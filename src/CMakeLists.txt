@@ -1,0 +1,8 @@
+cmake_minimum_required (VERSION 3.4)
+project (seqan3_tutorial CXX)
+set(SeqAn3_DIR "${CMAKE_SOURCE_DIR}/../submodules/seqan3/build_system")
+#SET(GCC_LINK_FLAGS "-lpthread")
+#SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${GCC_LINK_FLAGS}")
+find_package (SeqAn3 REQUIRED)
+add_executable (detectBreakends detectBreakends.cpp)
+target_link_libraries (detectBreakends seqan3::seqan3)

@@ -1,47 +1,55 @@
-#include <string>
-#include <vector>
-
 #include <seqan3/argument_parser/all.hpp>   // includes all necessary headers
-#include <seqan3/core/debug_stream.hpp>     // our custom output stream
-#include <seqan3/std/filesystem>            // use std::filesystem::path
 #include <seqan3/io/sequence_file/all.hpp>  // FASTA support
 #include <seqan3/io/alignment_file/all.hpp> // SAM/BAM support
-#include <seqan3/alphabet/nucleotide/dna5.hpp>
 
-#include "bam_functions.h"
-
-using namespace seqan3;
-
-class Breakend {
-    bool in_reference1;
-    int32_t chromosome1;
-    int32_t position1;
-    bool forward1;
-    bool in_reference2;
-    int32_t chromosome2;
-    int32_t position2;
-    bool forward2;
-    public:
-        Breakend (bool, int32_t, int32_t, bool, bool, int32_t, int32_t, bool);
-        void print_vcf_entry ();
-} ;
+#include "bam_functions.hpp"
+#include "breakend.hpp"
+#include "aligned_segment.hpp"
 
 
-Breakend::Breakend (bool in_ref1, int32_t chr1, int32_t pos1, bool fwd1, bool in_ref2, int32_t chr2, int32_t pos2, bool fwd2)
+template <class Container>
+void split_string(const std::string& str, Container& cont, char delim = ' ')
 {
-    in_reference1 = in_ref1;
-    chromosome1 = chr1;
-    position1 = pos1;
-    forward1 = fwd1;
-    in_reference2 = in_ref2;
-    chromosome2 = chr2;
-    position2 = pos2;
-    forward2 = fwd2;
+    std::stringstream ss(str);
+    std::string token;
+    while (std::getline(ss, token, delim)) {
+        cont.push_back(token);
+    }
 }
 
-void Breakend::print_vcf_entry()
+void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & aligned_segments, std::unordered_map<std::string, int32_t> ref_id_map)
 {
-    printf("%d\t%d\t%s\t%d\t%d\t%s\n", chromosome1, position1, forward1 ? "-->" : "<--", chromosome2, position2, forward2 ? "-->" : "<--");
+    std::vector<std::string> sa_tags{};
+    split_string(sa_string, sa_tags, ';');
+    for (std::string sa_tag : sa_tags)
+    {
+        std::vector<std::string> fields {};
+        split_string(sa_tag, fields, ',');
+        if (fields.size() == 6)
+        {
+            std::string rname = fields[0];
+            int32_t ref_id = ref_id_map[rname];
+            int32_t pos = std::stoi(fields[1]);
+            bool strand;
+            if (fields[2] == "+")
+            {
+                strand = true;
+            }
+            else if (fields[2] == "-")
+            {
+                strand = false;
+            }
+            else
+            {
+                continue;
+            }            
+            std::string cigar_field = fields[3];
+            //std::vector<cigar> cigar_vector = detail::parse_cigar(cigar_field);
+            std::vector<cigar> cigar_vector{};
+            int32_t mapq = std::stoi(fields[4]);
+            aligned_segments.push_back(AlignedSegment{ref_id, pos, strand, cigar_vector, mapq});
+        }
+    }
 }
 
 
@@ -67,7 +75,6 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & br
         {
             if (length > min_length)
             {
-                // debug_stream << "Found insertion of length " << length << " at position " << pos_ref << '\n';
                 if (insertion_allele_id < 0)
                 {
                     insertion_allele_id = insertions.size();
@@ -76,10 +83,10 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & br
                     insertions.push_back(query_sequence);
                 }
                 // Insertions cause two breakends ( (1) from the reference to the read and (2) back from the read to the reference )
-                Breakend new_breakend1 = Breakend {true, chromosome, query_start_pos, true, false, insertion_allele_id, pos_read, true};
+                Breakend new_breakend1 {true, chromosome, query_start_pos, true, false, insertion_allele_id, pos_read, true};
                 new_breakend1.print_vcf_entry();
                 breakends.push_back(new_breakend1);
-                Breakend new_breakend2 = Breakend {false, insertion_allele_id, pos_read + length, true, true, chromosome, query_start_pos, true};
+                Breakend new_breakend2 {false, insertion_allele_id, pos_read + length, true, true, chromosome, query_start_pos, true};
                 new_breakend2.print_vcf_entry();
                 breakends.push_back(new_breakend2);
             }
@@ -89,9 +96,8 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & br
         {
             if (length > min_length)
             {
-                // debug_stream << "Found deletion of length " << length << " at position " << pos_ref << '\n';
                 // Deletions cause one breakend from its start to its end
-                Breakend new_breakend = Breakend {true, chromosome, query_start_pos, true, true, chromosome, query_start_pos + length, true};
+                Breakend new_breakend {true, chromosome, query_start_pos, true, true, chromosome, query_start_pos + length, true};
                 new_breakend.print_vcf_entry();
                 breakends.push_back(new_breakend);
             }
@@ -104,10 +110,23 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & br
     }
 }
 
+std::unordered_map<std::string, int32_t> construct_ref_id_map(std::deque<std::string> ref_ids)
+{
+    std::unordered_map<std::string, int32_t> ref_id_map{};
+    int32_t index = 0;
+    for (std::string ref_name : ref_ids)
+    {
+        ref_id_map.insert({ref_name, index});
+        index++;
+    }
+    return ref_id_map;
+}
+
+
 void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_path, std::filesystem::path & insertion_file_path)
 {
     // Open input alignment file
-    using my_fields = fields<field::REF_ID, field::REF_OFFSET, field::FLAG, field::MAPQ, field::CIGAR, field::SEQ>;
+    using my_fields = fields<field::ID, field::REF_ID, field::REF_OFFSET, field::FLAG, field::MAPQ, field::CIGAR, field::SEQ, field::TAGS, field::HEADER_PTR>;
     alignment_file_input alignment_file{alignment_file_path, my_fields{}};
 
     // Open output file for insertion alleles
@@ -117,15 +136,27 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
     std::vector<Breakend> breakends {};
     std::vector<dna5_vector> insertion_alleles {};
     uint16_t num_good = 0;
+    bool ref_id_map_initialised = false;
+    std::unordered_map<std::string, int32_t> ref_id_map;
 
     for (auto & rec : alignment_file)
     {
-        int32_t chr = get<field::REF_ID>(rec).value_or(0);
+        std::string query_name = get<field::ID>(rec);
+        int32_t ref_id = get<field::REF_ID>(rec).value_or(0);
         int32_t pos = get<field::REF_OFFSET>(rec).value_or(0);
         auto flag = get<field::FLAG>(rec);
         auto mapq = get<field::MAPQ>(rec);
         auto cigar = get<field::CIGAR>(rec);
         auto seq = get<field::SEQ>(rec);
+        auto tags = get<field::TAGS>(rec);
+        auto header_ptr = get<field::HEADER_PTR>(rec);
+        auto ref_ids = header_ptr->ref_ids();
+        std::string ref_name = ref_ids[ref_id];
+        if (!ref_id_map_initialised)
+        {
+            ref_id_map = construct_ref_id_map(ref_ids);
+            ref_id_map_initialised = true;
+        }
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20)
         {
@@ -133,8 +164,20 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
         }
         else
         {
-            assert(pos >= 0);
-            analyze_cigar(cigar, breakends, insertion_alleles, chr, pos, seq, 30, insertion_file);
+            analyze_cigar(cigar, breakends, insertion_alleles, ref_id, pos, seq, 30, insertion_file);
+            // Primary alignments
+            if (!hasFlagSupplementary(flag))
+            {
+                std::string sa_tag = tags.get<"SA"_tag>();
+                if (!sa_tag.empty())
+                {
+                    std::vector<AlignedSegment> aligned_segments{};
+                    aligned_segments.push_back(AlignedSegment{ref_id, pos, !hasFlagReverseComplement(flag), cigar, mapq});
+                    analyze_segments(sa_tag, aligned_segments, ref_id_map);
+                    debug_stream << "Read " << query_name << " has " << aligned_segments.size() << " alignment segments" << '\n';
+                }
+            }
+            
             num_good++;
             if (num_good % 1000 == 0)
             {

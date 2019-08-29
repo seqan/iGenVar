@@ -1,5 +1,7 @@
-#ifndef INCLUDE_BAM_FUNCTIONS_H_
-#define INCLUDE_BAM_FUNCTIONS_H_
+#include <seqan3/range/view/all.hpp>
+#include <seqan3/alphabet/cigar/cigar.hpp>
+#include <seqan3/core/char_operations/predicate.hpp>
+#include <seqan3/io/exception.hpp>
 
 enum BamFlags
 {
@@ -47,4 +49,65 @@ hasFlagDuplicate(uint32_t const & flag)
     return (flag & BAM_FLAG_DUPLICATE) == BAM_FLAG_DUPLICATE;
 }
 
-#endif  // #ifndef INCLUDE_BAM_FUNCTIONS_H_
+
+ /*!\brief Updates the sequence lengths by `cigar_count` depending on the cigar operation `op`.
+     * \param[in, out]  ref_length  The reference sequence's length.
+     * \param[in, out]  seq_length  The query sequence's length.
+     * \param[in]       op          The cigar operation.
+     * \param[in]       cigar_count The cigar count value to add to the length depending on the cigar operation.
+     */
+    static void update_alignment_lengths(int32_t & ref_length, int32_t & seq_length, char op, uint32_t cigar_count)
+    {
+        switch (op)
+        {
+            case 'M': case '=': case 'X': ref_length += cigar_count, seq_length += cigar_count; break;
+            case 'D': case 'N':           ref_length += cigar_count; break;
+            case 'I' :                    seq_length += cigar_count; break;
+            case 'S': case 'H': case 'P': break; // no op (soft-clipping or padding does not increase either length)
+            default:                      throw seqan3::format_error{"Illegal cigar operation: " + std::string{op}};
+        }
+    };
+
+
+/*!\brief Parses a cigar string into a vector of operation-count pairs (e.g. (M, 3)).
+    * \ingroup alignment_file
+    * \tparam cigar_input_type The type of a single pass input view over the cigar string; must model
+    *                          std::ranges::InputRange.
+    * \param[in]  cigar_input  The single pass input view over the cigar string to parse.
+    *
+    * \returns A tuple of size three containing (1) std::vector over seqan3::cigar, that describes
+    *          the alignment, (2) the aligned reference length, (3) the aligned query sequence length.
+    *
+    * \details
+    *
+    * For example, the view over the cigar string "1H4M1D2M2S" will return `{[(H,1), (M,4), (D,1), (M,2), (S,2)], 7, 6}`.
+    */
+template <std::ranges::InputRange cigar_input_type>
+std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parse_cigar(cigar_input_type && cigar_input)
+{
+    std::vector<seqan3::cigar> operations{};
+    std::array<char, 20> buffer{}; // buffer to parse numbers with from_chars. Biggest number should fit in uint64_t
+    char op{'\0'};
+    uint32_t cigar_count{};
+    int32_t ref_length{}, seq_length{}; // length of aligned part for ref and query
+
+    // transform input into a single input view if it isn't already
+    auto cigar_view = cigar_input | seqan3::view::single_pass_input;
+
+    // parse the rest of the cigar
+    // -----------------------------------------------------------------------------------------------------------------
+    while (std::ranges::begin(cigar_view) != std::ranges::end(cigar_view)) // until stream is not empty
+    {
+        auto buffer_end = (std::ranges::copy(cigar_view | seqan3::view::take_until_or_throw(!seqan3::is_digit), buffer.data())).out;
+        op = *std::ranges::begin(cigar_view);
+        std::ranges::next(std::ranges::begin(cigar_view));
+
+        if (std::from_chars(buffer.begin(), buffer_end, cigar_count).ec != std::errc{})
+            throw seqan3::format_error{"Corrupted cigar string encountered"};
+
+        update_alignment_lengths(ref_length, seq_length, op, cigar_count);
+        operations.emplace_back(cigar_count, seqan3::cigar_op{}.assign_char(op));
+    }
+
+    return {operations, ref_length, seq_length};
+}

@@ -44,8 +44,8 @@ void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & align
                 continue;
             }            
             std::string cigar_field = fields[3];
-            //std::vector<cigar> cigar_vector = detail::parse_cigar(cigar_field);
-            std::vector<cigar> cigar_vector{};
+            std::tuple<std::vector<cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
+            std::vector<cigar> cigar_vector = std::get<0>(parsed_cigar);
             int32_t mapq = std::stoi(fields[4]);
             aligned_segments.push_back(AlignedSegment{ref_id, pos, strand, cigar_vector, mapq});
         }
@@ -164,8 +164,9 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
         }
         else
         {
+            // Detect breakends from CIGAR string
             analyze_cigar(cigar, breakends, insertion_alleles, ref_id, pos, seq, 30, insertion_file);
-            // Primary alignments
+            // Detect breakends from SA tag (primary alignments only)
             if (!hasFlagSupplementary(flag))
             {
                 std::string sa_tag = tags.get<"SA"_tag>();

@@ -3,7 +3,7 @@
 #include <seqan3/io/alignment_file/all.hpp> // SAM/BAM support
 
 #include "bam_functions.hpp"
-#include "breakend.hpp"
+#include "junction.hpp"
 #include "aligned_segment.hpp"
 
 
@@ -42,7 +42,7 @@ void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & align
             else
             {
                 continue;
-            }            
+            }
             std::string cigar_field = fields[3];
             std::tuple<std::vector<cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
             std::vector<cigar> cigar_vector = std::get<0>(parsed_cigar);
@@ -53,7 +53,7 @@ void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & align
 }
 
 
-void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & breakends, std::vector<dna5_vector> & insertions, int32_t chromosome, int32_t query_start_pos, dna5_vector & query_sequence, int32_t min_length, sequence_file_output<> & insertion_file)
+void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & junctions, std::vector<dna5_vector> & insertions, int32_t chromosome, int32_t query_start_pos, dna5_vector & query_sequence, int32_t min_length, sequence_file_output<> & insertion_file)
 {
     // Step through CIGAR string and store current position in reference and read
     int32_t pos_ref = query_start_pos;
@@ -82,13 +82,17 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & br
                     insertion_file.emplace_back(query_sequence, insertion_allele_name);
                     insertions.push_back(query_sequence);
                 }
-                // Insertions cause two breakends ( (1) from the reference to the read and (2) back from the read to the reference )
-                Breakend new_breakend1 {true, chromosome, query_start_pos, true, false, insertion_allele_id, pos_read, true};
-                new_breakend1.print_vcf_entry();
-                breakends.push_back(new_breakend1);
-                Breakend new_breakend2 {false, insertion_allele_id, pos_read + length, true, true, chromosome, query_start_pos, true};
-                new_breakend2.print_vcf_entry();
-                breakends.push_back(new_breakend2);
+                // Insertions cause two junctions ( (1) from the reference to the read and (2) back from the read to the reference )
+                junction new_junction1{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
+                                       breakend{insertion_allele_id, pos_read, strand::forward, sequence_type::read}};
+                // new_junction1.print_vcf_entry();
+                debug_stream << new_junction1 << "\n";
+                junctions.push_back(std::move(new_junction1));
+                junction new_junction2{breakend{insertion_allele_id, pos_read + length, strand::forward, sequence_type::read},
+                                       breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference}};
+                debug_stream << new_junction2 << "\n";
+                // new_junction2.print_vcf_entry();
+                junctions.push_back(std::move(new_junction2));
             }
             pos_read += length;
         }
@@ -96,17 +100,19 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<Breakend> & br
         {
             if (length > min_length)
             {
-                // Deletions cause one breakend from its start to its end
-                Breakend new_breakend {true, chromosome, query_start_pos, true, true, chromosome, query_start_pos + length, true};
-                new_breakend.print_vcf_entry();
-                breakends.push_back(new_breakend);
+                // Deletions cause one junction from its start to its end
+                junction new_junction{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
+                                      breakend{chromosome, query_start_pos + length, strand::forward, sequence_type::reference}};
+                // new_junction.print_vcf_entry();
+                debug_stream << new_junction << "\n";
+                junctions.push_back(std::move(new_junction));
             }
             pos_ref += length;
         }
         else if (operation == 'S'_cigar_op)
         {
             pos_read += length;
-        }       
+        }
     }
 }
 
@@ -123,18 +129,27 @@ std::unordered_map<std::string, int32_t> construct_ref_id_map(std::deque<std::st
 }
 
 
-void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_path, std::filesystem::path & insertion_file_path)
+void detect_junctions_in_alignment_file(std::filesystem::path & alignment_file_path, std::filesystem::path & insertion_file_path)
 {
     // Open input alignment file
-    using my_fields = fields<field::ID, field::REF_ID, field::REF_OFFSET, field::FLAG, field::MAPQ, field::CIGAR, field::SEQ, field::TAGS, field::HEADER_PTR>;
+    using my_fields = fields<field::ID,
+                             field::REF_ID,
+                             field::REF_OFFSET,
+                             field::FLAG,
+                             field::MAPQ,
+                             field::CIGAR,
+                             field::SEQ,
+                             field::TAGS,
+                             field::HEADER_PTR>;
+
     alignment_file_input alignment_file{alignment_file_path, my_fields{}};
 
     // Open output file for insertion alleles
     sequence_file_output insertion_file{insertion_file_path};
 
-    // Store breakends, insertion_alleles and number of good alignments
-    std::vector<Breakend> breakends {};
-    std::vector<dna5_vector> insertion_alleles {};
+    // Store junctions, insertion_alleles and number of good alignments
+    std::vector<junction> junctions{};
+    std::vector<dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
     bool ref_id_map_initialised = false;
     std::unordered_map<std::string, int32_t> ref_id_map;
@@ -152,6 +167,7 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
         auto header_ptr = get<field::HEADER_PTR>(rec);
         auto ref_ids = header_ptr->ref_ids();
         std::string ref_name = ref_ids[ref_id];
+
         if (!ref_id_map_initialised)
         {
             ref_id_map = construct_ref_id_map(ref_ids);
@@ -164,9 +180,9 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
         }
         else
         {
-            // Detect breakends from CIGAR string
-            analyze_cigar(cigar, breakends, insertion_alleles, ref_id, pos, seq, 30, insertion_file);
-            // Detect breakends from SA tag (primary alignments only)
+            // Detect junctions from CIGAR string
+            analyze_cigar(cigar, junctions, insertion_alleles, ref_id, pos, seq, 30, insertion_file);
+            // Detect junctions from SA tag (primary alignments only)
             if (!hasFlagSupplementary(flag))
             {
                 std::string sa_tag = tags.get<"SA"_tag>();
@@ -178,7 +194,7 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
                     debug_stream << "Read " << query_name << " has " << aligned_segments.size() << " alignment segments" << '\n';
                 }
             }
-            
+
             num_good++;
             if (num_good % 1000 == 0)
             {
@@ -187,7 +203,7 @@ void detect_breakends_in_alignment_file(std::filesystem::path & alignment_file_p
         }
     }
 
-    debug_stream << "Done. Found " << breakends.size() << " breakends." << '\n';
+    debug_stream << "Done. Found " << junctions.size() << " junctions." << '\n';
 }
 
 struct cmd_arguments
@@ -199,7 +215,7 @@ struct cmd_arguments
 void initialize_argument_parser(argument_parser & parser, cmd_arguments & args)
 {
     parser.info.author = "David Heller";
-    parser.info.short_description = "Detect breakends in a read alignment file";
+    parser.info.short_description = "Detect junctions in a read alignment file";
     parser.info.version = "0.0.1";
     parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",
                                  input_file_validator{{"sam", "bam"}} );
@@ -209,7 +225,7 @@ void initialize_argument_parser(argument_parser & parser, cmd_arguments & args)
 
 int main(int argc, char ** argv)
 {
-    argument_parser myparser{"detectBreakends", argc, argv};        // initialise myparser
+    argument_parser myparser{"detectJunctions", argc, argv};        // initialise myparser
     cmd_arguments args{};
     initialize_argument_parser(myparser, args);
     try
@@ -221,6 +237,6 @@ int main(int argc, char ** argv)
         debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
         return -1;
     }
-    detect_breakends_in_alignment_file(args.alignment_file_path, args.insertion_file_path);
+    detect_junctions_in_alignment_file(args.alignment_file_path, args.insertion_file_path);
     return 0;
 }

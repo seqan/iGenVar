@@ -1,22 +1,144 @@
-#include <seqan3/core/debug_stream.hpp>
+#include <seqan3/alphabet/cigar/cigar.hpp>
 
-using namespace seqan3;
-
-class AlignedSegment {
+struct aligned_segment
+{
     int32_t ref_id;
     int32_t pos;
-    bool strand;
-    std::vector<cigar> cig;
+    strand orientation;
+    std::vector<seqan3::cigar> cig;
     int32_t mapq;
-    public:
-        AlignedSegment (int32_t ref_id, int32_t pos, bool strand, std::vector<cigar> cig, int32_t mapq);
+
+    int32_t get_reference_start() const
+    {
+        return pos;
+    }
+
+    int32_t get_reference_end() const
+    {
+        int32_t current_pos = pos;
+        for (auto [element_length, element_operation] : cig)
+        {
+            switch(element_operation.to_char())
+            {
+                case 'M':
+                    current_pos += element_length;
+                    break;
+                case 'D':
+                    current_pos += element_length;
+                    break;
+                case 'N':
+                    current_pos += element_length;
+                    break;
+                case 'X':
+                    current_pos += element_length;
+                    break;
+                case '=':
+                    current_pos += element_length;
+                    break;
+            }
+        }
+        return current_pos;
+    }
+
+    int32_t get_left_soft_clip() const
+    {
+        int32_t left_soft_clip = 0;
+        for (auto [element_length, element_operation] : cig)
+        {
+            if(element_operation.to_char() == 'S')
+            {
+                left_soft_clip += element_length;
+            }
+            else if(element_operation.to_char() == 'M' ||
+                    element_operation.to_char() == '=' ||
+                    element_operation.to_char() == 'X' ||
+                    element_operation.to_char() == 'I')
+            {
+                break;
+            }
+        }
+        return left_soft_clip;
+    }
+
+    int32_t get_right_soft_clip() const
+    {
+        int32_t right_soft_clip = 0;
+        for (auto [element_length, element_operation] : std::view::reverse(cig))
+        {
+            if(element_operation.to_char() == 'S')
+            {
+                right_soft_clip += element_length;
+            }
+            else if(element_operation.to_char() == 'M' ||
+                    element_operation.to_char() == '=' ||
+                    element_operation.to_char() == 'X' ||
+                    element_operation.to_char() == 'I')
+            {
+                break;
+            }
+        }
+        return right_soft_clip;
+    }
+
+    int32_t get_query_start() const
+    {
+        if (orientation == strand::forward)
+        {
+            return get_left_soft_clip();
+        }
+        else
+        {
+            return get_right_soft_clip();
+        }
+    }
+
+    int32_t get_query_length() const
+    {
+        int32_t current_length = 0;
+        for (auto [element_length, element_operation] : cig)
+        {
+            switch(element_operation.to_char())
+            {
+                case 'M':
+                    current_length += element_length;
+                    break;
+                case 'S':
+                    current_length += element_length;
+                    break;
+                case 'I':
+                    current_length += element_length;
+                    break;
+                case 'X':
+                    current_length += element_length;
+                    break;
+                case '=':
+                    current_length += element_length;
+                    break;
+            }
+        }
+        return current_length;
+    }
+
+    int32_t get_query_end() const
+    {
+        if (orientation == strand::forward)
+        {
+            return get_query_length() - get_right_soft_clip();
+        }
+        else
+        {
+            return get_query_length() - get_left_soft_clip();
+        }
+    }
 };
 
-AlignedSegment::AlignedSegment (int32_t r, int32_t p, bool s, std::vector<cigar> c, int32_t m)
+template <typename stream_t>
+inline stream_t operator<<(stream_t && stream, aligned_segment const & a)
 {
-    ref_id = r;
-    pos = p;
-    strand = s;
-    cig = c;
-    mapq = m;
+    stream << a.ref_id << ";"
+           << a.get_reference_start() << "-" << a.get_reference_end() << ";"
+           << a.get_query_start() << "-" << a.get_query_end() << ";"
+           << ((a.orientation == strand::forward) ? "+" : "-") << ";"
+           << a.mapq;
+    return stream;
 }

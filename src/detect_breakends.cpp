@@ -6,6 +6,7 @@
 #include "junction.hpp"
 #include "aligned_segment.hpp"
 
+using namespace seqan3;
 
 template <class Container>
 void split_string(const std::string& str, Container& cont, char delim = ' ')
@@ -17,7 +18,7 @@ void split_string(const std::string& str, Container& cont, char delim = ' ')
     }
 }
 
-void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & aligned_segments, std::unordered_map<std::string, int32_t> ref_id_map)
+void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segment> & aligned_segments, std::unordered_map<std::string, int32_t> ref_id_map)
 {
     std::vector<std::string> sa_tags{};
     split_string(sa_string, sa_tags, ';');
@@ -30,14 +31,14 @@ void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & align
             std::string rname = fields[0];
             int32_t ref_id = ref_id_map[rname];
             int32_t pos = std::stoi(fields[1]);
-            bool strand;
+            strand orientation;
             if (fields[2] == "+")
             {
-                strand = true;
+                orientation = strand::forward;
             }
             else if (fields[2] == "-")
             {
-                strand = false;
+                orientation = strand::reverse;
             }
             else
             {
@@ -47,11 +48,15 @@ void analyze_segments(std::string sa_string, std::vector<AlignedSegment> & align
             std::tuple<std::vector<cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
             std::vector<cigar> cigar_vector = std::get<0>(parsed_cigar);
             int32_t mapq = std::stoi(fields[4]);
-            aligned_segments.push_back(AlignedSegment{ref_id, pos, strand, cigar_vector, mapq});
+            aligned_segments.push_back(aligned_segment{ref_id, pos, orientation, cigar_vector, mapq});
         }
     }
 }
 
+// void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments)
+// {
+//     for (size_t i = 0)
+// }
 
 void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & junctions, std::vector<dna5_vector> & insertions, int32_t chromosome, int32_t query_start_pos, dna5_vector & query_sequence, int32_t min_length, sequence_file_output<> & insertion_file)
 {
@@ -116,7 +121,7 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & ju
     }
 }
 
-std::unordered_map<std::string, int32_t> construct_ref_id_map(std::deque<std::string> ref_ids)
+std::unordered_map<std::string, int32_t> construct_ref_id_map(const std::deque<std::string> & ref_ids)
 {
     std::unordered_map<std::string, int32_t> ref_id_map{};
     int32_t index = 0;
@@ -129,7 +134,7 @@ std::unordered_map<std::string, int32_t> construct_ref_id_map(std::deque<std::st
 }
 
 
-void detect_junctions_in_alignment_file(std::filesystem::path & alignment_file_path, std::filesystem::path & insertion_file_path)
+void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path, const std::filesystem::path & insertion_file_path)
 {
     // Open input alignment file
     using my_fields = fields<field::ID,
@@ -188,10 +193,12 @@ void detect_junctions_in_alignment_file(std::filesystem::path & alignment_file_p
                 std::string sa_tag = tags.get<"SA"_tag>();
                 if (!sa_tag.empty())
                 {
-                    std::vector<AlignedSegment> aligned_segments{};
-                    aligned_segments.push_back(AlignedSegment{ref_id, pos, !hasFlagReverseComplement(flag), cigar, mapq});
-                    analyze_segments(sa_tag, aligned_segments, ref_id_map);
-                    debug_stream << "Read " << query_name << " has " << aligned_segments.size() << " alignment segments" << '\n';
+                    std::vector<aligned_segment> aligned_segments{};
+                    aligned_segments.push_back(aligned_segment{ref_id, pos, hasFlagReverseComplement(flag) ? strand::reverse : strand::forward, cigar, mapq});
+                    retrieve_aligned_segments(sa_tag, aligned_segments, ref_id_map);
+                    // analyze_aligned_segments(aligned_segments);
+                    debug_stream << "Read " << query_name << " has " << aligned_segments.size() << " alignment segments:" << '\n';
+                    debug_stream << aligned_segments << '\n';
                 }
             }
 

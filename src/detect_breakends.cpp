@@ -53,10 +53,32 @@ void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segmen
     }
 }
 
-// void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments)
-// {
-//     for (size_t i = 0)
-// }
+void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments, std::vector<junction> & junctions)
+{
+    for(size_t i = 1; i<aligned_segments.size(); i++)
+    {
+        aligned_segment current = aligned_segments[i-1];
+        aligned_segment next = aligned_segments[i];
+        int32_t distance_on_read = next.get_query_start() - current.get_query_end();
+        // Neither gap nor overlap on read
+        if (distance_on_read >= -10 && distance_on_read <= 10)
+        {
+            breakend mate1{current.ref_id,
+                            current.orientation == strand::forward ? current.get_reference_end()
+                                                                    : current.get_reference_start(),
+                            current.orientation,
+                            sequence_type::reference};
+            breakend mate2{next.ref_id,
+                            next.orientation == strand::forward ? next.get_reference_start()
+                                                                : next.get_reference_end(),
+                            next.orientation,
+                            sequence_type::reference};
+            junction new_junction{std::move(mate1), std::move(mate2)};
+            debug_stream << "BND: " << new_junction << "\n";
+            junctions.push_back(std::move(new_junction));
+        }
+    }
+}
 
 void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & junctions, std::vector<dna5_vector> & insertions, int32_t chromosome, int32_t query_start_pos, dna5_vector & query_sequence, int32_t min_length, sequence_file_output<> & insertion_file)
 {
@@ -90,13 +112,11 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & ju
                 // Insertions cause two junctions ( (1) from the reference to the read and (2) back from the read to the reference )
                 junction new_junction1{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
                                        breakend{insertion_allele_id, pos_read, strand::forward, sequence_type::read}};
-                // new_junction1.print_vcf_entry();
-                debug_stream << new_junction1 << "\n";
+                debug_stream << "INS1: " << new_junction1 << "\n";
                 junctions.push_back(std::move(new_junction1));
                 junction new_junction2{breakend{insertion_allele_id, pos_read + length, strand::forward, sequence_type::read},
                                        breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference}};
-                debug_stream << new_junction2 << "\n";
-                // new_junction2.print_vcf_entry();
+                debug_stream << "INS2: " << new_junction2 << "\n";
                 junctions.push_back(std::move(new_junction2));
             }
             pos_read += length;
@@ -109,7 +129,7 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & ju
                 junction new_junction{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
                                       breakend{chromosome, query_start_pos + length, strand::forward, sequence_type::reference}};
                 // new_junction.print_vcf_entry();
-                debug_stream << new_junction << "\n";
+                debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
             }
             pos_ref += length;
@@ -196,9 +216,8 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                     std::vector<aligned_segment> aligned_segments{};
                     aligned_segments.push_back(aligned_segment{ref_id, pos, hasFlagReverseComplement(flag) ? strand::reverse : strand::forward, cigar, mapq});
                     retrieve_aligned_segments(sa_tag, aligned_segments, ref_id_map);
-                    // analyze_aligned_segments(aligned_segments);
-                    debug_stream << "Read " << query_name << " has " << aligned_segments.size() << " alignment segments:" << '\n';
-                    debug_stream << aligned_segments << '\n';
+                    std::sort(aligned_segments.begin(), aligned_segments.end());
+                    analyze_aligned_segments(aligned_segments, junctions);
                 }
             }
 

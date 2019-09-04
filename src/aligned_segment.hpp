@@ -142,3 +142,12 @@ inline stream_t operator<<(stream_t && stream, aligned_segment const & a)
            << a.mapq;
     return stream;
 }
+
+inline bool operator<(const aligned_segment & lhs, const aligned_segment & rhs)
+{
+    return lhs.get_query_start() != rhs.get_query_start()
+            ? lhs.get_query_start() < rhs.get_query_start()
+            : lhs.get_query_end() != rhs.get_query_end()
+                ? lhs.get_query_end() < rhs.get_query_end()
+                : lhs.mapq < rhs.mapq;
+}

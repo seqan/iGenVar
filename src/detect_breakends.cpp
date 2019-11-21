@@ -65,7 +65,7 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
         {
             breakend mate1{current.ref_id,
                             current.orientation == strand::forward ? current.get_reference_end()
-                                                                    : current.get_reference_start(),
+                                                                   : current.get_reference_start(),
                             current.orientation,
                             sequence_type::reference};
             breakend mate2{next.ref_id,
@@ -128,7 +128,6 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & ju
                 // Deletions cause one junction from its start to its end
                 junction new_junction{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
                                       breakend{chromosome, query_start_pos + length, strand::forward, sequence_type::reference}};
-                // new_junction.print_vcf_entry();
                 debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
             }
@@ -228,7 +227,11 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
             }
         }
     }
-
+    std::sort(junctions.begin(), junctions.end());
+    for (junction elem : junctions)
+    {
+        std::cout << elem << '\n';
+    }
     debug_stream << "Done. Found " << junctions.size() << " junctions." << '\n';
 }
 

@@ -63,7 +63,7 @@ struct aligned_segment
     int32_t get_right_soft_clip() const
     {
         int32_t right_soft_clip = 0;
-        for (auto [element_length, element_operation] : std::view::reverse(cig))
+        for (auto [element_length, element_operation] : std::views::reverse(cig))
         {
             if(element_operation.to_char() == 'S')
             {

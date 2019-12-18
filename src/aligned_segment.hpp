@@ -2,7 +2,7 @@
 
 struct aligned_segment
 {
-    int32_t ref_id;
+    std::string ref_name;
     int32_t pos;
     strand orientation;
     std::vector<seqan3::cigar> cig;
@@ -135,7 +135,7 @@ struct aligned_segment
 template <typename stream_t>
 inline stream_t operator<<(stream_t && stream, aligned_segment const & a)
 {
-    stream << a.ref_id << ";"
+    stream << a.ref_name << ";"
            << a.get_reference_start() << "-" << a.get_reference_end() << ";"
            << a.get_query_start() << "-" << a.get_query_end() << ";"
            << ((a.orientation == strand::forward) ? "+" : "-") << ";"

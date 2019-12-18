@@ -9,8 +9,8 @@ public:
     junction(breakend mate1, breakend mate2, std::string read_name) : mate1{std::move(mate1)}, mate2{std::move(mate2)}, read_name{std::move(read_name)}
     {
         if ((mate2.seq_type < mate1.seq_type) ||
-            (mate2.seq_type == mate1.seq_type && mate2.seq_id < mate1.seq_id) ||
-            (mate2.seq_type == mate1.seq_type && mate2.seq_id == mate1.seq_id && mate2.position < mate1.position))
+            (mate2.seq_type == mate1.seq_type && mate2.seq_name < mate1.seq_name) ||
+            (mate2.seq_type == mate1.seq_type && mate2.seq_name == mate1.seq_name && mate2.position < mate1.position))
         {
             std::swap(this->mate1, this->mate2);
             this->mate1.flip_orientation();

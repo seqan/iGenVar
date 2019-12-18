@@ -53,7 +53,7 @@ void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segmen
     }
 }
 
-void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments, std::vector<junction> & junctions)
+void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments, std::vector<junction> & junctions, std::string & read_name)
 {
     for(size_t i = 1; i<aligned_segments.size(); i++)
     {
@@ -73,14 +73,14 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
                                                                 : next.get_reference_end(),
                             next.orientation,
                             sequence_type::reference};
-            junction new_junction{std::move(mate1), std::move(mate2)};
+            junction new_junction{std::move(mate1), std::move(mate2), read_name};
             debug_stream << "BND: " << new_junction << "\n";
             junctions.push_back(std::move(new_junction));
         }
     }
 }
 
-void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & junctions, std::vector<dna5_vector> & insertions, int32_t chromosome, int32_t query_start_pos, dna5_vector & query_sequence, int32_t min_length, sequence_file_output<> & insertion_file)
+void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & junctions, std::vector<dna5_vector> & insertions, int32_t chromosome, int32_t query_start_pos, dna5_vector & query_sequence, int32_t min_length, sequence_file_output<> & insertion_file, std::string & read_name)
 {
     // Step through CIGAR string and store current position in reference and read
     int32_t pos_ref = query_start_pos;
@@ -110,12 +110,14 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & ju
                     insertions.push_back(query_sequence);
                 }
                 // Insertions cause two junctions ( (1) from the reference to the read and (2) back from the read to the reference )
-                junction new_junction1{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
-                                       breakend{insertion_allele_id, pos_read, strand::forward, sequence_type::read}};
+                junction new_junction1{breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
+                                       breakend{insertion_allele_id, pos_read, strand::forward, sequence_type::read},
+                                       read_name};
                 debug_stream << "INS1: " << new_junction1 << "\n";
                 junctions.push_back(std::move(new_junction1));
                 junction new_junction2{breakend{insertion_allele_id, pos_read + length, strand::forward, sequence_type::read},
-                                       breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference}};
+                                       breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
+                                       read_name};
                 debug_stream << "INS2: " << new_junction2 << "\n";
                 junctions.push_back(std::move(new_junction2));
             }
@@ -126,8 +128,9 @@ void analyze_cigar(std::vector<cigar> & cigar_string, std::vector<junction> & ju
             if (length > min_length)
             {
                 // Deletions cause one junction from its start to its end
-                junction new_junction{breakend{chromosome, query_start_pos, strand::forward, sequence_type::reference},
-                                      breakend{chromosome, query_start_pos + length, strand::forward, sequence_type::reference}};
+                junction new_junction{breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
+                                      breakend{chromosome, pos_ref + length, strand::forward, sequence_type::reference},
+                                      read_name};
                 debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
             }
@@ -205,7 +208,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
         else
         {
             // Detect junctions from CIGAR string
-            analyze_cigar(cigar, junctions, insertion_alleles, ref_id, pos, seq, 30, insertion_file);
+            analyze_cigar(cigar, junctions, insertion_alleles, ref_id, pos, seq, 30, insertion_file, query_name);
             // Detect junctions from SA tag (primary alignments only)
             if (!hasFlagSupplementary(flag))
             {
@@ -216,7 +219,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                     aligned_segments.push_back(aligned_segment{ref_id, pos, hasFlagReverseComplement(flag) ? strand::reverse : strand::forward, cigar, mapq});
                     retrieve_aligned_segments(sa_tag, aligned_segments, ref_id_map);
                     std::sort(aligned_segments.begin(), aligned_segments.end());
-                    analyze_aligned_segments(aligned_segments, junctions);
+                    analyze_aligned_segments(aligned_segments, junctions, query_name);
                 }
             }
 

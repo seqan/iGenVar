@@ -35,7 +35,7 @@ struct breakend
 template <typename stream_t>
 inline stream_t operator<<(stream_t && stream, breakend const & b)
 {
-    stream << ((b.seq_type == sequence_type::reference) ? "Reference " : "Read ") << '\t'
+    stream << ((b.seq_type == sequence_type::reference) ? "Reference" : "Read ") << '\t'
            << b.seq_id << '\t'
            << b.position  << '\t'
            << ((b.orientation == strand::forward) ? "Forward" : "Reverse");

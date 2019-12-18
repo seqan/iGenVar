@@ -12,7 +12,7 @@ public:
             (mate2.seq_type == mate1.seq_type && mate2.seq_id < mate1.seq_id) ||
             (mate2.seq_type == mate1.seq_type && mate2.seq_id == mate1.seq_id && mate2.position < mate1.position))
         {
-            std::swap(mate1, mate2);
+            std::swap(this->mate1, this->mate2);
             mate1.flip_orientation();
             mate2.flip_orientation();
         }

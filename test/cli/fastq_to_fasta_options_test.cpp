@@ -62,7 +62,7 @@ TEST_F(cli_test, with_out_file)
     records.emplace_back("ACGTTTGATTCGCG"_dna5, std::string{"seq1"});
     records.emplace_back("TCGGGGGATTCGCG"_dna5, std::string{"seq2"});
 
-    EXPECT_TRUE(std::ranges::equal(fin, records));
+    EXPECT_RANGE_EQ(fin, records);
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, std::string{});
     EXPECT_EQ(result.err, std::string{});

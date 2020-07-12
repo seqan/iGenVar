@@ -158,15 +158,15 @@ std::unordered_map<std::string, int32_t> construct_ref_id_map(const std::deque<s
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path, const std::filesystem::path & insertion_file_path)
 {
     // Open input alignment file
-    using my_fields = fields<field::ID,
-                             field::REF_ID,
-                             field::REF_OFFSET,
-                             field::FLAG,
-                             field::MAPQ,
-                             field::CIGAR,
-                             field::SEQ,
-                             field::TAGS,
-                             field::HEADER_PTR>;
+    using my_fields = fields<field::id,
+                             field::ref_id,
+                             field::ref_offset,
+                             field::flag,
+                             field::mapq,
+                             field::cigar,
+                             field::seq,
+                             field::tags,
+                             field::header_ptr>;
 
     alignment_file_input alignment_file{alignment_file_path, my_fields{}};
 
@@ -180,15 +180,15 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
 
     for (auto & rec : alignment_file)
     {
-        std::string query_name = get<field::ID>(rec);
-        int32_t ref_id = get<field::REF_ID>(rec).value_or(0);
-        int32_t pos = get<field::REF_OFFSET>(rec).value_or(0);
-        auto flag = get<field::FLAG>(rec);
-        auto mapq = get<field::MAPQ>(rec);
-        auto cigar = get<field::CIGAR>(rec);
-        auto seq = get<field::SEQ>(rec);
-        auto tags = get<field::TAGS>(rec);
-        auto header_ptr = get<field::HEADER_PTR>(rec);
+        std::string query_name = get<field::id>(rec);
+        int32_t ref_id = get<field::ref_id>(rec).value_or(0);
+        int32_t pos = get<field::ref_offset>(rec).value_or(0);
+        seqan3::sam_flag const flag = get<field::flag>(rec);    // uint16_t enum
+        uint8_t const mapq = get<field::mapq>(rec);
+        auto cigar = get<field::cigar>(rec);
+        auto seq = get<field::seq>(rec);
+        auto tags = get<field::tags>(rec);
+        auto header_ptr = get<field::header_ptr>(rec);
         auto ref_ids = header_ptr->ref_ids();
         std::string ref_name = ref_ids[ref_id];
 
@@ -255,7 +255,7 @@ int main(int argc, char ** argv)
     {
         myparser.parse();                                          // trigger command line parsing
     }
-    catch (parser_invalid_argument const & ext)                     // catch user errors
+    catch (argument_parser_error const & ext)                   // catch user errors
     {
         debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
         return -1;

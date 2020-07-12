@@ -2,32 +2,30 @@
 #include <seqan3/argument_parser/all.hpp>   // includes all necessary headers
 #include "junction.hpp"
 
-using namespace std;
-
-vector<junction> read_junctions(const filesystem::path & junction_file_path)
+std::vector<junction> read_junctions(const std::filesystem::path & junction_file_path)
 {
-    fstream junction_file;
-    junction_file.open(junction_file_path,ios::in);
-    vector<junction> junctions;
+    std::fstream junction_file;
+    junction_file.open(junction_file_path, std::ios::in);
+    std::vector<junction> junctions;
     if (junction_file.is_open()){
-        string line, word;
+        std::string line, word;
         while(getline(junction_file, line)){
-            stringstream s(line);
-            vector<string> fields;
-            while (getline(s, word, '\t')) { 
+            std::stringstream s(line);
+            std::vector<std::string> fields;
+            while (getline(s, word, '\t')) {
                 fields.push_back(word);
             }
             if (fields.size() == 9)
             {
                 breakend mate1{fields[1],
-                               stoi(fields[2]),
+                               std::stoi(fields[2]),
                                (fields[3] == "Forward") ? strand::forward : strand::reverse,
                                (fields[0] == "Reference") ? sequence_type::reference : sequence_type::read};
                 breakend mate2{fields[5],
-                               stoi(fields[6]),
+                               std::stoi(fields[6]),
                                (fields[7] == "Forward") ? strand::forward : strand::reverse,
                                (fields[4] == "Reference") ? sequence_type::reference : sequence_type::read};
-                junction new_junction{move(mate1), move(mate2), fields[8]};
+                junction new_junction{std::move(mate1), std::move(mate2), fields[8]};
                 junctions.push_back(new_junction);
             }
         }
@@ -57,7 +55,7 @@ void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual)
 
 struct cmd_arguments
 {
-    filesystem::path junction_file_path{};
+    std::filesystem::path junction_file_path{};
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
@@ -77,12 +75,12 @@ int main(int argc, char ** argv)
     {
         myparser.parse();                                          // trigger command line parsing
     }
-    catch (seqan3::parser_invalid_argument const & ext)                     // catch user errors
+    catch (seqan3::argument_parser_error const & ext)                     // catch user errors
     {
         seqan3::debug_stream << "[Error] " << ext.what() << "\n"; // customise your error message
         return -1;
     }
-    vector<junction> junctions = read_junctions(args.junction_file_path);
+    std::vector<junction> junctions = read_junctions(args.junction_file_path);
     print_vcf_header();
     for (size_t i = 0; i<junctions.size(); i++)
     {
@@ -113,8 +111,6 @@ int main(int argc, char ** argv)
                 }
             }
         }
-        
-        
     }
     return 0;
 }

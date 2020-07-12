@@ -38,7 +38,5 @@ int main(int argc, char ** argv)
     if (verbose) // if flag is set
         seqan3::debug_stream << "Conversion was a success. Congrats!\n";
 
-
-
     return 0;
 }

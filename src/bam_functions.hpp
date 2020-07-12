@@ -20,33 +20,33 @@ enum BamFlags
 };
 
 inline bool
-hasFlagUnmapped(uint32_t const & flag)
+hasFlagUnmapped(seqan3::sam_flag const & flag)
 {
-    return (flag & BAM_FLAG_UNMAPPED) == BAM_FLAG_UNMAPPED;
+    return (static_cast<uint16_t>(flag) & BAM_FLAG_UNMAPPED) == BAM_FLAG_UNMAPPED;
 }
 
 inline bool
-hasFlagReverseComplement(uint32_t const & flag)
+hasFlagReverseComplement(seqan3::sam_flag const & flag)
 {
-    return (flag & BAM_FLAG_RC) == BAM_FLAG_RC;
+    return (static_cast<uint16_t>(flag) & BAM_FLAG_RC) == BAM_FLAG_RC;
 }
 
 inline bool
-hasFlagSecondary(uint32_t const & flag)
+hasFlagSecondary(seqan3::sam_flag const & flag)
 {
-    return (flag & BAM_FLAG_SECONDARY) == BAM_FLAG_SECONDARY;
+    return (static_cast<uint16_t>(flag) & BAM_FLAG_SECONDARY) == BAM_FLAG_SECONDARY;
 }
 
 inline bool
-hasFlagSupplementary(uint32_t const & flag)
+hasFlagSupplementary(seqan3::sam_flag const & flag)
 {
-    return (flag & BAM_FLAG_SUPPLEMENTARY) == BAM_FLAG_SUPPLEMENTARY;
+    return (static_cast<uint16_t>(flag) & BAM_FLAG_SUPPLEMENTARY) == BAM_FLAG_SUPPLEMENTARY;
 }
 
 inline bool
-hasFlagDuplicate(uint32_t const & flag)
+hasFlagDuplicate(seqan3::sam_flag const & flag)
 {
-    return (flag & BAM_FLAG_DUPLICATE) == BAM_FLAG_DUPLICATE;
+    return (static_cast<uint16_t>(flag) & BAM_FLAG_DUPLICATE) == BAM_FLAG_DUPLICATE;
 }
 
 

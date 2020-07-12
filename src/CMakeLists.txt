@@ -7,3 +7,11 @@ target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 
 add_executable ("${PROJECT_NAME}" main.cpp)
 target_link_libraries ("${PROJECT_NAME}" "${PROJECT_NAME}_lib")
+
+# project (seqan3_tutorial CXX)
+# set(SeqAn3_DIR "${CMAKE_SOURCE_DIR}/../submodules/seqan3/build_system")
+# find_package (SeqAn3 REQUIRED)
+# add_executable (detect_breakends detect_breakends.cpp)
+# add_executable (find_deletions find_deletions.cpp)
+# target_link_libraries (detect_breakends seqan3::seqan3)
+# target_link_libraries (find_deletions seqan3::seqan3)

@@ -9,11 +9,11 @@
 
 TEST_F(cli_test, no_options)
 {
-    cli_test_result result = execute_app("fastq_to_fasta");
+    cli_test_result result = execute_app("iGenVar");
     std::string expected
     {
-        "Fastq-to-Fasta-Converter\n"
-        "========================\n"
+        "Find-Genetic-Variations\n"
+        "=======================\n"
         "    Try -h or --help for more information.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
@@ -23,7 +23,7 @@ TEST_F(cli_test, no_options)
 
 TEST_F(cli_test, fail_no_argument)
 {
-    cli_test_result result = execute_app("fastq_to_fasta", "-v");
+    cli_test_result result = execute_app("iGenVar", "-v");
     std::string expected
     {
         "Parsing error. Not enough positional arguments provided (Need at least 1). "
@@ -36,7 +36,7 @@ TEST_F(cli_test, fail_no_argument)
 
 TEST_F(cli_test, with_argument)
 {
-    cli_test_result result = execute_app("fastq_to_fasta", data("in.fastq"));
+    cli_test_result result = execute_app("iGenVar", data("in.fastq"));
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, "> seq1\nACGTTTGATTCGCG\n> seq2\nTCGGGGGATTCGCG\n");
     EXPECT_EQ(result.err, std::string{});
@@ -44,7 +44,7 @@ TEST_F(cli_test, with_argument)
 
 TEST_F(cli_test, with_argument_verbose)
 {
-    cli_test_result result = execute_app("fastq_to_fasta", data("in.fastq"), "-v");
+    cli_test_result result = execute_app("iGenVar", data("in.fastq"), "-v");
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, "> seq1\nACGTTTGATTCGCG\n> seq2\nTCGGGGGATTCGCG\n");
     EXPECT_EQ(result.err, "Conversion was a success. Congrats!\n");
@@ -52,7 +52,7 @@ TEST_F(cli_test, with_argument_verbose)
 
 TEST_F(cli_test, with_out_file)
 {
-    cli_test_result result = execute_app("fastq_to_fasta", data("in.fastq"), "-o", "out.fasta");
+    cli_test_result result = execute_app("iGenVar", data("in.fastq"), "-o", "out.fasta");
     seqan3::sequence_file_input fin{"out.fasta", seqan3::fields<seqan3::field::seq, seqan3::field::id>{}};
 
     // create records to compare

@@ -7,7 +7,7 @@
 
 int main(int argc, char ** argv)
 {
-    seqan3::argument_parser parser{"Fastq-to-Fasta-Converter", argc, argv};
+    seqan3::argument_parser parser{"Find-Genetic-Variations", argc, argv};
 
     // Declarations for argument parser
     std::filesystem::path fastq_file{};

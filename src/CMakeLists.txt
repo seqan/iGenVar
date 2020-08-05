@@ -1,7 +1,10 @@
 cmake_minimum_required (VERSION 3.8)
 
 # An object library (without main) to be used in multiple targets.
-add_library ("${PROJECT_NAME}_lib" STATIC fastq_conversion.cpp)
+add_library ("${PROJECT_NAME}_lib" STATIC fastq_conversion.cpp
+                                          detect_breakends/junction_detection.cpp
+                                          find_deletions/deletion_finding_and_printing.cpp)
+
 target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC seqan3::seqan3)
 target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 

@@ -1,3 +1,4 @@
-[submodule "submodules/seqan3"]
-	path = submodules/seqan3
+[submodule "seqan3"]
+	path = lib/seqan3
 	url = https://github.com/seqan/seqan3.git
+	branch = master

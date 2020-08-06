@@ -1,6 +1,7 @@
 #include "detect_breakends/junction_detection.hpp"
 
-using namespace seqan3;
+using seqan3::operator""_cigar_op;
+using seqan3::operator""_tag;
 
 // ToDo: unused:
 // std::unordered_map<std::string, int32_t> construct_ref_id_map(const std::deque<std::string> & ref_ids)
@@ -51,8 +52,8 @@ void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segmen
                 continue;
             }
             std::string cigar_field = fields[3];
-            std::tuple<std::vector<cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
-            std::vector<cigar> cigar_vector = std::get<0>(parsed_cigar);
+            std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
+            std::vector<seqan3::cigar> cigar_vector = std::get<0>(parsed_cigar);
             int32_t mapq = std::stoi(fields[4]);
             aligned_segments.push_back(aligned_segment{ref_name, pos, orientation, cigar_vector, mapq});
         }
@@ -82,20 +83,20 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
                             next.orientation,
                             sequence_type::reference};
             junction new_junction{std::move(mate1), std::move(mate2), read_name};
-            debug_stream << "BND: " << new_junction << "\n";
+            seqan3::debug_stream << "BND: " << new_junction << "\n";
             junctions.push_back(std::move(new_junction));
         }
     }
 }
 
-void analyze_cigar(std::vector<cigar> & cigar_string,
+void analyze_cigar(std::vector<seqan3::cigar> & cigar_string,
                    std::vector<junction> & junctions,
-                   std::vector<dna5_vector> & insertions,
+                   std::vector<seqan3::dna5_vector> & insertions,
                    std::string chromosome,
                    int32_t query_start_pos,
-                   dna5_vector & query_sequence,
+                   seqan3::dna5_vector & query_sequence,
                    int32_t min_length,
-                   sequence_file_output<> & insertion_file,
+                   seqan3::sequence_file_output<> & insertion_file,
                    std::string & read_name)
 {
     // Step through CIGAR string and store current position in reference and read
@@ -105,10 +106,11 @@ void analyze_cigar(std::vector<cigar> & cigar_string,
     // Stores the index of the current read in the insertion allele output file (or -1 if current read has not been added yet)
     int32_t insertion_allele_id {-1};
 
-    for (cigar & pair : cigar_string)
+    for (seqan3::cigar & pair : cigar_string)
     {
+        using seqan3::get;
         int32_t length = get<0>(pair);
-        cigar_op operation = get<1>(pair);
+        seqan3::cigar_op operation = get<1>(pair);
         if (operation == 'M'_cigar_op || operation == '='_cigar_op || operation == 'X'_cigar_op)
         {
             pos_ref += length;
@@ -132,7 +134,7 @@ void analyze_cigar(std::vector<cigar> & cigar_string,
                                                 strand::forward,
                                                 sequence_type::read},
                                        read_name};
-                debug_stream << "INS1: " << new_junction1 << "\n";
+                seqan3::debug_stream << "INS1: " << new_junction1 << "\n";
                 junctions.push_back(std::move(new_junction1));
                 junction new_junction2{breakend{std::to_string(insertion_allele_id),
                                                 pos_read + length,
@@ -140,7 +142,7 @@ void analyze_cigar(std::vector<cigar> & cigar_string,
                                                 sequence_type::read},
                                        breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
                                        read_name};
-                debug_stream << "INS2: " << new_junction2 << "\n";
+                seqan3::debug_stream << "INS2: " << new_junction2 << "\n";
                 junctions.push_back(std::move(new_junction2));
             }
             pos_read += length;
@@ -153,7 +155,7 @@ void analyze_cigar(std::vector<cigar> & cigar_string,
                 junction new_junction{breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
                                       breakend{chromosome, pos_ref + length, strand::forward, sequence_type::reference},
                                       read_name};
-                debug_stream << "DEL: " << new_junction << "\n";
+                seqan3::debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
             }
             pos_ref += length;
@@ -169,42 +171,42 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                         const std::filesystem::path & insertion_file_path)
 {
     // Open input alignment file
-    using my_fields = fields<field::id,
-                             field::ref_id,
-                             field::ref_offset,
-                             field::flag,
-                             field::mapq,
-                             field::cigar,
-                             field::seq,
-                             field::tags,
-                             field::header_ptr>;
+    using my_fields = seqan3::fields<seqan3::field::id,
+                                     seqan3::field::ref_id,
+                                     seqan3::field::ref_offset,
+                                     seqan3::field::flag,
+                                     seqan3::field::mapq,
+                                     seqan3::field::cigar,
+                                     seqan3::field::seq,
+                                     seqan3::field::tags,
+                                     seqan3::field::header_ptr>;
 
-    alignment_file_input alignment_file{alignment_file_path, my_fields{}};
+    seqan3::alignment_file_input alignment_file{alignment_file_path, my_fields{}};
     // Open output file for insertion alleles
-    sequence_file_output insertion_file{insertion_file_path};
+    seqan3::sequence_file_output insertion_file{insertion_file_path};
 
     // Store junctions, insertion_alleles and number of good alignments
     std::vector<junction> junctions{};
-    std::vector<dna5_vector> insertion_alleles{};
+    std::vector<seqan3::dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
 
     for (auto & rec : alignment_file)
     {
-        std::string query_name = get<field::id>(rec);
-        int32_t ref_id = get<field::ref_id>(rec).value_or(0);
-        int32_t pos = get<field::ref_offset>(rec).value_or(0);
-        seqan3::sam_flag const flag = get<field::flag>(rec);    // uint16_t enum
-        uint8_t const mapq = get<field::mapq>(rec);
-        auto cigar = get<field::cigar>(rec);
-        auto seq = get<field::seq>(rec);
-        auto tags = get<field::tags>(rec);
-        auto header_ptr = get<field::header_ptr>(rec);
+        std::string query_name = seqan3::get<seqan3::field::id>(rec);
+        int32_t ref_id = seqan3::get<seqan3::field::ref_id>(rec).value_or(0);
+        int32_t pos = seqan3::get<seqan3::field::ref_offset>(rec).value_or(0);
+        seqan3::sam_flag const flag = seqan3::get<seqan3::field::flag>(rec);    // uint16_t enum
+        uint8_t const mapq = seqan3::get<seqan3::field::mapq>(rec);
+        auto cigar = seqan3::get<seqan3::field::cigar>(rec);
+        auto seq = seqan3::get<seqan3::field::seq>(rec);
+        auto tags = seqan3::get<seqan3::field::tags>(rec);
+        auto header_ptr = seqan3::get<seqan3::field::header_ptr>(rec);
         auto ref_ids = header_ptr->ref_ids();
         std::string ref_name = ref_ids[ref_id];
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20)
         {
-            // debug_stream << "Skipped flag " << flag << std::endl;
+            // seqan3::debug_stream << "Skipped flag " << flag << std::endl;
         }
         else
         {
@@ -228,7 +230,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
             num_good++;
             if (num_good % 1000 == 0)
             {
-                debug_stream << num_good << " good alignments" << std::endl;
+                seqan3::debug_stream << num_good << " good alignments" << std::endl;
             }
         }
     }
@@ -237,5 +239,5 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
     {
         std::cout << elem << '\n';
     }
-    debug_stream << "Done. Found " << junctions.size() << " junctions." << '\n';
+    seqan3::debug_stream << "Done. Found " << junctions.size() << " junctions." << '\n';
 }

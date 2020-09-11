@@ -1,12 +1,20 @@
 #include <seqan3/alphabet/cigar/cigar.hpp>
 
+/*!\brief Segment aligned to the reference out of the SAM/BAM file.
+ *
+ * \param orientation       reverse or forward depends on FLAG field of the SAM/BAM file
+ * \param read_name         RNAME field of the SAM/BAM file
+ * \param pos               POS field of the SAM/BAM file
+ * \param mapq              MAPQ field of the SAM/BAM file
+ * \param cig               CIGAR field of the SAM/BAM file
+ */
 struct aligned_segment
 {
+    strand orientation;
     std::string ref_name;
     int32_t pos;
-    strand orientation;
-    std::vector<seqan3::cigar> cig;
     int32_t mapq;
+    std::vector<seqan3::cigar> cig;
 
     int32_t get_reference_start() const
     {

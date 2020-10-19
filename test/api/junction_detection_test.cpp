@@ -17,11 +17,11 @@
 TEST(junction_detection, fasta_out_not_empty)
 {
     std::string expected{
-        "Reference\tchr21\t41972616\tForward\tRead \t0\t2294\tForward\tm2257/8161/CCS\n"
-        "Reference\tchr21\t41972616\tReverse\tRead \t0\t3975\tReverse\tm2257/8161/CCS\n"
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
+        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead \t0\t2294\tForward\tchr21\n"
+        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead \t0\t3975\tReverse\tchr21\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory

@@ -38,7 +38,9 @@ macro (add_app_test test_filename test_alternative)
 
     # Add the test to its general target (cli or api).
     if (${test_alternative} STREQUAL "CLI_TEST")
-        add_dependencies (${target} "${PROJECT_NAME}") # cli test needs the application executable
+        # add_dependencies (${target} "${PROJECT_NAME}") # cli test needs the application executable
+        add_dependencies (${target} detect_breakends)
+        add_dependencies (${target} find_deletions)
         target_include_directories(${target} PUBLIC "${SEQAN3_CLONE_DIR}/test/include")
         add_dependencies (cli_test ${target})
     elseif (${test_alternative} STREQUAL "API_TEST")

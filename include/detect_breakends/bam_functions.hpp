@@ -50,26 +50,26 @@ hasFlagDuplicate(seqan3::sam_flag const & flag)
 }
 
 
- /*!\brief Updates the sequence lengths by `cigar_count` depending on the cigar operation `op`.
-     * \param[in, out]  ref_length  The reference sequence's length.
-     * \param[in, out]  seq_length  The query sequence's length.
-     * \param[in]       op          The cigar operation.
-     * \param[in]       cigar_count The cigar count value to add to the length depending on the cigar operation.
-     */
-    static void update_alignment_lengths(int32_t & ref_length, int32_t & seq_length, char op, uint32_t cigar_count)
-    {
-        switch (op)
-        {
-            case 'M': case '=': case 'X': ref_length += cigar_count, seq_length += cigar_count; break;
-            case 'D': case 'N':           ref_length += cigar_count; break;
-            case 'I' :                    seq_length += cigar_count; break;
-            case 'S': case 'H': case 'P': break; // no op (soft-clipping or padding does not increase either length)
-            default:                      throw seqan3::format_error{"Illegal cigar operation: " + std::string{op}};
-        }
-    };
+ /*! \brief Updates the sequence lengths by `cigar_count` depending on the cigar operation `op`.
+  * \param[in, out]  ref_length  The reference sequence's length.
+  * \param[in, out]  seq_length  The query sequence's length.
+  * \param[in]       op          The cigar operation.
+  * \param[in]       cigar_count The cigar count value to add to the length depending on the cigar operation.
+  */
+static void update_alignment_lengths(int32_t & ref_length, int32_t & seq_length, char op, uint32_t cigar_count)
+  {
+switch (op)
+{
+    case 'M': case '=': case 'X': ref_length += cigar_count, seq_length += cigar_count; break;
+    case 'D': case 'N':           ref_length += cigar_count; break;
+    case 'I' :                    seq_length += cigar_count; break;
+    case 'S': case 'H': case 'P': break; // no op (soft-clipping or padding does not increase either length)
+    default:                      throw seqan3::format_error{"Illegal cigar operation: " + std::string{op}};
+}
+};
 
 
-/*!\brief Parses a cigar string into a vector of operation-count pairs (e.g. (M, 3)).
+/*! \brief Parses a cigar string into a vector of operation-count pairs (e.g. (M, 3)).
  * \tparam cigar_input_type The type of a single pass input view over the cigar string; must model
  *                          std::ranges::input_range.
  * \param[in]  cigar_input  The single pass input view over the cigar string to parse.

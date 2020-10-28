@@ -1,6 +1,6 @@
 #include "find_deletions/deletion_finding_and_printing.hpp"
 
-/*!\brief Reads the input junction file and stores the junctions in a vector.
+/*! \brief Reads the input junction file and stores the junctions in a vector.
  *
  * \param junction_file_path input junction file
  *
@@ -38,7 +38,7 @@ std::vector<junction> read_junctions(const std::filesystem::path & junction_file
     return junctions;
 }
 
-//!\brief Prints the header of a vcf file in std::out.
+//!\brief Prints the header of a vcf file on std::out.
 void print_vcf_header()
 {
     std::cout << "##fileformat=VCFv4.2" << '\n';
@@ -46,11 +46,11 @@ void print_vcf_header()
     std::cout << "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
 }
 
-/*!\brief Prints the deletion in vcf file style in std::out.
+/*! \brief Prints a deletion in vcf on std::out.
  *
  * \param chrom chromosome, where the deletion is located
- * \param start start coordinates of the deletion
- * \param end   end coordinates of the deletion
+ * \param start start coordinate of the deletion
+ * \param end   end coordinate of the deletion
  * \param qual  quality of the deletion, currently set to 60. ToDo: Requires a well-founded definition.
  */
 void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual)
@@ -65,7 +65,7 @@ void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual)
     std::cout << "SVTYPE=DEL;SVLEN=-" << end - start << ";END=" << end << '\n';
 }
 
-/*!\brief Detects deletions out of the junction file.
+/*! \brief Detects deletions out of the junction file.
  *
  * \param junction_file_path input junction file
  *

@@ -3,7 +3,7 @@
 using seqan3::operator""_cigar_op;
 using seqan3::operator""_tag;
 
-/*!\brief Splits a string by a given delimiter and stores substrings in a given container.
+/*! \brief Splits a string by a given delimiter and stores substrings in a given container.
  *
  * \param str   string to split
  * \param cont  container for the splited substrings
@@ -19,15 +19,17 @@ void split_string(const std::string& str, Container& cont, char delim = ' ')
     }
 }
 
-/*!\brief Build [aligned_segment's](\ref aligned_segment) out of supplementary alignment information.
+/*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
+ *         [aligned_segments](\ref aligned_segment), one for each alignment segment of the read.
  *
- * \param sa_string         "SA" tag string of the supplementary alignment
- * \param aligned_segments  vector of [aligned_segment's](\ref aligned_segment).
+ * \param sa_string         "SA" tag string
+ * \param aligned_segments  vector of [aligned_segments](\ref aligned_segment).
  *
- * \details The SA tag describes a chimeric alignment of a read and is like a small SAM within a SAM file:
- *          "SA:(rname,pos,strand,CIGAR,mapQ,NM;)" Each element represents a part of the chimeric alignment formatted as
- *          a semicolon-delimited list.
- *          We add all elements to our candidate list `aligned_segments` and examine them in the following function
+ * \details The SA tag describes the alignments of a chimeric read and is like a small SAM within a SAM file:
+ *          "SA:Z:(rname,pos,strand,CIGAR,mapQ,NM;)+"
+ *          Each element (in parentheses) represents one alignment segment of the chimeric alignment formatted as
+ *          a colon-delimited list.
+ *          We add all segments to our candidate list `aligned_segments` and examine them in the following function
  *          `analyze_aligned_segments()`.
  *          For more information about this tag, see the
  *          ([Map Optional Fields Specification](https://github.com/samtools/hts-specs/blob/master/SAMtags.pdf)).
@@ -66,11 +68,11 @@ void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segmen
     }
 }
 
-/*!\brief Build junctions out of aligned_segments.
+/*! \brief Build junctions out of aligned_segments.
  *
- * \param aligned_segments  vector of [aligned_segment's](\ref aligned_segment).
+ * \param aligned_segments  vector of [aligned_segments](\ref aligned_segment).
  * \param junctions         vector for storing junctions
- * \param read_name         RNAME field of the SAM/BAM file
+ * \param read_name         QNAME field of the SAM/BAM file
  */
 void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments,
                               std::vector<junction> & junctions,
@@ -101,30 +103,31 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
     }
 }
 
-/*!\brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
+/*! \brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *
- * \param chromosome        QNAME field of the SAM/BAM file
- * \param read_name         RNAME field of the SAM/BAM file
+ * \param chromosome        RNAME field of the SAM/BAM file
+ * \param read_name         QNAME field of the SAM/BAM file
  * \param query_start_pos   POS field of the SAM/BAM file
  * \param cigar_string      CIGAR field of the SAM/BAM file
  * \param query_sequence    SEQ field of the SAM/BAM file
  * \param junctions         vector for storing junctions
  * \param insertions        vector for storing insertion_alleles
- * \param min_length        a minimum length specified by us for reads (currently 30 bp)
+ * \param min_length        minimum length of vatiants to detect (currently 30 bp)
  * \param insertion_file    output file for insertion alleles
  *
  * \details This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *          We distinguish 4 cases of CIGAR operation characters:
  *          1. M, =, X: For matches and mismatches (Alignment column containing two letters. This could contain two
  *                      different letters (mismatch) or two identical letters), we step through ref and read.
- *          2. I:       For insertons (gap in the query sequence) -> Insertions cause two junctions ( (1) from the
+ *          2. I:       For insertons (gap in the reference sequence) -> Insertions cause two junctions ( (1) from the
  *                      reference to the read and (2) back from the read to the reference ).
- *          3. D:       For deletions (gap in the target sequence) -> Deletions cause one junction from its start to its
+ *          3. D:       For deletions (gap in the query sequence) -> Deletions cause one junction from its start to its
  *                      end.
  *          4. S:       For soft clipped letters we step through read. These are segments of the query sequence that
- *                      does not appear in the alignment. The full-length query sequence is given the SAM record.
+ *                      do not appear in the alignment. The full-length query sequence is given in the SEQ field of the
+ *                      SAM record.
  *          Other CIGAR operations: H, N, P are skipped (H: hard clipping sequences are not present in the SEQ, N:
- *          skipped region representing an intron, P: padding consumes neather the query not the reference).
+ *          skipped region representing an intron, P: padding consumes neither the query nor the reference).
  *          The junctions found are stored in the given `junctions` vector.
  *          For more information see the
  *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 8.
@@ -156,7 +159,7 @@ void analyze_cigar(std::string chromosome,
             pos_ref += length;
             pos_read += length;
         }
-        else if (operation == 'I'_cigar_op) // I: Insertion (gap in the query sequence).
+        else if (operation == 'I'_cigar_op) // I: Insertion (gap in the reference sequence).
         {
             if (length >= min_length)
             {
@@ -212,20 +215,19 @@ void analyze_cigar(std::string chromosome,
     }
 }
 
-
-/*!\brief Detects junctions in alignment files (sam/bam) and stores them in a fasta file.
+/*! \brief Detects junctions between distant genomic positions by analyzing an alignment file (sam/bam). The detected
+ *         junctions are printed on stdout and insertion alleles are stored in a fasta file.
  *
  * \param alignment_file_path input file - path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
  *
- * \details Detect junctions from CIGAR string & from supplementary alignment tag (primary alignments only)
- *          In the iteration over all reads, we first sort out all unmapped, all secondary alignments (i.e. we are only
- *          examining primary alignments) and all duplicates.
- *          You can find information about all flags at the
+ * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
+ *          In the iteration over all reads, we first sort out unmapped alignments, secondary alignments, duplicates
+ *          and alignments with low mapping quality. You can find information about all flags at the
  *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 7.
- *          If, in addition to the mandatory cigar string, an SA tag (i.e. reads aligning more than one distinct
- *          positions, called chimeric alignment or split reads) also exists under the optional fields, we also use this
- *          information. More details on this in the associated function `retrieve_aligned_segments()`.
+ *          Then, the CIGAR string of all remaining alignments is analyzed.
+ *          For primary alignments, the SA tag is analyzed additionally yielding information on supplementary alignments of a split read.
+ *          More details on this in the associated function `retrieve_aligned_segments()`.
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path)

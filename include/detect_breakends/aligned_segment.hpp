@@ -1,12 +1,13 @@
 #include <seqan3/alphabet/cigar/cigar.hpp>
 
-/*!\brief Segment aligned to the reference out of the SAM/BAM file.
+/*! \brief Read segment aligned to the reference genome (part of chimeric/split-aligned read). Contains information
+ *        parsed from the SA tag of an alignment in the SAM/BAM file.
  *
- * \param orientation       reverse or forward depends on FLAG field of the SAM/BAM file
- * \param read_name         RNAME field of the SAM/BAM file
- * \param pos               POS field of the SAM/BAM file
- * \param mapq              MAPQ field of the SAM/BAM file
- * \param cig               CIGAR field of the SAM/BAM file
+ * \param orientation       mapping orientation (reverse or forward strand)
+ * \param ref_name          reference/chromosome name
+ * \param pos               start position of the alignment
+ * \param mapq              mapping quality
+ * \param cig               cigar string of the alignment
  */
 struct aligned_segment
 {

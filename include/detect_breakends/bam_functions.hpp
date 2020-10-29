@@ -62,8 +62,8 @@ switch (op)
 {
     case 'M': case '=': case 'X': ref_length += cigar_count, seq_length += cigar_count; break;
     case 'D': case 'N':           ref_length += cigar_count; break;
-    case 'I' :                    seq_length += cigar_count; break;
-    case 'S': case 'H': case 'P': break; // no op (soft-clipping or padding does not increase either length)
+    case 'I': case 'S':           seq_length += cigar_count; break;
+    case 'H': case 'P':           break; // no op (hard-clipping or padding does not increase either length)
     default:                      throw seqan3::format_error{"Illegal cigar operation: " + std::string{op}};
 }
 };

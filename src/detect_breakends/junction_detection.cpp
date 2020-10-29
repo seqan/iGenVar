@@ -112,7 +112,7 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
  * \param query_sequence    SEQ field of the SAM/BAM file
  * \param junctions         vector for storing junctions
  * \param insertions        vector for storing insertion_alleles
- * \param min_length        minimum length of vatiants to detect (currently 30 bp)
+ * \param min_length        minimum length of variants to detect (currently 30 bp)
  * \param insertion_file    output file for insertion alleles
  *
  * \details This function steps through the CIGAR string and stores junctions with their position in reference and read.

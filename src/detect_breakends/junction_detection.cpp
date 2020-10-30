@@ -6,7 +6,7 @@ using seqan3::operator""_tag;
 /*! \brief Splits a string by a given delimiter and stores substrings in a given container.
  *
  * \param str   string to split
- * \param cont  container for the splited substrings
+ * \param cont  container for the splitted substrings
  * \param delim delimiter
  */
 template <class Container>
@@ -123,7 +123,7 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
  *                      reference to the read and (2) back from the read to the reference ).
  *          3. D:       For deletions (gap in the query sequence) -> Deletions cause one junction from its start to its
  *                      end.
- *          4. S:       For soft clipped letters we step through read. These are segments of the query sequence that
+ *          4. S:       For soft clipped letters we step through the read. These are segments of the query sequence that
  *                      do not appear in the alignment. The full-length query sequence is given in the SEQ field of the
  *                      SAM record.
  *          Other CIGAR operations: H, N, P are skipped (H: hard clipping sequences are not present in the SEQ, N:
@@ -217,16 +217,18 @@ void analyze_cigar(std::string chromosome,
 
 /*! \brief Detects junctions between distant genomic positions by analyzing an alignment file (sam/bam). The detected
  *         junctions are printed on stdout and insertion alleles are stored in a fasta file.
- *
+ * \cond
  * \param alignment_file_path input file - path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
+ * \endcond
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
  *          In the iteration over all reads, we first sort out unmapped alignments, secondary alignments, duplicates
  *          and alignments with low mapping quality. You can find information about all flags at the
  *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 7.
  *          Then, the CIGAR string of all remaining alignments is analyzed.
- *          For primary alignments, the SA tag is analyzed additionally yielding information on supplementary alignments of a split read.
+ *          For primary alignments, the SA tag is analyzed additionally yielding information on supplementary alignments
+ *          of a split read.
  *          More details on this in the associated function `retrieve_aligned_segments()`.
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,

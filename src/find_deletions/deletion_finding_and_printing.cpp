@@ -66,8 +66,10 @@ void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual)
 }
 
 /*! \brief Detects deletions out of the junction file.
- *
+
+ * \cond
  * \param junction_file_path input junction file
+ * \endcond
  *
  * \details Extracts deletions out of given breakends / junctions.
  */

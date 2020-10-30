@@ -35,15 +35,24 @@ TEST_F(cli_test, fail_no_argument)
 TEST_F(cli_test, with_arguments)
 {
     cli_test_result result = execute_app("detect_breakends",
-                                         data("converted_bam_shorted.sam"),
+                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
     std::string expected
     {
-        "Reference\tchr9\t70103073\tForward\tReference\tchr9\t70103147\tForward\tm13802/6999/CCS\n"
+        "Reference\tchr21\t41972616\tForward\tRead \t0\t2294\tForward\tm2257/8161/CCS\n"
+        "Reference\tchr21\t41972616\tReverse\tRead \t0\t3975\tReverse\tm2257/8161/CCS\n"
+        "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
+        "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
+        "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
     };
     std::string expected_err
     {
-        "DEL: Reference\tchr9\t70103073\tForward\tReference\tchr9\t70103147\tForward\tm13802/6999/CCS\nDone. Found 1 junctions.\n"
+        "INS1: Reference\tchr21\t41972616\tForward\tRead \t0\t2294\tForward\tm2257/8161/CCS\n"
+        "INS2: Reference\tchr21\t41972616\tReverse\tRead \t0\t3975\tReverse\tm2257/8161/CCS\n"
+        "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
+        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
+        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
+        "Done. Found 5 junctions.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected);
@@ -53,18 +62,15 @@ TEST_F(cli_test, with_arguments)
 TEST_F(cli_test, test_outfile)
 {
     cli_test_result result = execute_app("detect_breakends",
-                                         data("converted_bam_shorted.sam"),
+                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
-    std::ifstream f;
-    f.open("detect_breakends_insertion_file_out.fasta");
-    std::stringstream buffer;
-    buffer << f.rdbuf();
-    //expected string currently empty:
-    std::string expected
-    {
-	    ""
-    };
-    //this does not specifically check if file exists, rather if its readable.
-    EXPECT_TRUE(f.is_open());
-    EXPECT_EQ(buffer.str(), expected);
+
+    std::cout << "Current path is " << std::filesystem::current_path() << '\n';
+
+    std::filesystem::path out_file_path = "detect_breakends_insertion_file_out.fasta";
+    std::filesystem::path test_file_path = "../../data/detect_breakends_insertion_file_test.fasta";
+    seqan3::sequence_file_input out_file{out_file_path};
+    seqan3::sequence_file_input test_file{test_file_path};
+
+    EXPECT_RANGE_EQ(out_file, test_file);
 }

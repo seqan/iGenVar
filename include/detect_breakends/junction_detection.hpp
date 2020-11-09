@@ -15,8 +15,8 @@
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
  *          We sort out unmapped alignments, secondary alignments, duplicates and alignments with low mapping quality.
- *          Then, the CIGAR string of all remaining alignments and for primary alignments, the split read information is
- *          analyzed.
+ *          Then, the CIGAR string of all remaining alignments is analyzed.
+ *          For primary alignments, also the split read information is analyzed.
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path);

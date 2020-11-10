@@ -1,5 +1,11 @@
 #include "find_deletions/deletion_finding_and_printing.hpp"
 
+/*! \brief Reads the input junction file and stores the junctions in a vector.
+ *
+ * \param junction_file_path input junction file
+ *
+ * \returns a vector of junctions
+ */
 std::vector<junction> read_junctions(const std::filesystem::path & junction_file_path)
 {
     std::fstream junction_file;
@@ -32,6 +38,7 @@ std::vector<junction> read_junctions(const std::filesystem::path & junction_file
     return junctions;
 }
 
+//!\brief Prints the header of a vcf file on std::out.
 void print_vcf_header()
 {
     std::cout << "##fileformat=VCFv4.2" << '\n';
@@ -39,6 +46,13 @@ void print_vcf_header()
     std::cout << "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
 }
 
+/*! \brief Prints a deletion in vcf on std::out.
+ *
+ * \param chrom chromosome, where the deletion is located
+ * \param start start coordinate of the deletion
+ * \param end   end coordinate of the deletion
+ * \param qual  quality of the deletion, currently set to 60. ToDo: Requires a well-founded definition.
+ */
 void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual)
 {
     std::cout << chrom << '\t';
@@ -51,13 +65,22 @@ void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual)
     std::cout << "SVTYPE=DEL;SVLEN=-" << end - start << ";END=" << end << '\n';
 }
 
+/*! \brief Detects deletions out of the junction file.
+
+ * \cond
+ * \param junction_file_path input junction file
+ * \endcond
+ *
+ * \details Extracts deletions out of given breakends / junctions.
+ */
 void find_and_print_deletions(const std::filesystem::path & junction_file_path)
 {
     std::vector<junction> junctions = read_junctions(junction_file_path);
     print_vcf_header();
     for (size_t i = 0; i<junctions.size(); i++)
     {
-        if (junctions[i].get_mate1().seq_type == sequence_type::reference && junctions[i].get_mate2().seq_type == sequence_type::reference)
+        if (junctions[i].get_mate1().seq_type == sequence_type::reference &&
+            junctions[i].get_mate2().seq_type == sequence_type::reference)
         {
             if (junctions[i].get_mate1().orientation == junctions[i].get_mate2().orientation)
             {

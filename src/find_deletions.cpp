@@ -5,6 +5,7 @@
 struct cmd_arguments
 {
     std::filesystem::path junction_file_path{};
+    std::filesystem::path output_file_path{};
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
@@ -12,7 +13,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.author = "David Heller";
     parser.info.short_description = "Find deletions";
     parser.info.version = "0.0.1";
-    parser.add_positional_option(args.junction_file_path, "Input junctions tab-separated format.");
+    parser.add_option(args.junction_file_path, 'i', "input", "Input junctions tab-separated format.",
+                      seqan3::option_spec::REQUIRED);
+    parser.add_option(args.output_file_path, 'o', "output", "The path of the vcf output file.",
+                      seqan3::option_spec::REQUIRED );
 }
 
 int main(int argc, char ** argv)
@@ -29,7 +33,7 @@ int main(int argc, char ** argv)
         seqan3::debug_stream << "[Error] " << ext.what() << "\n";       // customise your error message
         return -1;
     }
-    find_and_print_deletions(args.junction_file_path);
+    find_and_print_deletions(args.junction_file_path, args.output_file_path);
 
 
     return 0;

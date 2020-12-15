@@ -1,6 +1,6 @@
 # SeqAn3 App Template
 
-[![Build Status](https://travis-ci.com/seqan/app-template.svg?branch=master)](https://travis-ci.com/seqan/app-template)
+[![Build Status](https://github.com/seqan/app-template/workflows/App%20CI/badge.svg)](https://github.com/seqan/app-template/actions?query=branch%3Amaster+workflow%3A%22App+CI%22)
 
 This is a template for app developers with SeqAn3. 
 You can easily clone this repository and modify the existing code to your needs. 

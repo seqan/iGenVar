@@ -41,33 +41,43 @@ std::vector<junction> read_junctions(std::filesystem::path const & junction_file
 
 /*! \brief Prints the header of a vcf file to a given outputfile.
  *
- * \param out_file ouput file ofstream object
- */   
-void print_vcf_header(std::ofstream & out_file)
+ * \tparam stream_type type of output stream to write to. Must satisfy seqan3::output_stream.
+ * \param out_stream ouput file ofstream object
+ */
+template<typename stream_type>
+//!\cond
+    requires seqan3::output_stream<stream_type>
+//!\endcond
+void print_vcf_header(stream_type & out_stream)
 {
-    out_file << "##fileformat=VCFv4.2" << '\n';
-    out_file << "##source=iGenVarCaller" << '\n';
-    out_file << "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
+    out_stream << "##fileformat=VCFv4.2" << '\n';
+    out_stream << "##source=iGenVarCaller" << '\n';
+    out_stream << "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
 }
 
 /*! \brief Prints a deletion in vcf to a given outputfile.
  *
+ * \tparam stream_type type of output stream to write to. Must satisfy seqan3::output_stream.
  * \param chrom chromosome, where the deletion is located
  * \param start start coordinate of the deletion
  * \param end   end coordinate of the deletion
  * \param qual  quality of the deletion, currently set to 60. ToDo: Requires a well-founded definition.
- * \param out_file output file ofstream object
+ * \param out_stream output file ofstream object
  */
-void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual, std::ofstream & out_file)
+template<typename stream_type>
+//!\cond
+    requires seqan3::output_stream<stream_type>
+//!\endcond
+void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual, stream_type & out_stream)
 {
-    out_file << chrom << '\t';
-    out_file << start << '\t';
-    out_file << "." << '\t';
-    out_file << "N" << '\t';
-    out_file << "<DEL>" << '\t';
-    out_file << qual << '\t';
-    out_file << "PASS" << '\t';
-    out_file << "SVTYPE=DEL;SVLEN=-" << end - start << ";END=" << end << '\n';
+    out_stream << chrom << '\t';
+    out_stream << start << '\t';
+    out_stream << "." << '\t';
+    out_stream << "N" << '\t';
+    out_stream << "<DEL>" << '\t';
+    out_stream << qual << '\t';
+    out_stream << "PASS" << '\t';
+    out_stream << "SVTYPE=DEL;SVLEN=-" << end - start << ";END=" << end << '\n';
 }
 
 /*! \brief Detects deletions out of the junction file.
@@ -83,7 +93,7 @@ void find_and_print_deletions(std::filesystem::path const & junction_file_path, 
 {
     std::vector<junction> junctions = read_junctions(junction_file_path);
     std::ofstream out_file{output_file_path.c_str()};
-    
+
     if (!out_file.good() || !out_file.is_open())
         throw std::runtime_error{"Could not open file '" + output_file_path.string() + "' for reading."};
 
@@ -120,4 +130,43 @@ void find_and_print_deletions(std::filesystem::path const & junction_file_path, 
         }
     }
     out_file.close();
+}
+
+//!\overload
+void find_and_print_deletions(std::filesystem::path const & junction_file_path)
+{
+    std::vector<junction> junctions = read_junctions(junction_file_path);
+
+    print_vcf_header(std::cout);
+    for (size_t i = 0; i<junctions.size(); i++)
+    {
+        if (junctions[i].get_mate1().seq_type == sequence_type::reference &&
+            junctions[i].get_mate2().seq_type == sequence_type::reference)
+        {
+            if (junctions[i].get_mate1().orientation == junctions[i].get_mate2().orientation)
+            {
+                if (junctions[i].get_mate1().seq_name == junctions[i].get_mate2().seq_name)
+                {
+                    int32_t mate1_pos = junctions[i].get_mate1().position;
+                    int32_t mate2_pos = junctions[i].get_mate2().position;
+                    if (junctions[i].get_mate1().orientation == strand::forward)
+                    {
+                        int32_t distance = mate2_pos - mate1_pos;
+                        if (distance > 40 && distance < 100000)
+                        {
+                            print_deletion(junctions[i].get_mate1().seq_name, mate1_pos, mate2_pos, 60, std::cout);
+                        }
+                    }
+                    else if (junctions[i].get_mate1().orientation == strand::reverse)
+                    {
+                        int32_t distance = mate1_pos - mate2_pos;
+                        if (distance > 40 && distance < 100000)
+                        {
+                            print_deletion(junctions[i].get_mate1().seq_name, mate2_pos, mate1_pos, 60, std::cout);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }

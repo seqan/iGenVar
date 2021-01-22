@@ -41,7 +41,7 @@ std::vector<junction> read_junctions(std::filesystem::path const & junction_file
 
 /*! \brief Prints the header of a vcf file to a given outputfile.
  *
- * \param out_stream ouput stream object
+ * \param out_stream output stream object
  */
 void print_vcf_header(std::ostream & out_stream)
 {

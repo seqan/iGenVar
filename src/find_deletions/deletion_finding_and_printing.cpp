@@ -1,4 +1,5 @@
 #include "find_deletions/deletion_finding_and_printing.hpp"
+#include "variant_parser/variant_record.hpp"
 
 #include <fstream>
 /*! \brief Reads the input junction file and stores the junctions in a vector.
@@ -39,37 +40,6 @@ std::vector<junction> read_junctions(std::filesystem::path const & junction_file
     return junctions;
 }
 
-/*! \brief Prints the header of a vcf file to a given outputfile.
- *
- * \param out_stream output stream object
- */
-void print_vcf_header(std::ostream & out_stream)
-{
-    out_stream << "##fileformat=VCFv4.2" << '\n';
-    out_stream << "##source=iGenVarCaller" << '\n';
-    out_stream << "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
-}
-
-/*! \brief Prints a deletion in vcf to a given outputfile.
- *
- * \param chrom chromosome, where the deletion is located
- * \param start start coordinate of the deletion
- * \param end   end coordinate of the deletion
- * \param qual  quality of the deletion, currently set to 60. ToDo: Requires a well-founded definition.
- * \param out_stream output stream object
- */
-void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual, std::ostream & out_stream)
-{
-    out_stream << chrom << '\t';
-    out_stream << start << '\t';
-    out_stream << "." << '\t';
-    out_stream << "N" << '\t';
-    out_stream << "<DEL>" << '\t';
-    out_stream << qual << '\t';
-    out_stream << "PASS" << '\t';
-    out_stream << "SVTYPE=DEL;SVLEN=-" << end - start << ";END=" << end << '\n';
-}
-
 /*! \brief Detects deletions out of the junction file.
 
  * \cond
@@ -79,43 +49,60 @@ void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual,
  *
  * \details Extracts deletions out of given breakends / junctions.
  */
- void find_and_print_deletions(std::filesystem::path const & junction_file_path, std::ostream & out_stream)
- {
-     std::vector<junction> junctions = read_junctions(junction_file_path);
+void find_and_print_deletions(std::filesystem::path const & junction_file_path, std::ostream & out_stream)
+{
+    std::vector<junction> junctions = read_junctions(junction_file_path);
 
-     print_vcf_header(out_stream);
-     for (size_t i = 0; i<junctions.size(); i++)
-     {
-         if (junctions[i].get_mate1().seq_type == sequence_type::reference &&
-             junctions[i].get_mate2().seq_type == sequence_type::reference)
-         {
-             if (junctions[i].get_mate1().orientation == junctions[i].get_mate2().orientation)
-             {
-                 if (junctions[i].get_mate1().seq_name == junctions[i].get_mate2().seq_name)
-                 {
-                     int32_t mate1_pos = junctions[i].get_mate1().position;
-                     int32_t mate2_pos = junctions[i].get_mate2().position;
-                     if (junctions[i].get_mate1().orientation == strand::forward)
-                     {
-                         int32_t distance = mate2_pos - mate1_pos;
-                         if (distance > 40 && distance < 100000)
-                         {
-                             print_deletion(junctions[i].get_mate1().seq_name, mate1_pos, mate2_pos, 60, out_stream);
-                         }
-                     }
-                     else if (junctions[i].get_mate1().orientation == strand::reverse)
-                     {
-                         int32_t distance = mate1_pos - mate2_pos;
-                         if (distance > 40 && distance < 100000)
-                         {
-                             print_deletion(junctions[i].get_mate1().seq_name, mate2_pos, mate1_pos, 60, out_stream);
-                         }
-                     }
-                 }
-             }
-         }
-     }
- }
+    variant_header header{};
+    header.set_fileformat("VCFv4.3");
+    header.add_meta_info("SVTYPE", 1, "String", "Type of SV called.", "iGenVarCaller", "1.0");
+    header.add_meta_info("SVLEN", 1, "Integer", "Length of SV called.", "iGenVarCaller", "1.0");
+    header.add_meta_info("END", 1, "Integer", "End position of SV called.", "iGenVarCaller", "1.0");
+    header.print(out_stream);
+    for (size_t i = 0; i<junctions.size(); i++)
+    {
+        if (junctions[i].get_mate1().orientation == junctions[i].get_mate2().orientation)
+        {
+            if (junctions[i].get_mate1().seq_name == junctions[i].get_mate2().seq_name)
+            {
+                variant_record tmp{};
+                tmp.set_chrom(junctions[i].get_mate1().seq_name);
+                tmp.set_qual(60);
+                tmp.set_alt("<DEL>");
+                tmp.add_info("SVTYPE", "DEL");
+                int32_t mate1_pos = junctions[i].get_mate1().position;
+                int32_t mate2_pos = junctions[i].get_mate2().position;
+                int32_t length{};
+                if (junctions[i].get_mate1().orientation == strand::forward)
+                {
+                    int32_t distance = mate2_pos - mate1_pos;
+                    if (distance > 40 && distance < 100000)
+                    {
+                        length = mate2_pos - mate1_pos;
+                        tmp.set_pos(mate1_pos);
+                        tmp.add_info("SVLEN", std::to_string(-length));
+                        tmp.add_info("END", std::to_string(mate2_pos));
+                        tmp.print(out_stream);
+                        // print_deletion(junctions[i].get_mate1().seq_name, mate1_pos, mate2_pos, 60, out_stream);
+                    }
+                }
+                else if (junctions[i].get_mate1().orientation == strand::reverse)
+                {
+                    int32_t distance = mate1_pos - mate2_pos;
+                    if (distance > 40 && distance < 100000)
+                    {
+                        length = mate1_pos - mate2_pos;
+                        tmp.set_pos(mate2_pos);
+                        tmp.add_info("SVLEN", std::to_string(-length));
+                        tmp.add_info("END", std::to_string(mate1_pos));
+                        tmp.print(out_stream);
+                        // print_deletion(junctions[i].get_mate1().seq_name, mate2_pos, mate1_pos, 60, out_stream);
+                    }
+                }
+            }
+        }
+    }
+}
 
 //!\overload
 void find_and_print_deletions(std::filesystem::path const & junction_file_path,

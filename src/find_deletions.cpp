@@ -32,14 +32,7 @@ int main(int argc, char ** argv)
         seqan3::debug_stream << "[Error] " << ext.what() << "\n";       // customise your error message
         return -1;
     }
-    if (!args.output_file_path.empty())
-    {
-        find_and_print_deletions(args.junction_file_path, args.output_file_path);
-    }
-    else
-    {
-        find_and_print_deletions(args.junction_file_path);
-    }
+    find_and_print_deletions(args.junction_file_path, args.output_file_path);
 
 
     return 0;

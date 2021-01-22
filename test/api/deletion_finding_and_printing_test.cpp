@@ -28,7 +28,7 @@ TEST(group1, test_out_file)
 TEST(group1, test_std_out)
 {
     testing::internal::CaptureStdout();
-    find_and_print_deletions(DATADIR"detect_breakends_shorted.vcf");
+    find_and_print_deletions(DATADIR"detect_breakends_shorted.vcf", "");
     std::string std_cout = testing::internal::GetCapturedStdout();
     std::string expected
     {

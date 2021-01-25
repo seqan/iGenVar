@@ -12,7 +12,10 @@
  *
  * \param alignment_file_path input file - path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
- * \param methods list of methods for detecting junctions (1: cigar_string, 2: split_read, 3: read_pairs, 4: read_depth)
+ * \param methods - list of methods for detecting junctions (1: cigar_string,
+ *                                                           2: split_read,
+ *                                                           3: read_pairs,
+ *                                                           4: read_depth)
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
  *          We sort out unmapped alignments, secondary alignments, duplicates and alignments with low mapping quality.

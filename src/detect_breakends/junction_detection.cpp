@@ -220,7 +220,10 @@ void analyze_cigar(std::string chromosome,
  * \cond
  * \param alignment_file_path input file - path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
- * \param methods list of methods for detecting junctions (1: cigar_string, 2: split_read, 3: read_pairs, 4: read_depth)
+ * \param methods - list of methods for detecting junctions (1: cigar_string,
+ *                                                           2: split_read,
+ *                                                           3: read_pairs,
+ *                                                           4: read_depth)
  * \endcond
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
@@ -289,6 +292,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                       insertion_alleles,
                                       30,
                                       insertion_file);
+                        break;
                     case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)
                         if (!hasFlagSupplementary(flag))
                         {
@@ -303,10 +307,13 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                 analyze_aligned_segments(aligned_segments, junctions, query_name);
                             }
                         }
+                        break;
                     case 3: // Detect junctions from read pair evidence
-                        continue;
+                        break;
+                        // continue;
                     case 4: // Detect junctions from read depth evidence
-                        continue;
+                        break;
+                        // continue;
                 }
             }
 

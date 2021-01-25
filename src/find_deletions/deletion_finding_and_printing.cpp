@@ -118,7 +118,8 @@ void print_deletion(std::string chrom, int32_t start, int32_t end, int32_t qual,
  }
 
 //!\overload
-void find_and_print_deletions(std::filesystem::path const & junction_file_path, std::filesystem::path const & output_file_path)
+void find_and_print_deletions(std::filesystem::path const & junction_file_path,
+                              std::filesystem::path const & output_file_path)
 {
     if (output_file_path.empty())
     {

@@ -220,6 +220,10 @@ void analyze_cigar(std::string chromosome,
  * \cond
  * \param alignment_file_path input file - path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
+ * \param methods - list of methods for detecting junctions (1: cigar_string,
+ *                                                           2: split_read,
+ *                                                           3: read_pairs,
+ *                                                           4: read_depth)
  * \endcond
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
@@ -232,7 +236,8 @@ void analyze_cigar(std::string chromosome,
  *          More details on this in the associated function `retrieve_aligned_segments()`.
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
-                                        const std::filesystem::path & insertion_file_path)
+                                        const std::filesystem::path & insertion_file_path,
+                                        const std::vector<uint8_t> methods)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -274,20 +279,41 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
         }
         else
         {
-            // Detect junctions from CIGAR string
-            analyze_cigar(query_name, ref_name, pos, cigar, seq, junctions, insertion_alleles, 30, insertion_file);
-            // Detect junctions from SA tag (primary alignments only)
-            if (!hasFlagSupplementary(flag))
-            {
-                std::string sa_tag = tags.get<"SA"_tag>();
-                if (!sa_tag.empty())
+            for (uint8_t method : methods) {
+                switch (method)
                 {
-                    std::vector<aligned_segment> aligned_segments{};
-                    auto strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
-                    aligned_segments.push_back(aligned_segment{strand, ref_name, pos, mapq, cigar});
-                    retrieve_aligned_segments(sa_tag, aligned_segments);
-                    std::sort(aligned_segments.begin(), aligned_segments.end());
-                    analyze_aligned_segments(aligned_segments, junctions, query_name);
+                    case 1: // Detect junctions from CIGAR string
+                        analyze_cigar(query_name,
+                                      ref_name,
+                                      pos,
+                                      cigar,
+                                      seq,
+                                      junctions,
+                                      insertion_alleles,
+                                      30,
+                                      insertion_file);
+                        break;
+                    case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)
+                        if (!hasFlagSupplementary(flag))
+                        {
+                            std::string sa_tag = tags.get<"SA"_tag>();
+                            if (!sa_tag.empty())
+                            {
+                                std::vector<aligned_segment> aligned_segments{};
+                                auto strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
+                                aligned_segments.push_back(aligned_segment{strand, ref_name, pos, mapq, cigar});
+                                retrieve_aligned_segments(sa_tag, aligned_segments);
+                                std::sort(aligned_segments.begin(), aligned_segments.end());
+                                analyze_aligned_segments(aligned_segments, junctions, query_name);
+                            }
+                        }
+                        break;
+                    case 3: // Detect junctions from read pair evidence
+                        break;
+                        // continue;
+                    case 4: // Detect junctions from read depth evidence
+                        break;
+                        // continue;
                 }
             }
 

@@ -9,8 +9,8 @@ TEST_F(cli_test, no_options)
     cli_test_result result = execute_app("detect_breakends");
     std::string expected
     {
-            "detectJunctions - Detect junctions in a read alignment file\n"
-            "===========================================================\n"
+            "iGenVar - Detect junctions in a read alignment file\n"
+            "===================================================\n"
             "    Try -h or --help for more information.\n"
     };
     EXPECT_EQ(result.exit_code, 0);

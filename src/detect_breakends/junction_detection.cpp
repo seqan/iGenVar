@@ -314,9 +314,11 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                         }
                         break;
                     case 3: // Detect junctions from read pair evidence
+                        seqan3::debug_stream << "The read pair method is not yet implemented.\n";
                         break;
                         // continue;
                     case 4: // Detect junctions from read depth evidence
+                        seqan3::debug_stream << "The read depth method is not yet implemented.\n";
                         break;
                         // continue;
                 }
@@ -354,13 +356,13 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
             }
             break;
         case 1: // hierarchical clustering
-            seqan3::debug_stream << "The hierarchical clustering method is not jet implemented\n";
+            seqan3::debug_stream << "The hierarchical clustering method is not yet implemented\n";
             break;
         case 2: // self-balancing_binary_tree,
-            seqan3::debug_stream << "The self-balancing binary tree clustering method is not jet implemented\n";
+            seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";
             break;
         case 3: // candidate_selection_based_on_voting
-            seqan3::debug_stream << "The candidate selection based on voting clustering method is not jet implemented\n";
+            seqan3::debug_stream << "The candidate selection based on voting clustering method is not yet implemented\n";
             break;
     }
 

@@ -43,6 +43,7 @@ TEST(junction_detection, fasta_out_not_empty)
                                        tmp_dir/"detect_breakends_out_short.fasta",
                                        {1, 2, 3, 4},
                                        simple_clustering,
+                                       no_refinement,
                                        sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
@@ -68,6 +69,7 @@ TEST(junction_detection, method_1_only)
                                        tmp_dir/"detect_breakends_out_short.fasta",
                                        {1},
                                        simple_clustering,
+                                       no_refinement,
                                        sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
@@ -93,6 +95,7 @@ TEST(junction_detection, method_2_only)
                                        tmp_dir/"detect_breakends_out_short.fasta",
                                        {2},
                                        simple_clustering,
+                                       no_refinement,
                                        sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
@@ -120,6 +123,7 @@ TEST(junction_detection, method_1_and_2)
                                        tmp_dir/"detect_breakends_out_short.fasta",
                                        {1, 2},
                                        simple_clustering,
+                                       no_refinement,
                                        sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();

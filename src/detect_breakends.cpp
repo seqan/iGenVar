@@ -23,7 +23,24 @@ auto enumeration_names(clustering_methods)
                                                   {"3", clustering_methods::candidate_selection_based_on_voting},
                                                   {"candidate_selection_based_on_voting",
                                                    clustering_methods::candidate_selection_based_on_voting}};
-}
+};
+
+// Specialise a mapping from an identifying string to the respective value of your type refinement_methods. With the
+// help of this function, you're able to call ./detect_breackends with -r 0 and -r no_refinement and get the same
+// result.
+auto enumeration_names(refinement_methods)
+{
+    return std::unordered_map<std::string_view,
+                              refinement_methods>{{"0", refinement_methods::no_refinement},
+                                                  {"no_refinement",
+                                                   refinement_methods::no_refinement},
+                                                  {"1", refinement_methods::sViper_refinement_method},
+                                                  {"sViper_refinement_method",
+                                                   refinement_methods::sViper_refinement_method},
+                                                  {"2", refinement_methods::sVirl_refinement_method},
+                                                  {"sVirl_refinement_method",
+                                                   refinement_methods::sVirl_refinement_method}};
+};
 
 struct cmd_arguments
 {
@@ -31,6 +48,7 @@ struct cmd_arguments
     std::filesystem::path insertion_file_path{};
     std::vector<uint8_t> methods{1, 2, 3, 4};                   // default is using all methods
     clustering_methods clustering_method{simple_clustering};    // default is the simple clustering method
+    refinement_methods refinement_method{no_refinement};        // default is using no refinement
     uint64_t min_var_length = 30;
 };
 
@@ -53,8 +71,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     //                                               "3", "read_pairs",
     //                                               "4", "read_depth"};
     seqan3::arithmetic_range_validator method_validator{1, 4};
-    seqan3::value_list_validator clustering_method_validator {(seqan3::enumeration_names<clustering_methods> | seqan3::views::get<1>)};
-
+    seqan3::value_list_validator clustering_method_validator {
+                                            (seqan3::enumeration_names<clustering_methods> | seqan3::views::get<1>)};
+    seqan3::value_list_validator refinement_method_validator {
+                                            (seqan3::enumeration_names<refinement_methods> | seqan3::views::get<1>)};
     // Options - Input / Output:
     parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",
                                  seqan3::input_file_validator{{"sam", "bam"}} );
@@ -67,6 +87,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::option_spec::advanced, method_validator);
     parser.add_option(args.clustering_method, 'c', "clustering_method", "Choose the clustering method to be used.",
                       seqan3::option_spec::advanced, clustering_method_validator);
+    parser.add_option(args.refinement_method, 'r', "refinement_method", "Choose the refinement method to be used.",
+                      seqan3::option_spec::advanced, refinement_method_validator);
 
     // Options - SV specifications:
     parser.add_option(args.min_var_length, 'l', "min_var_length",
@@ -95,6 +117,7 @@ int main(int argc, char ** argv)
                                        args.insertion_file_path,
                                        args.methods,
                                        args.clustering_method,
+                                       args.refinement_method,
                                        args.min_var_length);
 
     return 0;

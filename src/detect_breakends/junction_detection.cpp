@@ -228,6 +228,9 @@ void analyze_cigar(std::string chromosome,
  *                                                           1: hierarchical_clustering,
  *                                                           2: self-balancing_binary_tree,
  *                                                           3: candidate_selection_based_on_voting)
+ * \param refinement_method method for refining breakends (0: no_refinement,
+ *                                                         1: sViper_refinement_method,
+ *                                                         2: sVirl_refinement_method)
  * \param min_var_length - minimum length of variants to detect (default 30 bp)
  * \endcond
  *
@@ -244,6 +247,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                         const std::filesystem::path & insertion_file_path,
                                         const std::vector<uint8_t> methods,
                                         const clustering_methods clustering_method,
+                                        const refinement_methods refinement_method,
                                         const uint64_t min_var_length)
 {
     // Open input alignment file

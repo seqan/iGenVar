@@ -346,6 +346,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                         // seqan3::debug_stream << "previous_elem" << previous_elem << '\n';
                         // seqan3::debug_stream << "current_elem" << junctions[i] << '\n';
                         junctions.erase(junctions.begin() + i);
+                        junctions[i].supporting_reads ++;
                     }
                     else
                     {

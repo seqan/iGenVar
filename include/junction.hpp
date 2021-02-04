@@ -10,6 +10,8 @@ private:
     std::string read_name{};
 
 public:
+    uint64_t supporting_reads{1};
+
     /*!\name Constructors, destructor and assignment
      * \{
      */
@@ -52,7 +54,10 @@ public:
 template <typename stream_t>
 inline stream_t operator<<(stream_t && stream, junction const & junc)
 {
-    stream << junc.get_mate1() << '\t' << junc.get_mate2() << '\t' << junc.get_read_name();
+    stream << junc.get_mate1() << '\t'
+           << junc.get_mate2() << '\t'
+           << junc.get_read_name() << '\t'
+           << junc.supporting_reads;
     return stream;
 }
 
@@ -65,7 +70,13 @@ inline bool operator<(const junction & lhs, const junction & rhs)
                 : lhs.get_mate2() < rhs.get_mate2();
 }
 
-inline bool operator==(const junction & lhs, const junction & rhs) // ! Equality without read name!
+/*! \brief A junction is equal to another, if their mates are equal to each other. The read_name and supporting_reads
+ *         are allowed to be unequal, because more than one read could support the same junction.
+ *
+ * \param lhs   left side junction
+ * \param rhs   right side junction
+ */
+inline bool operator==(const junction & lhs, const junction & rhs)
 {
     return (lhs.get_mate1() == rhs.get_mate1()) && (lhs.get_mate2() == rhs.get_mate2());
 }

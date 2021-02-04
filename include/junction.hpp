@@ -4,9 +4,26 @@
 
 class junction
 {
-public:
+private:
+    breakend mate1{};
+    breakend mate2{};
+    std::string read_name{};
 
-    junction(breakend mate1, breakend mate2, std::string read_name) : mate1{std::move(mate1)}, mate2{std::move(mate2)}, read_name{std::move(read_name)}
+public:
+    /*!\name Constructors, destructor and assignment
+     * \{
+     */
+    constexpr junction()                    = default; //!< Defaulted.
+    junction(junction const &)              = default; //!< Defaulted.
+    junction(junction &&)                   = default; //!< Defaulted.
+    junction & operator=(junction const &)  = default; //!< Defaulted.
+    junction & operator=(junction &&)       = default; //!< Defaulted.
+    ~junction()                             = default; //!< Defaulted.
+    //!\}
+
+    junction(breakend mate1, breakend mate2, std::string read_name) : mate1{std::move(mate1)},
+                                                                      mate2{std::move(mate2)},
+                                                                      read_name{std::move(read_name)}
     {
         if ((mate2.seq_type < mate1.seq_type) ||
             (mate2.seq_type == mate1.seq_type && mate2.seq_name < mate1.seq_name) ||
@@ -30,13 +47,7 @@ public:
     {
         return read_name;
     }
-
-private:
-    breakend mate1{};
-    breakend mate2{};
-    std::string read_name{};
 };
-
 
 template <typename stream_t>
 inline stream_t operator<<(stream_t && stream, junction const & junc)
@@ -52,4 +63,9 @@ inline bool operator<(const junction & lhs, const junction & rhs)
             : rhs.get_mate1() < lhs.get_mate1()
                 ? false
                 : lhs.get_mate2() < rhs.get_mate2();
+}
+
+inline bool operator==(const junction & lhs, const junction & rhs) // ! Equality without read name!
+{
+    return (lhs.get_mate1() == rhs.get_mate1()) && (lhs.get_mate2() == rhs.get_mate2());
 }

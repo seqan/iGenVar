@@ -52,3 +52,11 @@ inline bool operator<(const breakend & lhs, const breakend & rhs)
                     ? lhs.orientation < rhs.orientation
                     : lhs.position < rhs.position;
 }
+
+inline bool operator==(const breakend & lhs, const breakend & rhs)
+{
+    return (lhs.seq_name == rhs.seq_name) &&
+           (lhs.position == rhs.position) &&
+           (lhs.orientation == rhs.orientation) &&
+           (lhs.seq_type == rhs.seq_type);
+}

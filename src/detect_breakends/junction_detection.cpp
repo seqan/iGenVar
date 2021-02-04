@@ -377,6 +377,19 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
 
     seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
 
+    switch (refinement_method)
+    {
+        case 0: // no refinement
+            seqan3::debug_stream << "No refinement was selected.\n";
+            break;
+        case 1: // sViper_refinement_method
+            seqan3::debug_stream << "The sViper refinement method is not yet implemented\n";
+            break;
+        case 2: // sVirl_refinement_method
+            seqan3::debug_stream << "The sVirl refinement method is not yet implemented\n";
+            break;
+    }
+
     for (Cluster const & elem : clusters)
     {
         std::cout << elem << '\n';

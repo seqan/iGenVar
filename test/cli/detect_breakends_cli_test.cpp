@@ -62,6 +62,7 @@ TEST_F(detect_breakends, with_arguments)
         "The read depth method is not yet implemented.\n"
         "Start clustering...\n"
         "Done with clustering. Found 4 junction clusters.\n"
+        "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected);

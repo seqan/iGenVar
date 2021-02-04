@@ -7,6 +7,7 @@ struct cmd_arguments
     std::filesystem::path alignment_file_path{};
     std::filesystem::path insertion_file_path{};
     std::vector<uint8_t> methods{1, 2, 3, 4};   // default is using all methods
+    uint8_t clustering_method{0};               // default is the simple clustering method
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
@@ -28,6 +29,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     //                                               "3", "read_pairs",
     //                                               "4", "read_depth"};
     seqan3::arithmetic_range_validator method_validator{1, 4};
+    // seqan3::value_list_validator clustering_method_validator{"0", "simple_clustering",
+    //                                                          "1", "hierarchical_clustering",
+    //                                                          "2", "self-balancing_binary_tree",
+    //                                                          "3", "candidate_selection_based_on_voting"};
+    seqan3::arithmetic_range_validator clustering_method_validator{0, 3};
 
     // Options - Input / Output:
     parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",
@@ -38,6 +44,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     // Options - Methods:
     parser.add_option(args.methods, 'm', "method", "Choose the method to be used.",
                       seqan3::option_spec::ADVANCED, method_validator);
+    parser.add_option(args.clustering_method, 'c', "clustering_method", "Choose the clustering method to be used.",
+                      seqan3::option_spec::ADVANCED, clustering_method_validator);
 }
 
 int main(int argc, char ** argv)
@@ -59,7 +67,8 @@ int main(int argc, char ** argv)
 
     detect_junctions_in_alignment_file(args.alignment_file_path,
                                        args.insertion_file_path,
-                                       args.methods);
+                                       args.methods,
+                                       args.clustering_method);
 
     return 0;
 }

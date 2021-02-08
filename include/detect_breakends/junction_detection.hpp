@@ -6,6 +6,7 @@
 #include "detect_breakends/bam_functions.hpp"   // for hasFlag* functions
 #include "junction.hpp"                         // for class junction
 #include "detect_breakends/aligned_segment.hpp" // for struct aligned_segment
+#include "method_enums.hpp"                     // for enum clustering_methods
 
 /*! \brief Detects junctions between distant genomic positions by analyzing an alignment file (sam/bam). The detected
  *         junctions are printed on stdout and insertion alleles are stored in a fasta file.
@@ -16,6 +17,10 @@
  *                                                           2: split_read,
  *                                                           3: read_pairs,
  *                                                           4: read_depth)
+ * \param clustering_method method for clustering junctions (0: simple_clustering
+ *                                                           1: hierarchical_clustering,
+ *                                                           2: self-balancing_binary_tree,
+ *                                                           3: candidate_selection_based_on_voting)
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
  *          We sort out unmapped alignments, secondary alignments, duplicates and alignments with low mapping quality.
@@ -24,4 +29,5 @@
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
-                                        const std::vector<uint8_t> methods);
+                                        const std::vector<uint8_t> methods,
+                                        const clustering_methods clustering_method);

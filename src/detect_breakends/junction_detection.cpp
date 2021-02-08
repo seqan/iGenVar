@@ -224,6 +224,10 @@ void analyze_cigar(std::string chromosome,
  *                                                           2: split_read,
  *                                                           3: read_pairs,
  *                                                           4: read_depth)
+ * \param clustering_method method for clustering junctions (0: simple_clustering
+ *                                                           1: hierarchical_clustering,
+ *                                                           2: self-balancing_binary_tree,
+ *                                                           3: candidate_selection_based_on_voting)
  * \endcond
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
@@ -237,7 +241,8 @@ void analyze_cigar(std::string chromosome,
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
-                                        const std::vector<uint8_t> methods)
+                                        const std::vector<uint8_t> methods,
+                                        const clustering_methods clustering_method)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -309,9 +314,11 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                         }
                         break;
                     case 3: // Detect junctions from read pair evidence
+                        seqan3::debug_stream << "The read pair method is not yet implemented.\n";
                         break;
                         // continue;
                     case 4: // Detect junctions from read depth evidence
+                        seqan3::debug_stream << "The read depth method is not yet implemented.\n";
                         break;
                         // continue;
                 }
@@ -325,9 +332,42 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
         }
     }
     std::sort(junctions.begin(), junctions.end());
+
+    switch (clustering_method)
+    {
+        case 0: // simple_clustering
+            {
+                junction previous_elem = junctions[0];
+                int i = 1;
+                while (i < junctions.size())
+                {
+                    if (junctions[i] == previous_elem)
+                    {
+                        junctions.erase(junctions.begin() + i);
+                        junctions[i].supporting_reads ++;
+                    }
+                    else
+                    {
+                        previous_elem = junctions[i];
+                        i++;
+                    }
+                }
+            }
+            break;
+        case 1: // hierarchical clustering
+            seqan3::debug_stream << "The hierarchical clustering method is not yet implemented\n";
+            break;
+        case 2: // self-balancing_binary_tree,
+            seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";
+            break;
+        case 3: // candidate_selection_based_on_voting
+            seqan3::debug_stream << "The candidate selection based on voting clustering method is not yet implemented\n";
+            break;
+    }
+
     for (junction elem : junctions)
     {
         std::cout << elem << '\n';
     }
-    seqan3::debug_stream << "Done. Found " << junctions.size() << " junctions." << '\n';
+    seqan3::debug_stream << "Done. Found " << junctions.size() << " junctions.\n";
 }

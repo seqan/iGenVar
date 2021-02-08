@@ -4,6 +4,8 @@
 #include "structures/aligned_segment.hpp"       // for struct AlignedSegment
 #include "structures/junction.hpp"              // for class Junction
 
+using seqan3::operator""_tag;
+
 template <class Container>
 void split_string(const std::string& str, Container& cont, char delim = ' ')
 {
@@ -75,4 +77,22 @@ void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segmen
             junctions.push_back(std::move(new_junction));
         }
     }
+}
+
+void analyze_sa_tag(const std::string & query_name,
+                    const seqan3::sam_flag & flag,
+                    const std::string & ref_name,
+                    const int32_t pos,
+                    const uint8_t mapq,
+                    std::vector<seqan3::cigar> & cigar,
+                    const std::string sa_tag,
+                    std::vector<Junction> & junctions)
+{
+
+    std::vector<AlignedSegment> aligned_segments{};
+    strand strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
+    aligned_segments.push_back(AlignedSegment{strand, ref_name, pos, mapq, cigar});
+    retrieve_aligned_segments(sa_tag, aligned_segments);
+    std::sort(aligned_segments.begin(), aligned_segments.end());
+    analyze_aligned_segments(aligned_segments, junctions, query_name);
 }

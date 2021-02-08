@@ -104,15 +104,10 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                     case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)
                         if (!hasFlagSupplementary(flag))
                         {
-                            std::string sa_tag = tags.get<"SA"_tag>();
+                            const std::string sa_tag = tags.get<"SA"_tag>();
                             if (!sa_tag.empty())
                             {
-                                std::vector<AlignedSegment> aligned_segments{};
-                                auto strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
-                                aligned_segments.push_back(AlignedSegment{strand, ref_name, pos, mapq, cigar});
-                                retrieve_aligned_segments(sa_tag, aligned_segments);
-                                std::sort(aligned_segments.begin(), aligned_segments.end());
-                                analyze_aligned_segments(aligned_segments, junctions, query_name);
+                                analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, sa_tag, junctions);
                             }
                         }
                         break;

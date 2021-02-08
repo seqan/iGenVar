@@ -1,13 +1,36 @@
 #include <seqan3/argument_parser/all.hpp>   // includes all necessary headers
 
+#include <seqan3/range/views/all.hpp>
+#include <seqan3/range/views/get.hpp>
+
 #include "detect_breakends/junction_detection.hpp"
+
+// Specialise a mapping from an identifying string to the respective value of your type clustering_methods. With the
+// help of this function, you're able to call ./detect_breackends with -c 0 and -c simple_clustering and get the same
+// result.
+auto enumeration_names(clustering_methods)
+{
+    return std::unordered_map<std::string_view,
+                              clustering_methods>{{"0", clustering_methods::simple_clustering},
+                                                  {"simple_clustering",
+                                                   clustering_methods::simple_clustering},
+                                                  {"1", clustering_methods::hierarchical_clustering},
+                                                  {"hierarchical_clustering",
+                                                   clustering_methods::hierarchical_clustering},
+                                                  {"2", clustering_methods::self_balancing_binary_tree},
+                                                  {"self_balancing_binary_tree",
+                                                   clustering_methods::self_balancing_binary_tree},
+                                                  {"3", clustering_methods::candidate_selection_based_on_voting},
+                                                  {"candidate_selection_based_on_voting",
+                                                   clustering_methods::candidate_selection_based_on_voting}};
+}
 
 struct cmd_arguments
 {
     std::filesystem::path alignment_file_path{};
     std::filesystem::path insertion_file_path{};
-    std::vector<uint8_t> methods{1, 2, 3, 4};   // default is using all methods
-    uint8_t clustering_method{0};               // default is the simple clustering method
+    std::vector<uint8_t> methods{1, 2, 3, 4};                   // default is using all methods
+    clustering_methods clustering_method{simple_clustering};    // default is the simple clustering method
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
@@ -29,11 +52,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     //                                               "3", "read_pairs",
     //                                               "4", "read_depth"};
     seqan3::arithmetic_range_validator method_validator{1, 4};
-    // seqan3::value_list_validator clustering_method_validator{"0", "simple_clustering",
-    //                                                          "1", "hierarchical_clustering",
-    //                                                          "2", "self-balancing_binary_tree",
-    //                                                          "3", "candidate_selection_based_on_voting"};
-    seqan3::arithmetic_range_validator clustering_method_validator{0, 3};
+    seqan3::value_list_validator clustering_method_validator {(seqan3::enumeration_names<clustering_methods> | seqan3::views::get<1>)};
 
     // Options - Input / Output:
     parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",

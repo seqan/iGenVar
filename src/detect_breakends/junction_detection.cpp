@@ -4,10 +4,11 @@
 #include <seqan3/io/alignment_file/input.hpp>   // SAM/BAM support
 #include <seqan3/io/sequence_file/output.hpp>   // FASTA support
 
-#include "detect_breakends/bam_functions.hpp"   // for hasFlag* functions
-#include "structures/aligned_segment.hpp"       // for struct AlignedSegment
-#include "structures/cluster.hpp"               // for class Cluster
-#include "structures/junction.hpp"              // for class Junction
+#include "detect_breakends/bam_functions.hpp"               // for hasFlag* functions
+#include "modules/clustering/simple_clustering_method.hpp"  // for the simple clustering method
+#include "structures/aligned_segment.hpp"                   // for struct AlignedSegment
+#include "structures/cluster.hpp"                           // for class Cluster
+#include "structures/junction.hpp"                          // for class Junction
 
 using seqan3::operator""_cigar_op;
 using seqan3::operator""_tag;
@@ -354,31 +355,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
     switch (clustering_method)
     {
         case 0: // simple_clustering
-            {
-                if (junctions.size() > 0)
-                {
-                    std::vector<Junction> current_cluster_members = {junctions[0]};
-                    size_t i = 1;
-                    while (i < junctions.size())
-                    {
-                        if (junctions[i] == current_cluster_members.back())
-                        {
-                            current_cluster_members.push_back(junctions[i]);
-                        }
-                        else
-                        {
-                            clusters.emplace_back(std::move(current_cluster_members));
-                            current_cluster_members = {junctions[i]};
-                        }
-                        ++i;
-                    }
-                    clusters.emplace_back(std::move(current_cluster_members));
-                }
-                else
-                {
-                    seqan3::debug_stream << "No junctions found...\n";
-                }
-            }
+            simple_clustering_method(junctions, clusters);
             break;
         case 1: // hierarchical clustering
             seqan3::debug_stream << "The hierarchical clustering method is not yet implemented\n";

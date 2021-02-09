@@ -4,13 +4,13 @@
 #include <seqan3/io/alignment_file/input.hpp>   // SAM/BAM support
 #include <seqan3/io/sequence_file/output.hpp>   // FASTA support
 
-#include "detect_breakends/bam_functions.hpp"               // for hasFlag* functions
-#include "modules/clustering/simple_clustering_method.hpp"  // for the simple clustering method
-#include "structures/aligned_segment.hpp"                   // for struct AlignedSegment
-#include "structures/cluster.hpp"                           // for class Cluster
-#include "structures/junction.hpp"                          // for class Junction
+#include "detect_breakends/bam_functions.hpp"                       // for hasFlag* functions
+#include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
+#include "modules/sv_detecting_methods/analyze_cigar_method.hpp"    // for the split read method
+#include "structures/aligned_segment.hpp"                           // for struct AlignedSegment
+#include "structures/cluster.hpp"                                   // for class Cluster
+#include "structures/junction.hpp"                                  // for class Junction
 
-using seqan3::operator""_cigar_op;
 using seqan3::operator""_tag;
 
 /*! \brief Splits a string by a given delimiter and stores substrings in a given container.
@@ -110,118 +110,6 @@ void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segmen
             seqan3::debug_stream << "BND: " << new_junction << "\n";
             junctions.push_back(std::move(new_junction));
         }
-    }
-}
-
-/*! \brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
- *
- * \param read_name         QNAME field of the SAM/BAM file
- * \param chromosome        RNAME field of the SAM/BAM file
- * \param query_start_pos   POS field of the SAM/BAM file
- * \param cigar_string      CIGAR field of the SAM/BAM file
- * \param query_sequence    SEQ field of the SAM/BAM file
- * \param junctions         vector for storing junctions
- * \param insertions        vector for storing insertion_alleles
- * \param min_length        minimum length of variants to detect (default 30 bp)
- * \param insertion_file    output file for insertion alleles
- *
- * \details This function steps through the CIGAR string and stores junctions with their position in reference and read.
- *          We distinguish 4 cases of CIGAR operation characters:
- *          1. M, =, X: For matches and mismatches (Alignment column containing two letters. This could contain two
- *                      different letters (mismatch) or two identical letters), we step through ref and read.
- *          2. I:       For insertons (gap in the reference sequence) -> Insertions cause two junctions ( (1) from the
- *                      reference to the read and (2) back from the read to the reference ).
- *          3. D:       For deletions (gap in the query sequence) -> Deletions cause one junction from its start to its
- *                      end.
- *          4. S:       For soft clipped letters we step through the read. These are segments of the query sequence that
- *                      do not appear in the alignment. The full-length query sequence is given in the SEQ field of the
- *                      SAM record.
- *          Other CIGAR operations: H, N, P are skipped (H: hard clipping sequences are not present in the SEQ, N:
- *          skipped region representing an intron, P: padding consumes neither the query nor the reference).
- *          The junctions found are stored in the given `junctions` vector.
- *          For more information see the
- *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 8.
- */
-void analyze_cigar(const std::string & read_name,
-                   const std::string chromosome,
-                   const int32_t query_start_pos,
-                   std::vector<seqan3::cigar> & cigar_string,
-                   const seqan3::dna5_vector & query_sequence,
-                   std::vector<Junction> & junctions,
-                   std::vector<seqan3::dna5_vector> & insertions,
-                   int32_t min_length,
-                   seqan3::sequence_file_output<> & insertion_file)
-{
-    // Step through CIGAR string and store current position in reference and read
-    int32_t pos_ref = query_start_pos;
-    int32_t pos_read = 0;
-
-    // Stores the index of the current read in the insertion allele output file (or -1 if current read has not been added yet)
-    int32_t insertion_allele_id {-1};
-
-    for (seqan3::cigar & pair : cigar_string)
-    {
-        using seqan3::get;
-        int32_t length = get<0>(pair);
-        seqan3::cigar_op operation = get<1>(pair);
-        if (operation == 'M'_cigar_op || operation == '='_cigar_op || operation == 'X'_cigar_op)
-        {
-            pos_ref += length;
-            pos_read += length;
-        }
-        else if (operation == 'I'_cigar_op) // I: Insertion (gap in the reference sequence).
-        {
-            if (length >= min_length)
-            {
-                if (insertion_allele_id < 0)
-                {
-                    insertion_allele_id = insertions.size();
-                    std::string insertion_allele_name{"allele_" + std::to_string(insertion_allele_id)};
-                    insertion_file.emplace_back(query_sequence, insertion_allele_name);
-                    insertions.push_back(query_sequence);
-                }
-                // Insertions cause two junctions ( (1) from the reference to the read and (2) back from the read to the reference )
-                Junction new_junction1{Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                       Breakend{std::to_string(insertion_allele_id),
-                                                pos_read,
-                                                strand::forward,
-                                                sequence_type::read},
-                                       read_name};
-                seqan3::debug_stream << "INS1: " << new_junction1 << "\n";
-                junctions.push_back(std::move(new_junction1));
-                Junction new_junction2{Breakend{std::to_string(insertion_allele_id),
-                                                pos_read + length,
-                                                strand::forward,
-                                                sequence_type::read},
-                                       Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                       read_name};
-                seqan3::debug_stream << "INS2: " << new_junction2 << "\n";
-                junctions.push_back(std::move(new_junction2));
-            }
-            pos_read += length;
-        }
-        else if (operation == 'D'_cigar_op)
-        {
-            if (length >= min_length)
-            {
-                // Deletions cause one junction from its start to its end
-                Junction new_junction{Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                      Breakend{chromosome, pos_ref + length, strand::forward, sequence_type::reference},
-                                      read_name};
-                seqan3::debug_stream << "DEL: " << new_junction << "\n";
-                junctions.push_back(std::move(new_junction));
-            }
-            pos_ref += length;
-        }
-        else if (operation == 'S'_cigar_op)
-        {
-            pos_read += length;
-        }
-        else // other possible cigar operations: H, N, P
-        {
-            // seqan3::debug_stream << "Unhandled operation " << operation << std::endl;
-        }
-
     }
 }
 

@@ -4,6 +4,7 @@ cmake_minimum_required (VERSION 3.8)
 add_library ("${PROJECT_NAME}_lib" STATIC detect_breakends/junction_detection.cpp
                                           find_deletions/deletion_finding_and_printing.cpp
                                           modules/clustering/simple_clustering_method.cpp
+                                          modules/sv_detecting_methods/analyze_cigar_method.cpp
                                           structures/aligned_segment.cpp
                                           structures/breakend.cpp
                                           structures/cluster.cpp

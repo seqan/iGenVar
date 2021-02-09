@@ -85,7 +85,7 @@ void retrieve_aligned_segments(std::string sa_string, std::vector<AlignedSegment
  */
 void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segments,
                               std::vector<Junction> & junctions,
-                              std::string & read_name)
+                              const std::string & read_name)
 {
     for(size_t i = 1; i<aligned_segments.size(); i++)
     {
@@ -114,8 +114,8 @@ void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segmen
 
 /*! \brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *
- * \param chromosome        RNAME field of the SAM/BAM file
  * \param read_name         QNAME field of the SAM/BAM file
+ * \param chromosome        RNAME field of the SAM/BAM file
  * \param query_start_pos   POS field of the SAM/BAM file
  * \param cigar_string      CIGAR field of the SAM/BAM file
  * \param query_sequence    SEQ field of the SAM/BAM file
@@ -141,11 +141,11 @@ void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segmen
  *          For more information see the
  *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 8.
  */
-void analyze_cigar(std::string chromosome,
-                   std::string & read_name,
-                   int32_t query_start_pos,
+void analyze_cigar(const std::string & read_name,
+                   const std::string chromosome,
+                   const int32_t query_start_pos,
                    std::vector<seqan3::cigar> & cigar_string,
-                   seqan3::dna5_vector & query_sequence,
+                   const seqan3::dna5_vector & query_sequence,
                    std::vector<Junction> & junctions,
                    std::vector<seqan3::dna5_vector> & insertions,
                    int32_t min_length,
@@ -281,17 +281,17 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
 
     for (auto & rec : alignment_file)
     {
-        std::string query_name = seqan3::get<seqan3::field::id>(rec);
-        int32_t ref_id = seqan3::get<seqan3::field::ref_id>(rec).value_or(0);
-        int32_t pos = seqan3::get<seqan3::field::ref_offset>(rec).value_or(0);
-        seqan3::sam_flag const flag = seqan3::get<seqan3::field::flag>(rec);    // uint16_t enum
-        uint8_t const mapq = seqan3::get<seqan3::field::mapq>(rec);
-        auto cigar = seqan3::get<seqan3::field::cigar>(rec);
-        auto seq = seqan3::get<seqan3::field::seq>(rec);
-        auto tags = seqan3::get<seqan3::field::tags>(rec);
-        auto header_ptr = seqan3::get<seqan3::field::header_ptr>(rec);
-        auto ref_ids = header_ptr->ref_ids();
-        std::string ref_name = ref_ids[ref_id];
+        const std::string query_name            = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
+        const seqan3::sam_flag flag             = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
+        const int32_t ref_id                    = seqan3::get<seqan3::field::ref_id>(rec).value_or(0);      // 3: RNAME
+        const int32_t pos                       = seqan3::get<seqan3::field::ref_offset>(rec).value_or(0);  // 4: POS
+        const uint8_t mapq                      = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
+        std::vector<seqan3::cigar> cigar        = seqan3::get<seqan3::field::cigar>(rec);                   // 6: CIGAR
+        const auto seq                          = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
+        auto tags                               = seqan3::get<seqan3::field::tags>(rec);
+        const auto header_ptr                   = seqan3::get<seqan3::field::header_ptr>(rec);
+        const auto ref_ids = header_ptr->ref_ids();
+        const std::string ref_name = ref_ids[ref_id];
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20)
         {

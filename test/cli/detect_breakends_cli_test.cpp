@@ -40,15 +40,15 @@ TEST_F(detect_breakends, with_arguments)
                                          "detect_breakends_insertion_file_out.fasta");
     std::string expected
     {
+        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
     std::string expected_err
     {
-        "INS1: Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\tchr21\n"
-        "INS2: Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\tchr21\n"
+        "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
+        "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
         "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
         "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"

@@ -14,25 +14,25 @@
 //     EXPECT_EQ(expected, std_cout);
 // }
 
-// Explanation for the stings:
-// Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\tchr21
-// INS from Primary Read - Sequence Type: Reference; Sequence Name: m2257/8161/CCS; Position: 41972616; Orientation: Reverse
-//                         Sequence Type: Read; Sequence Name: 0; Position: 3975; Orientation: Reverse
-//                         Chromosome: chr21
-// Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS
+// Explanation for the strings:
+// Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1
+// INS from Primary Read - Sequence Type: Reference; Chromosome: chr21; Position: 41972616; Orientation: Forward
+//                         Sequence Type: Read; Chromosome: 0; Position: 2294; Orientation: Forward
+//                         Supporting Reads: 1
+// Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1
 // BND from SA Tag - Sequence Type: Reference; Chromosome: chr22; Position: 17458417; Orientation: Forward
 //                   Sequence Type: Reference; Chromosome: chr21; Position: 41972615; Orientation: Forward
-//                   Sequence Name: m41327/11677/CCS
+//                   Supporting Reads: 1
 
 uint64_t sv_default_length = 30;
 
 TEST(junction_detection, fasta_out_not_empty)
 {
     std::string expected{
+        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
@@ -59,8 +59,8 @@ TEST(junction_detection, fasta_out_not_empty)
 TEST(junction_detection, method_1_only)
 {
     std::string expected{
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
+        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
@@ -111,10 +111,10 @@ TEST(junction_detection, method_2_only)
 TEST(junction_detection, method_1_and_2)
 {
     std::string expected{
+        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
@@ -140,11 +140,12 @@ TEST(junction_detection, method_1_and_2)
 
 TEST(junction_detection, refinement_method_sViper)
 {
-    std::string expected{
+    std::string expected
+    {
+        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
@@ -168,11 +169,12 @@ TEST(junction_detection, refinement_method_sViper)
 
 TEST(junction_detection, refinement_method_sVirl)
 {
-    std::string expected{
+    std::string expected
+    {
+        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory

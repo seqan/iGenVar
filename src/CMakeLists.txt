@@ -5,6 +5,7 @@ add_library ("${PROJECT_NAME}_lib" STATIC detect_breakends/junction_detection.cp
                                           find_deletions/deletion_finding_and_printing.cpp
                                           modules/clustering/simple_clustering_method.cpp
                                           modules/sv_detecting_methods/analyze_cigar_method.cpp
+                                          modules/sv_detecting_methods/analyze_sa_tag_method.cpp
                                           structures/aligned_segment.cpp
                                           structures/breakend.cpp
                                           structures/cluster.cpp

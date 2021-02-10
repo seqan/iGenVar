@@ -2,11 +2,18 @@
 #include <fstream>
 #include <map>
 
+/*
+ * An info field looks as follows:
+ * ##INFO=<ID=ID,Number=number,Type=type,Description="description",Source="source",Version="version">
+ * https://samtools.github.io/hts-specs/VCFv4.3.pdf (1.4.2 Information field format)
+ */
 class info_entry
 {
 public:
-    info_entry(std::string keyi, std::uint8_t numberi, std::string typei, std::string descriptioni, std::string sourcei, std::string versioni) :
-        key{std::move(keyi)}, number{numberi}, type{std::move(typei)}, description{std::move(descriptioni)}, source{std::move(sourcei)}, version{std::move(versioni)}
+    info_entry(std::string key_i, std::uint8_t number_i, std::string type_i, std::string description_i,
+               std::string source_i, std::string version_i) :
+        key{std::move(key_i)}, number{number_i}, type{std::move(type_i)}, description{std::move(description_i)},
+            source{std::move(source_i)}, version{std::move(version_i)}
     {}
     std::string key{};
     std::uint8_t number{};
@@ -16,6 +23,10 @@ public:
     std::string version{};
 };
 
+/*
+ * The variant header stores information about each of the keys of the info field along with other miscellaneous
+ * information, including current VCF file format and the source of the generated file.
+ */
 class variant_header
 {
 public:
@@ -25,9 +36,9 @@ public:
      *
      *  \param fileformati The input fileformat.
      */
-    void set_fileformat(std::string fileformati)
+    void set_fileformat(std::string fileformat_i)
     {
-        fileformat = fileformati;
+        fileformat = fileformat_i;
     }
 
     /*! \brief Add header information for a given INFO field.
@@ -39,9 +50,10 @@ public:
      *  \param sourcei The source of the INFO field.
      *  \param versioni The version of the source.
      */
-    void add_meta_info(std::string info_keyi, std::uint8_t numberi, std::string typei, std::string descriptioni, std::string sourcei, std::string versioni)
+    void add_meta_info(std::string info_key_i, std::uint8_t number_i, std::string type_i, std::string description_i,
+                       std::string source_i, std::string version_i)
     {
-        info.push_back(info_entry{info_keyi, numberi, typei, descriptioni, sourcei, versioni});
+        info.push_back(info_entry{info_key_i, number_i, type_i, description_i, source_i, version_i});
     }
 
     /*! \brief Prints the VCF header to a given output.
@@ -60,7 +72,9 @@ public:
         out_stream << "##source=" << source << '\n';
         for (const auto& i : info)
         {
-            out_stream << "##INFO=<ID=" << i.key << ",Number=" << std::to_string(i.number) << ",Type=" << i.type << ",Description=\"" << i.description << "\",Source=\"" << i.source << "\",Version=\"" << i.version << "\">" << '\n';
+            out_stream << "##INFO=<ID=" << i.key << ",Number=" << std::to_string(i.number) << ",Type=" << i.type
+                       << ",Description=\"" << i.description << "\",Source=\"" << i.source << "\",Version=\""
+                       << i.version << "\">" << '\n';
         }
         out_stream << "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
     }
@@ -71,6 +85,11 @@ private:
     std::vector<info_entry> info{};
 };
 
+/*
+ * A variant record consists of positional information, genotype information, and optional additional information in the
+ * INFO field.
+ */
+
 class variant_record
 {
 public:
@@ -80,63 +99,63 @@ public:
      *
      * \param chromi The chromosome value to use.
      */
-    void set_chrom(std::string chromi)
+    void set_chrom(std::string chrom_i)
     {
-        chrom = chromi;
+        chrom = chrom_i;
     }
 
     /*! \brief Set the pos for a variant.
      *
      * \param posi The pos value to use.
      */
-    void set_pos(std::uint64_t posi)
+    void set_pos(std::uint64_t pos_i)
     {
-        pos = posi;
+        pos = pos_i;
     }
 
     /*! \brief Set the id for a variant.
      *
      * \param idi The id value to use.
      */
-    void set_id(std::string idi)
+    void set_id(std::string id_i)
     {
-        id = idi;
+        id = id_i;
     }
 
     /*! \brief Set the ref for a variant.
      *
      * \param refi The ref value to use.
      */
-    void set_ref(std::string refi)
+    void set_ref(std::string ref_i)
     {
-        ref = refi;
+        ref = ref_i;
     }
 
     /*! \brief Set the alt for a variant.
      *
      * \param alti The alt value to use.
      */
-    void set_alt(std::string alti)
+    void set_alt(std::string alt_i)
     {
-        alt = alti;
+        alt = alt_i;
     }
 
     /*! \brief Set the qual for a variant.
      *
      * \param quali The qual value to use.
      */
-    void set_qual(float quali)
+    void set_qual(float qual_i)
     {
-        qual = quali;
+        qual = qual_i;
     }
 
     /*! \brief Set the filter for a variant.
      *
      * \param filteri The filter value to use.
      */
-    void set_filter(std::string filteri)
+    void set_filter(std::string filter_i)
     {
-        filter = filteri;
+        filter = filter_i;
     }
 
     /*! \brief Add an INFO entry for a variant.

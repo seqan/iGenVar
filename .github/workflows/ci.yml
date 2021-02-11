@@ -1,15 +1,15 @@
-name: App CI
+name: iGenVar CI
 
 on:
   push:
     branches:
       # Push events to branches matching refs/heads/master
-      - 'master'
+      # - 'master'
   pull_request:
 
 env:
   CMAKE_VERSION: 3.8.2
-  DOXYGEN_VERSION: 1.8.20
+  DOXYGEN_VERSION: 1.9.1
   SEQAN3_NO_VERSION_CHECK: 1
   TZ: Europe/Berlin
 
@@ -152,6 +152,7 @@ jobs:
           wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --quiet --directory-prefix=/tmp/cmake-download/ https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-${OS}-x86_64.tar.gz
           tar -C /tmp/ -zxf /tmp/cmake-download/cmake-${CMAKE_VERSION}-${OS}-x86_64.tar.gz
           echo "/tmp/cmake-${CMAKE_VERSION}-${OS}-x86_64/bin" >> $GITHUB_PATH # Only available in subsequent steps!
+
       - name: Get cached Doxygen
         if: matrix.build == 'documentation'
         uses: actions/cache@v2

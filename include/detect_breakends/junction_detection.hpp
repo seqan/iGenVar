@@ -6,6 +6,7 @@
 
 #include "detect_breakends/bam_functions.hpp"   // for hasFlag* functions
 #include "junction.hpp"                         // for class junction
+#include "cluster.hpp"                         // for class cluster
 #include "detect_breakends/aligned_segment.hpp" // for struct aligned_segment
 #include "method_enums.hpp"                     // for enum clustering_methods
 

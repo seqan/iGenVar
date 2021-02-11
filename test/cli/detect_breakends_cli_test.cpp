@@ -1,10 +1,11 @@
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/io/sequence_file/input.hpp>
+#include <seqan3/core/debug_stream.hpp>
 
 #include "cli_test.hpp"
 #include <fstream>
 #include <sstream>
-TEST_F(cli_test, no_options)
+TEST_F(detect_breakends, no_options)
 {
     cli_test_result result = execute_app("detect_breakends");
     std::string expected
@@ -18,7 +19,7 @@ TEST_F(cli_test, no_options)
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(cli_test, fail_no_argument)
+TEST_F(detect_breakends, fail_no_argument)
 {
     cli_test_result result = execute_app("detect_breakends", "-v");
     std::string expected
@@ -32,7 +33,7 @@ TEST_F(cli_test, fail_no_argument)
 }
 
 
-TEST_F(cli_test, with_arguments)
+TEST_F(detect_breakends, with_arguments)
 {
     cli_test_result result = execute_app("detect_breakends",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
@@ -66,7 +67,7 @@ TEST_F(cli_test, with_arguments)
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(cli_test, test_outfile)
+TEST_F(detect_breakends, test_outfile)
 {
     cli_test_result result = execute_app("detect_breakends",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sequence_file/all.hpp>  // FASTA support
 #include <seqan3/io/alignment_file/all.hpp> // SAM/BAM support
 

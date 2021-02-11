@@ -3,7 +3,7 @@
 
 #include "cli_test.hpp"
 
-TEST_F(cli_test, no_options)
+TEST_F(find_deletions, no_options)
 {
     cli_test_result result = execute_app("find_deletions");
     std::string expected
@@ -17,7 +17,7 @@ TEST_F(cli_test, no_options)
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(cli_test, fail_no_argument)
+TEST_F(find_deletions, fail_no_argument)
 {
     cli_test_result result = execute_app("find_deletions", "-v");
     std::string expected
@@ -29,7 +29,7 @@ TEST_F(cli_test, fail_no_argument)
     EXPECT_EQ(result.err, expected);
 }
 
-TEST_F(cli_test, with_one_argument)
+TEST_F(find_deletions, with_one_argument)
 {
     cli_test_result result = execute_app("find_deletions",
                                          "-i", data("detect_breakends_shorted.vcf"));
@@ -46,7 +46,7 @@ TEST_F(cli_test, with_one_argument)
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(cli_test, with_arguments)
+TEST_F(find_deletions, with_arguments)
 {
     cli_test_result result = execute_app("find_deletions",
                                          "-i", data("detect_breakends_shorted.vcf"),

@@ -168,6 +168,7 @@ jobs:
           wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --quiet --directory-prefix=/tmp/doxygen-download/ https://sourceforge.net/projects/doxygen/files/rel-${DOXYGEN_VERSION}/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
           tar -C /tmp/ -zxf /tmp/doxygen-download/doxygen-${DOXYGEN_VERSION}.linux.bin.tar.gz
           echo "/tmp/doxygen-${DOXYGEN_VERSION}/bin" >> $GITHUB_PATH # Only available in subsequent steps!
+
       - name: Add package source
         if: matrix.requires_toolchain && runner.os == 'Linux'
         shell: bash
@@ -181,6 +182,7 @@ jobs:
           else
             brew install --force-bottle ccache
           fi
+
       - name: Install compiler ${{ matrix.cxx }}
         if: matrix.requires_toolchain
         run: |
@@ -191,11 +193,13 @@ jobs:
             brew install --force-bottle $cxx_macos_name
             brew link $cxx_macos_name
           fi
+
       - name: Install lcov
         if: matrix.build == 'coverage'
         run: |
           sudo apt-get install --yes lcov
           sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-7 100
+
       - name: Get cached build
         if: matrix.requires_ccache
         uses: actions/cache@v2
@@ -207,6 +211,7 @@ jobs:
             ${{ matrix.name }}-ccache-${{ github.ref }}
             ${{ matrix.name }}-ccache-${{ github.base_ref }}
             ${{ matrix.name }}-ccache-
+
       - name: Configure tests
         env:
           CXX: ${{ matrix.cxx }}
@@ -215,6 +220,7 @@ jobs:
           mkdir app-build
           cd app-build
           cmake ../app -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+
       - name: Build tests
         env:
           CCACHE_BASEDIR: ${{ github.workspace }}
@@ -230,6 +236,7 @@ jobs:
           else
             make -k -j2
           fi
+
       - name: Run tests
         if: matrix.build != 'coverage' # Already ran by the make call
         run: |
@@ -239,6 +246,7 @@ jobs:
           else
             ctest . -j2 --output-on-failure
           fi
+
       - name: Submit coverage build
         if: matrix.build == 'coverage'
         shell: bash

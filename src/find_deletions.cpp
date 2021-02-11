@@ -14,7 +14,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.short_description = "Find deletions";
     parser.info.version = "0.0.1";
     parser.add_option(args.junction_file_path, 'i', "input", "Input junctions tab-separated format.",
-                      seqan3::option_spec::REQUIRED);
+                      seqan3::option_spec::required);
     parser.add_option(args.output_file_path, 'o', "output",
                       "The path of the vcf output file. If no path is given, will output to standard output.");
 }

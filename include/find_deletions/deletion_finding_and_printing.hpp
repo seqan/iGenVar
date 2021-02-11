@@ -1,6 +1,7 @@
 #pragma once
 
 #include <seqan3/std/filesystem>
+#include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/stream/concept.hpp>
 #include <fstream>
 #include <iostream>

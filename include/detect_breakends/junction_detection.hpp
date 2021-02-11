@@ -22,6 +22,7 @@
  *                                                           1: hierarchical_clustering,
  *                                                           2: self-balancing_binary_tree,
  *                                                           3: candidate_selection_based_on_voting)
+ * \param min_var_length - minimum length of variants to detect (default 30 bp)
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
  *          We sort out unmapped alignments, secondary alignments, duplicates and alignments with low mapping quality.
@@ -31,4 +32,5 @@
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
                                         const std::vector<uint8_t> methods,
-                                        const clustering_methods clustering_method);
+                                        const clustering_methods clustering_method,
+                                        const uint64_t min_var_length);

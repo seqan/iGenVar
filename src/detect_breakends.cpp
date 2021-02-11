@@ -31,6 +31,7 @@ struct cmd_arguments
     std::filesystem::path insertion_file_path{};
     std::vector<uint8_t> methods{1, 2, 3, 4};                   // default is using all methods
     clustering_methods clustering_method{simple_clustering};    // default is the simple clustering method
+    uint64_t min_var_length = 30;
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
@@ -66,6 +67,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::option_spec::advanced, method_validator);
     parser.add_option(args.clustering_method, 'c', "clustering_method", "Choose the clustering method to be used.",
                       seqan3::option_spec::advanced, clustering_method_validator);
+
+    // Options - SV specifications:
+    parser.add_option(args.min_var_length, 'l', "min_var_length",
+                      "Specify what should be the minimum length of your SVs to be detected (default 30 bp).",
+                      seqan3::option_spec::advanced);
 }
 
 int main(int argc, char ** argv)
@@ -88,7 +94,8 @@ int main(int argc, char ** argv)
     detect_junctions_in_alignment_file(args.alignment_file_path,
                                        args.insertion_file_path,
                                        args.methods,
-                                       args.clustering_method);
+                                       args.clustering_method,
+                                       args.min_var_length);
 
     return 0;
 }

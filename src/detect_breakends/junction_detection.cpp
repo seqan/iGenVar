@@ -112,7 +112,7 @@ void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segme
  * \param query_sequence    SEQ field of the SAM/BAM file
  * \param junctions         vector for storing junctions
  * \param insertions        vector for storing insertion_alleles
- * \param min_length        minimum length of variants to detect (currently 30 bp)
+ * \param min_length        minimum length of variants to detect (default 30 bp)
  * \param insertion_file    output file for insertion alleles
  *
  * \details This function steps through the CIGAR string and stores junctions with their position in reference and read.
@@ -228,6 +228,7 @@ void analyze_cigar(std::string chromosome,
  *                                                           1: hierarchical_clustering,
  *                                                           2: self-balancing_binary_tree,
  *                                                           3: candidate_selection_based_on_voting)
+ * \param min_var_length - minimum length of variants to detect (default 30 bp)
  * \endcond
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
@@ -242,7 +243,8 @@ void analyze_cigar(std::string chromosome,
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
                                         const std::vector<uint8_t> methods,
-                                        const clustering_methods clustering_method)
+                                        const clustering_methods clustering_method,
+                                        const uint64_t min_var_length)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -295,7 +297,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                       seq,
                                       junctions,
                                       insertion_alleles,
-                                      30,
+                                      min_var_length,
                                       insertion_file);
                         break;
                     case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)

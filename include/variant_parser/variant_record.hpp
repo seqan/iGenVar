@@ -34,7 +34,7 @@ public:
 
     /*! \brief Set the file format for this VCF file header.
      *
-     *  \param fileformati The input fileformat.
+     *  \param fileformat_i The input fileformat.
      */
     void set_fileformat(std::string fileformat_i)
     {
@@ -43,12 +43,12 @@ public:
 
     /*! \brief Add header information for a given INFO field.
      *
-     *  \param info_keyi The INFO key name.
-     *  \param numberi The number of values this key can hold.
-     *  \param typei The type of values this key holds.
-     *  \param descriptioni The description of this INFO field..
-     *  \param sourcei The source of the INFO field.
-     *  \param versioni The version of the source.
+     *  \param info_key_i The INFO key name.
+     *  \param number_i The number of values this key can hold.
+     *  \param type_i The type of values this key holds.
+     *  \param description_i The description of this INFO field..
+     *  \param source_i The source of the INFO field.
+     *  \param version_i The version of the source.
      */
     void add_meta_info(std::string info_key_i, std::uint8_t number_i, std::string type_i, std::string description_i,
                        std::string source_i, std::string version_i)
@@ -97,7 +97,7 @@ public:
 
     /*! \brief Set the chromosome for a variant.
      *
-     * \param chromi The chromosome value to use.
+     * \param chrom_i The chromosome value to use.
      */
     void set_chrom(std::string chrom_i)
     {
@@ -106,7 +106,7 @@ public:
 
     /*! \brief Set the pos for a variant.
      *
-     * \param posi The pos value to use.
+     * \param pos_i The pos value to use.
      */
     void set_pos(std::uint64_t pos_i)
     {
@@ -115,7 +115,7 @@ public:
 
     /*! \brief Set the id for a variant.
      *
-     * \param idi The id value to use.
+     * \param id_i The id value to use.
      */
     void set_id(std::string id_i)
     {
@@ -124,7 +124,7 @@ public:
 
     /*! \brief Set the ref for a variant.
      *
-     * \param refi The ref value to use.
+     * \param ref_i The ref value to use.
      */
     void set_ref(std::string ref_i)
     {
@@ -133,7 +133,7 @@ public:
 
     /*! \brief Set the alt for a variant.
      *
-     * \param alti The alt value to use.
+     * \param alt_i The alt value to use.
      */
     void set_alt(std::string alt_i)
     {
@@ -142,7 +142,7 @@ public:
 
     /*! \brief Set the qual for a variant.
      *
-     * \param quali The qual value to use.
+     * \param qual_i The qual value to use.
      */
     void set_qual(float qual_i)
     {
@@ -151,7 +151,7 @@ public:
 
     /*! \brief Set the filter for a variant.
      *
-     * \param filteri The filter value to use.
+     * \param filter_i The filter value to use.
      */
     void set_filter(std::string filter_i)
     {

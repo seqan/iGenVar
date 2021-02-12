@@ -7,7 +7,7 @@
 
 #include "cli_test.hpp"
 
-TEST_F(cli_test, no_options)
+TEST_F(fastq_to_fasta, no_options)
 {
     cli_test_result result = execute_app("fastq_to_fasta");
     std::string expected
@@ -21,7 +21,7 @@ TEST_F(cli_test, no_options)
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(cli_test, fail_no_argument)
+TEST_F(fastq_to_fasta, fail_no_argument)
 {
     cli_test_result result = execute_app("fastq_to_fasta", "-v");
     std::string expected
@@ -34,7 +34,7 @@ TEST_F(cli_test, fail_no_argument)
     EXPECT_EQ(result.err, expected);
 }
 
-TEST_F(cli_test, with_argument)
+TEST_F(fastq_to_fasta, with_argument)
 {
     cli_test_result result = execute_app("fastq_to_fasta", data("in.fastq"));
     EXPECT_EQ(result.exit_code, 0);
@@ -42,7 +42,7 @@ TEST_F(cli_test, with_argument)
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(cli_test, with_argument_verbose)
+TEST_F(fastq_to_fasta, with_argument_verbose)
 {
     cli_test_result result = execute_app("fastq_to_fasta", data("in.fastq"), "-v");
     EXPECT_EQ(result.exit_code, 0);
@@ -50,7 +50,7 @@ TEST_F(cli_test, with_argument_verbose)
     EXPECT_EQ(result.err, "Conversion was a success. Congrats!\n");
 }
 
-TEST_F(cli_test, with_out_file)
+TEST_F(fastq_to_fasta, with_out_file)
 {
     cli_test_result result = execute_app("fastq_to_fasta", data("in.fastq"), "-o", "out.fasta");
     seqan3::sequence_file_input fin{"out.fasta", seqan3::fields<seqan3::field::seq, seqan3::field::id>{}};

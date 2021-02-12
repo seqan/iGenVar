@@ -93,3 +93,6 @@ protected:
         }
     }
 };
+
+// To prevent issues when running multiple CLI tests in parallel, give each CLI test unique names:
+struct fastq_to_fasta : public cli_test {};

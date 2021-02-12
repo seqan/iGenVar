@@ -15,7 +15,7 @@
 // }
 
 // Explanation for the stings:
-// Reference\tm2257/8161/CCS\t41972616\tForward\tRead \t0\t2294\tForward\tchr21
+// Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\tchr21
 // INS from Primary Read - Sequence Type: Reference; Sequence Name: m2257/8161/CCS; Position: 41972616; Orientation: Reverse
 //                         Sequence Type: Read; Sequence Name: 0; Position: 3975; Orientation: Reverse
 //                         Chromosome: chr21
@@ -29,8 +29,8 @@ TEST(junction_detection, fasta_out_not_empty)
     std::string expected{
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead \t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead \t0\t3975\tReverse\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
@@ -51,8 +51,8 @@ TEST(junction_detection, fasta_out_not_empty)
 TEST(junction_detection, method_1_only)
 {
     std::string expected{
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead \t0\t2294\tForward\tchr21\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead \t0\t3975\tReverse\tchr21\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
@@ -97,8 +97,8 @@ TEST(junction_detection, method_1_and_2)
     std::string expected{
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead \t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead \t0\t3975\tReverse\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
 
     std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory

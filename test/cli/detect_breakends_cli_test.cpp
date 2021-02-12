@@ -42,8 +42,8 @@ TEST_F(detect_breakends, with_arguments)
     {
         "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
         "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead \t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead \t0\t3975\tReverse\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
     std::string expected_err
     {
@@ -62,10 +62,6 @@ TEST_F(detect_breakends, with_arguments)
         "The read depth method is not yet implemented.\n"
         "Start clustering...\n"
         "Done with clustering. Found 4 junction clusters.\n"
-        "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
-        "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-        "Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tm2257/8161/CCS\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected);

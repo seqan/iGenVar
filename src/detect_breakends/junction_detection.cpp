@@ -353,7 +353,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                         clusters.emplace_back(current_cluster_members);
                         current_cluster_members = {junctions[i]};
                     }
-                    i++;
+                    ++i;
                 }
                 clusters.emplace_back(current_cluster_members);
             }
@@ -371,7 +371,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
 
     seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
 
-    for (cluster elem : clusters)
+    for (cluster const & elem : clusters)
     {
         std::cout << elem << '\n';
     }

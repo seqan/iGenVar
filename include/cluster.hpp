@@ -1,6 +1,7 @@
 
 #include <utility>
 #include <cmath>
+#include <stdexcept>
 
 class cluster
 {
@@ -12,10 +13,10 @@ public:
      * \{
      */
     constexpr cluster()                    = default; //!< Defaulted.
-    cluster(cluster const &)              = default; //!< Defaulted.
-    cluster(cluster &&)                   = default; //!< Defaulted.
-    cluster & operator=(cluster const &)  = default; //!< Defaulted.
-    cluster & operator=(cluster &&)       = default; //!< Defaulted.
+    cluster(cluster const &)               = default; //!< Defaulted.
+    cluster(cluster &&)                    = default; //!< Defaulted.
+    cluster & operator=(cluster const &)   = default; //!< Defaulted.
+    cluster & operator=(cluster &&)        = default; //!< Defaulted.
     ~cluster()                             = default; //!< Defaulted.
     //!\}
 
@@ -23,19 +24,19 @@ public:
     {
         
     }
-    uint64_t get_cluster_size() const
+    size_t get_cluster_size() const
     {
         return members.size();
     }
 
     breakend get_average_mate1() const
     {
-        sequence_type seq_type;
-        std::string seq_name;
+        sequence_type seq_type{};
+        std::string seq_name{};
         uint64_t sum_positions = 0;
-        strand orientation;
+        strand orientation{};
         // Iterate through members of the cluster
-        for (uint32_t i=0; i<members.size(); i++)
+        for (uint32_t i = 0; i < members.size(); ++i)
         {
             breakend mate1 = members[i].get_mate1();
             if (i == 0)
@@ -57,19 +58,19 @@ public:
             // Add up breakend positions aross all members
             sum_positions += mate1.position;
         }
-        int32_t average_position = round(sum_positions / members.size());
+        int32_t average_position = std::round(static_cast<double>(sum_positions) / members.size());
         breakend average_breakend{seq_name, average_position, orientation, seq_type};
         return average_breakend;
     }
 
     breakend get_average_mate2() const
     {
-        sequence_type seq_type;
-        std::string seq_name;
+        sequence_type seq_type{};
+        std::string seq_name{};
         uint64_t sum_positions = 0;
-        strand orientation;
+        strand orientation{};
         // Iterate through members of the cluster
-        for (uint32_t i=0; i<members.size(); i++)
+        for (uint32_t i = 0; i < members.size(); ++i)
         {
             breakend mate2 = members[i].get_mate2();
             if (i == 0)
@@ -91,7 +92,7 @@ public:
             // Add up breakend positions aross all members
             sum_positions += mate2.position;
         }
-        int32_t average_position = round(sum_positions / members.size());
+        int32_t average_position = std::round(static_cast<double>(sum_positions) / members.size());
         breakend average_breakend{seq_name, average_position, orientation, seq_type};
         return average_breakend;
     }

@@ -1,7 +1,6 @@
 # iGenVar
-(build on SeqAn3 App Template)
 
-[![Build Status](https://github.com/seqan/app-template/workflows/App%20CI/badge.svg)](https://github.com/seqan/app-template/actions?query=branch%3Amaster+workflow%3A%22App+CI%22)
+[![Build Status](https://github.com/seqan/iGenVar/workflows/iGenVar%20CI/badge.svg)](https://github.com/seqan/iGenVar/actions?query=workflow%3A%22iGenVar+CI%22+branch%3Amaster)
 
 The official repository for the iGenVar project.
 
@@ -15,3 +14,5 @@ Instructions:
 5. optional: build and run the tests: `make test`
 6. optional: build the api documentation: `make doc`
 7. execute the app: `./bin/iGenVar`
+
+(Built using the [SeqAn3 App Template](https://github.com/seqan/app-template))

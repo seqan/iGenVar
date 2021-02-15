@@ -24,6 +24,8 @@
 //                   Sequence Type: Reference; Chromosome: chr21; Position: 41972615; Orientation: Forward
 //                   Sequence Name: m41327/11677/CCS
 
+uint64_t sv_default_length = 30;
+
 TEST(junction_detection, fasta_out_not_empty)
 {
     std::string expected{
@@ -38,7 +40,10 @@ TEST(junction_detection, fasta_out_not_empty)
 
     testing::internal::CaptureStdout();
     detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta", {1, 2, 3, 4}, simple_clustering);
+                                       tmp_dir/"detect_breakends_out_short.fasta",
+                                       {1, 2, 3, 4},
+                                       simple_clustering,
+                                       sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
     seqan3::debug_stream << "std_out:\n" << std_cout << '\n';
@@ -60,7 +65,10 @@ TEST(junction_detection, method_1_only)
 
     testing::internal::CaptureStdout();
     detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta", {1}, simple_clustering);
+                                       tmp_dir/"detect_breakends_out_short.fasta",
+                                       {1},
+                                       simple_clustering,
+                                       sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
     seqan3::debug_stream << "std_out:\n" << std_cout << '\n';
@@ -82,7 +90,10 @@ TEST(junction_detection, method_2_only)
 
     testing::internal::CaptureStdout();
     detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta", {2}, simple_clustering);
+                                       tmp_dir/"detect_breakends_out_short.fasta",
+                                       {2},
+                                       simple_clustering,
+                                       sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
     seqan3::debug_stream << "std_out:\n" << std_cout << '\n';
@@ -106,7 +117,10 @@ TEST(junction_detection, method_1_and_2)
 
     testing::internal::CaptureStdout();
     detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta", {1, 2}, simple_clustering);
+                                       tmp_dir/"detect_breakends_out_short.fasta",
+                                       {1, 2},
+                                       simple_clustering,
+                                       sv_default_length);
 
     std::string std_cout = testing::internal::GetCapturedStdout();
     seqan3::debug_stream << "std_out:\n" << std_cout << '\n';

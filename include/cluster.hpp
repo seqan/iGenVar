@@ -1,7 +1,7 @@
 
-#include <utility>
 #include <cmath>
 #include <stdexcept>
+#include <utility>
 
 class cluster
 {

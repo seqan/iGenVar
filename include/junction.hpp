@@ -10,8 +10,6 @@ private:
     std::string read_name{};
 
 public:
-    uint64_t supporting_reads{1};
-
     /*!\name Constructors, destructor and assignment
      * \{
      */
@@ -56,8 +54,7 @@ inline stream_t operator<<(stream_t && stream, junction const & junc)
 {
     stream << junc.get_mate1() << '\t'
            << junc.get_mate2() << '\t'
-           << junc.get_read_name() << '\t'
-           << junc.supporting_reads;
+           << junc.get_read_name();
     return stream;
 }
 

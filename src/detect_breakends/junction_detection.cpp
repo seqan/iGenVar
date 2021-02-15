@@ -335,25 +335,29 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
     }
     std::sort(junctions.begin(), junctions.end());
 
+    seqan3::debug_stream << "Start clustering...\n";
+
+    std::vector<cluster> clusters{};
     switch (clustering_method)
     {
         case 0: // simple_clustering
             {
-                junction previous_elem = junctions[0];
+                std::vector<junction> current_cluster_members = {junctions[0]};
                 int i = 1;
                 while (i < junctions.size())
                 {
-                    if (junctions[i] == previous_elem)
+                    if (junctions[i] == current_cluster_members.back())
                     {
-                        junctions.erase(junctions.begin() + i);
-                        junctions[i].supporting_reads ++;
+                        current_cluster_members.push_back(junctions[i]);
                     }
                     else
                     {
-                        previous_elem = junctions[i];
-                        i++;
+                        clusters.emplace_back(current_cluster_members);
+                        current_cluster_members = {junctions[i]};
                     }
+                    ++i;
                 }
+                clusters.emplace_back(current_cluster_members);
             }
             break;
         case 1: // hierarchical clustering
@@ -367,9 +371,10 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
             break;
     }
 
-    for (junction elem : junctions)
+    seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
+
+    for (cluster const & elem : clusters)
     {
         std::cout << elem << '\n';
     }
-    seqan3::debug_stream << "Done. Found " << junctions.size() << " junctions.\n";
 }

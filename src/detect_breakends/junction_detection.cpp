@@ -20,10 +20,10 @@ void split_string(const std::string& str, Container& cont, char delim = ' ')
 }
 
 /*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
- *         [aligned_segments](\ref aligned_segment), one for each alignment segment of the read.
+ *         [aligned_segments](\ref AlignedSegment), one for each alignment segment of the read.
  *
  * \param sa_string         "SA" tag string
- * \param aligned_segments  vector of [aligned_segments](\ref aligned_segment).
+ * \param aligned_segments  vector of [aligned_segments](\ref AlignedSegment).
  *
  * \details The SA tag describes the alignments of a chimeric read and is like a small SAM within a SAM file:
  *          "SA:Z:(rname,pos,strand,CIGAR,mapQ,NM;)+"
@@ -34,7 +34,7 @@ void split_string(const std::string& str, Container& cont, char delim = ' ')
  *          For more information about this tag, see the
  *          ([Map Optional Fields Specification](https://github.com/samtools/hts-specs/blob/master/SAMtags.pdf)).
  */
-void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segment> & aligned_segments)
+void retrieve_aligned_segments(std::string sa_string, std::vector<AlignedSegment> & aligned_segments)
 {
     std::vector<std::string> sa_tags{};
     split_string(sa_string, sa_tags, ';');
@@ -63,40 +63,40 @@ void retrieve_aligned_segments(std::string sa_string, std::vector<aligned_segmen
             std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
             std::vector<seqan3::cigar> cigar_vector = std::get<0>(parsed_cigar);
             int32_t mapq = std::stoi(fields[4]);
-            aligned_segments.push_back(aligned_segment{orientation, ref_name, pos, mapq, cigar_vector});
+            aligned_segments.push_back(AlignedSegment{orientation, ref_name, pos, mapq, cigar_vector});
         }
     }
 }
 
 /*! \brief Build junctions out of aligned_segments.
  *
- * \param aligned_segments  vector of [aligned_segments](\ref aligned_segment).
+ * \param aligned_segments  vector of [aligned_segments](\ref AlignedSegment).
  * \param junctions         vector for storing junctions
  * \param read_name         QNAME field of the SAM/BAM file
  */
-void analyze_aligned_segments(const std::vector<aligned_segment> & aligned_segments,
-                              std::vector<junction> & junctions,
+void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segments,
+                              std::vector<Junction> & junctions,
                               std::string & read_name)
 {
     for(size_t i = 1; i<aligned_segments.size(); i++)
     {
-        aligned_segment current = aligned_segments[i-1];
-        aligned_segment next = aligned_segments[i];
+        AlignedSegment current = aligned_segments[i-1];
+        AlignedSegment next = aligned_segments[i];
         int32_t distance_on_read = next.get_query_start() - current.get_query_end();
         // Neither gap nor overlap on read
         if (distance_on_read >= -10 && distance_on_read <= 10)
         {
-            breakend mate1{current.ref_name,
+            Breakend mate1{current.ref_name,
                             current.orientation == strand::forward ? current.get_reference_end()
                                                                    : current.get_reference_start(),
                             current.orientation,
                             sequence_type::reference};
-            breakend mate2{next.ref_name,
+            Breakend mate2{next.ref_name,
                             next.orientation == strand::forward ? next.get_reference_start()
                                                                 : next.get_reference_end(),
                             next.orientation,
                             sequence_type::reference};
-            junction new_junction{std::move(mate1), std::move(mate2), read_name};
+            Junction new_junction{std::move(mate1), std::move(mate2), read_name};
             seqan3::debug_stream << "BND: " << new_junction << "\n";
             junctions.push_back(std::move(new_junction));
         }
@@ -137,7 +137,7 @@ void analyze_cigar(std::string chromosome,
                    int32_t query_start_pos,
                    std::vector<seqan3::cigar> & cigar_string,
                    seqan3::dna5_vector & query_sequence,
-                   std::vector<junction> & junctions,
+                   std::vector<Junction> & junctions,
                    std::vector<seqan3::dna5_vector> & insertions,
                    int32_t min_length,
                    seqan3::sequence_file_output<> & insertion_file)
@@ -171,19 +171,19 @@ void analyze_cigar(std::string chromosome,
                     insertions.push_back(query_sequence);
                 }
                 // Insertions cause two junctions ( (1) from the reference to the read and (2) back from the read to the reference )
-                junction new_junction1{breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                       breakend{std::to_string(insertion_allele_id),
+                Junction new_junction1{Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
+                                       Breakend{std::to_string(insertion_allele_id),
                                                 pos_read,
                                                 strand::forward,
                                                 sequence_type::read},
                                        read_name};
                 seqan3::debug_stream << "INS1: " << new_junction1 << "\n";
                 junctions.push_back(std::move(new_junction1));
-                junction new_junction2{breakend{std::to_string(insertion_allele_id),
+                Junction new_junction2{Breakend{std::to_string(insertion_allele_id),
                                                 pos_read + length,
                                                 strand::forward,
                                                 sequence_type::read},
-                                       breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
+                                       Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
                                        read_name};
                 seqan3::debug_stream << "INS2: " << new_junction2 << "\n";
                 junctions.push_back(std::move(new_junction2));
@@ -195,8 +195,8 @@ void analyze_cigar(std::string chromosome,
             if (length >= min_length)
             {
                 // Deletions cause one junction from its start to its end
-                junction new_junction{breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                      breakend{chromosome, pos_ref + length, strand::forward, sequence_type::reference},
+                Junction new_junction{Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
+                                      Breakend{chromosome, pos_ref + length, strand::forward, sequence_type::reference},
                                       read_name};
                 seqan3::debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
@@ -262,7 +262,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
     seqan3::sequence_file_output insertion_file{insertion_file_path};
 
     // Store junctions, insertion_alleles and number of good alignments
-    std::vector<junction> junctions{};
+    std::vector<Junction> junctions{};
     std::vector<seqan3::dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
 
@@ -306,9 +306,9 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                             std::string sa_tag = tags.get<"SA"_tag>();
                             if (!sa_tag.empty())
                             {
-                                std::vector<aligned_segment> aligned_segments{};
+                                std::vector<AlignedSegment> aligned_segments{};
                                 auto strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
-                                aligned_segments.push_back(aligned_segment{strand, ref_name, pos, mapq, cigar});
+                                aligned_segments.push_back(AlignedSegment{strand, ref_name, pos, mapq, cigar});
                                 retrieve_aligned_segments(sa_tag, aligned_segments);
                                 std::sort(aligned_segments.begin(), aligned_segments.end());
                                 analyze_aligned_segments(aligned_segments, junctions, query_name);
@@ -337,12 +337,12 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
 
     seqan3::debug_stream << "Start clustering...\n";
 
-    std::vector<cluster> clusters{};
+    std::vector<Cluster> clusters{};
     switch (clustering_method)
     {
         case 0: // simple_clustering
             {
-                std::vector<junction> current_cluster_members = {junctions[0]};
+                std::vector<Junction> current_cluster_members = {junctions[0]};
                 int i = 1;
                 while (i < junctions.size())
                 {
@@ -373,7 +373,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
 
     seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
 
-    for (cluster const & elem : clusters)
+    for (Cluster const & elem : clusters)
     {
         std::cout << elem << '\n';
     }

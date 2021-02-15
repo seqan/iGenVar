@@ -12,7 +12,7 @@ enum struct strand : uint8_t
     reverse
 };
 
-struct breakend
+struct Breakend
 {
     std::string seq_name; // The id of the respective sequence
     int32_t position;
@@ -33,7 +33,7 @@ struct breakend
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, breakend const & b)
+inline stream_t operator<<(stream_t && stream, Breakend const & b)
 {
     stream << ((b.seq_type == sequence_type::reference) ? "Reference" : "Read") << '\t'
            << b.seq_name << '\t'
@@ -42,7 +42,7 @@ inline stream_t operator<<(stream_t && stream, breakend const & b)
     return stream;
 }
 
-inline bool operator<(const breakend & lhs, const breakend & rhs)
+inline bool operator<(const Breakend & lhs, const Breakend & rhs)
 {
     return lhs.seq_type != rhs.seq_type
             ? lhs.seq_type < rhs.seq_type
@@ -53,7 +53,7 @@ inline bool operator<(const breakend & lhs, const breakend & rhs)
                     : lhs.position < rhs.position;
 }
 
-inline bool operator==(const breakend & lhs, const breakend & rhs)
+inline bool operator==(const Breakend & lhs, const Breakend & rhs)
 {
     return (lhs.seq_name == rhs.seq_name) &&
            (lhs.position == rhs.position) &&

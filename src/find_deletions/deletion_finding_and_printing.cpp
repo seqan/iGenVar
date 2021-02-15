@@ -1,18 +1,19 @@
+#include <fstream>
+
 #include "find_deletions/deletion_finding_and_printing.hpp"
 #include "variant_parser/variant_record.hpp"
 
-#include <fstream>
 /*! \brief Reads the input junction file and stores the junctions in a vector.
  *
  * \param junction_file_path input junction file
  *
  * \returns a vector of junctions
  */
-std::vector<junction> read_junctions(std::filesystem::path const & junction_file_path)
+std::vector<Junction> read_junctions(std::filesystem::path const & junction_file_path)
 {
     std::fstream junction_file;
     junction_file.open(junction_file_path, std::ios::in);
-    std::vector<junction> junctions;
+    std::vector<Junction> junctions;
     if (junction_file.is_open()){
         std::string line, word;
         while(getline(junction_file, line)){
@@ -23,15 +24,15 @@ std::vector<junction> read_junctions(std::filesystem::path const & junction_file
             }
             if (fields.size() == 9)
             {
-                breakend mate1{fields[1],
+                Breakend mate1{fields[1],
                                std::stoi(fields[2]),
                                (fields[3] == "Forward") ? strand::forward : strand::reverse,
                                (fields[0] == "Reference") ? sequence_type::reference : sequence_type::read};
-                breakend mate2{fields[5],
+                Breakend mate2{fields[5],
                                std::stoi(fields[6]),
                                (fields[7] == "Forward") ? strand::forward : strand::reverse,
                                (fields[4] == "Reference") ? sequence_type::reference : sequence_type::read};
-                junction new_junction{std::move(mate1), std::move(mate2), fields[8]};
+                Junction new_junction{std::move(mate1), std::move(mate2), fields[8]};
                 junctions.push_back(new_junction);
             }
         }
@@ -51,7 +52,7 @@ std::vector<junction> read_junctions(std::filesystem::path const & junction_file
  */
 void find_and_print_deletions(std::filesystem::path const & junction_file_path, std::ostream & out_stream)
 {
-    std::vector<junction> junctions = read_junctions(junction_file_path);
+    std::vector<Junction> junctions = read_junctions(junction_file_path);
 
     variant_header header{};
     header.set_fileformat("VCFv4.3");

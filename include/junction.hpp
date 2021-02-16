@@ -1,27 +1,28 @@
 
 #include <utility>
+
 #include "breakend.hpp"
 
-class junction
+class Junction
 {
 private:
-    breakend mate1{};
-    breakend mate2{};
+    Breakend mate1{};
+    Breakend mate2{};
     std::string read_name{};
 
 public:
     /*!\name Constructors, destructor and assignment
      * \{
      */
-    constexpr junction()                    = default; //!< Defaulted.
-    junction(junction const &)              = default; //!< Defaulted.
-    junction(junction &&)                   = default; //!< Defaulted.
-    junction & operator=(junction const &)  = default; //!< Defaulted.
-    junction & operator=(junction &&)       = default; //!< Defaulted.
-    ~junction()                             = default; //!< Defaulted.
+    constexpr Junction()                    = default; //!< Defaulted.
+    Junction(Junction const &)              = default; //!< Defaulted.
+    Junction(Junction &&)                   = default; //!< Defaulted.
+    Junction & operator=(Junction const &)  = default; //!< Defaulted.
+    Junction & operator=(Junction &&)       = default; //!< Defaulted.
+    ~Junction()                             = default; //!< Defaulted.
     //!\}
 
-    junction(breakend mate1, breakend mate2, std::string read_name) : mate1{std::move(mate1)},
+    Junction(Breakend mate1, Breakend mate2, std::string read_name) : mate1{std::move(mate1)},
                                                                       mate2{std::move(mate2)},
                                                                       read_name{std::move(read_name)}
     {
@@ -34,11 +35,11 @@ public:
             this->mate2.flip_orientation();
         }
     }
-    breakend get_mate1() const
+    Breakend get_mate1() const
     {
         return mate1;
     }
-    breakend get_mate2() const
+    Breakend get_mate2() const
     {
         return mate2;
     }
@@ -50,7 +51,7 @@ public:
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, junction const & junc)
+inline stream_t operator<<(stream_t && stream, Junction const & junc)
 {
     stream << junc.get_mate1() << '\t'
            << junc.get_mate2() << '\t'
@@ -58,7 +59,7 @@ inline stream_t operator<<(stream_t && stream, junction const & junc)
     return stream;
 }
 
-inline bool operator<(const junction & lhs, const junction & rhs)
+inline bool operator<(const Junction & lhs, const Junction & rhs)
 {
     return lhs.get_mate1() < rhs.get_mate1()
             ? true
@@ -73,7 +74,7 @@ inline bool operator<(const junction & lhs, const junction & rhs)
  * \param lhs   left side junction
  * \param rhs   right side junction
  */
-inline bool operator==(const junction & lhs, const junction & rhs)
+inline bool operator==(const Junction & lhs, const Junction & rhs)
 {
     return (lhs.get_mate1() == rhs.get_mate1()) && (lhs.get_mate2() == rhs.get_mate2());
 }

@@ -9,7 +9,7 @@
  * \param mapq              mapping quality
  * \param cig               cigar string of the alignment
  */
-struct aligned_segment
+struct AlignedSegment
 {
     strand orientation;
     std::string ref_name;
@@ -142,7 +142,7 @@ struct aligned_segment
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, aligned_segment const & a)
+inline stream_t operator<<(stream_t && stream, AlignedSegment const & a)
 {
     stream << a.ref_name << ";"
            << a.get_reference_start() << "-" << a.get_reference_end() << ";"
@@ -152,7 +152,7 @@ inline stream_t operator<<(stream_t && stream, aligned_segment const & a)
     return stream;
 }
 
-inline bool operator<(const aligned_segment & lhs, const aligned_segment & rhs)
+inline bool operator<(const AlignedSegment & lhs, const AlignedSegment & rhs)
 {
     return lhs.get_query_start() != rhs.get_query_start()
             ? lhs.get_query_start() < rhs.get_query_start()

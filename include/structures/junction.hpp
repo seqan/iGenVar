@@ -1,8 +1,6 @@
 #pragma once
 
-#include <utility>
-
-#include "breakend.hpp"
+#include "structures/breakend.hpp"
 
 class Junction
 {
@@ -36,19 +34,12 @@ public:
             this->mate2.flip_orientation();
         }
     }
-    Breakend get_mate1() const
-    {
-        return mate1;
-    }
-    Breakend get_mate2() const
-    {
-        return mate2;
-    }
 
-    std::string get_read_name() const
-    {
-        return read_name;
-    }
+    Breakend get_mate1() const;
+
+    Breakend get_mate2() const;
+
+    std::string get_read_name() const;
 };
 
 template <typename stream_t>
@@ -60,14 +51,7 @@ inline stream_t operator<<(stream_t && stream, Junction const & junc)
     return stream;
 }
 
-inline bool operator<(const Junction & lhs, const Junction & rhs)
-{
-    return lhs.get_mate1() < rhs.get_mate1()
-            ? true
-            : rhs.get_mate1() < lhs.get_mate1()
-                ? false
-                : lhs.get_mate2() < rhs.get_mate2();
-}
+bool operator<(const Junction & lhs, const Junction & rhs);
 
 /*! \brief A junction is equal to another, if their mates are equal to each other. The read_name and supporting_reads
  *         are allowed to be unequal, because more than one read could support the same junction.
@@ -75,7 +59,4 @@ inline bool operator<(const Junction & lhs, const Junction & rhs)
  * \param lhs   left side junction
  * \param rhs   right side junction
  */
-inline bool operator==(const Junction & lhs, const Junction & rhs)
-{
-    return (lhs.get_mate1() == rhs.get_mate1()) && (lhs.get_mate2() == rhs.get_mate2());
-}
+bool operator==(const Junction & lhs, const Junction & rhs);

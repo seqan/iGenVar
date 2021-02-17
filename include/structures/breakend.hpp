@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 enum struct sequence_type : uint8_t
 {
     reference,
@@ -42,21 +44,6 @@ inline stream_t operator<<(stream_t && stream, Breakend const & b)
     return stream;
 }
 
-inline bool operator<(const Breakend & lhs, const Breakend & rhs)
-{
-    return lhs.seq_type != rhs.seq_type
-            ? lhs.seq_type < rhs.seq_type
-            : lhs.seq_name != rhs.seq_name
-                ? lhs.seq_name < rhs.seq_name
-                : lhs.orientation != rhs.orientation
-                    ? lhs.orientation < rhs.orientation
-                    : lhs.position < rhs.position;
-}
+bool operator<(const Breakend & lhs, const Breakend & rhs);
 
-inline bool operator==(const Breakend & lhs, const Breakend & rhs)
-{
-    return (lhs.seq_name == rhs.seq_name) &&
-           (lhs.position == rhs.position) &&
-           (lhs.orientation == rhs.orientation) &&
-           (lhs.seq_type == rhs.seq_type);
-}
+bool operator==(const Breakend & lhs, const Breakend & rhs);

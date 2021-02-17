@@ -1,4 +1,4 @@
-
+#pragma once
 
 enum struct sequence_type : uint8_t
 {

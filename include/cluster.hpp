@@ -1,3 +1,4 @@
+#pragma once
 
 #include <cmath>
 #include <stdexcept>
@@ -22,7 +23,7 @@ public:
 
     Cluster(std::vector<Junction> members) : members{std::move(members)}
     {
-        
+
     }
     size_t get_cluster_size() const
     {

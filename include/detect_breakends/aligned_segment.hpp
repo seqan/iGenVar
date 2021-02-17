@@ -1,3 +1,5 @@
+#pragma once
+
 #include <seqan3/alphabet/cigar/cigar.hpp>
 
 /*! \brief Read segment aligned to the reference genome (part of chimeric/split-aligned read). Contains information

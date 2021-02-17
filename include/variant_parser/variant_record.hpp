@@ -1,3 +1,5 @@
+#pragma once
+
 #include <seqan3/io/stream/concept.hpp>
 #include <fstream>
 #include <map>

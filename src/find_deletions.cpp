@@ -1,4 +1,4 @@
-#include <seqan3/argument_parser/all.hpp>   // includes all necessary headers
+#include <seqan3/argument_parser/argument_parser.hpp>
 
 #include "find_deletions/deletion_finding_and_printing.hpp"
 

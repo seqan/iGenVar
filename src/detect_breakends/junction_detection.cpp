@@ -1,5 +1,14 @@
 #include "detect_breakends/junction_detection.hpp"
 
+#include <seqan3/core/debug_stream.hpp>
+#include <seqan3/io/alignment_file/input.hpp>   // SAM/BAM support
+#include <seqan3/io/sequence_file/output.hpp>   // FASTA support
+
+#include "cluster.hpp"                          // for class Cluster
+#include "detect_breakends/aligned_segment.hpp" // for struct AlignedSegment
+#include "detect_breakends/bam_functions.hpp"   // for hasFlag* functions
+#include "junction.hpp"                         // for class Jnction
+
 using seqan3::operator""_cigar_op;
 using seqan3::operator""_tag;
 

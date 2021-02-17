@@ -1,4 +1,5 @@
 #include <seqan3/argument_parser/argument_parser.hpp>
+#include <seqan3/core/debug_stream.hpp>
 #include <seqan3/range/views/get.hpp>
 
 #include "detect_breakends/junction_detection.hpp"

@@ -1,7 +1,9 @@
-#include <fstream>
-
 #include "find_deletions/deletion_finding_and_printing.hpp"
-#include "variant_parser/variant_record.hpp"
+
+#include <iostream> // for std::cout
+
+#include "junction.hpp"                         // for class Junction
+#include "variant_parser/variant_record.hpp"    // for class variant_header
 
 /*! \brief Reads the input junction file and stores the junctions in a vector.
  *

@@ -1,14 +1,9 @@
 #pragma once
 
-#include <seqan3/core/debug_stream.hpp>
-#include <seqan3/io/alignment_file/input.hpp>   // SAM/BAM support
-#include <seqan3/io/sequence_file/output.hpp>   // FASTA support
+#include <seqan3/std/filesystem>    // for filesystem
+#include <vector>
 
-#include "detect_breakends/bam_functions.hpp"   // for hasFlag* functions
-#include "junction.hpp"                         // for class junction
-#include "cluster.hpp"                          // for class cluster
-#include "detect_breakends/aligned_segment.hpp" // for struct aligned_segment
-#include "method_enums.hpp"                     // for enum clustering_methods
+#include "method_enums.hpp"         // for enum clustering_methods
 
 /*! \brief Detects junctions between distant genomic positions by analyzing an alignment file (sam/bam). The detected
  *         junctions are printed on stdout and insertion alleles are stored in a fasta file.

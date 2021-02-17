@@ -1,4 +1,5 @@
 #include <seqan3/argument_parser/argument_parser.hpp>
+#include <seqan3/core/debug_stream.hpp>
 
 #include "find_deletions/deletion_finding_and_printing.hpp"
 

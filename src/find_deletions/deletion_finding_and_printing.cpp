@@ -2,7 +2,7 @@
 
 #include <iostream> // for std::cout
 
-#include "junction.hpp"                         // for class Junction
+#include "structures/junction.hpp"              // for class Junction
 #include "variant_parser/variant_record.hpp"    // for class variant_header
 
 /*! \brief Reads the input junction file and stores the junctions in a vector.

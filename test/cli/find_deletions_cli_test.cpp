@@ -3,6 +3,37 @@
 
 #include "cli_test.hpp"
 
+std::string help_page
+{
+    "partitionJunctions - Find deletions\n"
+    "===================================\n"
+    "\nOPTIONS\n"
+    "\n"
+    "  Basic options:\n"
+    "    -h, --help\n"
+    "          Prints the help page.\n"
+    "    -hh, --advanced-help\n"
+    "          Prints the help page including advanced options.\n"
+    "    --version\n"
+    "          Prints the version information.\n"
+    "    --copyright\n"
+    "          Prints the copyright/license information.\n"
+    "    --export-help (std::string)\n"
+    "          Export the help page information. Value must be one of [html, man].\n"
+    "    --version-check (bool)\n"
+    "          Whether to to check for the newest app version. Default: 1.\n"
+    "    -i, --input (std::filesystem::path)\n"
+    "          Input junctions tab-separated format.\n"
+    "    -o, --output (std::filesystem::path)\n"
+    "          The path of the vcf output file. If no path is given, will output to\n"
+    "          standard output. Default: \"\".\n"
+    "\n"
+    "VERSION\n"
+    "    Last update:\n"
+    "    partitionJunctions version: 0.0.1\n"
+    "    SeqAn version: 3.0.3\n"
+};
+
 TEST_F(find_deletions, no_options)
 {
     cli_test_result result = execute_app("find_deletions");
@@ -27,6 +58,26 @@ TEST_F(find_deletions, fail_no_argument)
     EXPECT_NE(result.exit_code, 0);
     EXPECT_EQ(result.out, std::string{});
     EXPECT_EQ(result.err, expected);
+}
+
+TEST_F(find_deletions, help_page_argument)
+{
+    cli_test_result result = execute_app("find_deletions", "-h");
+    std::string expected = help_page;
+
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.err, std::string{});
+}
+
+TEST_F(find_deletions, advanced_help_page_argument)
+{
+    cli_test_result result = execute_app("find_deletions", "-hh");
+    std::string expected = help_page;
+
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.err, std::string{});
 }
 
 TEST_F(find_deletions, with_one_argument)

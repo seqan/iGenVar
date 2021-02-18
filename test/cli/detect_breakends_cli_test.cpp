@@ -6,6 +6,70 @@
 #include <fstream>
 #include <sstream>
 
+std::string help_page_part_1
+{
+    "iGenVar - Detect junctions in a read alignment file\n"
+    "===================================================\n"
+    "\n"
+    "POSITIONAL ARGUMENTS\n"
+    "    ARGUMENT-1 (std::filesystem::path)\n"
+    "          Input read alignments in SAM or BAM format. The input file must\n"
+    "          exist and read permissions must be granted. Valid file extensions\n"
+    "          are: [sam, bam].\n"
+    "    ARGUMENT-2 (std::filesystem::path)\n"
+    "          Output file for insertion alleles Write permissions must be granted.\n"
+    "          Valid file extensions are: [fa, fasta].\n"
+    "\n"
+    "OPTIONS\n"
+    "\n"
+    "  Basic options:\n"
+    "    -h, --help\n"
+    "          Prints the help page.\n"
+    "    -hh, --advanced-help\n"
+    "          Prints the help page including advanced options.\n"
+    "    --version\n"
+    "          Prints the version information.\n"
+    "    --copyright\n"
+    "          Prints the copyright/license information.\n"
+    "    --export-help (std::string)\n"
+    "          Export the help page information. Value must be one of [html, man].\n"
+    "    --version-check (bool)\n"
+    "          Whether to to check for the newest app version. Default: 1.\n"
+};
+
+std::string help_page_part_2
+{
+    "\n"
+    "VERSION\n"
+    "    Last update: 19-01-2021\n"
+    "    iGenVar version: 0.0.1\n"
+    "    SeqAn version: 3.0.3\n"
+    "\nURL\n"
+    "    https://github.com/seqan/iGenVar/\n\nLEGAL\n"
+    "    iGenVar Copyright: short_copyright\n"
+    "    SeqAn Copyright: 2006-2021 Knut Reinert, FU-Berlin; released under the\n"
+    "    3-clause BSDL.\n"
+    "    For full copyright and/or warranty information see --copyright.\n"
+};
+
+std::string help_page_advanced
+{
+    "    -m, --method (List of unsigned 8 bit integer's)\n"
+    "          Choose the detecting method(s) to be used. Default: [1,2,3,4]. Value must be in\n"
+    "          range [1,4].\n"
+    "    -c, --clustering_method (clustering_methods)\n"
+    "          Choose the clustering method to be used. Default: simple_clustering.\n"
+    "          Value must be one of\n"
+    "          [candidate_selection_based_on_voting,self_balancing_binary_tree,self_balancing_binary_tree,hierarchical_clustering,hierarchical_clustering,candidate_selection_based_on_voting,simple_clustering,simple_clustering].\n"
+    "    -r, --refinement_method (refinement_methods)\n"
+    "          Choose the refinement method to be used. Default: no_refinement.\n"
+    "          Value must be one of\n"
+    "          [2,sViper_refinement_method,sViper_refinement_method,2,no_refinement,no_refinement].\n"
+    "    -l, --min_var_length (unsigned 64 bit integer)\n"
+    "          Specify what should be the minimum length of your SVs to be detected\n"
+    "          (default 30 bp). Default: 30.\n"
+};
+
 TEST_F(detect_breakends, no_options)
 {
     cli_test_result result = execute_app("detect_breakends");
@@ -33,6 +97,25 @@ TEST_F(detect_breakends, fail_no_argument)
     EXPECT_EQ(result.err, expected);
 }
 
+TEST_F(find_deletions, help_page_argument)
+{
+    cli_test_result result = execute_app("detect_breakends", "-h");
+    std::string expected = help_page_part_1 + help_page_part_2;
+
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.err, std::string{});
+}
+
+TEST_F(find_deletions, advanced_help_page_argument)
+{
+    cli_test_result result = execute_app("detect_breakends", "-hh");
+    std::string expected = help_page_part_1 + help_page_advanced + help_page_part_2;
+
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.err, std::string{});
+}
 
 TEST_F(detect_breakends, with_arguments)
 {

@@ -1,4 +1,5 @@
-#include <seqan3/range/views/all.hpp>
+#pragma once
+
 #include <seqan3/alphabet/cigar/cigar.hpp>
 #include <seqan3/utility/char_operations/predicate.hpp>
 #include <seqan3/io/exception.hpp>

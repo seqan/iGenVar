@@ -1,6 +1,5 @@
-#include <seqan3/argument_parser/all.hpp>   // includes all necessary headers
-
-#include <seqan3/range/views/all.hpp>
+#include <seqan3/argument_parser/argument_parser.hpp>
+#include <seqan3/core/debug_stream.hpp>
 #include <seqan3/range/views/get.hpp>
 
 #include "detect_breakends/junction_detection.hpp"

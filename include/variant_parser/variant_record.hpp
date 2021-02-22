@@ -1,8 +1,10 @@
 #pragma once
 
-#include <seqan3/io/stream/concept.hpp>
 #include <fstream>
 #include <map>
+#include <vector>
+
+#include <seqan3/io/stream/concept.hpp>
 
 /*
  * An info field looks as follows:

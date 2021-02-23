@@ -355,22 +355,29 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
     {
         case 0: // simple_clustering
             {
-                std::vector<Junction> current_cluster_members = {junctions[0]};
-                int i = 1;
-                while (i < junctions.size())
+                if (junctions.size() > 0)
                 {
-                    if (junctions[i] == current_cluster_members.back())
+                    std::vector<Junction> current_cluster_members = {junctions[0]};
+                    int i = 1;
+                    while (i < junctions.size())
                     {
-                        current_cluster_members.push_back(junctions[i]);
+                        if (junctions[i] == current_cluster_members.back())
+                        {
+                            current_cluster_members.push_back(junctions[i]);
+                        }
+                        else
+                        {
+                            clusters.emplace_back(current_cluster_members);
+                            current_cluster_members = {junctions[i]};
+                        }
+                        ++i;
                     }
-                    else
-                    {
-                        clusters.emplace_back(current_cluster_members);
-                        current_cluster_members = {junctions[i]};
-                    }
-                    ++i;
+                    clusters.emplace_back(current_cluster_members);
                 }
-                clusters.emplace_back(current_cluster_members);
+                else
+                {
+                    seqan3::debug_stream << "No junctions found...\n";
+                }
             }
             break;
         case 1: // hierarchical clustering

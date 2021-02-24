@@ -36,6 +36,5 @@ int main(int argc, char ** argv)
     }
     find_and_print_deletions(args.junction_file_path, args.output_file_path);
 
-
     return 0;
 }

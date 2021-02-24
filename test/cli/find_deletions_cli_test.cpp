@@ -3,7 +3,7 @@
 
 #include "cli_test.hpp"
 
-std::string help_page
+const std::string help_page
 {
     "partitionJunctions - Find deletions\n"
     "===================================\n"

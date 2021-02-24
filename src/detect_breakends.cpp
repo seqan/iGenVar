@@ -1,8 +1,11 @@
 #include <seqan3/argument_parser/argument_parser.hpp>
+#include <seqan3/argument_parser/validators.hpp>    // for value_list_validator
+
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/range/views/get.hpp>
 
 #include "detect_breakends/junction_detection.hpp"
+#include "detect_breakends/validator.hpp"            // for class EnumValidator
 
 // Specialise a mapping from an identifying string to the respective value of your type clustering_methods. With the
 // help of this function, you're able to call ./detect_breackends with -c 0 and -c simple_clustering and get the same
@@ -70,10 +73,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     //                                               "3", "read_pairs",
     //                                               "4", "read_depth"};
     seqan3::arithmetic_range_validator method_validator{1, 4};
-    seqan3::value_list_validator clustering_method_validator {
-                                            (seqan3::enumeration_names<clustering_methods> | seqan3::views::get<1>)};
-    seqan3::value_list_validator refinement_method_validator {
-                                            (seqan3::enumeration_names<refinement_methods> | seqan3::views::get<1>)};
+
+    EnumValidator<clustering_methods> clustering_method_validator{seqan3::enumeration_names<clustering_methods>
+                                                                  | std::views::values};
+    EnumValidator<refinement_methods> refinement_method_validator{seqan3::enumeration_names<refinement_methods>
+                                                                  | std::views::values};
 
     // Options - Input / Output:
     parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",

@@ -3,7 +3,7 @@
 #include <seqan3/std/filesystem>    // for filesystem
 #include <vector>
 
-#include "method_enums.hpp"         // for enum clustering_methods
+#include "method_enums.hpp"         // for enum clustering_methods and refinement_methods
 
 /*! \brief Detects junctions between distant genomic positions by analyzing an alignment file (sam/bam). The detected
  *         junctions are printed on stdout and insertion alleles are stored in a fasta file.

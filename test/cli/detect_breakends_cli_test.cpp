@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 
-std::string help_page_part_1
+const std::string help_page_part_1
 {
     "iGenVar - Detect junctions in a read alignment file\n"
     "===================================================\n"
@@ -37,7 +37,7 @@ std::string help_page_part_1
     "          Whether to check for the newest app version. Default: true.\n"
 };
 
-std::string help_page_part_2
+const std::string help_page_part_2
 {
     "\n"
     "VERSION\n"
@@ -57,19 +57,19 @@ std::string help_page_part_2
     "    For full copyright and/or warranty information see --copyright.\n"
 };
 
-std::string help_page_advanced
+const std::string help_page_advanced
 {
     "    -m, --method (List of unsigned 8 bit integer)\n"
     "          Choose the detecting method(s) to be used. Default: [1,2,3,4]. Value\n"
     "          must be in range [1,4].\n"
     "    -c, --clustering_method (clustering_methods)\n"
     "          Choose the clustering method to be used. Default: simple_clustering.\n"
-    "          Value must be one of\n"
-    "          [candidate_selection_based_on_voting,self_balancing_binary_tree,self_balancing_binary_tree,hierarchical_clustering,hierarchical_clustering,candidate_selection_based_on_voting,simple_clustering,simple_clustering].\n"
+    "          Value must be one of (method name or number)\n"
+    "          [simple_clustering,0,hierarchical_clustering,1,self_balancing_binary_tree,2,candidate_selection_based_on_voting,3].\n"
     "    -r, --refinement_method (refinement_methods)\n"
     "          Choose the refinement method to be used. Default: no_refinement.\n"
-    "          Value must be one of\n"
-    "          [2,sViper_refinement_method,sViper_refinement_method,2,no_refinement,no_refinement].\n"
+    "          Value must be one of (method name or number)\n"
+    "          [no_refinement,0,sViper_refinement_method,1,2,sVirl_refinement_method].\n"
     "    -l, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be detected\n"
     "          (default 30 bp). Default: 30.\n"

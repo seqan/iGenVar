@@ -21,7 +21,7 @@ std::string help_page
     "    --export-help (std::string)\n"
     "          Export the help page information. Value must be one of [html, man].\n"
     "    --version-check (bool)\n"
-    "          Whether to to check for the newest app version. Default: 1.\n"
+    "          Whether to check for the newest app version. Default: true.\n"
     "    -i, --input (std::filesystem::path)\n"
     "          Input junctions tab-separated format.\n"
     "    -o, --output (std::filesystem::path)\n"
@@ -32,6 +32,11 @@ std::string help_page
     "    Last update:\n"
     "    partitionJunctions version: 0.0.1\n"
     "    SeqAn version: 3.0.3\n"
+    "\n"
+    "LEGAL\n"
+    "    Author: David Heller\n"
+    "    SeqAn Copyright: 2006-2021 Knut Reinert, FU-Berlin; released under the\n"
+    "    3-clause BSDL.\n"
 };
 
 TEST_F(find_deletions, no_options)

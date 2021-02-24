@@ -17,8 +17,8 @@ std::string help_page_part_1
     "          exist and read permissions must be granted. Valid file extensions\n"
     "          are: [sam, bam].\n"
     "    ARGUMENT-2 (std::filesystem::path)\n"
-    "          Output file for insertion alleles Write permissions must be granted.\n"
-    "          Valid file extensions are: [fa, fasta].\n"
+    "          Output file for insertion alleles. Write permissions must be\n"
+    "          granted. Valid file extensions are: [fa, fasta].\n"
     "\n"
     "OPTIONS\n"
     "\n"
@@ -34,7 +34,7 @@ std::string help_page_part_1
     "    --export-help (std::string)\n"
     "          Export the help page information. Value must be one of [html, man].\n"
     "    --version-check (bool)\n"
-    "          Whether to to check for the newest app version. Default: 1.\n"
+    "          Whether to check for the newest app version. Default: true.\n"
 };
 
 std::string help_page_part_2
@@ -44,9 +44,14 @@ std::string help_page_part_2
     "    Last update: 19-01-2021\n"
     "    iGenVar version: 0.0.1\n"
     "    SeqAn version: 3.0.3\n"
-    "\nURL\n"
-    "    https://github.com/seqan/iGenVar/\n\nLEGAL\n"
+    "\n"
+    "URL\n"
+    "    https://github.com/seqan/iGenVar/\n"
+    "\n"
+    "LEGAL\n"
     "    iGenVar Copyright: short_copyright\n"
+    "    Author: David Heller & Lydia Buntrock\n"
+    "    Contact: lydia.buntrock@fu-berlin.de\n"
     "    SeqAn Copyright: 2006-2021 Knut Reinert, FU-Berlin; released under the\n"
     "    3-clause BSDL.\n"
     "    For full copyright and/or warranty information see --copyright.\n"
@@ -54,9 +59,9 @@ std::string help_page_part_2
 
 std::string help_page_advanced
 {
-    "    -m, --method (List of unsigned 8 bit integer's)\n"
-    "          Choose the detecting method(s) to be used. Default: [1,2,3,4]. Value must be in\n"
-    "          range [1,4].\n"
+    "    -m, --method (List of unsigned 8 bit integer)\n"
+    "          Choose the detecting method(s) to be used. Default: [1,2,3,4]. Value\n"
+    "          must be in range [1,4].\n"
     "    -c, --clustering_method (clustering_methods)\n"
     "          Choose the clustering method to be used. Default: simple_clustering.\n"
     "          Value must be one of\n"

@@ -74,15 +74,16 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                                             (seqan3::enumeration_names<clustering_methods> | seqan3::views::get<1>)};
     seqan3::value_list_validator refinement_method_validator {
                                             (seqan3::enumeration_names<refinement_methods> | seqan3::views::get<1>)};
+
     // Options - Input / Output:
     parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",
                                  seqan3::input_file_validator{{"sam", "bam"}} );
-    parser.add_positional_option(args.insertion_file_path, "Output file for insertion alleles",
+    parser.add_positional_option(args.insertion_file_path, "Output file for insertion alleles.",
                                  seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create,
                                                                {"fa", "fasta"}} );
 
     // Options - Methods:
-    parser.add_option(args.methods, 'm', "method", "Choose the method to be used.",
+    parser.add_option(args.methods, 'm', "method", "Choose the detecting method(s) to be used.",
                       seqan3::option_spec::advanced, method_validator);
     parser.add_option(args.clustering_method, 'c', "clustering_method", "Choose the clustering method to be used.",
                       seqan3::option_spec::advanced, clustering_method_validator);

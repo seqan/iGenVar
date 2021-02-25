@@ -8,7 +8,7 @@ std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // g
 const std::vector<uint8_t> all_methods = {1, 2, 3, 4};
 uint64_t sv_default_length = 30;
 
-// Explanation for the stings:
+// Explanation for the strings:
 // Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\tchr21
 // INS from Primary Read - Sequence Type: Reference; Sequence Name: m2257/8161/CCS; Position: 41972616; Orientation: Reverse
 //                         Sequence Type: Read; Sequence Name: 0; Position: 3975; Orientation: Reverse
@@ -57,11 +57,11 @@ TEST(junction_detection, single_method_only)
                              << "Test Method: " << method << '\n'
                              << "-----------------------------------------------------------------------\n";
         detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                        tmp_dir/"detect_breakends_out_short.fasta",
-                                        {method},
-                                        simple_clustering,
-                                        no_refinement,
-                                        sv_default_length);
+                                           tmp_dir/"detect_breakends_out_short.fasta",
+                                           {method},
+                                           simple_clustering,
+                                           no_refinement,
+                                           sv_default_length);
 
         if (method == 1)
         {
@@ -98,11 +98,11 @@ TEST(junction_detection, method_pairs)
                                     << "Test Methods: " << method_i << ", " << method_j << '\n'
                                     << "-----------------------------------------------------------------------\n";
             detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                            tmp_dir/"detect_breakends_out_short.fasta",
-                                            {method_i, method_j},
-                                            simple_clustering,
-                                            no_refinement,
-                                            sv_default_length);
+                                               tmp_dir/"detect_breakends_out_short.fasta",
+                                               {method_i, method_j},
+                                               simple_clustering,
+                                               no_refinement,
+                                               sv_default_length);
 
             if (method_i == 1 && method_j == 2)
             {
@@ -152,11 +152,11 @@ TEST(junction_detection, method_triples)
                                     << '\n'
                                     << "-----------------------------------------------------------------------\n";
                 detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                                tmp_dir/"detect_breakends_out_short.fasta",
-                                                {method_i, method_j, method_k},
-                                                simple_clustering,
-                                                no_refinement,
-                                                sv_default_length);
+                                                   tmp_dir/"detect_breakends_out_short.fasta",
+                                                   {method_i, method_j, method_k},
+                                                   simple_clustering,
+                                                   no_refinement,
+                                                   sv_default_length);
 
                 if (method_i == 1 && method_j == 2 && method_k == 3)
                 {

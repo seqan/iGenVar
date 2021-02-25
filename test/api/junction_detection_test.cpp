@@ -34,15 +34,6 @@ void check_output_and_cleanup(std::string expected_res)
     return;
 }
 
-// TEST(group1, fasta_out_empty)
-// {
-//     std::string expected{"Reference\tchr9\t70103073\tForward\tReference\tchr9\t70103147\tForward\tm13802/6999/CCS\t1\n"};
-//     testing::internal::CaptureStdout();
-//     detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam", "");
-//     std::string std_cout = testing::internal::GetCapturedStdout();
-//     EXPECT_EQ(expected, std_cout);
-// }
-
 TEST(junction_detection, fasta_out_not_empty)
 {
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent

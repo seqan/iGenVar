@@ -88,47 +88,45 @@ TEST(junction_detection, method_pairs)
 {
     for (uint8_t method_i : all_methods)
     {
-        for (uint8_t method_j = method_i + 1; method_j <= all_methods.size(); ++method_j)
+        for (uint8_t method_j : all_methods)
         {
-            if (method_i != method_j)
+            if (method_i >= method_j) continue; // only check in one order to safe time
+            std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");    // remove old output if existent
+
+            testing::internal::CaptureStdout();
+            seqan3::debug_stream << "-----------------------------------------------------------------------\n"
+                                    << "Test Methods: " << method_i << ", " << method_j << '\n'
+                                    << "-----------------------------------------------------------------------\n";
+            detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
+                                            tmp_dir/"detect_breakends_out_short.fasta",
+                                            {method_i, method_j},
+                                            simple_clustering,
+                                            no_refinement,
+                                            sv_default_length);
+
+            if (method_i == 1 && method_j == 2)
             {
-                std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");    // remove old output if existent
-
-                testing::internal::CaptureStdout();
-                seqan3::debug_stream << "-----------------------------------------------------------------------\n"
-                                     << "Test Methods: " << method_i << ", " << method_j << '\n'
-                                     << "-----------------------------------------------------------------------\n";
-                detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                                tmp_dir/"detect_breakends_out_short.fasta",
-                                                {method_i, method_j},
-                                                simple_clustering,
-                                                no_refinement,
-                                                sv_default_length);
-
-                if (method_i == 1 && method_j == 2)
-                {
-                    check_output_and_cleanup(expected_res_cigar + expected_res_split);
-                }
-                else if (method_i == 1 && method_j == 3)
-                {
-                    check_output_and_cleanup(expected_res_cigar + expected_res_pair);
-                }
-                else if (method_i == 1 && method_j == 4)
-                {
-                    check_output_and_cleanup(expected_res_cigar + expected_res_depth);
-                }
-                else if (method_i == 2 && method_j == 3)
-                {
-                    check_output_and_cleanup(expected_res_split + expected_res_pair);
-                }
-                else if (method_i == 2 && method_j == 4)
-                {
-                    check_output_and_cleanup(expected_res_split + expected_res_depth);
-                }
-                else // (method_i == 3 && method_j == 4)
-                {
-                    check_output_and_cleanup(expected_res_pair + expected_res_depth);
-                }
+                check_output_and_cleanup(expected_res_cigar + expected_res_split);
+            }
+            else if (method_i == 1 && method_j == 3)
+            {
+                check_output_and_cleanup(expected_res_cigar + expected_res_pair);
+            }
+            else if (method_i == 1 && method_j == 4)
+            {
+                check_output_and_cleanup(expected_res_cigar + expected_res_depth);
+            }
+            else if (method_i == 2 && method_j == 3)
+            {
+                check_output_and_cleanup(expected_res_split + expected_res_pair);
+            }
+            else if (method_i == 2 && method_j == 4)
+            {
+                check_output_and_cleanup(expected_res_split + expected_res_depth);
+            }
+            else // (method_i == 3 && method_j == 4)
+            {
+                check_output_and_cleanup(expected_res_pair + expected_res_depth);
             }
         }
     }
@@ -140,43 +138,41 @@ TEST(junction_detection, method_triples)
 {
     for (uint8_t method_i : all_methods)
     {
-        for (uint8_t method_j = method_i + 1; method_j <= all_methods.size(); ++method_j)
+        for (uint8_t method_j : all_methods)
         {
-            for (uint8_t method_k = method_j + 1; method_k <= all_methods.size(); ++method_k)
+            if (method_i >= method_j) continue; // only check in one order to safe time
+            for (uint8_t method_k : all_methods)
             {
+                if (method_j >= method_k) continue; // only check in one order to safe time
+                std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta"); // remove old output if existent
 
-                if (method_i != method_j != method_k)
+                testing::internal::CaptureStdout();
+                seqan3::debug_stream << "-----------------------------------------------------------------------\n"
+                                    << "Test Methods: " << method_i << ", " << method_j << ", " << method_k
+                                    << '\n'
+                                    << "-----------------------------------------------------------------------\n";
+                detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
+                                                tmp_dir/"detect_breakends_out_short.fasta",
+                                                {method_i, method_j, method_k},
+                                                simple_clustering,
+                                                no_refinement,
+                                                sv_default_length);
+
+                if (method_i == 1 && method_j == 2 && method_k == 3)
                 {
-                    std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta"); // remove old output if existent
-
-                    testing::internal::CaptureStdout();
-                    seqan3::debug_stream << "-----------------------------------------------------------------------\n"
-                                         << "Test Methods: " << method_i << ", " << method_j << ", " << method_k
-                                         << '\n'
-                                         << "-----------------------------------------------------------------------\n";
-                    detect_junctions_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                                    tmp_dir/"detect_breakends_out_short.fasta",
-                                                    {method_i, method_j, method_k},
-                                                    simple_clustering,
-                                                    no_refinement,
-                                                    sv_default_length);
-
-                    if (method_i == 1 && method_j == 2 && method_k == 3)
-                    {
-                        check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_pair);
-                    }
-                    else if (method_i == 1 && method_j == 2 && method_k == 4)
-                    {
-                        check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_depth);
-                    }
-                    else if (method_i == 1 && method_j == 3 && method_k == 4)
-                    {
-                        check_output_and_cleanup(expected_res_cigar + expected_res_pair + expected_res_depth);
-                    }
-                    else if (method_i == 2 && method_j == 3 && method_k == 4)
-                    {
-                        check_output_and_cleanup(expected_res_split + expected_res_pair + expected_res_depth);
-                    }
+                    check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_pair);
+                }
+                else if (method_i == 1 && method_j == 2 && method_k == 4)
+                {
+                    check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_depth);
+                }
+                else if (method_i == 1 && method_j == 3 && method_k == 4)
+                {
+                    check_output_and_cleanup(expected_res_cigar + expected_res_pair + expected_res_depth);
+                }
+                else if (method_i == 2 && method_j == 3 && method_k == 4)
+                {
+                    check_output_and_cleanup(expected_res_split + expected_res_pair + expected_res_depth);
                 }
             }
         }

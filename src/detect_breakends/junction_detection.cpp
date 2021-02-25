@@ -358,7 +358,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                 if (junctions.size() > 0)
                 {
                     std::vector<Junction> current_cluster_members = {junctions[0]};
-                    int i = 1;
+                    size_t i = 1;
                     while (i < junctions.size())
                     {
                         if (junctions[i] == current_cluster_members.back())
@@ -367,12 +367,12 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                         }
                         else
                         {
-                            clusters.emplace_back(current_cluster_members);
+                            clusters.emplace_back(std::move(current_cluster_members));
                             current_cluster_members = {junctions[i]};
                         }
                         ++i;
                     }
-                    clusters.emplace_back(current_cluster_members);
+                    clusters.emplace_back(std::move(current_cluster_members));
                 }
                 else
                 {

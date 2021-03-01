@@ -5,6 +5,7 @@
 #include "cli_test.hpp"
 #include <fstream>
 #include <sstream>
+
 TEST_F(detect_breakends, no_options)
 {
     cli_test_result result = execute_app("detect_breakends");

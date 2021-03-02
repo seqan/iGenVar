@@ -142,7 +142,6 @@ TEST_F(detect_breakends, with_arguments)
                                          "detect_breakends_insertion_file_out.fasta");
     std::string expected_err
     {
-        "Methods to be used: [cigar_string,split_read,read_pairs,read_depth]\n"
         "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
         "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
         "The read pair method is not yet implemented.\n"
@@ -171,8 +170,6 @@ TEST_F(detect_breakends, test_outfile)
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
 
-    std::cout << "Current path is " << std::filesystem::current_path() << '\n';
-
     std::filesystem::path out_file_path = "detect_breakends_insertion_file_out.fasta";
     std::filesystem::path test_file_path = "../../data/detect_breakends_insertion_file_test.fasta";
     seqan3::sequence_file_input out_file{out_file_path};
@@ -189,7 +186,6 @@ TEST_F(detect_breakends, with_detection_method_arguments)
                                          "-m 0 -m 1");
     std::string expected_err
     {
-        "Methods to be used: [cigar_string,split_read]\n"
         "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
         "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
         "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
@@ -201,5 +197,21 @@ TEST_F(detect_breakends, with_detection_method_arguments)
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res);
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
+{
+    cli_test_result result = execute_app("detect_breakends",
+                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
+                                         "detect_breakends_insertion_file_out.fasta",
+                                         "-m 0 -m 0");
+    std::string expected_err
+    {
+        "[Error] The same detection method was selected multiple times.\n"
+        "Methods to be used: [cigar_string,cigar_string]\n"
+    };
+    EXPECT_NE(result.exit_code, 0);
+    EXPECT_EQ(result.out, "");
     EXPECT_EQ(result.err, expected_err);
 }

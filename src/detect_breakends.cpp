@@ -128,7 +128,16 @@ int main(int argc, char ** argv)
         return -1;
     }
 
-    seqan3::debug_stream << "Methods to be used: " << args.methods << '\n';
+    // Check that method selection contains no duplicates.
+    std::vector<detecting_methods> unique_methods{args.methods};
+    std::ranges::sort(unique_methods);
+    unique_methods.erase(std::unique(unique_methods.begin(), unique_methods.end()), unique_methods.end());
+    if (args.methods.size() > unique_methods.size())
+    {
+        seqan3::debug_stream << "[Error] The same detection method was selected multiple times.\n";
+        seqan3::debug_stream << "Methods to be used: " << args.methods << '\n';
+        return -1;
+    }
 
     detect_junctions_in_alignment_file(args.alignment_file_path,
                                        args.insertion_file_path,

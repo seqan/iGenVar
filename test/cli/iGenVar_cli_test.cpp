@@ -227,3 +227,34 @@ TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
     EXPECT_EQ(result.out, "");
     EXPECT_EQ(result.err, expected_err);
 }
+
+TEST_F(detect_breakends, dataset_mini_example)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data("mini_example.sam"),
+                                         "mini_example_insertions_output.fasta",
+                                         "-l 8 -m 0 -m 1");
+
+    // Check the output of junctions:
+    seqan3::debug_stream << "Check the output of junctions... " << '\n';
+    EXPECT_EQ(result.out, expected_res);
+    seqan3::debug_stream << "done. " << '\n';
+
+    // Check the debug output of junctions:
+    seqan3::debug_stream << "Check the debug output of junctions... " << '\n';
+    std::ifstream txt_test_file("../../data/output_err.txt");
+    std::string txt_test_file_str((std::istreambuf_iterator<char>(txt_test_file)),
+                                   std::istreambuf_iterator<char>());
+    EXPECT_EQ(result.err, txt_test_file_str);
+    seqan3::debug_stream << "done. " << '\n';
+
+    // Check the output of insertion sequences:
+    seqan3::debug_stream << "Check the output of insertion sequences... " << '\n';
+    std::filesystem::path out_file_path_ins = "mini_example_insertions_output.fasta";
+    std::filesystem::path test_file_path_ins = "../../data/insertions_output.fasta";
+    seqan3::sequence_file_input out_file_ins{out_file_path_ins};
+    seqan3::sequence_file_input test_file_ins{test_file_path_ins};
+
+    EXPECT_RANGE_EQ(out_file_ins, test_file_ins);
+    seqan3::debug_stream << "done. " << '\n';
+}

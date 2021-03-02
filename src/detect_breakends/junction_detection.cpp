@@ -1,7 +1,7 @@
 #include "detect_breakends/junction_detection.hpp"
 
 #include <seqan3/core/debug_stream.hpp>
-#include <seqan3/io/alignment_file/input.hpp>   // SAM/BAM support
+#include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support
 #include <seqan3/io/sequence_file/output.hpp>   // FASTA support
 
 #include "detect_breakends/bam_functions.hpp"                       // for hasFlag* functions
@@ -58,7 +58,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                      seqan3::field::tags,
                                      seqan3::field::header_ptr>;
 
-    seqan3::alignment_file_input alignment_file{alignment_file_path, my_fields{}};
+    seqan3::sam_file_input alignment_file{alignment_file_path, my_fields{}};
     // Open output file for insertion alleles
     seqan3::sequence_file_output insertion_file{insertion_file_path};
 

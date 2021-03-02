@@ -1,5 +1,4 @@
 #include <seqan3/alphabet/cigar/cigar.hpp>
-#include <seqan3/alphabet/cigar/cigar_op.hpp>
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sequence_file/output.hpp>
@@ -7,7 +6,7 @@
 #include "structures/junction.hpp"  // for class Junction
 #include "structures/breakend.hpp"  // for class Breakend
 
-using seqan3::operator""_cigar_op;
+using seqan3::operator""_cigar_operation;
 
 void analyze_cigar(const std::string & read_name,
                    const std::string chromosome,
@@ -30,13 +29,13 @@ void analyze_cigar(const std::string & read_name,
     {
         using seqan3::get;
         int32_t length = get<0>(pair);
-        seqan3::cigar_op operation = get<1>(pair);
-        if (operation == 'M'_cigar_op || operation == '='_cigar_op || operation == 'X'_cigar_op)
+        seqan3::cigar::operation operation = get<1>(pair);
+        if (operation == 'M'_cigar_operation || operation == '='_cigar_operation || operation == 'X'_cigar_operation)
         {
             pos_ref += length;
             pos_read += length;
         }
-        else if (operation == 'I'_cigar_op) // I: Insertion (gap in the reference sequence)
+        else if (operation == 'I'_cigar_operation) // I: Insertion (gap in the reference sequence)
         {
             if (length >= min_length)
             {
@@ -67,7 +66,7 @@ void analyze_cigar(const std::string & read_name,
             }
             pos_read += length;
         }
-        else if (operation == 'D'_cigar_op)
+        else if (operation == 'D'_cigar_operation)
         {
             if (length >= min_length)
             {
@@ -80,7 +79,7 @@ void analyze_cigar(const std::string & read_name,
             }
             pos_ref += length;
         }
-        else if (operation == 'S'_cigar_op)
+        else if (operation == 'S'_cigar_operation)
         {
             pos_read += length;
         }

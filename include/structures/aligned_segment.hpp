@@ -7,11 +7,11 @@
 /*! \brief Read segment aligned to the reference genome (part of chimeric/split-aligned read). Contains information
  *        parsed from the SA tag of an alignment in the SAM/BAM file.
  *
- * \param orientation       mapping orientation (reverse or forward strand)
- * \param ref_name          reference/chromosome name
- * \param pos               start position of the alignment
- * \param mapq              mapping quality
- * \param cig               cigar string of the alignment
+ * \param orientation   - mapping orientation (reverse or forward strand)
+ * \param ref_name      - reference/chromosome name
+ * \param pos           - start position of the alignment
+ * \param mapq          - mapping quality
+ * \param cig           - cigar string of the alignment
  */
 struct AlignedSegment
 {

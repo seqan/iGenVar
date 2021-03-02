@@ -47,12 +47,12 @@ public:
 
     /*! \brief Add header information for a given INFO field.
      *
-     *  \param info_key_i The INFO key name.
-     *  \param number_i The number of values this key can hold.
-     *  \param type_i The type of values this key holds.
-     *  \param description_i The description of this INFO field..
-     *  \param source_i The source of the INFO field.
-     *  \param version_i The version of the source.
+     *  \param info_key_i       - the INFO key name
+     *  \param number_i         - the number of values this key can hold
+     *  \param type_i           - the type of values this key holds
+     *  \param description_i    - the description of this INFO field
+     *  \param source_i         - the source of the INFO field
+     *  \param version_i        - the version of the source
      */
     void add_meta_info(std::string info_key_i, std::uint8_t number_i, std::string type_i, std::string description_i,
                        std::string source_i, std::string version_i)
@@ -62,9 +62,9 @@ public:
 
     /*! \brief Prints the VCF header to a given output.
      *
-     * \tparam stream_type A stream to print the output to.
+     * \tparam stream_type - a stream to print the output to
      *
-     * \param out_stream The output stream to print to.
+     * \param out_stream - the output stream to print to
      */
     template<typename stream_type>
     //!cond
@@ -101,7 +101,7 @@ public:
 
     /*! \brief Set the chromosome for a variant.
      *
-     * \param chrom_i The chromosome value to use.
+     * \param chrom_i - the chromosome value to use
      */
     void set_chrom(std::string chrom_i)
     {
@@ -110,7 +110,7 @@ public:
 
     /*! \brief Set the pos for a variant.
      *
-     * \param pos_i The pos value to use.
+     * \param pos_i - the pos value to use
      */
     void set_pos(std::uint64_t pos_i)
     {
@@ -119,7 +119,7 @@ public:
 
     /*! \brief Set the id for a variant.
      *
-     * \param id_i The id value to use.
+     * \param id_i - the id value to use
      */
     void set_id(std::string id_i)
     {
@@ -128,7 +128,7 @@ public:
 
     /*! \brief Set the ref for a variant.
      *
-     * \param ref_i The ref value to use.
+     * \param ref_i - the ref value to use
      */
     void set_ref(std::string ref_i)
     {
@@ -137,7 +137,7 @@ public:
 
     /*! \brief Set the alt for a variant.
      *
-     * \param alt_i The alt value to use.
+     * \param alt_i - the alt value to use
      */
     void set_alt(std::string alt_i)
     {
@@ -146,7 +146,7 @@ public:
 
     /*! \brief Set the qual for a variant.
      *
-     * \param qual_i The qual value to use.
+     * \param qual_i - the qual value to use
      */
     void set_qual(float qual_i)
     {
@@ -155,7 +155,7 @@ public:
 
     /*! \brief Set the filter for a variant.
      *
-     * \param filter_i The filter value to use.
+     * \param filter_i - the filter value to use
      */
     void set_filter(std::string filter_i)
     {
@@ -164,8 +164,8 @@ public:
 
     /*! \brief Add an INFO entry for a variant.
      *
-     * \param info_key The INFO key to use.
-     * \param info_value The INFO value to set.
+     * \param info_key      - the INFO key to use
+     * \param info_value    - the INFO value to set
      */
     void add_info(std::string info_key, std::string info_value)
     {
@@ -174,9 +174,9 @@ public:
 
     /*! \brief Prints the variant to a given output in VCF format.
      *
-     * \tparam stream_type A stream to print the output to.
+     * \tparam stream_type - a stream to print the output to
      *
-     * \param out_stream The output stream to print to.
+     * \param out_stream - the output stream to print to
      */
     template<typename stream_type>
     //!cond

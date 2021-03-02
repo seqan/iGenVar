@@ -21,9 +21,10 @@ public:
     ~EnumValidator() = default;                                 //!< Defaulted.
 
     /*!\brief Constructing from a range.
-     * \tparam range_type The type of range; must model std::ranges::forward_range and EnumValidator::option_value_type
-     *                    must be constructible from the rvalue reference type of the given range.
-     * \param[in] rng The range of valid values to test.
+     * \tparam range_type - the type of range; must model std::ranges::forward_range and
+     *                      EnumValidator::option_value_type must be constructible from the rvalue reference type of the
+     *                      given range
+     * \param[in] rng - the range of valid values to test
      */
     template <std::ranges::forward_range range_type>
     //!\cond

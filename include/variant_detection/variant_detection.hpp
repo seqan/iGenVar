@@ -8,7 +8,8 @@
 /*! \brief Detects genomic variants by analyzing an alignment file (sam/bam). The detected
  *         variants are printed to a given file or stdout and insertion alleles are stored in a fasta file.
  *
- * \param alignment_file_path input file - path to the sam/bam file
+ * \param alignment_short_reads_file_path - short reads input file, path to the sam/bam file
+ * \param alignment_long_reads_file_path - long reads input file, path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
  * \param methods - list of methods for detecting junctions (1: cigar_string,
  *                                                           2: split_read,
@@ -30,7 +31,8 @@
  *          Finally, the refined junction clusters are categorized into different variant classes
  *          and output in VCF format.
  */
-void detect_variants_in_alignment_file(const std::filesystem::path & alignment_file_path,
+void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
+                                       const std::filesystem::path & alignment_long_reads_file_path,
                                        const std::filesystem::path & insertion_file_path,
                                        const std::vector<detection_methods> & methods,
                                        const clustering_methods & clustering_method,

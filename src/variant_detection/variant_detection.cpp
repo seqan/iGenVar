@@ -14,7 +14,8 @@
 using seqan3::operator""_tag;
 
 
-void detect_variants_in_alignment_file(const std::filesystem::path & alignment_file_path,
+void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
+                                       const std::filesystem::path & alignment_long_reads_file_path,
                                        const std::filesystem::path & insertion_file_path,
                                        const std::vector<detection_methods> & methods,
                                        const clustering_methods & clustering_method,
@@ -33,7 +34,21 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
                                      seqan3::field::tags,
                                      seqan3::field::header_ptr>;
 
-    seqan3::sam_file_input alignment_file{alignment_file_path, my_fields{}};
+    // ToDo (Lydia): handle short reads
+    if (alignment_short_reads_file_path != "")
+    {
+        seqan3::sam_file_input alignment_short_reads_file{alignment_short_reads_file_path, my_fields{}};
+        seqan3::debug_stream << "Short reads are currently not supported.\n ";
+        return;
+    }
+
+    if (alignment_long_reads_file_path == "")
+    {
+        seqan3::debug_stream << "No long reads where given (short reads are currently not supported).\n ";
+        return;
+    }
+    seqan3::sam_file_input alignment_long_reads_file{alignment_long_reads_file_path, my_fields{}};
+
     // Open output file for insertion alleles
     seqan3::sequence_file_output insertion_file{insertion_file_path};
 
@@ -42,7 +57,7 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
     std::vector<seqan3::dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
 
-    for (auto & rec : alignment_file)
+    for (auto & rec : alignment_long_reads_file)
     {
         const std::string query_name            = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
         const seqan3::sam_flag flag             = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG

@@ -57,7 +57,8 @@ auto enumeration_names(refinement_methods)
 
 struct cmd_arguments
 {
-    std::filesystem::path alignment_file_path{};
+    std::filesystem::path alignment_short_reads_file_path{""};
+    std::filesystem::path alignment_long_reads_file_path{""};
     std::filesystem::path insertion_file_path{};
     std::filesystem::path output_file_path{};
     std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
@@ -92,8 +93,17 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                                                                   | std::views::values};
 
     // Options - Input / Output:
-    parser.add_positional_option(args.alignment_file_path, "Input read alignments in SAM or BAM format.",
-                                 seqan3::input_file_validator{{"sam", "bam"}} );
+    parser.add_option(args.alignment_short_reads_file_path,
+                      'i', "input_short_reads",
+                      "Input short read alignments in SAM or BAM format (Illumina).",
+                      seqan3::option_spec::standard,
+                      seqan3::input_file_validator{{"sam", "bam"}} );
+    parser.add_option(args.alignment_long_reads_file_path,
+                      'j', "input_long_reads",
+                      "Input long read alignments in SAM or BAM format (PacBio, Oxford Nanopore, ...).",
+                      seqan3::option_spec::standard,
+                      seqan3::input_file_validator{{"sam", "bam"}} );
+
     parser.add_positional_option(args.insertion_file_path, "Output file for insertion alleles.",
                                  seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create,
                                                                {"fa", "fasta"}} );
@@ -134,6 +144,15 @@ int main(int argc, char ** argv)
         return -1;
     }
 
+    // Check if we have at least one input file.
+    if (args.alignment_short_reads_file_path == "" && args.alignment_long_reads_file_path == "")
+    {
+        seqan3::debug_stream << "[Error] You need to input at least one sam/bam file.\n"
+                             << "Please use -i or -input_short_reads to pass a short read file "
+                                "or -j or -input_long_reads for a long read file.\n";
+        return -1;
+    }
+
     // Check that method selection contains no duplicates.
     std::vector<detection_methods> unique_methods{args.methods};
     std::ranges::sort(unique_methods);
@@ -145,7 +164,8 @@ int main(int argc, char ** argv)
         return -1;
     }
 
-    detect_variants_in_alignment_file(args.alignment_file_path,
+    detect_variants_in_alignment_file(args.alignment_short_reads_file_path,
+                                      args.alignment_long_reads_file_path,
                                       args.insertion_file_path,
                                       args.methods,
                                       args.clustering_method,

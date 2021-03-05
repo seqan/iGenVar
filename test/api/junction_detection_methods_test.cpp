@@ -4,6 +4,8 @@
 
 #include "variant_detection/variant_detection.hpp"
 
+const std::string empty_alignment_short_reads_file_path = "";
+const std::string default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
 std::filesystem::path empty_path{};
 const std::vector<detection_methods> all_methods{cigar_string, split_read, read_pairs, read_depth};
@@ -67,13 +69,14 @@ TEST(junction_detection, single_method_only)
         seqan3::debug_stream << "-----------------------------------------------------------------------\n"
                              << "Test Method: " << method << '\n'
                              << "-----------------------------------------------------------------------\n";
-        detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                           tmp_dir/"detect_breakends_out_short.fasta",
-                                           {method},
-                                           simple_clustering,
-                                           no_refinement,
-                                           sv_default_length,
-                                           empty_path);
+        detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                          default_alignment_long_reads_file_path,
+                                          tmp_dir/"detect_breakends_out_short.fasta",
+                                          {method},
+                                          simple_clustering,
+                                          no_refinement,
+                                          sv_default_length,
+                                          empty_path);
 
         //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
         //We need to replace this with real API tests that check inidividual parts of the pipeline.
@@ -115,13 +118,14 @@ TEST(junction_detection, method_pairs)
             seqan3::debug_stream << "-----------------------------------------------------------------------\n"
                                     << "Test Methods: " << method_i << ", " << method_j << '\n'
                                     << "-----------------------------------------------------------------------\n";
-            detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                               tmp_dir/"detect_breakends_out_short.fasta",
-                                               {method_i, method_j},
-                                               simple_clustering,
-                                               no_refinement,
-                                               sv_default_length,
-                                               empty_path);
+            detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                              default_alignment_long_reads_file_path,
+                                              tmp_dir/"detect_breakends_out_short.fasta",
+                                              {method_i, method_j},
+                                              simple_clustering,
+                                              no_refinement,
+                                              sv_default_length,
+                                              empty_path);
 
             //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
             //We need to replace this with real API tests that check inidividual parts of the pipeline.
@@ -178,13 +182,14 @@ TEST(junction_detection, method_triples)
                                     << "Test Methods: " << method_i << ", " << method_j << ", " << method_k
                                     << '\n'
                                     << "-----------------------------------------------------------------------\n";
-                detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                                   tmp_dir/"detect_breakends_out_short.fasta",
-                                                   {method_i, method_j, method_k},
-                                                   simple_clustering,
-                                                   no_refinement,
-                                                   sv_default_length,
-                                                   empty_path);
+                detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                                  default_alignment_long_reads_file_path,
+                                                  tmp_dir/"detect_breakends_out_short.fasta",
+                                                  {method_i, method_j, method_k},
+                                                  simple_clustering,
+                                                  no_refinement,
+                                                  sv_default_length,
+                                                  empty_path);
 
                 //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
                 //We need to replace this with real API tests that check inidividual parts of the pipeline.

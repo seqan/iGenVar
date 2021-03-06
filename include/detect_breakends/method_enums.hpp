@@ -1,7 +1,7 @@
 #pragma once
 
 //!\brief An enum for the different clustering methods.
-enum detecting_methods
+enum detection_methods
 {
     cigar_string = 0,
     split_read = 1,

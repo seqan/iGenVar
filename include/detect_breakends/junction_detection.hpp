@@ -30,7 +30,7 @@
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
-                                        const std::vector<detecting_methods> methods,
+                                        const std::vector<detection_methods> methods,
                                         const clustering_methods clustering_method,
                                         const refinement_methods refinement_method,
                                         const uint64_t min_var_length);

@@ -59,8 +59,8 @@ const std::string help_page_part_2
 
 const std::string help_page_advanced
 {
-    "    -m, --method (List of detecting_methods)\n"
-    "          Choose the detecting method(s) to be used. Default:\n"
+    "    -m, --method (List of detection_methods)\n"
+    "          Choose the detection method(s) to be used. Default:\n"
     "          [cigar_string,split_read,read_pairs,read_depth]. Value must be one\n"
     "          of\n"
     "          [read_depth,read_depth,read_pairs,read_pairs,split_read,split_read,cigar_string,cigar_string].\n"

@@ -5,7 +5,7 @@
 #include "detect_breakends/junction_detection.hpp"
 
 std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
-const std::vector<detecting_methods> all_methods{cigar_string, split_read, read_pairs, read_depth};
+const std::vector<detection_methods> all_methods{cigar_string, split_read, read_pairs, read_depth};
 const uint64_t sv_default_length = 30;
 
 // Explanation for the strings:
@@ -48,7 +48,7 @@ void check_output_and_cleanup(std::string expected_res)
 
 TEST(junction_detection, single_method_only)
 {
-    for (detecting_methods method : all_methods)
+    for (detection_methods method : all_methods)
     {
         std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");    // remove old output if existent
 
@@ -86,9 +86,9 @@ TEST(junction_detection, single_method_only)
 
 TEST(junction_detection, method_pairs)
 {
-    for (detecting_methods method_i : all_methods)
+    for (detection_methods method_i : all_methods)
     {
-        for (detecting_methods method_j : all_methods)
+        for (detection_methods method_j : all_methods)
         {
             if (method_i >= method_j) continue; // only check in one order to safe time
             std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");    // remove old output if existent
@@ -136,12 +136,12 @@ TEST(junction_detection, method_pairs)
 
 TEST(junction_detection, method_triples)
 {
-    for (detecting_methods method_i : all_methods)
+    for (detection_methods method_i : all_methods)
     {
-        for (detecting_methods method_j : all_methods)
+        for (detection_methods method_j : all_methods)
         {
             if (method_i >= method_j) continue; // only check in one order to safe time
-            for (detecting_methods method_k : all_methods)
+            for (detection_methods method_k : all_methods)
             {
                 if (method_j >= method_k) continue; // only check in one order to safe time
                 std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta"); // remove old output if existent

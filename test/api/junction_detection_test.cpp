@@ -3,7 +3,7 @@
 #include "detect_breakends/junction_detection.hpp"
 
 std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
-const std::vector<detecting_methods> default_methods{cigar_string, split_read, read_pairs, read_depth};
+const std::vector<detection_methods> default_methods{cigar_string, split_read, read_pairs, read_depth};
 const uint64_t sv_default_length = 30;
 
 // Explanation for the strings:

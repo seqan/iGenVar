@@ -7,16 +7,16 @@
 
 // Specialise a mapping from an identifying string to the respective value of your type methods. With the help of this
 // function, you're able to call ./detect_breackends with -m 1 and -m cigar_string and get the same result.
-auto enumeration_names(detecting_methods)
+auto enumeration_names(detection_methods)
 {
-    return std::unordered_map<std::string, detecting_methods>{{"0", detecting_methods::cigar_string},
-                                                              {"cigar_string", detecting_methods::cigar_string},
-                                                              {"1", detecting_methods::split_read},
-                                                              {"split_read", detecting_methods::split_read},
-                                                              {"2", detecting_methods::read_pairs},
-                                                              {"read_pairs", detecting_methods::read_pairs},
-                                                              {"3", detecting_methods::read_depth},
-                                                              {"read_depth", detecting_methods::read_depth}};
+    return std::unordered_map<std::string, detection_methods>{{"0", detection_methods::cigar_string},
+                                                              {"cigar_string", detection_methods::cigar_string},
+                                                              {"1", detection_methods::split_read},
+                                                              {"split_read", detection_methods::split_read},
+                                                              {"2", detection_methods::read_pairs},
+                                                              {"read_pairs", detection_methods::read_pairs},
+                                                              {"3", detection_methods::read_depth},
+                                                              {"read_depth", detection_methods::read_depth}};
 };
 
 // Specialise a mapping from an identifying string to the respective value of your type clustering_methods. With the
@@ -59,7 +59,7 @@ struct cmd_arguments
 {
     std::filesystem::path alignment_file_path{};
     std::filesystem::path insertion_file_path{};
-    std::vector<detecting_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
+    std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
     clustering_methods clustering_method{simple_clustering};    // default: simple clustering method
     refinement_methods refinement_method{no_refinement};        // default: no refinement
     uint64_t min_var_length = 30;
@@ -79,8 +79,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.url = "https://github.com/seqan/iGenVar/";
 
     // Validatiors:
-    seqan3::value_list_validator detecting_method_validator {
-        (seqan3::enumeration_names<detecting_methods> | std::views::values)
+    seqan3::value_list_validator detection_method_validator {
+        (seqan3::enumeration_names<detection_methods> | std::views::values)
     };
     // ToDo (Lydia): Should get solved with solving https://github.com/seqan/iGenVar/issues/78
     // EnumValidator<detecting_methods> detecting_method_validator{seqan3::enumeration_names<detecting_methods>
@@ -98,8 +98,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                                                                {"fa", "fasta"}} );
 
     // Options - Methods:
-    parser.add_option(args.methods, 'm', "method", "Choose the detecting method(s) to be used.",
-                      seqan3::option_spec::advanced, detecting_method_validator);
+    parser.add_option(args.methods, 'm', "method", "Choose the detection method(s) to be used.",
+                      seqan3::option_spec::advanced, detection_method_validator);
     parser.add_option(args.clustering_method, 'c', "clustering_method", "Choose the clustering method to be used.",
                       seqan3::option_spec::advanced, clustering_method_validator);
     parser.add_option(args.refinement_method, 'r', "refinement_method", "Choose the refinement method to be used.",
@@ -129,7 +129,7 @@ int main(int argc, char ** argv)
     }
 
     // Check that method selection contains no duplicates.
-    std::vector<detecting_methods> unique_methods{args.methods};
+    std::vector<detection_methods> unique_methods{args.methods};
     std::ranges::sort(unique_methods);
     unique_methods.erase(std::unique(unique_methods.begin(), unique_methods.end()), unique_methods.end());
     if (args.methods.size() > unique_methods.size())

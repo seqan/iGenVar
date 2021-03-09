@@ -1,23 +1,26 @@
-#include "detect_breakends/junction_detection.hpp"
+#include "variant_detection/variant_detection.hpp"
 
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support
 #include <seqan3/io/sequence_file/output.hpp>   // FASTA support
 
-#include "detect_breakends/bam_functions.hpp"                       // for hasFlag* functions
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
 #include "modules/sv_detection_methods/analyze_cigar_method.hpp"    // for the split read method
 #include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
 #include "structures/cluster.hpp"                                   // for class Cluster
+#include "variant_detection/bam_functions.hpp"                      // for hasFlag* functions
+#include "variant_detection/variant_output.hpp"
 
 using seqan3::operator""_tag;
 
-void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
-                                        const std::filesystem::path & insertion_file_path,
-                                        const std::vector<detection_methods> methods,
-                                        const clustering_methods clustering_method,
-                                        const refinement_methods refinement_method,
-                                        const uint64_t min_var_length)
+
+void detect_variants_in_alignment_file(const std::filesystem::path & alignment_file_path,
+                                       const std::filesystem::path & insertion_file_path,
+                                       const std::vector<detection_methods> & methods,
+                                       const clustering_methods & clustering_method,
+                                       const refinement_methods & refinement_method,
+                                       const uint64_t & min_var_length,
+                                       const std::filesystem::path & output_file_path)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -134,8 +137,5 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
             break;
     }
 
-    for (Cluster const & elem : clusters)
-    {
-        std::cout << elem << '\n';
-    }
+    find_and_output_variant(clusters, output_file_path);
 }

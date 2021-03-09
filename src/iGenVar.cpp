@@ -2,8 +2,8 @@
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/range/views/get.hpp>
 
-#include "detect_breakends/junction_detection.hpp"
-#include "detect_breakends/validator.hpp"            // for class EnumValidator
+#include "variant_detection/variant_detection.hpp"
+#include "variant_detection/validator.hpp"            // for class EnumValidator
 
 // Specialise a mapping from an identifying string to the respective value of your type methods. With the help of this
 // function, you're able to call ./detect_breackends with -m 1 and -m cigar_string and get the same result.
@@ -59,20 +59,21 @@ struct cmd_arguments
 {
     std::filesystem::path alignment_file_path{};
     std::filesystem::path insertion_file_path{};
+    std::filesystem::path output_file_path{};
     std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
-    clustering_methods clustering_method{simple_clustering};    // default: simple clustering method
-    refinement_methods refinement_method{no_refinement};        // default: no refinement
+    clustering_methods clustering_method{simple_clustering};                                    // default: simple clustering method
+    refinement_methods refinement_method{no_refinement};                                        // default: no refinement
     uint64_t min_var_length = 30;
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
 {
-    parser.info.author = "David Heller & Lydia Buntrock";
+    parser.info.author = "Lydia Buntrock, David Heller, Joshua Kim";
     parser.info.app_name = "iGenVar";
-    parser.info.man_page_title = "Short and long Read SV Caller";
-    parser.info.short_description = "Detect junctions in a read alignment file";
+    parser.info.man_page_title = "Short and Long Read SV Caller";
+    parser.info.short_description = "Detect genomic variants in a read alignment file";
     parser.info.version = "0.0.1";
-    parser.info.date = "19-01-2021";    // last update
+    parser.info.date = "04-03-2021";    // last update
     parser.info.email = "lydia.buntrock@fu-berlin.de";
     parser.info.long_copyright = "long_copyright";
     parser.info.short_copyright = "short_copyright";
@@ -96,6 +97,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_positional_option(args.insertion_file_path, "Output file for insertion alleles.",
                                  seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create,
                                                                {"fa", "fasta"}} );
+    parser.add_option(args.output_file_path, 'o', "output",
+                      "The path of the vcf output file. If no path is given, will output to standard output.",
+                      seqan3::option_spec::standard,
+                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create,
+                                                               {"vcf"}});
 
     // Options - Methods:
     parser.add_option(args.methods, 'm', "method", "Choose the detection method(s) to be used.",
@@ -113,7 +119,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
 
 int main(int argc, char ** argv)
 {
-    seqan3::argument_parser myparser{"detectJunctions", argc, argv};    // initialise myparser
+    seqan3::argument_parser myparser{"iGenVar", argc, argv};    // initialise myparser
     cmd_arguments args{};
     initialize_argument_parser(myparser, args);
 
@@ -139,12 +145,13 @@ int main(int argc, char ** argv)
         return -1;
     }
 
-    detect_junctions_in_alignment_file(args.alignment_file_path,
-                                       args.insertion_file_path,
-                                       args.methods,
-                                       args.clustering_method,
-                                       args.refinement_method,
-                                       args.min_var_length);
+    detect_variants_in_alignment_file(args.alignment_file_path,
+                                      args.insertion_file_path,
+                                      args.methods,
+                                      args.clustering_method,
+                                      args.refinement_method,
+                                      args.min_var_length,
+                                      args.output_file_path);
 
     return 0;
 }

@@ -1,6 +1,22 @@
 #pragma once
 
 //!\brief An enum for the different clustering methods.
+enum detection_methods
+{
+    cigar_string = 0,
+    split_read = 1,
+    read_pairs = 2,
+    read_depth = 3,
+
+    // Also add new methods to the default values in the argument parsers
+
+    //!\cond
+    // ATTENTION: Must always be the last item; will be used to determine the number of ids.
+    SIZE //!< Determines the size of the enum.
+    //!\endcond
+};
+
+//!\brief An enum for the different clustering methods.
 enum clustering_methods
 {
     simple_clustering = 0,

@@ -10,10 +10,10 @@
  *
  * \param alignment_file_path input file - path to the sam/bam file
  * \param insertion_file_path output file - path for the fasta file
- * \param methods - list of methods for detecting junctions (1: cigar_string,
- *                                                           2: split_read,
- *                                                           3: read_pairs,
- *                                                           4: read_depth)
+ * \param methods - list of methods for detecting junctions (0: cigar_string,
+ *                                                           1: split_read,
+ *                                                           2: read_pairs,
+ *                                                           3: read_depth)
  * \param clustering_method method for clustering junctions (0: simple_clustering
  *                                                           1: hierarchical_clustering,
  *                                                           2: self-balancing_binary_tree,
@@ -30,7 +30,7 @@
  */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
-                                        const std::vector<uint8_t> methods,
+                                        const std::vector<detection_methods> methods,
                                         const clustering_methods clustering_method,
                                         const refinement_methods refinement_method,
                                         const uint64_t min_var_length);

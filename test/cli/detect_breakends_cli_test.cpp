@@ -59,9 +59,14 @@ const std::string help_page_part_2
 
 const std::string help_page_advanced
 {
-    "    -m, --method (List of unsigned 8 bit integer)\n"
-    "          Choose the detecting method(s) to be used. Default: [1,2,3,4]. Value\n"
-    "          must be in range [1,4].\n"
+    "    -m, --method (List of detection_methods)\n"
+    "          Choose the detection method(s) to be used. Default:\n"
+    "          [cigar_string,split_read,read_pairs,read_depth]. Value must be one\n"
+    "          of\n"
+    "          [read_depth,read_depth,read_pairs,read_pairs,split_read,split_read,cigar_string,cigar_string].\n"
+    // ToDo (Lydia): Should get solved with solving https://github.com/seqan/iGenVar/issues/78
+    // "          of (method name or number)\n"
+    // "          [cigar_string,0,split_read,1,read_pairs,2,read_depth,3].\n"
     "    -c, --clustering_method (clustering_methods)\n"
     "          Choose the clustering method to be used. Default: simple_clustering.\n"
     "          Value must be one of (method name or number)\n"
@@ -73,6 +78,14 @@ const std::string help_page_advanced
     "    -l, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be detected\n"
     "          (default 30 bp). Default: 30.\n"
+};
+
+std::string expected_res
+{
+    "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
+    "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
+    "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
+    "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
 };
 
 TEST_F(detect_breakends, no_options)
@@ -127,13 +140,6 @@ TEST_F(detect_breakends, with_arguments)
     cli_test_result result = execute_app("detect_breakends",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
-    std::string expected
-    {
-        "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-        "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
-        "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
-        "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
-    };
     std::string expected_err
     {
         "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
@@ -154,7 +160,7 @@ TEST_F(detect_breakends, with_arguments)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.out, expected_res);
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -164,12 +170,48 @@ TEST_F(detect_breakends, test_outfile)
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
 
-    std::cout << "Current path is " << std::filesystem::current_path() << '\n';
-
     std::filesystem::path out_file_path = "detect_breakends_insertion_file_out.fasta";
     std::filesystem::path test_file_path = "../../data/detect_breakends_insertion_file_test.fasta";
     seqan3::sequence_file_input out_file{out_file_path};
     seqan3::sequence_file_input test_file{test_file_path};
 
     EXPECT_RANGE_EQ(out_file, test_file);
+}
+
+TEST_F(detect_breakends, with_detection_method_arguments)
+{
+    cli_test_result result = execute_app("detect_breakends",
+                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
+                                         "detect_breakends_insertion_file_out.fasta",
+                                         "-m 0 -m 1");
+    std::string expected_err
+    {
+        "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
+        "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
+        "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
+        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
+        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
+        "Start clustering...\n"
+        "Done with clustering. Found 4 junction clusters.\n"
+        "No refinement was selected.\n"
+    };
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected_res);
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
+{
+    cli_test_result result = execute_app("detect_breakends",
+                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
+                                         "detect_breakends_insertion_file_out.fasta",
+                                         "-m 0 -m 0");
+    std::string expected_err
+    {
+        "[Error] The same detection method was selected multiple times.\n"
+        "Methods to be used: [cigar_string,cigar_string]\n"
+    };
+    EXPECT_NE(result.exit_code, 0);
+    EXPECT_EQ(result.out, "");
+    EXPECT_EQ(result.err, expected_err);
 }

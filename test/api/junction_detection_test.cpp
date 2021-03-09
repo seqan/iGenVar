@@ -3,8 +3,8 @@
 #include "detect_breakends/junction_detection.hpp"
 
 std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
-const std::vector<uint8_t> default_methods = {1, 2, 3, 4};
-uint64_t sv_default_length = 30;
+const std::vector<detection_methods> default_methods{cigar_string, split_read, read_pairs, read_depth};
+const uint64_t sv_default_length = 30;
 
 // Explanation for the strings:
 // Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1

@@ -1,9 +1,9 @@
 #pragma once
 
 #include <seqan3/alphabet/cigar/cigar.hpp>
-#include <seqan3/utility/char_operations/predicate.hpp>
-#include <seqan3/io/alignment_file/output.hpp>
 #include <seqan3/io/exception.hpp>
+#include <seqan3/io/sam_file/output.hpp>
+#include <seqan3/utility/char_operations/predicate.hpp>
 
 enum BamFlags
 {
@@ -108,7 +108,7 @@ inline std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parse_cigar(ciga
             throw seqan3::format_error{"Corrupted cigar string encountered"};
 
         update_alignment_lengths(ref_length, seq_length, cigar_operation, cigar_count);
-        operations.emplace_back(cigar_count, seqan3::cigar_op{}.assign_char(cigar_operation));
+        operations.emplace_back(cigar_count, seqan3::cigar::operation{}.assign_char(cigar_operation));
     }
 
     return {operations, ref_length, seq_length};

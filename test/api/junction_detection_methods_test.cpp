@@ -5,8 +5,8 @@
 #include "detect_breakends/junction_detection.hpp"
 
 std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
-const std::vector<uint8_t> all_methods = {1, 2, 3, 4};
-uint64_t sv_default_length = 30;
+const std::vector<detection_methods> all_methods{cigar_string, split_read, read_pairs, read_depth};
+const uint64_t sv_default_length = 30;
 
 // Explanation for the strings:
 // Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\tchr21
@@ -48,7 +48,7 @@ void check_output_and_cleanup(std::string expected_res)
 
 TEST(junction_detection, single_method_only)
 {
-    for (uint8_t method : all_methods)
+    for (detection_methods method : all_methods)
     {
         std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");    // remove old output if existent
 
@@ -63,19 +63,19 @@ TEST(junction_detection, single_method_only)
                                            no_refinement,
                                            sv_default_length);
 
-        if (method == 1)
+        if (method == 0)
         {
             check_output_and_cleanup(expected_res_cigar);
         }
-        else if (method == 2)
+        else if (method == 1)
         {
             check_output_and_cleanup(expected_res_split);
         }
-        else if (method == 3)
+        else if (method == 2)
         {
             check_output_and_cleanup(expected_res_pair);
         }
-        else // (method == 4)
+        else // (method == 3)
         {
             check_output_and_cleanup(expected_res_depth);
         }
@@ -86,9 +86,9 @@ TEST(junction_detection, single_method_only)
 
 TEST(junction_detection, method_pairs)
 {
-    for (uint8_t method_i : all_methods)
+    for (detection_methods method_i : all_methods)
     {
-        for (uint8_t method_j : all_methods)
+        for (detection_methods method_j : all_methods)
         {
             if (method_i >= method_j) continue; // only check in one order to safe time
             std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");    // remove old output if existent
@@ -104,27 +104,27 @@ TEST(junction_detection, method_pairs)
                                                no_refinement,
                                                sv_default_length);
 
-            if (method_i == 1 && method_j == 2)
+            if (method_i == 0 && method_j == 1)
             {
                 check_output_and_cleanup(expected_res_cigar + expected_res_split);
             }
-            else if (method_i == 1 && method_j == 3)
+            else if (method_i == 0 && method_j == 2)
             {
                 check_output_and_cleanup(expected_res_cigar + expected_res_pair);
             }
-            else if (method_i == 1 && method_j == 4)
+            else if (method_i == 0 && method_j == 3)
             {
                 check_output_and_cleanup(expected_res_cigar + expected_res_depth);
             }
-            else if (method_i == 2 && method_j == 3)
+            else if (method_i == 1 && method_j == 2)
             {
                 check_output_and_cleanup(expected_res_split + expected_res_pair);
             }
-            else if (method_i == 2 && method_j == 4)
+            else if (method_i == 1 && method_j == 3)
             {
                 check_output_and_cleanup(expected_res_split + expected_res_depth);
             }
-            else // (method_i == 3 && method_j == 4)
+            else // (method_i == 2 && method_j == 3)
             {
                 check_output_and_cleanup(expected_res_pair + expected_res_depth);
             }
@@ -136,12 +136,12 @@ TEST(junction_detection, method_pairs)
 
 TEST(junction_detection, method_triples)
 {
-    for (uint8_t method_i : all_methods)
+    for (detection_methods method_i : all_methods)
     {
-        for (uint8_t method_j : all_methods)
+        for (detection_methods method_j : all_methods)
         {
             if (method_i >= method_j) continue; // only check in one order to safe time
-            for (uint8_t method_k : all_methods)
+            for (detection_methods method_k : all_methods)
             {
                 if (method_j >= method_k) continue; // only check in one order to safe time
                 std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta"); // remove old output if existent
@@ -158,19 +158,19 @@ TEST(junction_detection, method_triples)
                                                    no_refinement,
                                                    sv_default_length);
 
-                if (method_i == 1 && method_j == 2 && method_k == 3)
+                if (method_i == 0 && method_j == 1 && method_k == 2)
                 {
                     check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_pair);
                 }
-                else if (method_i == 1 && method_j == 2 && method_k == 4)
+                else if (method_i == 0 && method_j == 1 && method_k == 3)
                 {
                     check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_depth);
                 }
-                else if (method_i == 1 && method_j == 3 && method_k == 4)
+                else if (method_i == 0 && method_j == 2 && method_k == 3)
                 {
                     check_output_and_cleanup(expected_res_cigar + expected_res_pair + expected_res_depth);
                 }
-                else if (method_i == 2 && method_j == 3 && method_k == 4)
+                else if (method_i == 1 && method_j == 2 && method_k == 3)
                 {
                     check_output_and_cleanup(expected_res_split + expected_res_pair + expected_res_depth);
                 }

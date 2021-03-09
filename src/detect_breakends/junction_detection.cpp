@@ -1,48 +1,20 @@
 #include "detect_breakends/junction_detection.hpp"
 
 #include <seqan3/core/debug_stream.hpp>
-#include <seqan3/io/alignment_file/input.hpp>   // SAM/BAM support
+#include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support
 #include <seqan3/io/sequence_file/output.hpp>   // FASTA support
 
 #include "detect_breakends/bam_functions.hpp"                       // for hasFlag* functions
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
-#include "modules/sv_detecting_methods/analyze_cigar_method.hpp"    // for the split read method
-#include "modules/sv_detecting_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
+#include "modules/sv_detection_methods/analyze_cigar_method.hpp"    // for the split read method
+#include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
 #include "structures/cluster.hpp"                                   // for class Cluster
 
 using seqan3::operator""_tag;
 
-/*! \brief Detects junctions between distant genomic positions by analyzing an alignment file (sam/bam). The detected
- *         junctions are printed on stdout and insertion alleles are stored in a fasta file.
- * \cond
- * \param alignment_file_path input file - path to the sam/bam file
- * \param insertion_file_path output file - path for the fasta file
- * \param methods - list of methods for detecting junctions (1: cigar_string,
- *                                                           2: split_read,
- *                                                           3: read_pairs,
- *                                                           4: read_depth)
- * \param clustering_method method for clustering junctions (0: simple_clustering
- *                                                           1: hierarchical_clustering,
- *                                                           2: self-balancing_binary_tree,
- *                                                           3: candidate_selection_based_on_voting)
- * \param refinement_method method for refining breakends (0: no_refinement,
- *                                                         1: sViper_refinement_method,
- *                                                         2: sVirl_refinement_method)
- * \param min_var_length - minimum length of variants to detect (default 30 bp)
- * \endcond
- *
- * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.
- *          In the iteration over all reads, we first sort out unmapped alignments, secondary alignments, duplicates
- *          and alignments with low mapping quality. You can find information about all flags at the
- *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 7.
- *          Then, the CIGAR string of all remaining alignments is analyzed.
- *          For primary alignments, the SA tag is analyzed additionally yielding information on supplementary alignments
- *          of a split read.
- *          More details on this in the associated function `retrieve_aligned_segments()`.
- */
 void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_file_path,
                                         const std::filesystem::path & insertion_file_path,
-                                        const std::vector<uint8_t> methods,
+                                        const std::vector<detection_methods> methods,
                                         const clustering_methods clustering_method,
                                         const refinement_methods refinement_method,
                                         const uint64_t min_var_length)
@@ -58,7 +30,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                      seqan3::field::tags,
                                      seqan3::field::header_ptr>;
 
-    seqan3::alignment_file_input alignment_file{alignment_file_path, my_fields{}};
+    seqan3::sam_file_input alignment_file{alignment_file_path, my_fields{}};
     // Open output file for insertion alleles
     seqan3::sequence_file_output insertion_file{insertion_file_path};
 
@@ -88,7 +60,7 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
         for (uint8_t method : methods) {
             switch (method)
             {
-                case 1: // Detect junctions from CIGAR string
+                case detection_methods::cigar_string: // Detect junctions from CIGAR string
                     analyze_cigar(query_name,
                                   ref_name,
                                   pos,
@@ -99,25 +71,21 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                   min_var_length,
                                   insertion_file);
                     break;
-                case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)
-                    if (!hasFlagSupplementary(flag))
+                case detection_methods::split_read:     // Detect junctions from split read evidence (SA tag,
+                    if (!hasFlagSupplementary(flag))    //                                  primary alignments only)
                     {
-                        std::string sa_tag = tags.get<"SA"_tag>();
+                        const std::string sa_tag = tags.get<"SA"_tag>();
                         if (!sa_tag.empty())
                         {
-                            const std::string sa_tag = tags.get<"SA"_tag>();
-                            if (!sa_tag.empty())
-                            {
-                                analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, sa_tag, junctions);
-                            }
+                            analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, sa_tag, junctions);
                         }
                     }
                     break;
-                case 3: // Detect junctions from read pair evidence
+                case detection_methods::read_pairs: // Detect junctions from read pair evidence
                     seqan3::debug_stream << "The read pair method is not yet implemented.\n";
                     break;
                     // continue;
-                case 4: // Detect junctions from read depth evidence
+                case detection_methods::read_depth: // Detect junctions from read depth evidence
                     seqan3::debug_stream << "The read depth method is not yet implemented.\n";
                     break;
                     // continue;

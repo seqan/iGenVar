@@ -71,38 +71,39 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
     {
         const std::string query_name            = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
         const seqan3::sam_flag flag             = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
-        const int32_t ref_id                    = seqan3::get<seqan3::field::ref_id>(rec).value_or(0);      // 3: RNAME
-        const int32_t pos                       = seqan3::get<seqan3::field::ref_offset>(rec).value_or(0);  // 4: POS
+        const int32_t ref_id                    = seqan3::get<seqan3::field::ref_id>(rec).value_or(-1);     // 3: RNAME
+        const int32_t pos                       = seqan3::get<seqan3::field::ref_offset>(rec).value_or(-1);  // 4: POS
         const uint8_t mapq                      = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
         std::vector<seqan3::cigar> cigar        = seqan3::get<seqan3::field::cigar>(rec);                   // 6: CIGAR
         const auto seq                          = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
         auto tags                               = seqan3::get<seqan3::field::tags>(rec);
         const auto header_ptr                   = seqan3::get<seqan3::field::header_ptr>(rec);
         const auto ref_ids = header_ptr->ref_ids();
-        const std::string ref_name = ref_ids[ref_id];
 
-        if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20)
-        {
-            // seqan3::debug_stream << "Skipped flag " << flag << std::endl;
-        }
-        else
-        {
-            for (uint8_t method : methods) {
-                switch (method)
-                {
-                    case 1: // Detect junctions from CIGAR string
-                        analyze_cigar(query_name,
-                                      ref_name,
-                                      pos,
-                                      cigar,
-                                      seq,
-                                      junctions,
-                                      insertion_alleles,
-                                      min_var_length,
-                                      insertion_file);
-                        break;
-                    case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)
-                        if (!hasFlagSupplementary(flag))
+        if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
+            ref_id < 0 || pos < 0)
+            continue;
+
+        const std::string ref_name = ref_ids[ref_id];
+        for (uint8_t method : methods) {
+            switch (method)
+            {
+                case 1: // Detect junctions from CIGAR string
+                    analyze_cigar(query_name,
+                                  ref_name,
+                                  pos,
+                                  cigar,
+                                  seq,
+                                  junctions,
+                                  insertion_alleles,
+                                  min_var_length,
+                                  insertion_file);
+                    break;
+                case 2: // Detect junctions from split read evidence (SA tag, primary alignments only)
+                    if (!hasFlagSupplementary(flag))
+                    {
+                        std::string sa_tag = tags.get<"SA"_tag>();
+                        if (!sa_tag.empty())
                         {
                             const std::string sa_tag = tags.get<"SA"_tag>();
                             if (!sa_tag.empty())
@@ -110,23 +111,23 @@ void detect_junctions_in_alignment_file(const std::filesystem::path & alignment_
                                 analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, sa_tag, junctions);
                             }
                         }
-                        break;
-                    case 3: // Detect junctions from read pair evidence
-                        seqan3::debug_stream << "The read pair method is not yet implemented.\n";
-                        break;
-                        // continue;
-                    case 4: // Detect junctions from read depth evidence
-                        seqan3::debug_stream << "The read depth method is not yet implemented.\n";
-                        break;
-                        // continue;
-                }
+                    }
+                    break;
+                case 3: // Detect junctions from read pair evidence
+                    seqan3::debug_stream << "The read pair method is not yet implemented.\n";
+                    break;
+                    // continue;
+                case 4: // Detect junctions from read depth evidence
+                    seqan3::debug_stream << "The read depth method is not yet implemented.\n";
+                    break;
+                    // continue;
             }
+        }
 
-            num_good++;
-            if (num_good % 1000 == 0)
-            {
-                seqan3::debug_stream << num_good << " good alignments" << std::endl;
-            }
+        num_good++;
+        if (num_good % 1000 == 0)
+        {
+            seqan3::debug_stream << num_good << " good alignments" << std::endl;
         }
     }
     std::sort(junctions.begin(), junctions.end());

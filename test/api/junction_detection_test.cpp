@@ -6,6 +6,7 @@ std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // g
 std::filesystem::path empty_path{};
 const std::vector<detection_methods> default_methods{cigar_string, split_read, read_pairs, read_depth};
 const uint64_t sv_default_length = 30;
+const uint64_t sample_size = 10;
 
 // Explanation for the strings:
 // Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1
@@ -56,7 +57,8 @@ TEST(junction_detection, fasta_out_not_empty)
                                        simple_clustering,
                                        no_refinement,
                                        sv_default_length,
-                                       empty_path);
+                                       empty_path,
+                                       sample_size);
 
     // check_output_and_cleanup(expected_res);
     check_output_and_cleanup(empty_res);
@@ -75,7 +77,8 @@ TEST(junction_detection, clustering_method_hierarchical)
                                        hierarchical_clustering,
                                        no_refinement,
                                        sv_default_length,
-                                       empty_path);
+                                       empty_path,
+                                       sample_size);
 
     // check_output_and_cleanup("");
     check_output_and_cleanup(empty_res);
@@ -92,7 +95,8 @@ TEST(junction_detection, clustering_method_self_balancing_binary_tree)
                                        self_balancing_binary_tree,
                                        no_refinement,
                                        sv_default_length,
-                                       empty_path);
+                                       empty_path,
+                                       sample_size);
 
     // check_output_and_cleanup("");
     check_output_and_cleanup(empty_res);
@@ -109,7 +113,8 @@ TEST(junction_detection, clustering_method_candidate_selection_based_on_voting)
                                        candidate_selection_based_on_voting,
                                        no_refinement,
                                        sv_default_length,
-                                       empty_path);
+                                       empty_path,
+                                       sample_size);
 
     // check_output_and_cleanup("");
     check_output_and_cleanup(empty_res);
@@ -128,7 +133,8 @@ TEST(junction_detection, refinement_method_sViper)
                                        simple_clustering,
                                        sViper_refinement_method,
                                        sv_default_length,
-                                       empty_path);
+                                       empty_path,
+                                       sample_size);
 
     // check_output_and_cleanup(expected_res);
     check_output_and_cleanup(empty_res);
@@ -145,7 +151,8 @@ TEST(junction_detection, refinement_method_sVirl)
                                        simple_clustering,
                                        sVirl_refinement_method,
                                        sv_default_length,
-                                       empty_path);
+                                       empty_path,
+                                       sample_size);
 
     // check_output_and_cleanup(expected_res);
     check_output_and_cleanup(empty_res);

@@ -8,6 +8,7 @@ std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // g
 std::filesystem::path empty_path{};
 const std::vector<detection_methods> all_methods{cigar_string, split_read, read_pairs, read_depth};
 const uint64_t sv_default_length = 30;
+const uint64_t sample_size = 10;
 
 // Explanation for the strings:
 // Reference\tm2257/8161/CCS\t41972616\tForward\tRead\t0\t2294\tForward\tchr21
@@ -73,7 +74,8 @@ TEST(junction_detection, single_method_only)
                                            simple_clustering,
                                            no_refinement,
                                            sv_default_length,
-                                           empty_path);
+                                           empty_path,
+                                           sample_size);
 
         //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
         //We need to replace this with real API tests that check inidividual parts of the pipeline.
@@ -121,7 +123,8 @@ TEST(junction_detection, method_pairs)
                                                simple_clustering,
                                                no_refinement,
                                                sv_default_length,
-                                               empty_path);
+                                               empty_path,
+                                               sample_size);
 
             //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
             //We need to replace this with real API tests that check inidividual parts of the pipeline.
@@ -184,7 +187,8 @@ TEST(junction_detection, method_triples)
                                                    simple_clustering,
                                                    no_refinement,
                                                    sv_default_length,
-                                                   empty_path);
+                                                   empty_path,
+                                                   sample_size);
 
                 //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
                 //We need to replace this with real API tests that check inidividual parts of the pipeline.

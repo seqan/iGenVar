@@ -4,6 +4,7 @@
 #include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support
 #include <seqan3/io/sequence_file/output.hpp>   // FASTA support
 
+#include "misc/statistics.hpp"                                      // for calculating average read depth
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
 #include "modules/sv_detection_methods/analyze_cigar_method.hpp"    // for the split read method
 #include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
@@ -20,7 +21,8 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
                                        const clustering_methods & clustering_method,
                                        const refinement_methods & refinement_method,
                                        const uint64_t & min_var_length,
-                                       const std::filesystem::path & output_file_path)
+                                       const std::filesystem::path & output_file_path,
+                                       const uint64_t & sample_size)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -42,6 +44,12 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
     std::vector<seqan3::dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
 
+    // Obtain list of random chromosomes and positions to get read depth from.
+    std::forward_list<std::pair<int32_t, int32_t>> rand_sample = get_random_positions(sample_size, alignment_file.header());
+    uint32_t avg_depth{0};
+    uint32_t cur_depth{0};
+    uint32_t num_pos{0};
+
     for (auto & rec : alignment_file)
     {
         const std::string query_name            = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
@@ -60,6 +68,26 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
             continue;
 
         const std::string ref_name = ref_ids[ref_id];
+        uint32_t read_length{get_read_length(cigar)};
+        // If there are positions to be sampled, then sample them.
+        if (!rand_sample.empty() && sample_size > 0)
+        {
+            if (ref_id == std::get<0>(rand_sample.front()) &&           // Correct chromosome.
+                pos <= std::get<1>(rand_sample.front()) &&              // Read starts before or at the position.
+                std::get<1>(rand_sample.front()) <= pos + read_length)  // Read ends after or at position.
+            {
+                ++cur_depth;
+            }
+            else if (ref_id > std::get<0>(rand_sample.front()) ||       // Record is at next chromosome
+                     (ref_id == std::get<0>(rand_sample.front()) &&     // Record is at same chromosome BUT
+                      pos > std::get<1>(rand_sample.front())))          // in a later position.
+            {
+                ++num_pos;
+                avg_depth += cur_depth;
+                cur_depth = 0;
+                rand_sample.pop_front();
+            }
+        }
         for (uint8_t method : methods) {
             switch (method)
             {
@@ -100,6 +128,14 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
         {
             seqan3::debug_stream << num_good << " good alignments" << std::endl;
         }
+    }
+    if (sample_size == 0 || num_pos == 0) // User requested no sampling, or all of the random positions generated were not covered.
+    {
+        avg_depth = 0;
+    }
+    else
+    {
+        avg_depth = avg_depth/num_pos;
     }
     std::sort(junctions.begin(), junctions.end());
 

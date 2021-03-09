@@ -68,11 +68,8 @@ std::string const help_page_advanced
     "    -m, --method (List of detection_methods)\n"
     "          Choose the detection method(s) to be used. Default:\n"
     "          [cigar_string,split_read,read_pairs,read_depth]. Value must be one\n"
-    "          of\n"
-    "          [read_depth,read_depth,read_pairs,read_pairs,split_read,split_read,cigar_string,cigar_string].\n"
-    // ToDo (Lydia): Should get solved with solving https://github.com/seqan/iGenVar/issues/78
-    // "          of (method name or number)\n"
-    // "          [cigar_string,0,split_read,1,read_pairs,2,read_depth,3].\n"
+    "          of (method name or number)\n"
+    "          [cigar_string,0,split_read,1,read_pairs,2,read_depth,3].\n"
     "    -c, --clustering_method (clustering_methods)\n"
     "          Choose the clustering method to be used. Default: simple_clustering.\n"
     "          Value must be one of (method name or number)\n"
@@ -209,6 +206,31 @@ TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
     };
     EXPECT_NE(result.exit_code, 0);
     EXPECT_EQ(result.out, "");
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(detect_breakends, test_direct_methods_input)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         fasta_out_file_path,
+                                         "-m 0 -m 1 -c 0 -r 0");
+
+    std::cout << "Current path is " << std::filesystem::current_path() << '\n';
+
+    std::string expected_err
+    {
+        "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
+        "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
+        "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
+        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
+        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
+        "Start clustering...\n"
+        "Done with clustering. Found 4 junction clusters.\n"
+        "No refinement was selected.\n"
+    };
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected_res);
     EXPECT_EQ(result.err, expected_err);
 }
 

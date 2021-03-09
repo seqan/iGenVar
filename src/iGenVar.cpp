@@ -81,12 +81,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.url = "https://github.com/seqan/iGenVar/";
 
     // Validatiors:
-    seqan3::value_list_validator detection_method_validator {
-        (seqan3::enumeration_names<detection_methods> | std::views::values)
-    };
-    // ToDo (Lydia): Should get solved with solving https://github.com/seqan/iGenVar/issues/78
-    // EnumValidator<detecting_methods> detecting_method_validator{seqan3::enumeration_names<detecting_methods>
-    //                                                             | std::views::values};
+    EnumValidator<detection_methods> detection_method_validator{seqan3::enumeration_names<detection_methods>
+                                                                | std::views::values};
     EnumValidator<clustering_methods> clustering_method_validator{seqan3::enumeration_names<clustering_methods>
                                                                   | std::views::values};
     EnumValidator<refinement_methods> refinement_method_validator{seqan3::enumeration_names<refinement_methods>

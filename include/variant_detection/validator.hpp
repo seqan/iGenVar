@@ -1,10 +1,9 @@
 #pragma once
 
 #include <seqan3/argument_parser/auxiliary.hpp>     // for enumeration_names
-#include <seqan3/argument_parser/validators.hpp>    // for value_list_validator
 
 template <typename option_value_t>
-class EnumValidator : public seqan3::value_list_validator<option_value_t>
+class EnumValidator
 {
 public:
     //!\brief Type of values that are tested by validator
@@ -39,7 +38,32 @@ public:
     }
     //!\}
 
-    //!\brief Returns a message that can be appended to the (positional) options help page info. <- todo...
+    /*!\brief Tests whether cmp lies inside values.
+     * \param cmp The input value to check.
+     * \throws seqan3::validation_error
+     */
+    void operator()(option_value_type const & cmp) const
+    {
+        if (!(std::find(values.begin(), values.end(), cmp) != values.end()))
+            throw seqan3::validation_error{seqan3::detail::to_string("Value ", cmp, " is not one of ",
+                                                                     std::views::all(values), ".")};
+    }
+
+    /*!\brief Tests whether every element in \p range lies inside values.
+     * \tparam range_type The type of range to check; must model std::ranges::forward_range.
+     * \param  range      The input range to iterate over and check every element.
+     * \throws seqan3::validation_error
+     */
+    template <std::ranges::forward_range range_type>
+    //!\cond
+        requires std::convertible_to<std::ranges::range_value_t<range_type>, option_value_type>
+    //!\endcond
+    void operator()(range_type const & range) const
+    {
+        std::for_each(std::ranges::begin(range), std::ranges::end(range), [&] (auto cmp) { (*this)(cmp); });
+    }
+
+    //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
         std::vector<std::string> possible_values;

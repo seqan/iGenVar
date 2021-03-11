@@ -51,8 +51,7 @@ macro (add_app_test test_filename test_alternative)
     # Add the test to its general target (cli or api).
     if (${test_alternative} STREQUAL "CLI_TEST")
         # add_dependencies (${target} "${PROJECT_NAME}") # cli test needs the application executable
-        add_dependencies (${target} detect_breakends)
-        add_dependencies (${target} find_deletions)
+        add_dependencies (${target} iGenVar)
         add_dependencies (cli_test ${target})
     elseif (${test_alternative} STREQUAL "API_TEST")
         add_dependencies (api_test ${target})

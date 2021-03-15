@@ -8,8 +8,8 @@
 
 const std::string help_page_part_1
 {
-    "iGenVar - Detect junctions in a read alignment file\n"
-    "===================================================\n"
+    "iGenVar - Detect genomic variants in a read alignment file\n"
+    "==========================================================\n"
     "\n"
     "POSITIONAL ARGUMENTS\n"
     "    ARGUMENT-1 (std::filesystem::path)\n"
@@ -35,13 +35,17 @@ const std::string help_page_part_1
     "          Export the help page information. Value must be one of [html, man].\n"
     "    --version-check (bool)\n"
     "          Whether to check for the newest app version. Default: true.\n"
+    "    -o, --output (std::filesystem::path)\n"
+    "          The path of the vcf output file. If no path is given, will output to\n"
+    "          standard output. Default: \"\". Write permissions must be granted.\n"
+    "          Valid file extensions are: [vcf].\n"
 };
 
 const std::string help_page_part_2
 {
     "\n"
     "VERSION\n"
-    "    Last update: 19-01-2021\n"
+    "    Last update: 04-03-2021\n"
     "    iGenVar version: 0.0.1\n"
     "    SeqAn version: 3.0.3\n"
     "\n"
@@ -50,7 +54,7 @@ const std::string help_page_part_2
     "\n"
     "LEGAL\n"
     "    iGenVar Copyright: short_copyright\n"
-    "    Author: David Heller & Lydia Buntrock\n"
+    "    Author: Lydia Buntrock, David Heller, Joshua Kim\n"
     "    Contact: lydia.buntrock@fu-berlin.de\n"
     "    SeqAn Copyright: 2006-2021 Knut Reinert, FU-Berlin; released under the\n"
     "    3-clause BSDL.\n"
@@ -82,19 +86,21 @@ const std::string help_page_advanced
 
 std::string expected_res
 {
-    "Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\t1\n"
-    "Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\t1\n"
-    "Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\t1\n"
-    "Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\t2\n"
+    "##fileformat=VCFv4.3\n"
+    "##source=iGenVarCaller\n"
+    "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
 };
 
 TEST_F(detect_breakends, no_options)
 {
-    cli_test_result result = execute_app("detect_breakends");
+    cli_test_result result = execute_app("iGenVar");
     std::string expected
     {
-            "iGenVar - Detect junctions in a read alignment file\n"
-            "===================================================\n"
+            "iGenVar - Detect genomic variants in a read alignment file\n"
+            "==========================================================\n"
             "    Try -h or --help for more information.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
@@ -104,7 +110,7 @@ TEST_F(detect_breakends, no_options)
 
 TEST_F(detect_breakends, fail_no_argument)
 {
-    cli_test_result result = execute_app("detect_breakends", "-v");
+    cli_test_result result = execute_app("iGenVar", "-v");
     std::string expected
     {
         "[Error] Unknown option -v. In case this is meant to be a non-option/argument/parameter, please specify "
@@ -117,7 +123,7 @@ TEST_F(detect_breakends, fail_no_argument)
 
 TEST_F(find_deletions, help_page_argument)
 {
-    cli_test_result result = execute_app("detect_breakends", "-h");
+    cli_test_result result = execute_app("iGenVar", "-h");
     std::string expected = help_page_part_1 + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
@@ -127,7 +133,7 @@ TEST_F(find_deletions, help_page_argument)
 
 TEST_F(find_deletions, advanced_help_page_argument)
 {
-    cli_test_result result = execute_app("detect_breakends", "-hh");
+    cli_test_result result = execute_app("iGenVar", "-hh");
     std::string expected = help_page_part_1 + help_page_advanced + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
@@ -137,7 +143,7 @@ TEST_F(find_deletions, advanced_help_page_argument)
 
 TEST_F(detect_breakends, with_arguments)
 {
-    cli_test_result result = execute_app("detect_breakends",
+    cli_test_result result = execute_app("iGenVar",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
     std::string expected_err
@@ -166,7 +172,7 @@ TEST_F(detect_breakends, with_arguments)
 
 TEST_F(detect_breakends, test_outfile)
 {
-    cli_test_result result = execute_app("detect_breakends",
+    cli_test_result result = execute_app("iGenVar",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta");
 
@@ -180,7 +186,7 @@ TEST_F(detect_breakends, test_outfile)
 
 TEST_F(detect_breakends, with_detection_method_arguments)
 {
-    cli_test_result result = execute_app("detect_breakends",
+    cli_test_result result = execute_app("iGenVar",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta",
                                          "-m 0 -m 1");
@@ -202,7 +208,7 @@ TEST_F(detect_breakends, with_detection_method_arguments)
 
 TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
 {
-    cli_test_result result = execute_app("detect_breakends",
+    cli_test_result result = execute_app("iGenVar",
                                          data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
                                          "detect_breakends_insertion_file_out.fasta",
                                          "-m 0 -m 0");

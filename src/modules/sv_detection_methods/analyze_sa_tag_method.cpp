@@ -1,6 +1,6 @@
 #include <seqan3/core/debug_stream.hpp>
 
-#include "detect_breakends/bam_functions.hpp"   // for hasFlag* functions
+#include "variant_detection/bam_functions.hpp"  // for hasFlag* functions
 #include "structures/aligned_segment.hpp"       // for struct AlignedSegment
 #include "structures/junction.hpp"              // for class Junction
 

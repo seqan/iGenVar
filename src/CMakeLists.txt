@@ -1,8 +1,8 @@
 cmake_minimum_required (VERSION 3.8)
 
 # An object library (without main) to be used in multiple targets.
-add_library ("${PROJECT_NAME}_lib" STATIC detect_breakends/junction_detection.cpp
-                                          find_deletions/deletion_finding_and_printing.cpp
+add_library ("${PROJECT_NAME}_lib" STATIC variant_detection/variant_detection.cpp
+                                          variant_detection/variant_output.cpp
                                           modules/clustering/simple_clustering_method.cpp
                                           modules/sv_detection_methods/analyze_cigar_method.cpp
                                           modules/sv_detection_methods/analyze_sa_tag_method.cpp
@@ -17,8 +17,5 @@ target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 # add_executable ("${PROJECT_NAME}" main.cpp)
 # target_link_libraries ("${PROJECT_NAME}" "${PROJECT_NAME}_lib")
 
-add_executable (detect_breakends detect_breakends.cpp)
-target_link_libraries (detect_breakends "${PROJECT_NAME}_lib")
-
-add_executable (find_deletions find_deletions.cpp)
-target_link_libraries (find_deletions "${PROJECT_NAME}_lib")
+add_executable (iGenVar iGenVar.cpp)
+target_link_libraries (iGenVar "${PROJECT_NAME}_lib")

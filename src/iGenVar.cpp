@@ -64,6 +64,7 @@ struct cmd_arguments
     clustering_methods clustering_method{simple_clustering};                                    // default: simple clustering method
     refinement_methods refinement_method{no_refinement};                                        // default: no refinement
     uint64_t min_var_length = 30;
+    uint64_t sample_size{100000};                                                               // default is to sample 100000
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
@@ -115,6 +116,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_option(args.min_var_length, 'l', "min_var_length",
                       "Specify what should be the minimum length of your SVs to be detected (default 30 bp).",
                       seqan3::option_spec::advanced);
+
+    // Options - Miscellaneous
+    parser.add_option(args.sample_size, 's', "sample_size",
+                      "This value is used in sampling positions for average read depth, insert size, and read length. Setting to 0 will skip sampling.",
+                      seqan3::option_spec::advanced);
 }
 
 int main(int argc, char ** argv)
@@ -151,7 +157,8 @@ int main(int argc, char ** argv)
                                       args.clustering_method,
                                       args.refinement_method,
                                       args.min_var_length,
-                                      args.output_file_path);
+                                      args.output_file_path,
+                                      args.sample_size);
 
     return 0;
 }

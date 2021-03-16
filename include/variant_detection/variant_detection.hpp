@@ -23,6 +23,7 @@
  *                                                         2: sVirl_refinement_method)
  * \param min_var_length - minimum length of variants to detect (default 30 bp)
  * \param output_file_path output file - path for the VCF file
+ * \param sample_size - how many positions to sample for read depth estimation.
  *
  * \details Detects novel junctions from read alignment records using different detection methods.
  *          The junctions are clustered using one of several clustering methods.
@@ -36,4 +37,5 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
                                        const clustering_methods & clustering_method,
                                        const refinement_methods & refinement_method,
                                        const uint64_t & min_var_length,
-                                       const std::filesystem::path & output_file_path);
+                                       const std::filesystem::path & output_file_path,
+                                       const uint64_t & sample_size);

@@ -82,6 +82,10 @@ const std::string help_page_advanced
     "    -l, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be detected\n"
     "          (default 30 bp). Default: 30.\n"
+    "    -s, --sample_size (unsigned 64 bit integer)\n"
+    "          This value is used in sampling positions for average read depth,\n"
+    "          insert size, and read length. Setting to 0 will skip sampling.\n"
+    "          Default: 100000.\n"
 };
 
 std::string expected_res

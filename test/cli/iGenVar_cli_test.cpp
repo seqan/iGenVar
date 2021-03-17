@@ -183,9 +183,8 @@ TEST_F(detect_breakends, test_outfile)
                                          "-j ", data(default_alignment_long_reads_file_path),
                                          fasta_out_file_path);
 
-    std::filesystem::path out_file_path = fasta_out_file_path;
     std::filesystem::path test_file_path = "../../data/detect_breakends_insertion_file_test.fasta";
-    seqan3::sequence_file_input out_file{out_file_path};
+    seqan3::sequence_file_input out_file{fasta_out_file_path};
     seqan3::sequence_file_input test_file{test_file_path};
 
     EXPECT_RANGE_EQ(out_file, test_file);

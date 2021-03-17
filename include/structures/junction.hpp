@@ -53,8 +53,8 @@ inline stream_t operator<<(stream_t && stream, Junction const & junc)
 
 bool operator<(const Junction & lhs, const Junction & rhs);
 
-/*! \brief A junction is equal to another, if their mates are equal to each other. The read_name and supporting_reads
- *         are allowed to be unequal, because more than one read could support the same junction.
+/*! \brief A junction is equal to another, if their mates are equal to each other. The read_name is allowed to be
+ *         unequal, because more than one read could support the same junction.
  *
  * \param lhs   left side junction
  * \param rhs   right side junction

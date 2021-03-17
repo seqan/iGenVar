@@ -13,14 +13,13 @@
 
 using seqan3::operator""_tag;
 
-
-void detect_variants_in_alignment_file(const std::filesystem::path & alignment_file_path,
-                                       const std::filesystem::path & insertion_file_path,
-                                       const std::vector<detection_methods> & methods,
-                                       const clustering_methods & clustering_method,
-                                       const refinement_methods & refinement_method,
-                                       const uint64_t & min_var_length,
-                                       const std::filesystem::path & output_file_path)
+void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
+                                             const std::filesystem::path & alignment_long_reads_file_path,
+                                             const std::filesystem::path & insertion_file_path,
+                                             const std::vector<detection_methods> methods,
+                                             const clustering_methods clustering_method,
+                                             const refinement_methods refinement_method,
+                                             const uint64_t min_var_length)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -32,27 +31,26 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
                                      seqan3::field::seq,
                                      seqan3::field::tags,
                                      seqan3::field::header_ptr>;
+    seqan3::sam_file_input alignment_long_reads_file{alignment_long_reads_file_path, my_fields{}};
 
-    seqan3::sam_file_input alignment_file{alignment_file_path, my_fields{}};
     // Open output file for insertion alleles
     seqan3::sequence_file_output insertion_file{insertion_file_path};
 
-    // Store junctions, insertion_alleles and number of good alignments
-    std::vector<Junction> junctions{};
+    // Store insertion_alleles and number of good alignments
     std::vector<seqan3::dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
 
-    for (auto & rec : alignment_file)
+    for (auto & rec : alignment_long_reads_file)
     {
-        const std::string query_name            = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
-        const seqan3::sam_flag flag             = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
-        const int32_t ref_id                    = seqan3::get<seqan3::field::ref_id>(rec).value_or(-1);     // 3: RNAME
-        const int32_t pos                       = seqan3::get<seqan3::field::ref_offset>(rec).value_or(-1);  // 4: POS
-        const uint8_t mapq                      = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
-        std::vector<seqan3::cigar> cigar        = seqan3::get<seqan3::field::cigar>(rec);                   // 6: CIGAR
-        const auto seq                          = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
-        auto tags                               = seqan3::get<seqan3::field::tags>(rec);
-        const auto header_ptr                   = seqan3::get<seqan3::field::header_ptr>(rec);
+        const std::string query_name        = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
+        const seqan3::sam_flag flag         = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
+        const int32_t ref_id                = seqan3::get<seqan3::field::ref_id>(rec).value_or(-1);     // 3: RNAME
+        const int32_t pos                   = seqan3::get<seqan3::field::ref_offset>(rec).value_or(-1); // 4: POS
+        const uint8_t mapq                  = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
+        std::vector<seqan3::cigar> cigar    = seqan3::get<seqan3::field::cigar>(rec);                   // 6: CIGAR
+        const auto seq                      = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
+        auto tags                           = seqan3::get<seqan3::field::tags>(rec);
+        const auto header_ptr               = seqan3::get<seqan3::field::header_ptr>(rec);
         const auto ref_ids = header_ptr->ref_ids();
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
@@ -60,7 +58,7 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
             continue;
 
         const std::string ref_name = ref_ids[ref_id];
-        for (uint8_t method : methods) {
+        for (detection_methods method : methods) {
             switch (method)
             {
                 case detection_methods::cigar_string: // Detect junctions from CIGAR string
@@ -102,6 +100,42 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_f
         }
     }
     std::sort(junctions.begin(), junctions.end());
+}
+
+void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
+                                       const std::filesystem::path & alignment_long_reads_file_path,
+                                       const std::filesystem::path & insertion_file_path,
+                                       const std::vector<detection_methods> & methods,
+                                       const clustering_methods & clustering_method,
+                                       const refinement_methods & refinement_method,
+                                       const uint64_t & min_var_length,
+                                       const std::filesystem::path & output_file_path)
+
+{
+    // Store junctions
+    std::vector<Junction> junctions{};
+
+    // short reads
+    // ToDo (Lydia): handle short reads
+    if (alignment_short_reads_file_path != "")
+    {
+        seqan3::debug_stream << "Short reads are currently not supported.\n ";
+        return;
+    }
+
+    // long reads
+    if (alignment_long_reads_file_path == "")
+    {
+        seqan3::debug_stream << "No long reads were given (short reads are currently not supported).\n ";
+        return;
+    }
+    detect_junctions_in_long_reads_sam_file(junctions,
+                                            alignment_long_reads_file_path,
+                                            insertion_file_path,
+                                            methods,
+                                            clustering_method,
+                                            refinement_method,
+                                            min_var_length);
 
     seqan3::debug_stream << "Start clustering...\n";
 

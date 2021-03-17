@@ -2,8 +2,10 @@
 
 #include "variant_detection/variant_detection.hpp"
 
-std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
-std::filesystem::path empty_path{};
+const std::string empty_alignment_short_reads_file_path = "";
+const std::string default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
+const std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
+const std::filesystem::path empty_output_path{};
 const std::vector<detection_methods> default_methods{cigar_string, split_read, read_pairs, read_depth};
 const uint64_t sv_default_length = 30;
 
@@ -50,13 +52,14 @@ TEST(junction_detection, fasta_out_not_empty)
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
 
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta",
-                                       default_methods,
-                                       simple_clustering,
-                                       no_refinement,
-                                       sv_default_length,
-                                       empty_path);
+    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                      default_alignment_long_reads_file_path,
+                                      tmp_dir/"detect_breakends_out_short.fasta",
+                                      default_methods,
+                                      simple_clustering,
+                                      no_refinement,
+                                      sv_default_length,
+                                      empty_output_path);
 
     // check_output_and_cleanup(expected_res);
     check_output_and_cleanup(empty_res);
@@ -69,13 +72,14 @@ TEST(junction_detection, clustering_method_hierarchical)
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
 
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta",
-                                       default_methods,
-                                       hierarchical_clustering,
-                                       no_refinement,
-                                       sv_default_length,
-                                       empty_path);
+    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                      default_alignment_long_reads_file_path,
+                                      tmp_dir/"detect_breakends_out_short.fasta",
+                                      default_methods,
+                                      hierarchical_clustering,
+                                      no_refinement,
+                                      sv_default_length,
+                                      empty_output_path);
 
     // check_output_and_cleanup("");
     check_output_and_cleanup(empty_res);
@@ -86,13 +90,14 @@ TEST(junction_detection, clustering_method_self_balancing_binary_tree)
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
 
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta",
-                                       default_methods,
-                                       self_balancing_binary_tree,
-                                       no_refinement,
-                                       sv_default_length,
-                                       empty_path);
+    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                      default_alignment_long_reads_file_path,
+                                      tmp_dir/"detect_breakends_out_short.fasta",
+                                      default_methods,
+                                      self_balancing_binary_tree,
+                                      no_refinement,
+                                      sv_default_length,
+                                      empty_output_path);
 
     // check_output_and_cleanup("");
     check_output_and_cleanup(empty_res);
@@ -103,13 +108,14 @@ TEST(junction_detection, clustering_method_candidate_selection_based_on_voting)
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
 
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta",
-                                       default_methods,
-                                       candidate_selection_based_on_voting,
-                                       no_refinement,
-                                       sv_default_length,
-                                       empty_path);
+    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                      default_alignment_long_reads_file_path,
+                                      tmp_dir/"detect_breakends_out_short.fasta",
+                                      default_methods,
+                                      candidate_selection_based_on_voting,
+                                      no_refinement,
+                                      sv_default_length,
+                                      empty_output_path);
 
     // check_output_and_cleanup("");
     check_output_and_cleanup(empty_res);
@@ -122,13 +128,14 @@ TEST(junction_detection, refinement_method_sViper)
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
 
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta",
-                                       default_methods,
-                                       simple_clustering,
-                                       sViper_refinement_method,
-                                       sv_default_length,
-                                       empty_path);
+    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                      default_alignment_long_reads_file_path,
+                                      tmp_dir/"detect_breakends_out_short.fasta",
+                                      default_methods,
+                                      simple_clustering,
+                                      sViper_refinement_method,
+                                      sv_default_length,
+                                      empty_output_path);
 
     // check_output_and_cleanup(expected_res);
     check_output_and_cleanup(empty_res);
@@ -139,13 +146,14 @@ TEST(junction_detection, refinement_method_sVirl)
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
 
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam",
-                                       tmp_dir/"detect_breakends_out_short.fasta",
-                                       default_methods,
-                                       simple_clustering,
-                                       sVirl_refinement_method,
-                                       sv_default_length,
-                                       empty_path);
+    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                      default_alignment_long_reads_file_path,
+                                      tmp_dir/"detect_breakends_out_short.fasta",
+                                      default_methods,
+                                      simple_clustering,
+                                      sVirl_refinement_method,
+                                      sv_default_length,
+                                      empty_output_path);
 
     // check_output_and_cleanup(expected_res);
     check_output_and_cleanup(empty_res);

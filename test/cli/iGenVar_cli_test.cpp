@@ -6,6 +6,9 @@
 #include <fstream>
 #include <sstream>
 
+const std::string default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
+const std::string fasta_out_file_path = "detect_breakends_insertion_file_out.fasta";
+
 const std::string help_page_part_1
 {
     "iGenVar - Detect genomic variants in a read alignment file\n"
@@ -13,10 +16,6 @@ const std::string help_page_part_1
     "\n"
     "POSITIONAL ARGUMENTS\n"
     "    ARGUMENT-1 (std::filesystem::path)\n"
-    "          Input read alignments in SAM or BAM format. The input file must\n"
-    "          exist and read permissions must be granted. Valid file extensions\n"
-    "          are: [sam, bam].\n"
-    "    ARGUMENT-2 (std::filesystem::path)\n"
     "          Output file for insertion alleles. Write permissions must be\n"
     "          granted. Valid file extensions are: [fa, fasta].\n"
     "\n"
@@ -35,6 +34,14 @@ const std::string help_page_part_1
     "          Export the help page information. Value must be one of [html, man].\n"
     "    --version-check (bool)\n"
     "          Whether to check for the newest app version. Default: true.\n"
+    "    -i, --input_short_reads (std::filesystem::path)\n"
+    "          Input short read alignments in SAM or BAM format (Illumina).\n"
+    "          Default: \"\". The input file must exist and read permissions must be\n"
+    "          granted. Valid file extensions are: [sam, bam].\n"
+    "    -j, --input_long_reads (std::filesystem::path)\n"
+    "          Input long read alignments in SAM or BAM format (PacBio, Oxford\n"
+    "          Nanopore, ...). Default: \"\". The input file must exist and read\n"
+    "          permissions must be granted. Valid file extensions are: [sam, bam].\n"
     "    -o, --output (std::filesystem::path)\n"
     "          The path of the vcf output file. If no path is given, will output to\n"
     "          standard output. Default: \"\". Write permissions must be granted.\n"
@@ -144,8 +151,8 @@ TEST_F(find_deletions, advanced_help_page_argument)
 TEST_F(detect_breakends, with_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
-                                         "detect_breakends_insertion_file_out.fasta");
+                                         "-j ", data(default_alignment_long_reads_file_path),
+                                         fasta_out_file_path);
     std::string expected_err
     {
         "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
@@ -173,12 +180,11 @@ TEST_F(detect_breakends, with_arguments)
 TEST_F(detect_breakends, test_outfile)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
-                                         "detect_breakends_insertion_file_out.fasta");
+                                         "-j ", data(default_alignment_long_reads_file_path),
+                                         fasta_out_file_path);
 
-    std::filesystem::path out_file_path = "detect_breakends_insertion_file_out.fasta";
     std::filesystem::path test_file_path = "../../data/detect_breakends_insertion_file_test.fasta";
-    seqan3::sequence_file_input out_file{out_file_path};
+    seqan3::sequence_file_input out_file{fasta_out_file_path};
     seqan3::sequence_file_input test_file{test_file_path};
 
     EXPECT_RANGE_EQ(out_file, test_file);
@@ -187,8 +193,8 @@ TEST_F(detect_breakends, test_outfile)
 TEST_F(detect_breakends, with_detection_method_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
-                                         "detect_breakends_insertion_file_out.fasta",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         fasta_out_file_path,
                                          "-m 0 -m 1");
     std::string expected_err
     {
@@ -209,8 +215,8 @@ TEST_F(detect_breakends, with_detection_method_arguments)
 TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         data("simulated.minimap2.hg19.coordsorted_cutoff.sam"),
-                                         "detect_breakends_insertion_file_out.fasta",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         fasta_out_file_path,
                                          "-m 0 -m 0");
     std::string expected_err
     {

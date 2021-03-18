@@ -42,7 +42,7 @@ public:
      */
     void set_fileformat(std::string fileformat_i)
     {
-        fileformat = fileformat_i;
+        fileformat = std::move(fileformat_i);
     }
 
     /*! \brief Add header information for a given INFO field.
@@ -105,7 +105,7 @@ public:
      */
     void set_chrom(std::string chrom_i)
     {
-        chrom = chrom_i;
+        chrom = std::move(chrom_i);
     }
 
     /*! \brief Set the pos for a variant.
@@ -114,7 +114,7 @@ public:
      */
     void set_pos(std::uint64_t pos_i)
     {
-        pos = pos_i;
+        pos = std::move(pos_i);
     }
 
     /*! \brief Set the id for a variant.
@@ -123,7 +123,7 @@ public:
      */
     void set_id(std::string id_i)
     {
-        id = id_i;
+        id = std::move(id_i);
     }
 
     /*! \brief Set the ref for a variant.
@@ -132,7 +132,7 @@ public:
      */
     void set_ref(std::string ref_i)
     {
-        ref = ref_i;
+        ref = std::move(ref_i);
     }
 
     /*! \brief Set the alt for a variant.
@@ -141,16 +141,16 @@ public:
      */
     void set_alt(std::string alt_i)
     {
-        alt = alt_i;
+        alt = std::move(alt_i);
     }
 
     /*! \brief Set the qual for a variant.
      *
      * \param[in] qual_i - the qual value to use
      */
-    void set_qual(const float qual_i)
+    void set_qual(float qual_i)
     {
-        qual = qual_i;
+        qual = std::move(qual_i);
     }
 
     /*! \brief Set the filter for a variant.
@@ -159,7 +159,7 @@ public:
      */
     void set_filter(std::string filter_i)
     {
-        filter = filter_i;
+        filter = std::move(filter_i);
     }
 
     /*! \brief Add an INFO entry for a variant.
@@ -167,7 +167,7 @@ public:
      * \param[in] info_key      - the INFO key to use
      * \param[in] info_value    - the INFO value to set
      */
-    void add_info(std::string info_key, std::string info_value)
+    void add_info(std::string const info_key, std::string const info_value)
     {
         info.insert_or_assign(info_key, info_value);
     }

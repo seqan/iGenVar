@@ -7,7 +7,7 @@
 using seqan3::operator""_tag;
 
 template <class Container>
-void split_string(const std::string& str, Container& cont, char delim = ' ')
+void split_string(std::string const & str, Container & cont, char const delim = ' ')
 {
     std::stringstream ss(str);
     std::string token;
@@ -85,7 +85,7 @@ void analyze_sa_tag(const std::string & query_name,
                     const std::string & ref_name,
                     const int32_t pos,
                     const uint8_t mapq,
-                    std::vector<seqan3::cigar> & cigar,
+                    std::vector<seqan3::cigar> const & cigar,
                     const seqan3::dna5_vector & seq,
                     const std::string & sa_tag,
                     std::vector<Junction> & junctions)

@@ -9,7 +9,7 @@
  * \param[in]       delim   - delimiter
  */
 template <class Container>
-void split_string(const std::string& str, Container& cont, char delim = ' ');
+void split_string(std::string const & str, Container & cont, char const delim = ' ');
 
 /*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
  *         [aligned_segments](\ref AlignedSegment), one for each alignment segment of the read.
@@ -59,7 +59,7 @@ void analyze_sa_tag(const std::string & query_name,
                     const std::string & ref_name,
                     const int32_t pos,
                     const uint8_t mapq,
-                    std::vector<seqan3::cigar> & cigar,
+                    std::vector<seqan3::cigar> const & cigar,
                     const seqan3::dna5_vector & seq,
                     const std::string & sa_tag,
                     std::vector<Junction> & junctions);

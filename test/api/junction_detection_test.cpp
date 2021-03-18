@@ -40,7 +40,7 @@ std::string empty_res
 };
 
 
-void check_output(std::string expected_res)
+void check_output(std::string const expected_res)
 {
     std::string std_cout = testing::internal::GetCapturedStdout();
     EXPECT_EQ(expected_res, std_cout);

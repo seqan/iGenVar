@@ -38,7 +38,7 @@ public:
 
     /*! \brief Set the file format for this VCF file header.
      *
-     *  \param fileformat_i The input fileformat.
+     * \param[in] fileformat_i The input fileformat.
      */
     void set_fileformat(std::string fileformat_i)
     {
@@ -47,12 +47,12 @@ public:
 
     /*! \brief Add header information for a given INFO field.
      *
-     *  \param info_key_i       - the INFO key name
-     *  \param number_i         - the number of values this key can hold
-     *  \param type_i           - the type of values this key holds
-     *  \param description_i    - the description of this INFO field
-     *  \param source_i         - the source of the INFO field
-     *  \param version_i        - the version of the source
+     * \param[in] info_key_i    - the INFO key name
+     * \param[in] number_i      - the number of values this key can hold
+     * \param[in] type_i        - the type of values this key holds
+     * \param[in] description_i - the description of this INFO field
+     * \param[in] source_i      - the source of the INFO field
+     * \param[in] version_i     - the version of the source
      */
     void add_meta_info(std::string info_key_i, std::uint8_t number_i, std::string type_i, std::string description_i,
                        std::string source_i, std::string version_i)
@@ -64,7 +64,7 @@ public:
      *
      * \tparam stream_type - a stream to print the output to
      *
-     * \param out_stream - the output stream to print to
+     * \param[in, out] out_stream - the output stream to print to
      */
     template<typename stream_type>
     //!cond
@@ -101,7 +101,7 @@ public:
 
     /*! \brief Set the chromosome for a variant.
      *
-     * \param chrom_i - the chromosome value to use
+     * \param[in] chrom_i - the chromosome value to use
      */
     void set_chrom(std::string chrom_i)
     {
@@ -110,7 +110,7 @@ public:
 
     /*! \brief Set the pos for a variant.
      *
-     * \param pos_i - the pos value to use
+     * \param[in] pos_i - the pos value to use
      */
     void set_pos(std::uint64_t pos_i)
     {
@@ -119,7 +119,7 @@ public:
 
     /*! \brief Set the id for a variant.
      *
-     * \param id_i - the id value to use
+     * \param[in] id_i - the id value to use
      */
     void set_id(std::string id_i)
     {
@@ -128,7 +128,7 @@ public:
 
     /*! \brief Set the ref for a variant.
      *
-     * \param ref_i - the ref value to use
+     * \param[in] ref_i - the ref value to use
      */
     void set_ref(std::string ref_i)
     {
@@ -137,7 +137,7 @@ public:
 
     /*! \brief Set the alt for a variant.
      *
-     * \param alt_i - the alt value to use
+     * \param[in] alt_i - the alt value to use
      */
     void set_alt(std::string alt_i)
     {
@@ -146,16 +146,16 @@ public:
 
     /*! \brief Set the qual for a variant.
      *
-     * \param qual_i - the qual value to use
+     * \param[in] qual_i - the qual value to use
      */
-    void set_qual(float qual_i)
+    void set_qual(const float qual_i)
     {
         qual = qual_i;
     }
 
     /*! \brief Set the filter for a variant.
      *
-     * \param filter_i - the filter value to use
+     * \param[in] filter_i - the filter value to use
      */
     void set_filter(std::string filter_i)
     {
@@ -164,8 +164,8 @@ public:
 
     /*! \brief Add an INFO entry for a variant.
      *
-     * \param info_key      - the INFO key to use
-     * \param info_value    - the INFO value to set
+     * \param[in] info_key      - the INFO key to use
+     * \param[in] info_value    - the INFO value to set
      */
     void add_info(std::string info_key, std::string info_value)
     {
@@ -176,7 +176,7 @@ public:
      *
      * \tparam stream_type - a stream to print the output to
      *
-     * \param out_stream - the output stream to print to
+     * \param[in, out] out_stream - the output stream to print to
      */
     template<typename stream_type>
     //!cond

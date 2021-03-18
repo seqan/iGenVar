@@ -9,8 +9,8 @@
 
 /*! \brief Detects genomic variants from junction clusters and prints them to output stream in VCF format.
  *
- * \param clusters      - input junction clusters
- * \param out_stream    - output stream
+ * \param[in]       clusters    - input junction clusters
+ * \param[in, out]  out_stream  - output stream
  *
  * \details Extracts genomic variants from given junction clusters.
  */
@@ -19,8 +19,8 @@ void find_and_output_variant(std::vector<Cluster> const & clusters, std::ostream
 
 /*! \brief Detects genomic variants from junction clusters and prints them in output file in VCF format.
  *
- * \param clusters          - input junction clusters
- * \param output_file_path  - output file path
+ * \param[in] clusters          - input junction clusters
+ * \param[in] output_file_path  - output file path
  *
  * \details Extracts genomic variants from given junction clusters.
  */

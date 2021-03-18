@@ -74,7 +74,7 @@ switch (op)
 /*! \brief Parses a cigar string into a vector of operation-count pairs (e.g. (M, 3)).
  * \tparam cigar_input_type - the type of a single pass input view over the cigar string; must model
  *                            std::ranges::input_range
- * \param[in] cigar_input - the single pass input view over the cigar string to parse
+ * \param[in, out] cigar_input - the single pass input view over the cigar string to parse
  *
  * \returns A tuple of size three containing (1) std::vector over seqan3::cigar, that describes
  *          the alignment, (2) the aligned reference length, (3) the aligned query sequence length.

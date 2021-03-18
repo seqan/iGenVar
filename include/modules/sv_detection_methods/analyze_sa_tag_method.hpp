@@ -35,10 +35,10 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
  * \param[in, out]  query_sequence      - SEQ field of the SAM/BAM file
  * \param[in]       read_name           - QNAME field of the SAM/BAM file
  */
-void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segments,
+void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segments,
                               std::vector<Junction> & junctions,
-                              const seqan3::dna5_vector & query_sequence,
-                              const std::string & read_name);
+                              seqan3::dna5_vector const & query_sequence,
+                              std::string const & read_name);
 
 /*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
  *         [aligned_segments](\ref AlignedSegment), one for each alignment segment of the read.
@@ -54,12 +54,12 @@ void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segmen
  * \param[in]       sa_tag      - SA tag, one tag from the read of the SAM/BAM file
  * \param[in, out]  junctions   - vector for storing junctions
  */
-void analyze_sa_tag(const std::string & query_name,
-                    const seqan3::sam_flag & flag,
-                    const std::string & ref_name,
-                    const int32_t pos,
-                    const uint8_t mapq,
+void analyze_sa_tag(std::string const & query_name,
+                    seqan3::sam_flag const & flag,
+                    std::string const & ref_name,
+                    int32_t const pos,
+                    uint8_t const mapq,
                     std::vector<seqan3::cigar> const & cigar,
-                    const seqan3::dna5_vector & seq,
-                    const std::string & sa_tag,
+                    seqan3::dna5_vector const & seq,
+                    std::string const & sa_tag,
                     std::vector<Junction> & junctions);

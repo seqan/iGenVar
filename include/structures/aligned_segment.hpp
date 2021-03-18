@@ -47,4 +47,4 @@ inline stream_t operator<<(stream_t && stream, AlignedSegment const & a)
     return stream;
 }
 
-bool operator<(const AlignedSegment & lhs, const AlignedSegment & rhs);
+bool operator<(AlignedSegment const & lhs, AlignedSegment const & rhs);

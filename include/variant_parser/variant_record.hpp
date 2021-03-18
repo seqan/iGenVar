@@ -74,7 +74,7 @@ public:
     {
         out_stream << "##fileformat=" << fileformat << '\n';
         out_stream << "##source=" << source << '\n';
-        for (const auto& i : info)
+        for (auto const & i : info)
         {
             out_stream << "##INFO=<ID=" << i.key << ",Number=" << std::to_string(i.number) << ",Type=" << i.type
                        << ",Description=\"" << i.description << "\",Source=\"" << i.source << "\",Version=\""

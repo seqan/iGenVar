@@ -9,11 +9,11 @@
 using seqan3::operator""_cigar_operation;
 using seqan3::operator""_dna5;
 
-void analyze_cigar(const std::string & read_name,
-                   const std::string chromosome,
-                   const int32_t query_start_pos,
+void analyze_cigar(std::string const & read_name,
+                   std::string const chromosome,
+                   int32_t const query_start_pos,
                    std::vector<seqan3::cigar> & cigar_string,
-                   const seqan3::dna5_vector & query_sequence,
+                   seqan3::dna5_vector const & query_sequence,
                    std::vector<Junction> & junctions,
                    uint64_t const min_length)
 {

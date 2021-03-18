@@ -129,7 +129,7 @@ int32_t AlignedSegment::get_query_end() const
     }
 }
 
-bool operator<(const AlignedSegment & lhs, const AlignedSegment & rhs)
+bool operator<(AlignedSegment const & lhs, AlignedSegment const & rhs)
 {
     return lhs.get_query_start() != rhs.get_query_start()
             ? lhs.get_query_start() < rhs.get_query_start()

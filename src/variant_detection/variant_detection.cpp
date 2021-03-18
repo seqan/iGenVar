@@ -14,11 +14,11 @@
 using seqan3::operator""_tag;
 
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
-                                             const std::filesystem::path & alignment_long_reads_file_path,
-                                             const std::vector<detection_methods> methods,
-                                             const clustering_methods clustering_method,
-                                             const refinement_methods refinement_method,
-                                             const uint64_t min_var_length)
+                                             std::filesystem::path const & alignment_long_reads_file_path,
+                                             std::vector<detection_methods> const & methods,
+                                             clustering_methods const & clustering_method,
+                                             refinement_methods const & refinement_method,
+                                             uint64_t const min_var_length)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,
@@ -41,22 +41,22 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
 
     for (auto & rec : alignment_long_reads_file)
     {
-        const std::string query_name        = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
-        const seqan3::sam_flag flag         = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
-        const int32_t ref_id                = seqan3::get<seqan3::field::ref_id>(rec).value_or(-1);     // 3: RNAME
-        const int32_t pos                   = seqan3::get<seqan3::field::ref_offset>(rec).value_or(-1); // 4: POS
-        const uint8_t mapq                  = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
+        std::string const query_name        = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
+        seqan3::sam_flag const flag         = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
+        int32_t const ref_id                = seqan3::get<seqan3::field::ref_id>(rec).value_or(-1);     // 3: RNAME
+        int32_t const pos                   = seqan3::get<seqan3::field::ref_offset>(rec).value_or(-1); // 4: POS
+        uint8_t const mapq                  = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
         std::vector<seqan3::cigar> cigar    = seqan3::get<seqan3::field::cigar>(rec);                   // 6: CIGAR
-        const auto seq                      = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
+        auto const seq                      = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
         auto tags                           = seqan3::get<seqan3::field::tags>(rec);
-        const auto header_ptr               = seqan3::get<seqan3::field::header_ptr>(rec);
-        const auto ref_ids = header_ptr->ref_ids();
+        auto const header_ptr               = seqan3::get<seqan3::field::header_ptr>(rec);
+        auto const ref_ids = header_ptr->ref_ids();
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
             ref_id < 0 || pos < 0)
             continue;
 
-        const std::string ref_name = ref_ids[ref_id];
+        std::string const ref_name = ref_ids[ref_id];
         for (detection_methods method : methods) {
             switch (method)
             {
@@ -72,7 +72,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                 case detection_methods::split_read:     // Detect junctions from split read evidence (SA tag,
                     if (!hasFlagSupplementary(flag))    //                                  primary alignments only)
                     {
-                        const std::string sa_tag = tags.get<"SA"_tag>();
+                        std::string const sa_tag = tags.get<"SA"_tag>();
                         if (!sa_tag.empty())
                         {
                             analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, seq, sa_tag, junctions);
@@ -99,13 +99,13 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
     std::sort(junctions.begin(), junctions.end());
 }
 
-void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
-                                       const std::filesystem::path & alignment_long_reads_file_path,
-                                       const std::vector<detection_methods> & methods,
-                                       const clustering_methods & clustering_method,
-                                       const refinement_methods & refinement_method,
-                                       const uint64_t & min_var_length,
-                                       const std::filesystem::path & output_file_path)
+void detect_variants_in_alignment_file(std::filesystem::path const & alignment_short_reads_file_path,
+                                       std::filesystem::path const & alignment_long_reads_file_path,
+                                       std::vector<detection_methods> const & methods,
+                                       clustering_methods const & clustering_method,
+                                       refinement_methods const & refinement_method,
+                                       uint64_t const min_var_length,
+                                       std::filesystem::path const & output_file_path)
 
 {
     // Store junctions

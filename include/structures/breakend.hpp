@@ -36,6 +36,6 @@ inline stream_t operator<<(stream_t && stream, Breakend const & b)
     return stream;
 }
 
-bool operator<(const Breakend & lhs, const Breakend & rhs);
+bool operator<(Breakend const & lhs, Breakend const & rhs);
 
-bool operator==(const Breakend & lhs, const Breakend & rhs);
+bool operator==(Breakend const & lhs, Breakend const & rhs);

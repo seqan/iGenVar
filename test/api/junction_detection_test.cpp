@@ -5,11 +5,11 @@
 
 #include "variant_detection/variant_detection.hpp"
 
-const std::string empty_alignment_short_reads_file_path = "";
-const std::string default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
-const std::filesystem::path empty_output_path{};
-const std::vector<detection_methods> default_methods{cigar_string, split_read, read_pairs, read_depth};
-const uint64_t sv_default_length = 30;
+std::string const empty_alignment_short_reads_file_path = "";
+std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
+std::filesystem::path const empty_output_path{};
+std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
+constexpr uint64_t sv_default_length = 30;
 
 // Explanation for the strings:
 // chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681

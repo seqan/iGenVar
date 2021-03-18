@@ -6,11 +6,11 @@
 
 using seqan3::operator""_dna5;
 
-const std::string empty_alignment_short_reads_file_path = "";
-const std::string default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
+std::string const empty_alignment_short_reads_file_path = "";
+std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path empty_path{};
-const std::vector<detection_methods> all_methods{cigar_string, split_read, read_pairs, read_depth};
-const uint64_t sv_default_length = 30;
+std::vector<detection_methods> const all_methods{cigar_string, split_read, read_pairs, read_depth};
+constexpr uint64_t sv_default_length = 30;
 
 // Explanation for the strings:
 // chr21\t41972616\tForward\tchr21\t41972617\tForward\t1\t1681
@@ -221,49 +221,49 @@ TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
                                             sVirl_refinement_method,
                                             sv_default_length);
 
-    const std::string chromosome_1 = "chr21";
-    const std::string chromosome_2 = "chr22";
-    const int32_t pos_ref_1 = 41972615;
-    const int32_t pos_ref_2 = 17458417;
-    const int32_t pos_ref_3 = 41972615;
-    const int32_t pos_ref_4 = 17458418;
-    const int32_t pos_ref_5 = 41972616;
-    // const std::string insertion_allele_id_1 = "0";
+    std::string const chromosome_1 = "chr21";
+    std::string const chromosome_2 = "chr22";
+    int32_t const pos_ref_1 = 41972615;
+    int32_t const pos_ref_2 = 17458417;
+    int32_t const pos_ref_3 = 41972615;
+    int32_t const pos_ref_4 = 17458418;
+    int32_t const pos_ref_5 = 41972616;
+    // std::string const insertion_allele_id_1 = "0";
 
-    seqan3::dna5_vector insertion_sequence_1 = "GAGTGGACCTCAGCAAACTCCCAGTAGAGCTGCAGCAGAGGGGGTCTGAC"
-                                               "TGTTAGGATGGAAAACTAACAAACAGAAGGCAATAGCATCAACAACAACA"
-                                               "AAAAAAAACTGCCACACAAAAACCGCTATCCGAAGATCACCAACATCAAA"
-                                               "GATCGAACAGGTAGACAAATGACGAAGAGAGGAAAAAACAGTGCAAAAAA"
-                                               "GGCTGAAAAGCCCAGAACCACCTCTTCCCTCCAGAGGATCACAACTCCTC"
-                                               "ACCAGGAAAGGGAACAAAACTGCACAGAGAAGAGTTTGACCAATGACAGA"
-                                               "AGTAGGCTTCAGCAGAATGGGTAATAACTCCTCTGAGCTAAAGGAGCATG"
-                                               "TTCCTACCCTAATGCAAGGAAGCTAAAGATACTTGATAAAAGGTTACAGG"
-                                               "AACTGCTAACTAAATAAACCAGTTCAGAGAAGAACATAAATGACCTAAAT"
-                                               "GGAGCTGAAAAACACAGCATGAGAACTTCATGAAGGAATACACAAGGTAT"
-                                               "CAACAGACAAGTCCATCAGGCAGAAGAAAGGGATATCAGAGATTGAAGAT"
-                                               "CAACTTAATGAAATAAAGCATGCAAGACGAGATTAGTGAGAAAAAAGAAT"
-                                               "TAAAAGAAATGAGCAAAGGCCTCAAGGAAATATGGGACTATGTGTAAAAG"
-                                               "ACCAAGCATACGGTTTGATTGGTGTATGTGAAAATGACAGGGAAAATGGA"
-                                               "ACCAAGTTGGAAAACACTCTTCAGGATATCATGCAGGAGAACCTCCCAAC"
-                                               "CTAGCAAGAGAAGCCAACATTCACATTCAGGAAATACAAGAGAACACCAC"
-                                               "CAAGATACTCCTTGAGAAGTAGCAAACCCCCAAGACACATAATTGTTCAG"
-                                               "ATTCAGGCAAGGGTGAAAATGAAGGAAAAAATGCTAAGAGAGCCAGAGAG"
-                                               "AAAGGTATGGGTTATCCACAAAAGGGCCAGCCATCAGACTAAGAGCAATT"
-                                               "CTCTGCAGAAACCCTACAACCAGAAGAGAGAAGGGGCCAATATTCAACAT"
-                                               "TCTTAAAGAAAAGAATTTTCAACCCAGAATTTCATATCCAGCCAAAACAA"
-                                               "AGCTTCGTAAGTGAAGGAGAAATAAATTTCTTTACAGACAAGCAAATGAC"
-                                               "TGAAGAAGATTTTTGTCACCACCATGCCTGCCTTACAAGATCTCCTGAAG"
-                                               "GAAGCACTAAGACATGGGAAGGAAAAAATCCAGTACCAAGCCACTGCTAA"
-                                               "ACCATACCAAAATGTAGAGACTCAATGCTTAGGATAGGAAACTGCATCAA"
-                                               "CTAGCAGTCAAAATAACCAGCTAGCATTCATAATGACAGGATCAAATTCA"
-                                               "GACCACATACAATTATTAACCTTAAATGTAAATGGGCTAAATGCCGCAAT"
-                                               "TAAAAGACACATCACTGGCAAATTGGATAAAGAGTCAAGCCCAATCGGTG"
-                                               "TGCTGTTATTCAAGGAGACACCACTCTCACGTGCAAGAGACACAGATAGG"
-                                               "CTCGAAAATGAATAGGGATGAAGGAAGATTACCAAGCAAATGGAAAGCAA"
-                                               "AAAAAAAAAAAGCAGGGGTTGCAAATCCTAGTCTCTGTAAAACACTACTT"
-                                               "TAAACCAAGAAAGATCAAAAGAGACAAAGAGGGCTTTAATAATGGTAATA"
-                                               "GGGGGATTAATTCAACAAGAAGAGTTAACTATCCTAAATATATATGCTGC"
-                                               "CTAATACAGGCACACCCAGATTCATAAAGCA"_dna5;
+    seqan3::dna5_vector const insertion_sequence_1 = "GAGTGGACCTCAGCAAACTCCCAGTAGAGCTGCAGCAGAGGGGGTCTGAC"
+                                                     "TGTTAGGATGGAAAACTAACAAACAGAAGGCAATAGCATCAACAACAACA"
+                                                     "AAAAAAAACTGCCACACAAAAACCGCTATCCGAAGATCACCAACATCAAA"
+                                                     "GATCGAACAGGTAGACAAATGACGAAGAGAGGAAAAAACAGTGCAAAAAA"
+                                                     "GGCTGAAAAGCCCAGAACCACCTCTTCCCTCCAGAGGATCACAACTCCTC"
+                                                     "ACCAGGAAAGGGAACAAAACTGCACAGAGAAGAGTTTGACCAATGACAGA"
+                                                     "AGTAGGCTTCAGCAGAATGGGTAATAACTCCTCTGAGCTAAAGGAGCATG"
+                                                     "TTCCTACCCTAATGCAAGGAAGCTAAAGATACTTGATAAAAGGTTACAGG"
+                                                     "AACTGCTAACTAAATAAACCAGTTCAGAGAAGAACATAAATGACCTAAAT"
+                                                     "GGAGCTGAAAAACACAGCATGAGAACTTCATGAAGGAATACACAAGGTAT"
+                                                     "CAACAGACAAGTCCATCAGGCAGAAGAAAGGGATATCAGAGATTGAAGAT"
+                                                     "CAACTTAATGAAATAAAGCATGCAAGACGAGATTAGTGAGAAAAAAGAAT"
+                                                     "TAAAAGAAATGAGCAAAGGCCTCAAGGAAATATGGGACTATGTGTAAAAG"
+                                                     "ACCAAGCATACGGTTTGATTGGTGTATGTGAAAATGACAGGGAAAATGGA"
+                                                     "ACCAAGTTGGAAAACACTCTTCAGGATATCATGCAGGAGAACCTCCCAAC"
+                                                     "CTAGCAAGAGAAGCCAACATTCACATTCAGGAAATACAAGAGAACACCAC"
+                                                     "CAAGATACTCCTTGAGAAGTAGCAAACCCCCAAGACACATAATTGTTCAG"
+                                                     "ATTCAGGCAAGGGTGAAAATGAAGGAAAAAATGCTAAGAGAGCCAGAGAG"
+                                                     "AAAGGTATGGGTTATCCACAAAAGGGCCAGCCATCAGACTAAGAGCAATT"
+                                                     "CTCTGCAGAAACCCTACAACCAGAAGAGAGAAGGGGCCAATATTCAACAT"
+                                                     "TCTTAAAGAAAAGAATTTTCAACCCAGAATTTCATATCCAGCCAAAACAA"
+                                                     "AGCTTCGTAAGTGAAGGAGAAATAAATTTCTTTACAGACAAGCAAATGAC"
+                                                     "TGAAGAAGATTTTTGTCACCACCATGCCTGCCTTACAAGATCTCCTGAAG"
+                                                     "GAAGCACTAAGACATGGGAAGGAAAAAATCCAGTACCAAGCCACTGCTAA"
+                                                     "ACCATACCAAAATGTAGAGACTCAATGCTTAGGATAGGAAACTGCATCAA"
+                                                     "CTAGCAGTCAAAATAACCAGCTAGCATTCATAATGACAGGATCAAATTCA"
+                                                     "GACCACATACAATTATTAACCTTAAATGTAAATGGGCTAAATGCCGCAAT"
+                                                     "TAAAAGACACATCACTGGCAAATTGGATAAAGAGTCAAGCCCAATCGGTG"
+                                                     "TGCTGTTATTCAAGGAGACACCACTCTCACGTGCAAGAGACACAGATAGG"
+                                                     "CTCGAAAATGAATAGGGATGAAGGAAGATTACCAAGCAAATGGAAAGCAA"
+                                                     "AAAAAAAAAAAGCAGGGGTTGCAAATCCTAGTCTCTGTAAAACACTACTT"
+                                                     "TAAACCAAGAAAGATCAAAAGAGACAAAGAGGGCTTTAATAATGGTAATA"
+                                                     "GGGGGATTAATTCAACAAGAAGAGTTAACTATCCTAAATATATATGCTGC"
+                                                     "CTAATACAGGCACACCCAGATTCATAAAGCA"_dna5;
 
     Breakend new_breakend_1 {chromosome_1, pos_ref_1, strand::forward};
     Breakend new_breakend_2 {chromosome_1, pos_ref_1+1, strand::forward};
@@ -273,10 +273,10 @@ TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
     Breakend new_breakend_8 {chromosome_1, pos_ref_5, strand::forward};
     Breakend new_breakend_9 {chromosome_1, pos_ref_5, strand::forward};
 
-    const std::string & read_name_1 = "m2257/8161/CCS";
-    const std::string & read_name_2 = "m41327/11677/CCS";
-    const std::string & read_name_3 = "m21263/13017/CCS";
-    const std::string & read_name_4 = "m38637/7161/CCS";
+    std::string const & read_name_1 = "m2257/8161/CCS";
+    std::string const & read_name_2 = "m41327/11677/CCS";
+    std::string const & read_name_3 = "m21263/13017/CCS";
+    std::string const & read_name_4 = "m38637/7161/CCS";
 
     std::vector<Junction> junctions_expected_res
     {   Junction{new_breakend_1, new_breakend_2, insertion_sequence_1, read_name_1},

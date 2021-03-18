@@ -30,11 +30,11 @@
  *          For primary alignments, also the split read information is analyzed.
  */
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
-                                             const std::filesystem::path & alignment_long_reads_file_path,
-                                             const std::vector<detection_methods> methods,
-                                             const clustering_methods clustering_method,
-                                             const refinement_methods refinement_method,
-                                             const uint64_t min_var_length);
+                                             std::filesystem::path const & alignment_long_reads_file_path,
+                                             std::vector<detection_methods> const & methods,
+                                             clustering_methods const & clustering_method,
+                                             refinement_methods const & refinement_method,
+                                             uint64_t const min_var_length);
 
 /*! \brief Detects genomic variants by analyzing an alignment file (sam/bam). The detected
  *         variants are printed to a given file or stdout and insertion alleles are stored in a fasta file.
@@ -61,10 +61,10 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
  *          Finally, the refined junction clusters are categorized into different variant classes
  *          and output in VCF format.
  */
-void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
-                                       const std::filesystem::path & alignment_long_reads_file_path,
-                                       const std::vector<detection_methods> & methods,
-                                       const clustering_methods & clustering_method,
-                                       const refinement_methods & refinement_method,
-                                       const uint64_t & min_var_length,
-                                       const std::filesystem::path & output_file_path);
+void detect_variants_in_alignment_file(std::filesystem::path const & alignment_short_reads_file_path,
+                                       std::filesystem::path const & alignment_long_reads_file_path,
+                                       std::vector<detection_methods> const & methods,
+                                       clustering_methods const & clustering_method,
+                                       refinement_methods const & refinement_method,
+                                       uint64_t const min_var_length,
+                                       std::filesystem::path const & output_file_path);

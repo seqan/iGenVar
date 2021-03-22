@@ -7,7 +7,7 @@
 #include <sstream>
 
 std::string const default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
-std::string const fasta_out_file_path = "detect_breakends_insertion_file_out.fasta";
+std::string const vcf_out_file_path = "variants_file_out.vcf";
 
 std::string const help_page_part_1
 {
@@ -83,14 +83,14 @@ std::string const help_page_advanced
     "          (default 30 bp). Default: 30.\n"
 };
 
-// std::string expected_res
+// std::string expected_res_default
 // {
 //     "chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681\n"
 //     "chr22\t17458417\tForward\tchr21\t41972615\tForward\t1\t2\n"
 //     "chr22\t17458418\tForward\tchr21\t41972616\tForward\t2\t0\n"
 // }
 
-std::string expected_res
+std::string expected_res_default
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
@@ -100,54 +100,107 @@ std::string expected_res
     "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
 };
 
-TEST_F(detect_breakends, no_options)
+std::string expected_err_default_no_err
+{
+    "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
+    "BND: chr22\t17458417\tForward\tchr21\t41972615\tForward\t2\tm41327/11677/CCS\n"
+    "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm21263/13017/CCS\n"
+    "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm38637/7161/CCS\n"
+    "Start clustering...\n"
+    "Done with clustering. Found 3 junction clusters.\n"
+    "No refinement was selected.\n"
+};
+
+TEST_F(iGenVar_cli_test, no_options)
 {
     cli_test_result result = execute_app("iGenVar");
-    std::string expected
+    std::string expected_res
     {
             "iGenVar - Detect genomic variants in a read alignment file\n"
             "==========================================================\n"
             "    Try -h or --help for more information.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.out, expected_res);
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(detect_breakends, fail_no_argument)
+// TODO (irallia): There is an open Issue, if we want to add the verbose option https://github.com/seqan/iGenVar/issues/20
+TEST_F(iGenVar_cli_test, test_verbose_option)
 {
     cli_test_result result = execute_app("iGenVar", "-v");
-    std::string expected
+    std::string expected_err
     {
         "[Error] Unknown option -v. In case this is meant to be a non-option/argument/parameter, please specify "
         "the start of non-options with '--'. See -h/--help for program information.\n"
     };
-    EXPECT_NE(result.exit_code, 0);
+    EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
-    EXPECT_EQ(result.err, expected);
+    EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(detect_breakends, help_page_argument)
+TEST_F(iGenVar_cli_test, help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "-h");
-    std::string expected = help_page_part_1 + help_page_part_2;
+    std::string expected_res = help_page_part_1 + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.out, expected_res);
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(detect_breakends, advanced_help_page_argument)
+TEST_F(iGenVar_cli_test, advanced_help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "-hh");
-    std::string expected = help_page_part_1 + help_page_advanced + help_page_part_2;
+    std::string expected_res = help_page_part_1 + help_page_advanced + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected);
+    EXPECT_EQ(result.out, expected_res);
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(detect_breakends, with_arguments)
+TEST_F(iGenVar_cli_test, fail_unknown_option)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-x 0");
+
+    std::string expected_err
+    {
+        "[Error] Unknown option -x. In case this is meant to be a non-option/argument/parameter, please specify the "
+        "start of non-options with '--'. See -h/--help for program information.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_missing_value)
+{
+    cli_test_result result = execute_app("iGenVar", "-i");
+    std::string expected_err
+    {
+        "[Error] Missing value for option -i\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_no_input_file)
+{
+    cli_test_result result = execute_app("iGenVar", "-m 0");
+    std::string expected_err
+    {
+        "[Error] You need to input at least one sam/bam file.\n"
+        "Please use -i or -input_short_reads to pass a short read file or -j or -input_long_reads for a long read file.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, with_default_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j ", data(default_alignment_long_reads_file_path));
@@ -170,31 +223,36 @@ TEST_F(detect_breakends, with_arguments)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res);
+    EXPECT_EQ(result.out, expected_res_default);
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(detect_breakends, with_detection_method_arguments)
+TEST_F(iGenVar_cli_test, test_outfile)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j ", data(default_alignment_long_reads_file_path),
+                                         "-o ", vcf_out_file_path);
+    std::ifstream f;
+    f.open(vcf_out_file_path);
+    std::stringstream buffer;
+    buffer << f.rdbuf();
+
+    //this does not specifically check if file exists, rather if its readable.
+    EXPECT_TRUE(f.is_open());
+    EXPECT_EQ(buffer.str(), expected_res_default);
+}
+
+TEST_F(iGenVar_cli_test, with_detection_method_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "-m 0 -m 1");
-    std::string expected_err
-    {
-        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
-        "BND: chr22\t17458417\tForward\tchr21\t41972615\tForward\t2\tm41327/11677/CCS\n"
-        "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm21263/13017/CCS\n"
-        "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm38637/7161/CCS\n"
-        "Start clustering...\n"
-        "Done with clustering. Found 3 junction clusters.\n"
-        "No refinement was selected.\n"
-    };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res);
-    EXPECT_EQ(result.err, expected_err);
+    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.err, expected_err_default_no_err);
 }
 
-TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
+TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
@@ -205,36 +263,36 @@ TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
         "Methods to be used: [cigar_string,cigar_string]\n"
     };
     EXPECT_NE(result.exit_code, 0);
-    EXPECT_EQ(result.out, "");
+    EXPECT_EQ(result.out, std::string{});
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(detect_breakends, test_direct_methods_input)
+TEST_F(iGenVar_cli_test, test_direct_methods_input)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         fasta_out_file_path,
                                          "-m 0 -m 1 -c 0 -r 0");
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.err, expected_err_default_no_err);
+}
 
-    std::cout << "Current path is " << std::filesystem::current_path() << '\n';
-
+//TODO (irallia): This should get a better Error message with resolving https://github.com/seqan/seqan3/issues/2464
+TEST_F(iGenVar_cli_test, test_unknown_argument)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-m 9");
     std::string expected_err
     {
-        "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
-        "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
-        "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
-        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
-        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
-        "Start clustering...\n"
-        "Done with clustering. Found 4 junction clusters.\n"
-        "No refinement was selected.\n"
+        "[Error] Value parse failed for -m: Argument 9 could not be parsed as type std::string.\n"
     };
-    EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res);
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(detect_breakends, dataset_mini_example)
+TEST_F(iGenVar_cli_test, dataset_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("mini_example.sam"),
@@ -242,7 +300,7 @@ TEST_F(detect_breakends, dataset_mini_example)
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';
-    EXPECT_EQ(result.out, expected_res);
+    EXPECT_EQ(result.out, expected_res_default);
     seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:

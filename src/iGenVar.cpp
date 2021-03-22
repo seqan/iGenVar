@@ -102,8 +102,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_option(args.output_file_path, 'o', "output",
                       "The path of the vcf output file. If no path is given, will output to standard output.",
                       seqan3::option_spec::standard,
-                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create,
-                                                               {"vcf"}});
+                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create, {"vcf"}});
 
     // Options - Methods:
     parser.add_option(args.methods, 'm', "method", "Choose the detection method(s) to be used.",

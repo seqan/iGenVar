@@ -37,7 +37,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
     if (alignment_long_reads_file.header().sorting != "coordinate")
     {
         seqan3::debug_stream << "ERROR: Input file must be sorted by coordinate (e.g. samtools sort)" << std::endl;
-        return;
+        exit(EXIT_FAILURE);
     }
     // Open output file for insertion alleles
     seqan3::sequence_file_output insertion_file{insertion_file_path};

@@ -1,0 +1,27 @@
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read010
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read011
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read012
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read013
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read014
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read015
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read016
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read017
+DEL: Reference	chr1	57	Forward	Reference	chr1	70	Forward	read018
+INS1: Reference	chr1	125	Forward	Read	0	25	Forward	read023
+INS2: Reference	chr1	125	Reverse	Read	0	40	Reverse	read023
+INS1: Reference	chr1	125	Forward	Read	1	24	Forward	read024
+INS2: Reference	chr1	125	Reverse	Read	1	39	Reverse	read024
+INS1: Reference	chr1	125	Forward	Read	2	23	Forward	read025
+INS2: Reference	chr1	125	Reverse	Read	2	38	Reverse	read025
+INS1: Reference	chr1	180	Forward	Read	3	30	Forward	read031
+INS2: Reference	chr1	180	Reverse	Read	3	38	Reverse	read031
+DEL: Reference	chr1	266	Forward	Reference	chr1	286	Forward	read037
+DEL: Reference	chr1	266	Forward	Reference	chr1	286	Forward	read038
+DEL: Reference	chr1	282	Forward	Reference	chr1	299	Forward	read041
+DEL: Reference	chr1	336	Forward	Reference	chr1	350	Forward	read042
+DEL: Reference	chr1	336	Forward	Reference	chr1	350	Forward	read043
+DEL: Reference	chr1	336	Forward	Reference	chr1	350	Forward	read044
+DEL: Reference	chr1	336	Forward	Reference	chr1	350	Forward	read045
+Start clustering...
+Done with clustering. Found 12 junction clusters.
+No refinement was selected.

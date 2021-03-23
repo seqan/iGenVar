@@ -28,7 +28,7 @@ struct Breakend
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, Breakend const & b)
+inline constexpr stream_t operator<<(stream_t && stream, Breakend const & b)
 {
     stream << b.seq_name << '\t'
            << b.position  << '\t'

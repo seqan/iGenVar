@@ -62,7 +62,7 @@ public:
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, Junction const & junc)
+inline constexpr stream_t operator<<(stream_t && stream, Junction const & junc)
 {
     stream << junc.get_mate1() << '\t'
            << junc.get_mate2() << '\t'

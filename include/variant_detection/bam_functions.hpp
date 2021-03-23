@@ -21,31 +21,31 @@ enum BamFlags
     BAM_FLAG_SUPPLEMENTARY = 0x0800
 };
 
-inline bool
+inline constexpr bool
 hasFlagUnmapped(seqan3::sam_flag const & flag)
 {
     return (static_cast<uint16_t>(flag) & BAM_FLAG_UNMAPPED) == BAM_FLAG_UNMAPPED;
 }
 
-inline bool
+inline constexpr bool
 hasFlagReverseComplement(seqan3::sam_flag const & flag)
 {
     return (static_cast<uint16_t>(flag) & BAM_FLAG_RC) == BAM_FLAG_RC;
 }
 
-inline bool
+inline constexpr bool
 hasFlagSecondary(seqan3::sam_flag const & flag)
 {
     return (static_cast<uint16_t>(flag) & BAM_FLAG_SECONDARY) == BAM_FLAG_SECONDARY;
 }
 
-inline bool
+inline constexpr bool
 hasFlagSupplementary(seqan3::sam_flag const & flag)
 {
     return (static_cast<uint16_t>(flag) & BAM_FLAG_SUPPLEMENTARY) == BAM_FLAG_SUPPLEMENTARY;
 }
 
-inline bool
+inline constexpr bool
 hasFlagDuplicate(seqan3::sam_flag const & flag)
 {
     return (static_cast<uint16_t>(flag) & BAM_FLAG_DUPLICATE) == BAM_FLAG_DUPLICATE;
@@ -85,7 +85,7 @@ switch (op)
  * `{[(H,1), (M,4), (D,1), (M,2), (S,2)], 7, 6}`.
  */
 template <typename cigar_input_type>
-inline std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parse_cigar(cigar_input_type && cigar_input)
+inline constexpr std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parse_cigar(cigar_input_type && cigar_input)
 {
     std::vector<seqan3::cigar> operations{};
     std::array<char, 20> buffer{}; // buffer to parse numbers with from_chars. Biggest number should fit in uint64_t

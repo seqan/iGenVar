@@ -10,7 +10,7 @@ using seqan3::operator""_cigar_operation;
 using seqan3::operator""_dna5;
 
 void analyze_cigar(std::string const & read_name,
-                   std::string const chromosome,
+                   std::string const & chromosome,
                    int32_t const query_start_pos,
                    std::vector<seqan3::cigar> & cigar_string,
                    seqan3::dna5_vector const & query_sequence,

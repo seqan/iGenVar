@@ -66,7 +66,7 @@ TEST(junction_detection, fasta_out_not_empty)
 TEST(junction_detection, sam_file_unsorted)
 {
     // Create a blank SAM file without a sorting indicator.
-    const std::filesystem::path tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
+    std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
     std::filesystem::path unsorted_sam_path{tmp_dir/"unsorted.sam"};
     std::ofstream unsorted_sam{unsorted_sam_path.c_str()};
     unsorted_sam << "@HD\tVN:1.6\n" <<

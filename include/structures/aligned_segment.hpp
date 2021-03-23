@@ -37,7 +37,7 @@ struct AlignedSegment
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, AlignedSegment const & a)
+inline constexpr stream_t operator<<(stream_t && stream, AlignedSegment const & a)
 {
     stream << a.ref_name << ";"
            << a.get_reference_start() << "-" << a.get_reference_end() << ";"

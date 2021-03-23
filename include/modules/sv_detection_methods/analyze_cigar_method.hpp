@@ -28,8 +28,8 @@
  *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 8.
  */
 void analyze_cigar(std::string const & read_name,
-                   std::string const chromosome,
-                   int32_t query_start_pos,
+                   std::string const & chromosome,
+                   int32_t const query_start_pos,
                    std::vector<seqan3::cigar> & cigar_string,
                    seqan3::dna5_vector const & query_sequence,
                    std::vector<Junction> & junctions,

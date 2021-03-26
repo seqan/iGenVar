@@ -1,4 +1,7 @@
+#include <fstream>
 #include <gtest/gtest.h>
+
+#include <seqan3/io/exception.hpp>
 
 #include "variant_detection/variant_detection.hpp"
 
@@ -65,6 +68,29 @@ TEST(junction_detection, fasta_out_not_empty)
     check_output_and_cleanup(empty_res);
 }
 
+TEST(junction_detection, sam_file_unsorted)
+{
+    std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");        // remove old output if existent
+
+    // Create a blank SAM file without a sorting indicator.
+    std::filesystem::path unsorted_sam_path{tmp_dir/"unsorted.sam"};
+    std::ofstream unsorted_sam{unsorted_sam_path.c_str()};
+    unsorted_sam << "@HD\tVN:1.6\n" <<
+                    "@SQ\tSN:testchr\tLN:1000\n" <<
+                    "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
+    unsorted_sam.close();
+    EXPECT_THROW(detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                                   unsorted_sam_path,
+                                                   tmp_dir/"detect_breakends_out_short.fasta",
+                                                   default_methods,
+                                                   simple_clustering,
+                                                   no_refinement,
+                                                   sv_default_length,
+                                                   empty_output_path), seqan3::format_error);
+
+    std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");
+    std::filesystem::remove(unsorted_sam_path);
+}
 /* -------- clustering methods tests -------- */
 
 TEST(junction_detection, clustering_method_hierarchical)

@@ -79,21 +79,14 @@ TEST(junction_detection, sam_file_unsorted)
                     "@SQ\tSN:testchr\tLN:1000\n" <<
                     "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
     unsorted_sam.close();
-    try
-    {
-        detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                          unsorted_sam_path,
-                                          tmp_dir/"detect_breakends_out_short.fasta",
-                                          default_methods,
-                                          simple_clustering,
-                                          no_refinement,
-                                          sv_default_length,
-                                          empty_output_path);
-    }
-    catch (seqan3::format_error & ex)
-    {
-        EXPECT_EQ(ex.what(), std::string{"ERROR: Input file must be sorted by coordinate (e.g. samtools sort)"});
-    }
+    EXPECT_THROW(detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
+                                                   unsorted_sam_path,
+                                                   tmp_dir/"detect_breakends_out_short.fasta",
+                                                   default_methods,
+                                                   simple_clustering,
+                                                   no_refinement,
+                                                   sv_default_length,
+                                                   empty_output_path), seqan3::format_error);
 
     std::filesystem::remove(tmp_dir/"detect_breakends_out_short.fasta");
     std::filesystem::remove(unsorted_sam_path);

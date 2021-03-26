@@ -11,7 +11,6 @@
  *
  * \param junctions - a vector of junctions
  * \param alignment_long_reads_file_path - long reads input file, path to the sam/bam file
- * \param insertion_file_path - output file path for the fasta file
  * \param methods - list of methods for detecting junctions (0: cigar_string,
  *                                                           1: split_read,
  *                                                           2: read_pairs,
@@ -32,7 +31,6 @@
  */
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                              const std::filesystem::path & alignment_long_reads_file_path,
-                                             const std::filesystem::path & insertion_file_path,
                                              const std::vector<detection_methods> methods,
                                              const clustering_methods clustering_method,
                                              const refinement_methods refinement_method,
@@ -43,7 +41,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
  *
  * \param alignment_short_reads_file_path - short reads input file, path to the sam/bam file
  * \param alignment_long_reads_file_path - long reads input file, path to the sam/bam file
- * \param insertion_file_path - output file path for the fasta file
  * \param methods - list of methods for detecting junctions (1: cigar_string,
  *                                                           2: split_read,
  *                                                           3: read_pairs,
@@ -66,7 +63,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
  */
 void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
                                        const std::filesystem::path & alignment_long_reads_file_path,
-                                       const std::filesystem::path & insertion_file_path,
                                        const std::vector<detection_methods> & methods,
                                        const clustering_methods & clustering_method,
                                        const refinement_methods & refinement_method,

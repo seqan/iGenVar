@@ -103,10 +103,6 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Input long read alignments in SAM or BAM format (PacBio, Oxford Nanopore, ...).",
                       seqan3::option_spec::standard,
                       seqan3::input_file_validator{{"sam", "bam"}} );
-
-    parser.add_positional_option(args.insertion_file_path, "Output file for insertion alleles.",
-                                 seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create,
-                                                               {"fa", "fasta"}} );
     parser.add_option(args.output_file_path, 'o', "output",
                       "The path of the vcf output file. If no path is given, will output to standard output.",
                       seqan3::option_spec::standard,
@@ -166,7 +162,6 @@ int main(int argc, char ** argv)
 
     detect_variants_in_alignment_file(args.alignment_short_reads_file_path,
                                       args.alignment_long_reads_file_path,
-                                      args.insertion_file_path,
                                       args.methods,
                                       args.clustering_method,
                                       args.refinement_method,

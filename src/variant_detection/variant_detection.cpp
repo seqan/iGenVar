@@ -15,7 +15,6 @@ using seqan3::operator""_tag;
 
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                              const std::filesystem::path & alignment_long_reads_file_path,
-                                             const std::filesystem::path & insertion_file_path,
                                              const std::vector<detection_methods> methods,
                                              const clustering_methods clustering_method,
                                              const refinement_methods refinement_method,
@@ -38,11 +37,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
     {
         throw seqan3::format_error{"ERROR: Input file must be sorted by coordinate (e.g. samtools sort)"};
     }
-    // Open output file for insertion alleles
-    seqan3::sequence_file_output insertion_file{insertion_file_path};
-
-    // Store insertion_alleles and number of good alignments
-    std::vector<seqan3::dna5_vector> insertion_alleles{};
     uint16_t num_good = 0;
 
     for (auto & rec : alignment_long_reads_file)
@@ -73,9 +67,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                   cigar,
                                   seq,
                                   junctions,
-                                  insertion_alleles,
-                                  min_var_length,
-                                  insertion_file);
+                                  min_var_length);
                     break;
                 case detection_methods::split_read:     // Detect junctions from split read evidence (SA tag,
                     if (!hasFlagSupplementary(flag))    //                                  primary alignments only)
@@ -83,7 +75,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                         const std::string sa_tag = tags.get<"SA"_tag>();
                         if (!sa_tag.empty())
                         {
-                            analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, sa_tag, junctions);
+                            analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, seq, sa_tag, junctions);
                         }
                     }
                     break;
@@ -109,7 +101,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
 
 void detect_variants_in_alignment_file(const std::filesystem::path & alignment_short_reads_file_path,
                                        const std::filesystem::path & alignment_long_reads_file_path,
-                                       const std::filesystem::path & insertion_file_path,
                                        const std::vector<detection_methods> & methods,
                                        const clustering_methods & clustering_method,
                                        const refinement_methods & refinement_method,
@@ -136,7 +127,6 @@ void detect_variants_in_alignment_file(const std::filesystem::path & alignment_s
     }
     detect_junctions_in_long_reads_sam_file(junctions,
                                             alignment_long_reads_file_path,
-                                            insertion_file_path,
                                             methods,
                                             clustering_method,
                                             refinement_method,

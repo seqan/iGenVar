@@ -14,11 +14,6 @@ const std::string help_page_part_1
     "iGenVar - Detect genomic variants in a read alignment file\n"
     "==========================================================\n"
     "\n"
-    "POSITIONAL ARGUMENTS\n"
-    "    ARGUMENT-1 (std::filesystem::path)\n"
-    "          Output file for insertion alleles. Write permissions must be\n"
-    "          granted. Valid file extensions are: [fa, fasta].\n"
-    "\n"
     "OPTIONS\n"
     "\n"
     "  Basic options:\n"
@@ -91,6 +86,13 @@ const std::string help_page_advanced
     "          (default 30 bp). Default: 30.\n"
 };
 
+// std::string expected_res
+// {
+//     "chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681\n"
+//     "chr22\t17458417\tForward\tchr21\t41972615\tForward\t1\t2\n"
+//     "chr22\t17458418\tForward\tchr21\t41972616\tForward\t2\t0\n"
+// }
+
 std::string expected_res
 {
     "##fileformat=VCFv4.3\n"
@@ -128,7 +130,7 @@ TEST_F(detect_breakends, fail_no_argument)
     EXPECT_EQ(result.err, expected);
 }
 
-TEST_F(find_deletions, help_page_argument)
+TEST_F(detect_breakends, help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "-h");
     std::string expected = help_page_part_1 + help_page_part_2;
@@ -138,7 +140,7 @@ TEST_F(find_deletions, help_page_argument)
     EXPECT_EQ(result.err, std::string{});
 }
 
-TEST_F(find_deletions, advanced_help_page_argument)
+TEST_F(detect_breakends, advanced_help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "-hh");
     std::string expected = help_page_part_1 + help_page_advanced + help_page_part_2;
@@ -151,25 +153,23 @@ TEST_F(find_deletions, advanced_help_page_argument)
 TEST_F(detect_breakends, with_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         "-j ", data(default_alignment_long_reads_file_path),
-                                         fasta_out_file_path);
+                                         "-j ", data(default_alignment_long_reads_file_path));
     std::string expected_err
     {
-        "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
-        "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
+        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
         "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
-        "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
+        "BND: chr22\t17458417\tForward\tchr21\t41972615\tForward\t2\tm41327/11677/CCS\n"
         "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
-        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
+        "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm21263/13017/CCS\n"
         "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
-        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
+        "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm38637/7161/CCS\n"
         "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
         "Start clustering...\n"
-        "Done with clustering. Found 4 junction clusters.\n"
+        "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
@@ -177,34 +177,19 @@ TEST_F(detect_breakends, with_arguments)
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(detect_breakends, test_outfile)
-{
-    cli_test_result result = execute_app("iGenVar",
-                                         "-j ", data(default_alignment_long_reads_file_path),
-                                         fasta_out_file_path);
-
-    std::filesystem::path test_file_path = "../../data/detect_breakends_insertion_file_test.fasta";
-    seqan3::sequence_file_input out_file{fasta_out_file_path};
-    seqan3::sequence_file_input test_file{test_file_path};
-
-    EXPECT_RANGE_EQ(out_file, test_file);
-}
-
 TEST_F(detect_breakends, with_detection_method_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         fasta_out_file_path,
                                          "-m 0 -m 1");
     std::string expected_err
     {
-        "INS1: Reference\tchr21\t41972616\tForward\tRead\t0\t2294\tForward\tm2257/8161/CCS\n"
-        "INS2: Reference\tchr21\t41972616\tReverse\tRead\t0\t3975\tReverse\tm2257/8161/CCS\n"
-        "BND: Reference\tchr22\t17458417\tForward\tReference\tchr21\t41972615\tForward\tm41327/11677/CCS\n"
-        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm21263/13017/CCS\n"
-        "BND: Reference\tchr22\t17458418\tForward\tReference\tchr21\t41972616\tForward\tm38637/7161/CCS\n"
+        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
+        "BND: chr22\t17458417\tForward\tchr21\t41972615\tForward\t2\tm41327/11677/CCS\n"
+        "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm21263/13017/CCS\n"
+        "BND: chr22\t17458418\tForward\tchr21\t41972616\tForward\t0\tm38637/7161/CCS\n"
         "Start clustering...\n"
-        "Done with clustering. Found 4 junction clusters.\n"
+        "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
@@ -216,7 +201,6 @@ TEST_F(detect_breakends, with_detection_method_duplicate_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         fasta_out_file_path,
                                          "-m 0 -m 0");
     std::string expected_err
     {
@@ -232,7 +216,6 @@ TEST_F(detect_breakends, dataset_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("mini_example.sam"),
-                                         "mini_example_insertions_output.fasta",
                                          "-l 8 -m 0 -m 1");
 
     // Check the output of junctions:
@@ -246,15 +229,5 @@ TEST_F(detect_breakends, dataset_mini_example)
     std::string txt_test_file_str((std::istreambuf_iterator<char>(txt_test_file)),
                                    std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, txt_test_file_str);
-    seqan3::debug_stream << "done. " << '\n';
-
-    // Check the output of insertion sequences:
-    seqan3::debug_stream << "Check the output of insertion sequences... " << '\n';
-    std::filesystem::path out_file_path_ins = "mini_example_insertions_output.fasta";
-    std::filesystem::path test_file_path_ins = "../../data/insertions_output.fasta";
-    seqan3::sequence_file_input out_file_ins{out_file_path_ins};
-    seqan3::sequence_file_input test_file_ins{test_file_path_ins};
-
-    EXPECT_RANGE_EQ(out_file_ins, test_file_ins);
     seqan3::debug_stream << "done. " << '\n';
 }

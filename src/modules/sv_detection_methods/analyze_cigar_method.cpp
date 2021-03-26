@@ -7,6 +7,7 @@
 #include "structures/breakend.hpp"  // for class Breakend
 
 using seqan3::operator""_cigar_operation;
+using seqan3::operator""_dna5;
 
 void analyze_cigar(const std::string & read_name,
                    const std::string chromosome,
@@ -14,16 +15,11 @@ void analyze_cigar(const std::string & read_name,
                    std::vector<seqan3::cigar> & cigar_string,
                    const seqan3::dna5_vector & query_sequence,
                    std::vector<Junction> & junctions,
-                   std::vector<seqan3::dna5_vector> & insertions,
-                   int32_t min_length,
-                   seqan3::sequence_file_output<> & insertion_file)
+                   uint64_t const min_length)
 {
     // Step through CIGAR string and store current position in reference and read
     int32_t pos_ref = query_start_pos;
     int32_t pos_read = 0;
-
-    // Stores the index of the current read in the insertion allele output file (or -1 if current read has not been added yet)
-    int32_t insertion_allele_id {-1};
 
     for (seqan3::cigar & pair : cigar_string)
     {
@@ -39,30 +35,14 @@ void analyze_cigar(const std::string & read_name,
         {
             if (length >= min_length)
             {
-                if (insertion_allele_id < 0)
-                {
-                    insertion_allele_id = insertions.size();
-                    std::string insertion_allele_name{"allele_" + std::to_string(insertion_allele_id)};
-                    insertion_file.emplace_back(query_sequence, insertion_allele_name);
-                    insertions.push_back(query_sequence);
-                }
-                // Insertions cause two junctions ( (1) from the reference to the read and (2) back from the read to the reference )
-                Junction new_junction1{Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                       Breakend{std::to_string(insertion_allele_id),
-                                                pos_read,
-                                                strand::forward,
-                                                sequence_type::read},
-                                       read_name};
-                seqan3::debug_stream << "INS1: " << new_junction1 << "\n";
-                junctions.push_back(std::move(new_junction1));
-                Junction new_junction2{Breakend{std::to_string(insertion_allele_id),
-                                                pos_read + length,
-                                                strand::forward,
-                                                sequence_type::read},
-                                       Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                       read_name};
-                seqan3::debug_stream << "INS2: " << new_junction2 << "\n";
-                junctions.push_back(std::move(new_junction2));
+                // Insertions cause one junction from the insertion location to the next base
+                auto inserted_bases = query_sequence | seqan3::views::slice(pos_read, pos_read + length);
+                Junction new_junction{Breakend{chromosome, pos_ref-1, strand::forward},
+                                      Breakend{chromosome, pos_ref, strand::forward},
+                                      inserted_bases,
+                                      read_name};
+                seqan3::debug_stream << "INS: " << new_junction << "\n";
+                junctions.push_back(std::move(new_junction));
             }
             pos_read += length;
         }
@@ -71,8 +51,9 @@ void analyze_cigar(const std::string & read_name,
             if (length >= min_length)
             {
                 // Deletions cause one junction from its start to its end
-                Junction new_junction{Breakend{chromosome, pos_ref, strand::forward, sequence_type::reference},
-                                      Breakend{chromosome, pos_ref + length, strand::forward, sequence_type::reference},
+                Junction new_junction{Breakend{chromosome, pos_ref, strand::forward},
+                                      Breakend{chromosome, pos_ref + length, strand::forward},
+                                      ""_dna5,
                                       read_name};
                 seqan3::debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));

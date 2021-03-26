@@ -2,12 +2,6 @@
 
 #include <string>
 
-enum struct sequence_type : uint8_t
-{
-    reference,
-    read
-};
-
 enum struct strand : uint8_t
 {
     forward,
@@ -19,7 +13,6 @@ struct Breakend
     std::string seq_name; // The id of the respective sequence
     int32_t position;
     strand orientation;
-    sequence_type seq_type;
 
     void flip_orientation()
     {
@@ -37,8 +30,7 @@ struct Breakend
 template <typename stream_t>
 inline stream_t operator<<(stream_t && stream, Breakend const & b)
 {
-    stream << ((b.seq_type == sequence_type::reference) ? "Reference" : "Read") << '\t'
-           << b.seq_name << '\t'
+    stream << b.seq_name << '\t'
            << b.position  << '\t'
            << ((b.orientation == strand::forward) ? "Forward" : "Reverse");
     return stream;

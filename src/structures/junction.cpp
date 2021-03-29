@@ -20,7 +20,7 @@ std::string Junction::get_read_name() const
     return read_name;
 }
 
-bool operator<(const Junction & lhs, const Junction & rhs)
+bool operator<(Junction const & lhs, Junction const & rhs)
 {
     return lhs.get_mate1() < rhs.get_mate1()
             ? true
@@ -33,7 +33,7 @@ bool operator<(const Junction & lhs, const Junction & rhs)
                         : lhs.get_inserted_sequence() < rhs.get_inserted_sequence();
 }
 
-bool operator==(const Junction & lhs, const Junction & rhs)
+bool operator==(Junction const & lhs, Junction const & rhs)
 {
     return (lhs.get_mate1() == rhs.get_mate1()) && (lhs.get_mate2() == rhs.get_mate2()) && (lhs.get_inserted_sequence() == rhs.get_inserted_sequence());
 }

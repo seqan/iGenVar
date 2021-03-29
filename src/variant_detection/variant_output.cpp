@@ -4,7 +4,6 @@
 #include "variant_detection/variant_output.hpp"
 #include "variant_parser/variant_record.hpp"    // for class variant_header
 
-
 void find_and_output_variant(std::vector<Cluster> const & clusters, std::ostream & out_stream)
 {
     variant_header header{};

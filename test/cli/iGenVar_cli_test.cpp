@@ -6,10 +6,10 @@
 #include <fstream>
 #include <sstream>
 
-const std::string default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
-const std::string fasta_out_file_path = "detect_breakends_insertion_file_out.fasta";
+std::string const default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
+std::string const fasta_out_file_path = "detect_breakends_insertion_file_out.fasta";
 
-const std::string help_page_part_1
+std::string const help_page_part_1
 {
     "iGenVar - Detect genomic variants in a read alignment file\n"
     "==========================================================\n"
@@ -43,7 +43,7 @@ const std::string help_page_part_1
     "          Valid file extensions are: [vcf].\n"
 };
 
-const std::string help_page_part_2
+std::string const help_page_part_2
 {
     "\n"
     "VERSION\n"
@@ -63,7 +63,7 @@ const std::string help_page_part_2
     "    For full copyright and/or warranty information see --copyright.\n"
 };
 
-const std::string help_page_advanced
+std::string const help_page_advanced
 {
     "    -m, --method (List of detection_methods)\n"
     "          Choose the detection method(s) to be used. Default:\n"

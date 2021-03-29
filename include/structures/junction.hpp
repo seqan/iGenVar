@@ -62,7 +62,7 @@ public:
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, Junction const & junc)
+inline constexpr stream_t operator<<(stream_t && stream, Junction const & junc)
 {
     stream << junc.get_mate1() << '\t'
            << junc.get_mate2() << '\t'
@@ -77,12 +77,12 @@ inline stream_t operator<<(stream_t && stream, Junction const & junc)
  * \param lhs   left side junction
  * \param rhs   right side junction
  */
-bool operator<(const Junction & lhs, const Junction & rhs);
+bool operator<(Junction const & lhs, Junction const & rhs);
 
 /*! \brief A junction is equal to another, if their mates and the inserted sequences are equal to each other.
  *         The read_name is allowed to be unequal, because more than one read could support the same junction.
  *
- * \param lhs   left side junction
- * \param rhs   right side junction
+ * \param lhs - left side junction
+ * \param rhs - right side junction
  */
-bool operator==(const Junction & lhs, const Junction & rhs);
+bool operator==(Junction const & lhs, Junction const & rhs);

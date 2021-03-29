@@ -7,7 +7,7 @@
 using seqan3::operator""_tag;
 
 template <class Container>
-void split_string(const std::string& str, Container& cont, char delim = ' ')
+void split_string(std::string const & str, Container & cont, char const delim = ' ')
 {
     std::stringstream ss(str);
     std::string token;
@@ -50,10 +50,10 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
     }
 }
 
-void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segments,
+void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segments,
                               std::vector<Junction> & junctions,
-                              const seqan3::dna5_vector & query_sequence,
-                              const std::string & read_name)
+                              seqan3::dna5_vector const & query_sequence,
+                              std::string const & read_name)
 {
     for(size_t i = 1; i<aligned_segments.size(); i++)
     {
@@ -80,14 +80,14 @@ void analyze_aligned_segments(const std::vector<AlignedSegment> & aligned_segmen
     }
 }
 
-void analyze_sa_tag(const std::string & query_name,
-                    const seqan3::sam_flag & flag,
-                    const std::string & ref_name,
-                    const int32_t pos,
-                    const uint8_t mapq,
-                    std::vector<seqan3::cigar> & cigar,
-                    const seqan3::dna5_vector & seq,
-                    const std::string & sa_tag,
+void analyze_sa_tag(std::string const & query_name,
+                    seqan3::sam_flag const & flag,
+                    std::string const & ref_name,
+                    int32_t const pos,
+                    uint8_t const mapq,
+                    std::vector<seqan3::cigar> const & cigar,
+                    seqan3::dna5_vector const & seq,
+                    std::string const & sa_tag,
                     std::vector<Junction> & junctions)
 {
 

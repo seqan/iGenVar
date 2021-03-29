@@ -2,13 +2,13 @@
 
 /*! \brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *
- * \param read_name         QNAME field of the SAM/BAM file
- * \param chromosome        RNAME field of the SAM/BAM file
- * \param query_start_pos   POS field of the SAM/BAM file
- * \param cigar_string      CIGAR field of the SAM/BAM file
- * \param query_sequence    SEQ field of the SAM/BAM file
- * \param junctions         vector for storing junctions
- * \param min_length        minimum length of variants to detect (default 30 bp)
+ * \param[in]       read_name       - QNAME field of the SAM/BAM file
+ * \param[in]       chromosome      - RNAME field of the SAM/BAM file
+ * \param[in]       query_start_pos - POS field of the SAM/BAM file
+ * \param[in]       cigar_string    - CIGAR field of the SAM/BAM file
+ * \param[in]       query_sequence  - SEQ field of the SAM/BAM file
+ * \param[in, out]  junctions       - vector for storing junctions
+ * \param[in]       min_length      - minimum length of variants to detect (default 30 bp)
  *
  * \details This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *          We distinguish 4 cases of CIGAR operation characters:
@@ -27,10 +27,10 @@
  *          For more information see the
  *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 8.
  */
-void analyze_cigar(const std::string & read_name,
-                   const std::string chromosome,
-                   const int32_t query_start_pos,
+void analyze_cigar(std::string const & read_name,
+                   std::string const & chromosome,
+                   int32_t const query_start_pos,
                    std::vector<seqan3::cigar> & cigar_string,
-                   const seqan3::dna5_vector & query_sequence,
+                   seqan3::dna5_vector const & query_sequence,
                    std::vector<Junction> & junctions,
                    uint64_t const min_length);

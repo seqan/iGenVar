@@ -2,7 +2,7 @@
 
 #include <seqan3/core/debug_stream.hpp>
 
-void simple_clustering_method(std::vector<Junction> & junctions, std::vector<Cluster> & clusters)
+void simple_clustering_method(std::vector<Junction> const & junctions, std::vector<Cluster> & clusters)
 {
     if (junctions.size() > 0)
     {

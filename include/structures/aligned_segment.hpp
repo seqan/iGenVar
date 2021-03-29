@@ -7,11 +7,11 @@
 /*! \brief Read segment aligned to the reference genome (part of chimeric/split-aligned read). Contains information
  *        parsed from the SA tag of an alignment in the SAM/BAM file.
  *
- * \param orientation       mapping orientation (reverse or forward strand)
- * \param ref_name          reference/chromosome name
- * \param pos               start position of the alignment
- * \param mapq              mapping quality
- * \param cig               cigar string of the alignment
+ * \param orientation   - mapping orientation (reverse or forward strand)
+ * \param ref_name      - reference/chromosome name
+ * \param pos           - start position of the alignment
+ * \param mapq          - mapping quality
+ * \param cig           - cigar string of the alignment
  */
 struct AlignedSegment
 {
@@ -37,7 +37,7 @@ struct AlignedSegment
 };
 
 template <typename stream_t>
-inline stream_t operator<<(stream_t && stream, AlignedSegment const & a)
+inline constexpr stream_t operator<<(stream_t && stream, AlignedSegment const & a)
 {
     stream << a.ref_name << ";"
            << a.get_reference_start() << "-" << a.get_reference_end() << ";"
@@ -47,4 +47,4 @@ inline stream_t operator<<(stream_t && stream, AlignedSegment const & a)
     return stream;
 }
 
-bool operator<(const AlignedSegment & lhs, const AlignedSegment & rhs);
+bool operator<(AlignedSegment const & lhs, AlignedSegment const & rhs);

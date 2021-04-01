@@ -26,22 +26,25 @@ public:
     Junction & operator=(Junction &&)       = default; //!< Defaulted.
     ~Junction()                             = default; //!< Defaulted.
 
-    Junction(Breakend mate1, Breakend mate2, auto const & inserted_sequence, std::string read_name) : mate1{std::move(mate1)},
-                                                                                                      mate2{std::move(mate2)},
-                                                                                                      read_name{std::move(read_name)}
+    Junction(Breakend the_mate1,
+             Breakend the_mate2,
+             auto const & the_inserted_sequence,
+             std::string the_read_name) : mate1{std::move(the_mate1)},
+                                          mate2{std::move(the_mate2)},
+                                          read_name{std::move(the_read_name)}
     {
         if ((mate2.seq_name < mate1.seq_name) ||
             (mate2.seq_name == mate1.seq_name && mate2.position < mate1.position))
         {
-            std::swap(this->mate1, this->mate2);
-            this->mate1.flip_orientation();
-            this->mate2.flip_orientation();
+            std::swap(mate1, mate2);
+            mate1.flip_orientation();
+            mate2.flip_orientation();
 
-            this->inserted_sequence = inserted_sequence | std::views::reverse | seqan3::views::complement | seqan3::views::to<seqan3::dna5_vector>;
+            inserted_sequence = the_inserted_sequence | std::views::reverse | seqan3::views::complement | seqan3::views::to<seqan3::dna5_vector>;
         }
         else
         {
-            this->inserted_sequence = inserted_sequence | seqan3::views::to<seqan3::dna5_vector>;
+            inserted_sequence = the_inserted_sequence | seqan3::views::to<seqan3::dna5_vector>;
         }
     }
     //!\}

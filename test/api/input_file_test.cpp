@@ -53,7 +53,7 @@ void check_output(std::string const expected_res)
 
 std::vector<Junction> junctions_res{};
 
-TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
+TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
     detect_junctions_in_long_reads_sam_file(junctions_res,
                                             default_alignment_long_reads_file_path,
@@ -141,7 +141,7 @@ TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
     }
 }
 
-TEST(junction_detection, long_read_sam_file_unsorted)
+TEST(input_file, long_read_sam_file_unsorted)
 {
     // Create a blank SAM file without a sorting indicator.
     std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory

@@ -277,7 +277,6 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
     EXPECT_EQ(result.err, expected_err_default_no_err);
 }
 
-//TODO (irallia): This should get a better Error message with resolving https://github.com/seqan/seqan3/issues/2464
 TEST_F(iGenVar_cli_test, test_unknown_argument)
 {
     cli_test_result result = execute_app("iGenVar",
@@ -285,7 +284,8 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
                                          "-m 9");
     std::string expected_err
     {
-        "[Error] Value parse failed for -m: Argument 9 could not be parsed as type std::string.\n"
+        "[Error] You have chosen an invalid input value: 9. "
+        "Please use one of: [read_depth,3,read_pairs,2,split_read,1,cigar_string,0]\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

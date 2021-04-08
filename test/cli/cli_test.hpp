@@ -93,5 +93,4 @@ protected:
     }
 };
 
-struct detect_breakends : public cli_test {};
-struct find_deletions : public cli_test {};
+struct iGenVar_cli_test : public cli_test {};

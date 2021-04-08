@@ -39,21 +39,21 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
     }
     uint16_t num_good = 0;
 
-    for (auto & rec : alignment_long_reads_file)
+    for (auto & record : alignment_long_reads_file)
     {
-        std::string const query_name        = seqan3::get<seqan3::field::id>(rec);                      // 1: QNAME
-        seqan3::sam_flag const flag         = seqan3::get<seqan3::field::flag>(rec);                    // 2: FLAG
-        int32_t const ref_id                = seqan3::get<seqan3::field::ref_id>(rec).value_or(-1);     // 3: RNAME
-        int32_t const pos                   = seqan3::get<seqan3::field::ref_offset>(rec).value_or(-1); // 4: POS
-        uint8_t const mapq                  = seqan3::get<seqan3::field::mapq>(rec);                    // 5: MAPQ
-        std::vector<seqan3::cigar> cigar    = seqan3::get<seqan3::field::cigar>(rec);                   // 6: CIGAR
-        auto const seq                      = seqan3::get<seqan3::field::seq>(rec);                     // 10:SEQ
-        auto tags                           = seqan3::get<seqan3::field::tags>(rec);
-        auto const header_ptr               = seqan3::get<seqan3::field::header_ptr>(rec);
+        std::string const query_name        = record.id();                              // 1: QNAME
+        seqan3::sam_flag const flag         = record.flag();                            // 2: FLAG
+        int32_t const ref_id                = record.reference_id().value_or(-1);       // 3: RNAME
+        int32_t const ref_pos               = record.reference_position().value_or(-1); // 4: POS
+        uint8_t const mapq                  = record.mapping_quality();                 // 5: MAPQ
+        std::vector<seqan3::cigar> cigar    = record.cigar_sequence();                  // 6: CIGAR
+        auto const seq                      = record.sequence();                        // 10:SEQ
+        auto tags                           = record.tags();
+        auto const header_ptr               = record.header_ptr();
         auto const ref_ids = header_ptr->ref_ids();
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
-            ref_id < 0 || pos < 0)
+            ref_id < 0 || ref_pos < 0)
             continue;
 
         std::string const ref_name = ref_ids[ref_id];
@@ -63,7 +63,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                 case detection_methods::cigar_string: // Detect junctions from CIGAR string
                     analyze_cigar(query_name,
                                   ref_name,
-                                  pos,
+                                  ref_pos,
                                   cigar,
                                   seq,
                                   junctions,
@@ -75,7 +75,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                         std::string const sa_tag = tags.get<"SA"_tag>();
                         if (!sa_tag.empty())
                         {
-                            analyze_sa_tag(query_name, flag, ref_name, pos, mapq, cigar, seq, sa_tag, junctions);
+                            analyze_sa_tag(query_name, flag, ref_name, ref_pos, mapq, cigar, seq, sa_tag, junctions);
                         }
                     }
                     break;

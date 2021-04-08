@@ -7,7 +7,7 @@
  *         The junctions in each of the returned partitions are sorted even though
  *         the partitions themselves are not returned in a particular order.
  *
- * \param junctions - a vector of junctions (needs to be sorted)
+ * \param[in] junctions - a vector of junctions (needs to be sorted)
  */
 std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions);
 
@@ -15,17 +15,15 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
  *         The junctions in each of the returned sub-partitions are sorted even though
  *         the sub-partitions themselves are not returned in a particular order.
  *
- * \param partition - a partition (i.e. a vector) of junctions (needs to be sorted)
+ * \param[in] partition - a partition (i.e. a vector) of junctions (needs to be sorted)
  */
 std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition);
 
 /*! \brief Cluster junctions by an hierarchical clustering method.
  *         The returned clusters and the junctions in each returned cluster are sorted.
  *
- * \param junctions - a vector of junctions (needs to be sorted)
- * \param clusters - a vector of clusters (sorted)
- * \param clustering_cutoff - distance cutoff for clustering
+ * \param[in] junctions - a vector of junctions (needs to be sorted)
+ * \param[in] clustering_cutoff - distance cutoff for clustering
  */
-void hierarchical_clustering_method(std::vector<Junction> const & junctions,
-                                    std::vector<Cluster> & clusters,
-                                    double clustering_cutoff);
+std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
+                                                    double clustering_cutoff);

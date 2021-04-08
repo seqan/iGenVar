@@ -2,11 +2,12 @@
 
 #include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
 
-#include "modules/clustering/simple_clustering_method.hpp"  // for the simple clustering method
-#include "structures/cluster.hpp"                           // for class Cluster
-#include "variant_detection/validator.hpp"                  // for class EnumValidator
-#include "variant_detection/variant_detection.hpp"          // for detect_junctions_in_long_reads_sam_file()
-#include "variant_detection/variant_output.hpp"             // for find_and_output_variants()
+#include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
+#include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
+#include "structures/cluster.hpp"                                   // for class Cluster
+#include "variant_detection/validator.hpp"                          // for class EnumValidator
+#include "variant_detection/variant_detection.hpp"                  // for detect_junctions_in_long_reads_sam_file()
+#include "variant_detection/variant_output.hpp"                     // for find_and_output_variants()
 
 struct cmd_arguments
 {
@@ -98,14 +99,14 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 
     seqan3::debug_stream << "Start clustering...\n";
 
-    std::vector<Cluster> clusters{};
+    std::vector<Cluster> clusters;
     switch (args.clustering_method)
     {
         case 0: // simple_clustering
-            simple_clustering_method(junctions, clusters);
+            clusters = simple_clustering_method(junctions);
             break;
         case 1: // hierarchical clustering
-            seqan3::debug_stream << "The hierarchical clustering method is not yet implemented\n";
+            clusters = hierarchical_clustering_method(junctions, 10.0);
             break;
         case 2: // self-balancing_binary_tree,
             seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";

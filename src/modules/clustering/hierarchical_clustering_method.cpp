@@ -103,11 +103,11 @@ int junction_distance(Junction const & lhs, Junction const & rhs)
     }        
 }
 
-void hierarchical_clustering_method(std::vector<Junction> const & junctions,
-                                    std::vector<Cluster> & clusters,
-                                    double clustering_cutoff)
+std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
+                                                    double clustering_cutoff)
 {
     auto partitions = partition_junctions(junctions);
+    std::vector<Cluster> clusters{};
     for (std::vector<Junction> partition : partitions)
     {
         size_t partition_size = partition.size();
@@ -165,4 +165,5 @@ void hierarchical_clustering_method(std::vector<Junction> const & junctions,
         delete[] labels;
     }
     std::sort(clusters.begin(), clusters.end());
+    return clusters;
 }

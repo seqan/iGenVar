@@ -14,7 +14,7 @@ TEST(clustering, clustering_method_simple)
 
     std::vector<Junction> junctions{};
     std::vector<Cluster> resulting_clusters{};
-    simple_clustering_method(junctions, resulting_clusters);
+    resulting_clusters = simple_clustering_method(junctions);
 
     std::vector<Cluster> expected_clusters{};
     // TODO (irallia): We need to implement operator== for Clusters.
@@ -113,8 +113,7 @@ TEST(clustering, partitioning)
 TEST(clustering, strict_clustering)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters{};
-    hierarchical_clustering_method(input_junctions, clusters, 0);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0);
 
     // Each junction in separate cluster
     std::vector<Cluster> expected_clusters
@@ -169,8 +168,7 @@ TEST(clustering, strict_clustering)
 TEST(clustering, clustering_10)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters{};
-    hierarchical_clustering_method(input_junctions, clusters, 10);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 10);
 
     // Distance matrix for junctions from reads 1-3 and 6-8
     //      1   2   3
@@ -233,8 +231,7 @@ TEST(clustering, clustering_10)
 TEST(clustering, clustering_15)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters{};
-    hierarchical_clustering_method(input_junctions, clusters, 15);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 15);
 
     // Distance matrix for junctions from reads 1-3 and 6-8
     //      1   2   3
@@ -295,8 +292,7 @@ TEST(clustering, clustering_15)
 TEST(clustering, clustering_25)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters{};
-    hierarchical_clustering_method(input_junctions, clusters, 25);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 25);
 
     // Distance matrix for junctions from reads 1-3 and 6-8
     //      1   2   3

@@ -14,6 +14,7 @@ add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_cluste
                                           variant_detection/variant_output.cpp)
 
 target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC seqan3::seqan3)
+target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC fastcluster)
 target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 
 # add_executable ("${PROJECT_NAME}" main.cpp)

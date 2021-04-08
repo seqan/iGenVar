@@ -30,6 +30,9 @@ find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
 add_subdirectory (src)
 message (STATUS "${FontBold}You can run `make` to build the application.${FontReset}")
 
+# Dependency: hclust.
+add_subdirectory (lib)
+
 ## DOCUMENTATION
 
 add_subdirectory (doc EXCLUDE_FROM_ALL)

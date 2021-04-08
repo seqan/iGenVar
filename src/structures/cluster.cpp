@@ -81,3 +81,21 @@ int32_t Cluster::get_average_inserted_sequence_size() const
     int32_t average_size = std::round(static_cast<double>(sum_sizes) / members.size());
     return average_size;
 }
+
+std::vector<Junction> Cluster::get_members() const
+{
+    return members;
+}
+
+bool operator<(Cluster const & lhs, Cluster const & rhs)
+{
+    return lhs.get_average_mate1() < rhs.get_average_mate1()
+            ? true
+            : rhs.get_average_mate1() < lhs.get_average_mate1()
+                ? false
+                : lhs.get_average_mate2() < rhs.get_average_mate2()
+                    ? true
+                    : rhs.get_average_mate2() < lhs.get_average_mate2()
+                        ? false
+                        : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
+}

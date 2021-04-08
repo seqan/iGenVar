@@ -43,6 +43,9 @@ public:
 
     // \brief Returns the average length of the inserted sequences of all cluster members.
     int32_t get_average_inserted_sequence_size() const;
+
+    // \brief Returns the members of the cluster.
+    std::vector<Junction> get_members() const;
 };
 
 template <typename stream_t>
@@ -54,3 +57,12 @@ inline stream_t operator<<(stream_t && stream, Cluster const & clust)
            << clust.get_average_inserted_sequence_size();
     return stream;
 }
+
+/*! \brief A cluster is smaller than another, if its average first mate, average second mate, 
+ *         or average inserted sequence size (in this order) is smaller than the corresponding
+ *         element of the other cluster.
+ *
+ * \param lhs   left side cluster
+ * \param rhs   right side cluster
+ */
+bool operator<(Cluster const & lhs, Cluster const & rhs);

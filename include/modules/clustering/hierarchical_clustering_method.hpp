@@ -20,8 +20,12 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
 std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition);
 
 /*! \brief Cluster junctions by an hierarchical clustering method.
+ *         The returned clusters and the junctions in each returned cluster are sorted.
  *
- * \param junctions - a sorted vector of junctions
- * \param clusters - a vector of clusters
+ * \param junctions - a vector of junctions (needs to be sorted)
+ * \param clusters - a vector of clusters (sorted)
+ * \param clustering_cutoff - distance cutoff for clustering
  */
-void hierarchical_clustering_method(std::vector<Junction> const & junctions, std::vector<Cluster> & clusters);
+void hierarchical_clustering_method(std::vector<Junction> const & junctions,
+                                    std::vector<Cluster> & clusters,
+                                    double clustering_cutoff);

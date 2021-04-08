@@ -73,8 +73,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.app_name = "iGenVar";
     parser.info.man_page_title = "Short and Long Read SV Caller";
     parser.info.short_description = "Detect genomic variants in a read alignment file";
-    parser.info.version = "0.0.1";
-    parser.info.date = "04-03-2021";    // last update
+    parser.info.version = "0.0.2";
+    parser.info.date = "30-03-2021";    // last update
     parser.info.email = "lydia.buntrock@fu-berlin.de";
     parser.info.long_copyright = "long_copyright";
     parser.info.short_copyright = "short_copyright";

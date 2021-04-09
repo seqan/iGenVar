@@ -49,10 +49,10 @@ public:
     }
     //!\}
 
-    // \brief Returns the first mate of this junction.
+    //! \brief Returns the first mate of this junction.
     Breakend get_mate1() const;
 
-    // \brief Returns the second mate of this junction.
+    //! \brief Returns the second mate of this junction.
     Breakend get_mate2() const;
 
     /*! \brief Returns the sequence inserted between the two mates.
@@ -60,7 +60,7 @@ public:
     */
     seqan3::dna5_vector get_inserted_sequence() const;
 
-    // \brief Returns the name of the read giving rise to this junction.
+    //! \brief Returns the name of the read giving rise to this junction.
     std::string get_read_name() const;
 };
 
@@ -89,3 +89,10 @@ bool operator<(Junction const & lhs, Junction const & rhs);
  * \param rhs - right side junction
  */
 bool operator==(Junction const & lhs, Junction const & rhs);
+
+/*! \brief A junction is unequal to another, if their mates or the inserted sequences are unequal to each other.
+ *
+ * \param lhs - left side junction
+ * \param rhs - right side junction
+ */
+bool operator!=(Junction const & lhs, Junction const & rhs);

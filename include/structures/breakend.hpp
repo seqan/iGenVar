@@ -39,3 +39,5 @@ inline constexpr stream_t operator<<(stream_t && stream, Breakend const & b)
 bool operator<(Breakend const & lhs, Breakend const & rhs);
 
 bool operator==(Breakend const & lhs, Breakend const & rhs);
+
+bool operator!=(Breakend const & lhs, Breakend const & rhs);

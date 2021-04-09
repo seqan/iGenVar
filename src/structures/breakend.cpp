@@ -1,5 +1,7 @@
 #include "structures/breakend.hpp"
 
+#include <tuple>
+
 /*! \brief Compares two breakends.
  *
  * Breakends are compared in the following order:
@@ -9,11 +11,7 @@
  */
 bool operator<(Breakend const & lhs, Breakend const & rhs)
 {
-    return lhs.seq_name != rhs.seq_name
-            ? lhs.seq_name < rhs.seq_name
-            : lhs.orientation != rhs.orientation
-                ? lhs.orientation < rhs.orientation
-                : lhs.position < rhs.position;
+    return std::tie(lhs.seq_name, lhs.orientation, lhs.position) < std::tie(rhs.seq_name, rhs.orientation, rhs.position);
 }
 
 bool operator==(Breakend const & lhs, Breakend const & rhs)
@@ -21,4 +19,9 @@ bool operator==(Breakend const & lhs, Breakend const & rhs)
     return (lhs.seq_name == rhs.seq_name) &&
            (lhs.position == rhs.position) &&
            (lhs.orientation == rhs.orientation);
+}
+
+bool operator!=(Breakend const & lhs, Breakend const & rhs)
+{
+    return !(lhs == rhs);
 }

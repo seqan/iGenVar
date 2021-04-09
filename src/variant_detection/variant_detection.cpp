@@ -4,6 +4,7 @@
 #include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support (seqan3::sam_file_input)
 
 #include "modules/sv_detection_methods/analyze_cigar_method.hpp"    // for the split read method
+#include "modules/sv_detection_methods/analyze_read_pair_method.hpp"// for the read pair method
 #include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
 #include "variant_detection/bam_functions.hpp"                      // for hasFlag* functions
 
@@ -76,9 +77,11 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                     }
                     break;
                 case detection_methods::read_pairs: // Detect junctions from read pair evidence
-                    seqan3::debug_stream << "The read pair method is not yet implemented.\n";
+                    {
+                        // TODO (irallia): analyzing read pair is only possible for short reads!
+                        analyze_read_pair();
+                    }
                     break;
-                    // continue;
                 case detection_methods::read_depth: // Detect junctions from read depth evidence
                     seqan3::debug_stream << "The read depth method is not yet implemented.\n";
                     break;

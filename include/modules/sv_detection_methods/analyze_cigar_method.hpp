@@ -23,11 +23,12 @@
  *          4. S:       For soft clipped letters we step through the read. These are segments of the query sequence that
  *                      do not appear in the alignment. The full-length query sequence is given in the SEQ field of the
  *                      SAM record.
+ *
  *          Other CIGAR operations: H, N, P are skipped (H: hard clipping sequences are not present in the SEQ, N:
  *          skipped region representing an intron, P: padding consumes neither the query nor the reference).
  *          The junctions found are stored in the given `junctions` vector.
- *          For more information see the
- *          ([Map Format Specification](https://github.com/samtools/hts-specs/blob/master/SAMv1.pdf)) page 8.
+ *          For more information about CIGAR operations see the
+ *          [Map Format Specification](https://samtools.github.io/hts-specs/SAMv1.pdf#page=8) (last access 09.04.2021).
  */
 void analyze_cigar(std::string const & read_name,
                    std::string const & chromosome,

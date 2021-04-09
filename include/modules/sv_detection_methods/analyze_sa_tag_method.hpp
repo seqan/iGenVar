@@ -17,14 +17,19 @@ void split_string(std::string const & str, Container & cont, char const delim = 
  * \param[in]       sa_string           - "SA" tag string
  * \param[in, out]  aligned_segments    - vector of [aligned_segments](\ref AlignedSegment)
  *
- * \details The SA tag describes the alignments of a chimeric read and is like a small SAM within a SAM file:
- *          "SA:Z:(rname,pos,strand,CIGAR,mapQ,NM;)+"
+ * \details The SA tag describes the alignments of a chimeric read and is like a small SAM within a SAM
+ *          file:
+ *
+ *          `"SA:Z:(rname,pos,strand,CIGAR,mapQ,NM;)+"`
+ *
  *          Each element (in parentheses) represents one alignment segment of the chimeric alignment formatted as
  *          a colon-delimited list.
  *          We add all segments to our candidate list `aligned_segments` and examine them in the following function
  *          `analyze_aligned_segments()`.
+ *
  *          For more information about this tag, see the
- *          ([Map Optional Fields Specification](https://github.com/samtools/hts-specs/blob/master/SAMtags.pdf)).
+ *          [Map Optional Fields Specification](https://samtools.github.io/hts-specs/SAMtags.pdf)
+ *          (last access 09.04.2021).
  */
 void retrieve_aligned_segments(std::string const & sa_string, std::vector<AlignedSegment> & aligned_segments);
 

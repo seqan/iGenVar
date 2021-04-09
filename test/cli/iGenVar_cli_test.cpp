@@ -207,16 +207,12 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
     std::string expected_err
     {
         "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
-        "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
         "BND: chr21\t41972615\tReverse\tchr22\t17458417\tReverse\t2\tm41327/11677/CCS\n"
-        "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
         "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm21263/13017/CCS\n"
-        "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
         "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
-        "The read pair method is not yet implemented.\n"
         "The read depth method is not yet implemented.\n"
         "Start clustering...\n"
         "Done with clustering. Found 3 junction clusters.\n"

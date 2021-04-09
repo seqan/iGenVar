@@ -6,10 +6,12 @@
 
 #include <seqan3/io/stream/concept.hpp>
 
-/*
+/*!\details
  * An info field looks as follows:
- * ##INFO=<ID=ID,Number=number,Type=type,Description="description",Source="source",Version="version">
- * https://samtools.github.io/hts-specs/VCFv4.3.pdf (1.4.2 Information field format)
+ *
+ * `##INFO=<ID=ID,Number=number,Type=type,Description="description",Source="source",Version="version">`
+ * \see [Variant Call Format Specification](https://samtools.github.io/hts-specs/VCFv4.3.pdf#page=5)
+ * (1.4.2 Information field format) (last access 09.04.2021)
  */
 class info_entry
 {

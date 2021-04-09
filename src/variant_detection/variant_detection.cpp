@@ -77,6 +77,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                     }
                     break;
                 case detection_methods::read_pairs: // Detect junctions from read pair evidence
+                    if (hasFlagProperMappedPairedReads(flag))
                     {
                         // TODO (irallia): analyzing read pair is only possible for short reads!
                         analyze_read_pair();

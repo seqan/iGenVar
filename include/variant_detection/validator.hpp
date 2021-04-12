@@ -1,6 +1,10 @@
 #pragma once
 
-#include <seqan3/argument_parser/auxiliary.hpp>     // for enumeration_names
+#include <seqan3/std/algorithm>                             // for std::ranges::move
+
+#include <seqan3/argument_parser/auxiliary.hpp>             // for enumeration_names
+#include <seqan3/argument_parser/exceptions.hpp>            // for seqan3::validation_error
+#include <seqan3/core/debug_stream/detail/to_string.hpp>    // for seqan3::detail::to_string
 
 template <typename option_value_t>
 class EnumValidator

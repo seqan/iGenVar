@@ -1,59 +1,8 @@
-#include <seqan3/argument_parser/argument_parser.hpp>
-#include <seqan3/core/debug_stream.hpp>
-#include <seqan3/range/views/get.hpp>
+#include <seqan3/argument_parser/argument_parser.hpp>   // for seqan3::argument_parser
+#include <seqan3/core/debug_stream.hpp>                 // for seqan3::debug_stream
 
 #include "variant_detection/variant_detection.hpp"
 #include "variant_detection/validator.hpp"            // for class EnumValidator
-
-// Specialise a mapping from an identifying string to the respective value of your type methods. With the help of this
-// function, you're able to call ./detect_breackends with -m 1 and -m cigar_string and get the same result.
-auto enumeration_names(detection_methods)
-{
-    return std::unordered_map<std::string, detection_methods>{{"0", detection_methods::cigar_string},
-                                                              {"cigar_string", detection_methods::cigar_string},
-                                                              {"1", detection_methods::split_read},
-                                                              {"split_read", detection_methods::split_read},
-                                                              {"2", detection_methods::read_pairs},
-                                                              {"read_pairs", detection_methods::read_pairs},
-                                                              {"3", detection_methods::read_depth},
-                                                              {"read_depth", detection_methods::read_depth}};
-};
-
-// Specialise a mapping from an identifying string to the respective value of your type clustering_methods. With the
-// help of this function, you're able to call ./detect_breackends with -c 0 and -c simple_clustering and get the same
-// result.
-auto enumeration_names(clustering_methods)
-{
-    return std::unordered_map<std::string,
-                              clustering_methods>{{"0", clustering_methods::simple_clustering},
-                                                  {"simple_clustering",
-                                                   clustering_methods::simple_clustering},
-                                                  {"1", clustering_methods::hierarchical_clustering},
-                                                  {"hierarchical_clustering",
-                                                   clustering_methods::hierarchical_clustering},
-                                                  {"2", clustering_methods::self_balancing_binary_tree},
-                                                  {"self_balancing_binary_tree",
-                                                   clustering_methods::self_balancing_binary_tree},
-                                                  {"3", clustering_methods::candidate_selection_based_on_voting},
-                                                  {"candidate_selection_based_on_voting",
-                                                   clustering_methods::candidate_selection_based_on_voting}};
-};
-
-// Specialise a mapping from an identifying string to the respective value of your type refinement_methods. With the
-// help of this function, you're able to call ./detect_breackends with -r 0 and -r no_refinement and get the same
-// result.
-auto enumeration_names(refinement_methods)
-{
-    return std::unordered_map<std::string, refinement_methods>{{"0", refinement_methods::no_refinement},
-                                                               {"no_refinement",
-                                                                refinement_methods::no_refinement},
-                                                               {"1", refinement_methods::sViper_refinement_method},
-                                                               {"sViper_refinement_method",
-                                                                refinement_methods::sViper_refinement_method},
-                                                               {"2", refinement_methods::sVirl_refinement_method},
-                                                               {"sVirl_refinement_method",
-                                                                refinement_methods::sVirl_refinement_method}};
-};
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
 {

@@ -6,6 +6,7 @@
 #include "method_enums.hpp"         // for enum clustering_methods and refinement_methods
 #include "structures/junction.hpp"  // for class Junction
 
+//TODO (irallia): move this back to the iGenVar.cpp with the PR #104
 struct cmd_arguments
 {
     std::filesystem::path alignment_short_reads_file_path{""};

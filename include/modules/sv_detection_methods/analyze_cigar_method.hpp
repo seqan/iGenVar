@@ -1,5 +1,7 @@
 #pragma once
 
+#include "structures/junction.hpp"  // for class Junction
+
 /*! \brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *
  * \param[in]       read_name       - QNAME field of the SAM/BAM file

@@ -14,7 +14,7 @@
  *
  * \details Extracts genomic variants from given junction clusters.
  */
-void find_and_output_variant(std::vector<Cluster> const & clusters, std::ostream & out_stream);
+void find_and_output_variants(std::vector<Cluster> const & clusters, std::ostream & out_stream);
 
 
 /*! \brief Detects genomic variants from junction clusters and prints them in output file in VCF format.
@@ -25,5 +25,5 @@ void find_and_output_variant(std::vector<Cluster> const & clusters, std::ostream
  * \details Extracts genomic variants from given junction clusters.
  */
 //!\overload
-void find_and_output_variant(std::vector<Cluster> const & clusters,
+void find_and_output_variants(std::vector<Cluster> const & clusters,
                              std::filesystem::path const & output_file_path);

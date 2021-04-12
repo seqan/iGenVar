@@ -51,13 +51,16 @@ void check_output(std::string const expected_res)
 TEST(junction_detection, fasta_out_not_empty)
 {
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                      default_alignment_long_reads_file_path,
-                                      default_methods,
-                                      simple_clustering,
-                                      no_refinement,
-                                      sv_default_length,
-                                      empty_output_path);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        default_alignment_long_reads_file_path,
+        empty_output_path,
+        default_methods,
+        simple_clustering,
+        no_refinement,
+        sv_default_length
+    };
+    detect_variants_in_alignment_file(args);
 
     // check_output_and_cleanup(expected_res);
     check_output(empty_res);
@@ -73,13 +76,16 @@ TEST(junction_detection, sam_file_unsorted)
                     "@SQ\tSN:testchr\tLN:1000\n" <<
                     "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
     unsorted_sam.close();
-    EXPECT_THROW(detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                                   unsorted_sam_path,
-                                                   default_methods,
-                                                   simple_clustering,
-                                                   no_refinement,
-                                                   sv_default_length,
-                                                   empty_output_path), seqan3::format_error);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        unsorted_sam_path,
+        empty_output_path,
+        default_methods,
+        simple_clustering,
+        no_refinement,
+        sv_default_length
+    };
+    EXPECT_THROW(detect_variants_in_alignment_file(args), seqan3::format_error);
 
     std::filesystem::remove(unsorted_sam_path);
 }
@@ -88,13 +94,16 @@ TEST(junction_detection, sam_file_unsorted)
 TEST(junction_detection, clustering_method_hierarchical)
 {
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                      default_alignment_long_reads_file_path,
-                                      default_methods,
-                                      hierarchical_clustering,
-                                      no_refinement,
-                                      sv_default_length,
-                                      empty_output_path);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        default_alignment_long_reads_file_path,
+        empty_output_path,
+        default_methods,
+        hierarchical_clustering,
+        no_refinement,
+        sv_default_length
+    };
+    detect_variants_in_alignment_file(args);
 
     // check_output_and_cleanup("");
     check_output(empty_res);
@@ -103,13 +112,16 @@ TEST(junction_detection, clustering_method_hierarchical)
 TEST(junction_detection, clustering_method_self_balancing_binary_tree)
 {
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                      default_alignment_long_reads_file_path,
-                                      default_methods,
-                                      self_balancing_binary_tree,
-                                      no_refinement,
-                                      sv_default_length,
-                                      empty_output_path);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        default_alignment_long_reads_file_path,
+        empty_output_path,
+        default_methods,
+        self_balancing_binary_tree,
+        no_refinement,
+        sv_default_length
+    };
+    detect_variants_in_alignment_file(args);
 
     // check_output_and_cleanup("");
     check_output(empty_res);
@@ -118,13 +130,16 @@ TEST(junction_detection, clustering_method_self_balancing_binary_tree)
 TEST(junction_detection, clustering_method_candidate_selection_based_on_voting)
 {
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                      default_alignment_long_reads_file_path,
-                                      default_methods,
-                                      candidate_selection_based_on_voting,
-                                      no_refinement,
-                                      sv_default_length,
-                                      empty_output_path);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        default_alignment_long_reads_file_path,
+        empty_output_path,
+        default_methods,
+        candidate_selection_based_on_voting,
+        no_refinement,
+        sv_default_length
+    };
+    detect_variants_in_alignment_file(args);
 
     // check_output_and_cleanup("");
     check_output(empty_res);
@@ -135,13 +150,16 @@ TEST(junction_detection, clustering_method_candidate_selection_based_on_voting)
 TEST(junction_detection, refinement_method_sViper)
 {
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                      default_alignment_long_reads_file_path,
-                                      default_methods,
-                                      simple_clustering,
-                                      sViper_refinement_method,
-                                      sv_default_length,
-                                      empty_output_path);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        default_alignment_long_reads_file_path,
+        empty_output_path,
+        default_methods,
+        simple_clustering,
+        sViper_refinement_method,
+        sv_default_length
+    };
+    detect_variants_in_alignment_file(args);
 
     // check_output_and_cleanup(expected_res);
     check_output(empty_res);
@@ -150,13 +168,16 @@ TEST(junction_detection, refinement_method_sViper)
 TEST(junction_detection, refinement_method_sVirl)
 {
     testing::internal::CaptureStdout();
-    detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                      default_alignment_long_reads_file_path,
-                                      default_methods,
-                                      simple_clustering,
-                                      sVirl_refinement_method,
-                                      sv_default_length,
-                                      empty_output_path);
+    cmd_arguments args{
+        empty_alignment_short_reads_file_path,
+        default_alignment_long_reads_file_path,
+        empty_output_path,
+        default_methods,
+        simple_clustering,
+        sVirl_refinement_method,
+        sv_default_length
+    };
+    detect_variants_in_alignment_file(args);
 
     // check_output_and_cleanup(expected_res);
     check_output(empty_res);

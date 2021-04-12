@@ -99,43 +99,36 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
     std::sort(junctions.begin(), junctions.end());
 }
 
-void detect_variants_in_alignment_file(std::filesystem::path const & alignment_short_reads_file_path,
-                                       std::filesystem::path const & alignment_long_reads_file_path,
-                                       std::vector<detection_methods> const & methods,
-                                       clustering_methods const & clustering_method,
-                                       refinement_methods const & refinement_method,
-                                       uint64_t const min_var_length,
-                                       std::filesystem::path const & output_file_path)
-
+void detect_variants_in_alignment_file(cmd_arguments const & args)
 {
     // Store junctions
     std::vector<Junction> junctions{};
 
     // short reads
     // ToDo (Lydia): handle short reads
-    if (alignment_short_reads_file_path != "")
+    if (args.alignment_short_reads_file_path != "")
     {
         seqan3::debug_stream << "Short reads are currently not supported.\n ";
         return;
     }
 
     // long reads
-    if (alignment_long_reads_file_path == "")
+    if (args.alignment_long_reads_file_path == "")
     {
         seqan3::debug_stream << "No long reads were given (short reads are currently not supported).\n ";
         return;
     }
     detect_junctions_in_long_reads_sam_file(junctions,
-                                            alignment_long_reads_file_path,
-                                            methods,
-                                            clustering_method,
-                                            refinement_method,
-                                            min_var_length);
+                                            args.alignment_long_reads_file_path,
+                                            args.methods,
+                                            args.clustering_method,
+                                            args.refinement_method,
+                                            args.min_var_length);
 
     seqan3::debug_stream << "Start clustering...\n";
 
     std::vector<Cluster> clusters{};
-    switch (clustering_method)
+    switch (args.clustering_method)
     {
         case 0: // simple_clustering
             simple_clustering_method(junctions, clusters);
@@ -153,7 +146,7 @@ void detect_variants_in_alignment_file(std::filesystem::path const & alignment_s
 
     seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
 
-    switch (refinement_method)
+    switch (args.refinement_method)
     {
         case 0: // no refinement
             seqan3::debug_stream << "No refinement was selected.\n";
@@ -166,5 +159,5 @@ void detect_variants_in_alignment_file(std::filesystem::path const & alignment_s
             break;
     }
 
-    find_and_output_variant(clusters, output_file_path);
+    find_and_output_variant(clusters, args.output_file_path);
 }

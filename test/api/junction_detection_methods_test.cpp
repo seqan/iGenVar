@@ -66,13 +66,16 @@ TEST(junction_detection, single_method_only)
         seqan3::debug_stream << "-----------------------------------------------------------------------\n"
                              << "Test Method: " << method << '\n'
                              << "-----------------------------------------------------------------------\n";
-        detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                          default_alignment_long_reads_file_path,
-                                          {method},
-                                          simple_clustering,
-                                          no_refinement,
-                                          sv_default_length,
-                                          empty_path);
+        cmd_arguments args{
+            empty_alignment_short_reads_file_path,
+            default_alignment_long_reads_file_path,
+            empty_path,
+            {method},
+            simple_clustering,
+            no_refinement,
+            sv_default_length
+        };
+        detect_variants_in_alignment_file(args);
 
         //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
         //We need to replace this with real API tests that check inidividual parts of the pipeline.
@@ -113,13 +116,16 @@ TEST(junction_detection, method_pairs)
             seqan3::debug_stream << "-----------------------------------------------------------------------\n"
                                     << "Test Methods: " << method_i << ", " << method_j << '\n'
                                     << "-----------------------------------------------------------------------\n";
-            detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                              default_alignment_long_reads_file_path,
-                                              {method_i, method_j},
-                                              simple_clustering,
-                                              no_refinement,
-                                              sv_default_length,
-                                              empty_path);
+            cmd_arguments args{
+                empty_alignment_short_reads_file_path,
+                default_alignment_long_reads_file_path,
+                empty_path,
+                {method_i, method_j},
+                simple_clustering,
+                no_refinement,
+                sv_default_length
+            };
+            detect_variants_in_alignment_file(args);
 
             //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
             //We need to replace this with real API tests that check inidividual parts of the pipeline.
@@ -175,13 +181,16 @@ TEST(junction_detection, method_triples)
                                     << "Test Methods: " << method_i << ", " << method_j << ", " << method_k
                                     << '\n'
                                     << "-----------------------------------------------------------------------\n";
-                detect_variants_in_alignment_file(empty_alignment_short_reads_file_path,
-                                                  default_alignment_long_reads_file_path,
-                                                  {method_i, method_j, method_k},
-                                                  simple_clustering,
-                                                  no_refinement,
-                                                  sv_default_length,
-                                                  empty_path);
+                cmd_arguments args{
+                    empty_alignment_short_reads_file_path,
+                    default_alignment_long_reads_file_path,
+                    empty_path,
+                    {method_i, method_j, method_k},
+                    simple_clustering,
+                    no_refinement,
+                    sv_default_length
+                };
+                detect_variants_in_alignment_file(args);
 
                 //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
                 //We need to replace this with real API tests that check inidividual parts of the pipeline.

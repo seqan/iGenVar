@@ -55,18 +55,6 @@ auto enumeration_names(refinement_methods)
                                                                 refinement_methods::sVirl_refinement_method}};
 };
 
-struct cmd_arguments
-{
-    std::filesystem::path alignment_short_reads_file_path{""};
-    std::filesystem::path alignment_long_reads_file_path{""};
-    std::filesystem::path insertion_file_path{};
-    std::filesystem::path output_file_path{};
-    std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
-    clustering_methods clustering_method{simple_clustering};                                    // default: simple clustering method
-    refinement_methods refinement_method{no_refinement};                                        // default: no refinement
-    uint64_t min_var_length = 30;
-};
-
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
 {
     parser.info.author = "Lydia Buntrock, David Heller, Joshua Kim";
@@ -155,13 +143,7 @@ int main(int argc, char ** argv)
         return -1;
     }
 
-    detect_variants_in_alignment_file(args.alignment_short_reads_file_path,
-                                      args.alignment_long_reads_file_path,
-                                      args.methods,
-                                      args.clustering_method,
-                                      args.refinement_method,
-                                      args.min_var_length,
-                                      args.output_file_path);
+    detect_variants_in_alignment_file(args);
 
     return 0;
 }

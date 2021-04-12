@@ -10,23 +10,86 @@
 
 using seqan3::operator""_tag;
 
+void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
+                                              std::filesystem::path const & alignment_short_reads_file_path,
+                                              std::vector<detection_methods> const & methods,
+                                              uint64_t const min_var_length)
+{
+    // Open input alignment file
+    using my_fields = seqan3::fields<seqan3::field::flag,       // 2: FLAG
+                                     seqan3::field::ref_id,     // 3: RNAME
+                                     seqan3::field::ref_offset, // 4: POS
+                                     seqan3::field::mapq,       // 5: MAPQ
+                                     seqan3::field::header_ptr>;
+
+    seqan3::sam_file_input alignment_short_reads_file{alignment_short_reads_file_path, my_fields{}};
+
+    // Check that the file is sorted before proceeding.
+    if (alignment_short_reads_file.header().sorting != "coordinate")
+    {
+        throw seqan3::format_error{"ERROR: Input file must be sorted by coordinate (e.g. samtools sort)"};
+    }
+    uint16_t num_good = 0;
+
+    for (auto & record : alignment_short_reads_file)
+    {
+        seqan3::sam_flag const flag         = record.flag();                            // 2: FLAG
+        int32_t const ref_id                = record.reference_id().value_or(-1);       // 3: RNAME
+        int32_t const ref_pos               = record.reference_position().value_or(-1); // 4: POS
+        uint8_t const mapq                  = record.mapping_quality();                 // 5: MAPQ
+        auto const header_ptr               = record.header_ptr();
+        auto const ref_ids = header_ptr->ref_ids();
+
+        if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
+            ref_id < 0 || ref_pos < 0)
+            continue;
+
+        std::string const ref_name = ref_ids[ref_id];
+        for (detection_methods method : methods) {
+            switch (method)
+            {
+                case detection_methods::cigar_string: // Detect junctions from CIGAR string
+                    seqan3::debug_stream << "The cigar string method for short reads is not yet implemented.\n";
+                    break;
+                case detection_methods::split_read:     // Detect junctions from split read evidence (SA tag,
+                    seqan3::debug_stream << "The split read method for short reads is not yet implemented.\n";
+                    break;
+                case detection_methods::read_pairs: // Detect junctions from read pair evidence
+                    if (hasFlagMultiple(flag))
+                    {
+                        analyze_read_pair();
+                    }
+                    break;
+                case detection_methods::read_depth: // Detect junctions from read depth evidence
+                    seqan3::debug_stream << "The read depth method for short reads is not yet implemented.\n";
+                    break;
+            }
+        }
+
+        num_good++;
+        if (num_good % 1000 == 0)
+        {
+            seqan3::debug_stream << num_good << " good alignments from short read file." << std::endl;
+        }
+    }
+}
+
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                              std::filesystem::path const & alignment_long_reads_file_path,
                                              std::vector<detection_methods> const & methods,
-                                             clustering_methods const & clustering_method,
-                                             refinement_methods const & refinement_method,
                                              uint64_t const min_var_length)
 {
     // Open input alignment file
-    using my_fields = seqan3::fields<seqan3::field::id,
-                                     seqan3::field::ref_id,
-                                     seqan3::field::ref_offset,
-                                     seqan3::field::flag,
-                                     seqan3::field::mapq,
-                                     seqan3::field::cigar,
-                                     seqan3::field::seq,
+    using my_fields = seqan3::fields<seqan3::field::id,         // 1: QNAME
+                                     seqan3::field::flag,       // 2: FLAG
+                                     seqan3::field::ref_id,     // 3: RNAME
+                                     seqan3::field::ref_offset, // 4: POS
+                                     seqan3::field::mapq,       // 5: MAPQ
+                                     seqan3::field::cigar,      // 6: CIGAR
+                                     seqan3::field::seq,        // 10:SEQ
                                      seqan3::field::tags,
                                      seqan3::field::header_ptr>;
+
     seqan3::sam_file_input alignment_long_reads_file{alignment_long_reads_file_path, my_fields{}};
 
     // Check that the file is sorted before proceeding.
@@ -44,7 +107,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
         int32_t const ref_pos               = record.reference_position().value_or(-1); // 4: POS
         uint8_t const mapq                  = record.mapping_quality();                 // 5: MAPQ
         std::vector<seqan3::cigar> cigar    = record.cigar_sequence();                  // 6: CIGAR
-        auto const seq                      = record.sequence();                        // 10:SEQ
+        seqan3::dna5_vector const seq       = record.sequence();                        // 10:SEQ
         auto tags                           = record.tags();
         auto const header_ptr               = record.header_ptr();
         auto const ref_ids = header_ptr->ref_ids();
@@ -76,25 +139,18 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                         }
                     }
                     break;
-                case detection_methods::read_pairs: // Detect junctions from read pair evidence
-                    if (hasFlagProperMappedPairedReads(flag))
-                    {
-                        // TODO (irallia): analyzing read pair is only possible for short reads!
-                        analyze_read_pair();
-                    }
+                case detection_methods::read_pairs: // There are no read pairs in long reads.
                     break;
                 case detection_methods::read_depth: // Detect junctions from read depth evidence
-                    seqan3::debug_stream << "The read depth method is not yet implemented.\n";
+                    seqan3::debug_stream << "The read depth method for long reads is not yet implemented.\n";
                     break;
-                    // continue;
             }
         }
 
         num_good++;
         if (num_good % 1000 == 0)
         {
-            seqan3::debug_stream << num_good << " good alignments" << std::endl;
+            seqan3::debug_stream << num_good << " good alignments from long read file." << std::endl;
         }
     }
-    std::sort(junctions.begin(), junctions.end());
 }

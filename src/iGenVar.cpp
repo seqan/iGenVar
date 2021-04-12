@@ -77,25 +77,26 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     std::vector<Junction> junctions{};
 
     // short reads
-    // ToDo (Lydia): handle short reads
     if (args.alignment_short_reads_file_path != "")
     {
-        seqan3::debug_stream << "Short reads are currently not supported.\n";
-        return;
+        seqan3::debug_stream << "Detect junctions in short reads...\n";
+        detect_junctions_in_short_reads_sam_file(junctions,
+                                                 args.alignment_short_reads_file_path,
+                                                 args.methods,
+                                                 args.min_var_length);
     }
 
     // long reads
-    if (args.alignment_long_reads_file_path == "")
+    if (args.alignment_long_reads_file_path != "")
     {
-        seqan3::debug_stream << "No long reads were given (short reads are currently not supported).\n";
-        return;
+        seqan3::debug_stream << "Detect junctions in long reads...\n";
+        detect_junctions_in_long_reads_sam_file(junctions,
+                                                args.alignment_long_reads_file_path,
+                                                args.methods,
+                                                args.min_var_length);
     }
-    detect_junctions_in_long_reads_sam_file(junctions,
-                                            args.alignment_long_reads_file_path,
-                                            args.methods,
-                                            args.clustering_method,
-                                            args.refinement_method,
-                                            args.min_var_length);
+
+    std::sort(junctions.begin(), junctions.end());
 
     seqan3::debug_stream << "Start clustering...\n";
 

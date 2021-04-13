@@ -80,14 +80,14 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     // ToDo (Lydia): handle short reads
     if (args.alignment_short_reads_file_path != "")
     {
-        seqan3::debug_stream << "Short reads are currently not supported.\n ";
+        seqan3::debug_stream << "Short reads are currently not supported.\n";
         return;
     }
 
     // long reads
     if (args.alignment_long_reads_file_path == "")
     {
-        seqan3::debug_stream << "No long reads were given (short reads are currently not supported).\n ";
+        seqan3::debug_stream << "No long reads were given (short reads are currently not supported).\n";
         return;
     }
     detect_junctions_in_long_reads_sam_file(junctions,

@@ -8,7 +8,8 @@
 
 using seqan3::operator""_dna5;
 
-std::string const empty_alignment_short_reads_file_path = "";
+// TODO (irallia): Add a test for short read files.
+// std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_short_read_mini_example.sam";
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path const empty_output_path{};
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};

@@ -14,7 +14,7 @@ declare_datasource (FILE simulated.minimap2.hg19.coordsorted_cutoff.sam
 # copies file to <build>/data/paired_end_short_read_mini_example.sam
 declare_datasource (FILE paired_end_short_read_mini_example.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/paired_end_short_read_mini_example.sam
-                    URL_HASH SHA256=11403c69b9967b345dae78c52c25259f529bae20593db487bffffb54c1efdaff)
+                    URL_HASH SHA256=c45579b4de9dc60365e31149197a88354164969adc584bf41c03cb05e4398e63)
 
 # copies file to <build>/data/single_end_mini_example.sam
 declare_datasource (FILE single_end_mini_example.sam

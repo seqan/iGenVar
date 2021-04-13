@@ -2,7 +2,7 @@
 
 #include <seqan3/argument_parser/argument_parser.hpp>   // for seqan3::argument_parser
 
-#include "variant_detection/variant_detection.hpp"
+struct cmd_arguments;
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
 

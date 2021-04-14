@@ -1,41 +1,36 @@
 #include <gtest/gtest.h>
 
-#include <seqan3/core/debug_stream.hpp>
+#include <fstream>
 
-#include "variant_detection/variant_detection.hpp"
+#include <seqan3/io/exception.hpp>
+
+#include "variant_detection/variant_detection.hpp"  // for detect_junctions_in_long_reads_sam_file()
 
 using seqan3::operator""_dna5;
 
 std::string const empty_alignment_short_reads_file_path = "";
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
-std::filesystem::path empty_path{};
-std::vector<detection_methods> const all_methods{cigar_string, split_read, read_pairs, read_depth};
+std::filesystem::path const empty_output_path{};
+std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
 constexpr uint64_t sv_default_length = 30;
 
 // Explanation for the strings:
-// chr21\t41972616\tForward\tchr21\t41972617\tForward\t1\t1681
+// chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681
 // INS - Chromosome: chr21; Position: 41972615; Orientation: Forward
 //       Chromosome: chr21; Position: 41972616; Orientation: Forward
 //       Supporting Reads: 1
 //       Average insertion size between two positions: 1681bp
-// std::string expected_res_cigar
-// {
-//     "chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681\n"
-// };
-
 // chr22\t17458417\tForward\tchr21\t41972615\tForward\t1\t2
 // BND - Chromosome: chr22; Position: 17458417; Orientation: Forward
 //       Chromosome: chr21; Position: 41972615; Orientation: Forward
 //       Supporting Reads: 1
 //       Average insertion size between two positions: 2bp
-// std::string expected_res_split
+// std::string expected_res
 // {
+//     "chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681\n"
 //     "chr22\t17458417\tForward\tchr21\t41972615\tForward\t1\t2\n"
 //     "chr22\t17458418\tForward\tchr21\t41972616\tForward\t2\t0\n"
 // };
-
-// std::string expected_res_pair = "";
-// std::string expected_res_depth = "";
 
 std::string empty_res
 {
@@ -47,7 +42,8 @@ std::string empty_res
     "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
 };
 
-void check_output(std::string expected_res)
+
+void check_output(std::string const expected_res)
 {
     std::string std_cout = testing::internal::GetCapturedStdout();
     EXPECT_EQ(expected_res, std_cout);
@@ -55,177 +51,13 @@ void check_output(std::string expected_res)
     return;
 }
 
-/* -------- detection methods tests -------- */
-/* -------- single methods -------- */
-
-TEST(junction_detection, single_method_only)
-{
-    for (detection_methods method : all_methods)
-    {
-        testing::internal::CaptureStdout();
-        seqan3::debug_stream << "-----------------------------------------------------------------------\n"
-                             << "Test Method: " << method << '\n'
-                             << "-----------------------------------------------------------------------\n";
-        cmd_arguments args{
-            empty_alignment_short_reads_file_path,
-            default_alignment_long_reads_file_path,
-            empty_path,
-            {method},
-            simple_clustering,
-            no_refinement,
-            sv_default_length
-        };
-        detect_variants_in_alignment_file(args);
-
-        //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
-        //We need to replace this with real API tests that check inidividual parts of the pipeline.
-        if (method == 0)
-        {
-            // check_output_and_cleanup(expected_res_cigar);
-            check_output(empty_res);
-        }
-        else if (method == 1)
-        {
-            // check_output_and_cleanup(expected_res_split);
-            check_output(empty_res);
-        }
-        else if (method == 2)
-        {
-            // check_output_and_cleanup(expected_res_pair);
-            check_output(empty_res);
-        }
-        else // (method == 3)
-        {
-            // check_output_and_cleanup(expected_res_depth);
-            check_output(empty_res);
-        }
-    }
-}
-
-/* -------- method pairs -------- */
-
-TEST(junction_detection, method_pairs)
-{
-    for (detection_methods method_i : all_methods)
-    {
-        for (detection_methods method_j : all_methods)
-        {
-            if (method_i >= method_j) continue; // only check in one order to safe time
-
-            testing::internal::CaptureStdout();
-            seqan3::debug_stream << "-----------------------------------------------------------------------\n"
-                                    << "Test Methods: " << method_i << ", " << method_j << '\n'
-                                    << "-----------------------------------------------------------------------\n";
-            cmd_arguments args{
-                empty_alignment_short_reads_file_path,
-                default_alignment_long_reads_file_path,
-                empty_path,
-                {method_i, method_j},
-                simple_clustering,
-                no_refinement,
-                sv_default_length
-            };
-            detect_variants_in_alignment_file(args);
-
-            //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
-            //We need to replace this with real API tests that check inidividual parts of the pipeline.
-            if (method_i == 0 && method_j == 1)
-            {
-                // check_output_and_cleanup(expected_res_cigar + expected_res_split);
-                check_output(empty_res);
-            }
-            else if (method_i == 0 && method_j == 2)
-            {
-                // check_output_and_cleanup(expected_res_cigar + expected_res_pair);
-                check_output(empty_res);
-            }
-            else if (method_i == 0 && method_j == 3)
-            {
-                // check_output_and_cleanup(expected_res_cigar + expected_res_depth);
-                check_output(empty_res);
-            }
-            else if (method_i == 1 && method_j == 2)
-            {
-                // check_output_and_cleanup(expected_res_split + expected_res_pair);
-                check_output(empty_res);
-            }
-            else if (method_i == 1 && method_j == 3)
-            {
-                // check_output_and_cleanup(expected_res_split + expected_res_depth);
-                check_output(empty_res);
-            }
-            else // (method_i == 2 && method_j == 3)
-            {
-                // check_output_and_cleanup(expected_res_pair + expected_res_depth);
-                check_output(empty_res);
-            }
-        }
-    }
-}
-
-/* -------- method triples -------- */
-
-TEST(junction_detection, method_triples)
-{
-    for (detection_methods method_i : all_methods)
-    {
-        for (detection_methods method_j : all_methods)
-        {
-            if (method_i >= method_j) continue; // only check in one order to safe time
-            for (detection_methods method_k : all_methods)
-            {
-                if (method_j >= method_k) continue; // only check in one order to safe time
-
-                testing::internal::CaptureStdout();
-                seqan3::debug_stream << "-----------------------------------------------------------------------\n"
-                                    << "Test Methods: " << method_i << ", " << method_j << ", " << method_k
-                                    << '\n'
-                                    << "-----------------------------------------------------------------------\n";
-                cmd_arguments args{
-                    empty_alignment_short_reads_file_path,
-                    default_alignment_long_reads_file_path,
-                    empty_path,
-                    {method_i, method_j, method_k},
-                    simple_clustering,
-                    no_refinement,
-                    sv_default_length
-                };
-                detect_variants_in_alignment_file(args);
-
-                //TODO (eldariont): Currently, this (CLI-like) test compares the stdout of the method with an expected string in VCF format.
-                //We need to replace this with real API tests that check inidividual parts of the pipeline.
-                if (method_i == 0 && method_j == 1 && method_k == 2)
-                {
-                    // check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_pair);
-                    check_output(empty_res);
-                }
-                else if (method_i == 0 && method_j == 1 && method_k == 3)
-                {
-                    // check_output_and_cleanup(expected_res_cigar + expected_res_split + expected_res_depth);
-                    check_output(empty_res);
-                }
-                else if (method_i == 0 && method_j == 2 && method_k == 3)
-                {
-                    // check_output_and_cleanup(expected_res_cigar + expected_res_pair + expected_res_depth);
-                    check_output(empty_res);
-                }
-                else if (method_i == 1 && method_j == 2 && method_k == 3)
-                {
-                    // check_output_and_cleanup(expected_res_split + expected_res_pair + expected_res_depth);
-                    check_output(empty_res);
-                }
-            }
-        }
-    }
-}
+std::vector<Junction> junctions_res{};
 
 TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
 {
-    std::vector<Junction> junctions_res{};
-
     detect_junctions_in_long_reads_sam_file(junctions_res,
                                             default_alignment_long_reads_file_path,
-                                            all_methods,
+                                            default_methods,
                                             simple_clustering,
                                             sVirl_refinement_method,
                                             sv_default_length);
@@ -294,7 +126,7 @@ TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
         Junction{new_breakend_7, new_breakend_9, ""_dna5, read_name_4}
     };
 
-    EXPECT_EQ(junctions_expected_res.size(), junctions_res.size());
+    ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
     for (size_t i = 0; i < junctions_expected_res.size(); ++i)
     {
@@ -307,4 +139,25 @@ TEST(junction_detection, detect_junctions_in_long_reads_sam_file)
         //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ": \n"
         //                      << junctions_expected_res[i].get_mate2() << " == " << junctions_res[i].get_mate2() << "\n";
     }
+}
+
+TEST(junction_detection, long_read_sam_file_unsorted)
+{
+    // Create a blank SAM file without a sorting indicator.
+    std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
+    std::filesystem::path unsorted_sam_path{tmp_dir/"unsorted.sam"};
+    std::ofstream unsorted_sam{unsorted_sam_path.c_str()};
+    unsorted_sam << "@HD\tVN:1.6\n" <<
+                    "@SQ\tSN:testchr\tLN:1000\n" <<
+                    "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
+    unsorted_sam.close();
+
+    EXPECT_THROW(detect_junctions_in_long_reads_sam_file(junctions_res,
+                                                         unsorted_sam_path,
+                                                         default_methods,
+                                                         simple_clustering,
+                                                         no_refinement,
+                                                         sv_default_length), seqan3::format_error);
+
+    std::filesystem::remove(unsorted_sam_path);
 }

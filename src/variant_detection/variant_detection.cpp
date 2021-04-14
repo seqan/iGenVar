@@ -1,15 +1,11 @@
 #include "variant_detection/variant_detection.hpp"
 
 #include <seqan3/core/debug_stream.hpp>
-#include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support
-#include <seqan3/io/sequence_file/output.hpp>   // FASTA support
+#include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support (seqan3::sam_file_input)
 
-#include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
 #include "modules/sv_detection_methods/analyze_cigar_method.hpp"    // for the split read method
 #include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
-#include "structures/cluster.hpp"                                   // for class Cluster
 #include "variant_detection/bam_functions.hpp"                      // for hasFlag* functions
-#include "variant_detection/variant_output.hpp"
 
 using seqan3::operator""_tag;
 
@@ -97,67 +93,4 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
         }
     }
     std::sort(junctions.begin(), junctions.end());
-}
-
-void detect_variants_in_alignment_file(cmd_arguments const & args)
-{
-    // Store junctions
-    std::vector<Junction> junctions{};
-
-    // short reads
-    // ToDo (Lydia): handle short reads
-    if (args.alignment_short_reads_file_path != "")
-    {
-        seqan3::debug_stream << "Short reads are currently not supported.\n ";
-        return;
-    }
-
-    // long reads
-    if (args.alignment_long_reads_file_path == "")
-    {
-        seqan3::debug_stream << "No long reads were given (short reads are currently not supported).\n ";
-        return;
-    }
-    detect_junctions_in_long_reads_sam_file(junctions,
-                                            args.alignment_long_reads_file_path,
-                                            args.methods,
-                                            args.clustering_method,
-                                            args.refinement_method,
-                                            args.min_var_length);
-
-    seqan3::debug_stream << "Start clustering...\n";
-
-    std::vector<Cluster> clusters{};
-    switch (args.clustering_method)
-    {
-        case 0: // simple_clustering
-            simple_clustering_method(junctions, clusters);
-            break;
-        case 1: // hierarchical clustering
-            seqan3::debug_stream << "The hierarchical clustering method is not yet implemented\n";
-            break;
-        case 2: // self-balancing_binary_tree,
-            seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";
-            break;
-        case 3: // candidate_selection_based_on_voting
-            seqan3::debug_stream << "The candidate selection based on voting clustering method is not yet implemented\n";
-            break;
-    }
-
-    seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
-
-    switch (args.refinement_method)
-    {
-        case 0: // no refinement
-            seqan3::debug_stream << "No refinement was selected.\n";
-            break;
-        case 1: // sViper_refinement_method
-            seqan3::debug_stream << "The sViper refinement method is not yet implemented\n";
-            break;
-        case 2: // sVirl_refinement_method
-            seqan3::debug_stream << "The sVirl refinement method is not yet implemented\n";
-            break;
-    }
-
-    find_and_output_variant(clusters, args.output_file_path);
 }

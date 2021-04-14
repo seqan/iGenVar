@@ -3,8 +3,8 @@
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sequence_file/output.hpp>
 
-#include "structures/junction.hpp"  // for class Junction
 #include "structures/breakend.hpp"  // for class Breakend
+#include "structures/junction.hpp"  // for class Junction
 
 using seqan3::operator""_cigar_operation;
 using seqan3::operator""_dna5;

@@ -8,19 +8,6 @@ using seqan3::operator""_dna5;
 
 /* -------- clustering methods tests -------- */
 
-TEST(clustering, clustering_method_simple)
-{
-    testing::internal::CaptureStdout();
-
-    std::vector<Junction> junctions{};
-    std::vector<Cluster> resulting_clusters{};
-    resulting_clusters = simple_clustering_method(junctions);
-
-    std::vector<Cluster> expected_clusters{};
-    // TODO (irallia): We need to implement operator== for Clusters.
-    // EXPECT_EQ(expected_clusters, resulting_clusters);
-}
-
 std::string const chrom1 = "chr1";
 int32_t const chrom1_position1 = 12323443;
 int32_t const chrom1_position2 = 94734377;
@@ -62,6 +49,49 @@ std::vector<Junction> prepare_input_junctions()
     return input_junctions;
 }
 
+TEST(clustering, clustering_method_simple)
+{
+    std::vector<Junction> input_junctions = prepare_input_junctions();
+    std::vector<Cluster> resulting_clusters{};
+    resulting_clusters = simple_clustering_method(input_junctions);
+
+    // Each junction in separate cluster
+    std::vector<Cluster> expected_clusters
+    {
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
+                             Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, read_name_1}
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
+                             Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, read_name_2}
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
+                             Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, read_name_3},
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
+                             Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, read_name_4},
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
+                             Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, read_name_5},
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
+                             Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, read_name_6}
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
+                             Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, read_name_7}
+        }},
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
+                             Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, read_name_8}
+        }}
+    };
+    std::sort(expected_clusters.begin(), expected_clusters.end());
+
+    ASSERT_EQ(expected_clusters.size(), resulting_clusters.size());
+
+    for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
+    {
+        EXPECT_TRUE(expected_clusters[cluster_index] == resulting_clusters[cluster_index]) << "Cluster " << cluster_index << " unequal";
+    }
+}
 
 TEST(clustering, partitioning)
 {

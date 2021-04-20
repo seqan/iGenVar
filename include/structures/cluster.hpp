@@ -66,3 +66,14 @@ inline stream_t operator<<(stream_t && stream, Cluster const & clust)
  * \param rhs   right side cluster
  */
 bool operator<(Cluster const & lhs, Cluster const & rhs);
+
+/*! \brief A cluster is equal to another, if both have the same member junctions.
+ *         The member junctions need to have the same mates and inserted sequences.
+ *         The definition of equality implemented here is very strict because it
+ *         contains the cluster members instead of the average mates only.
+ *         It may happen that for two clusters a and b neither a<b, b<a nor a==b is true.
+ *
+ * \param lhs - left side cluster
+ * \param rhs - right side cluster
+ */
+bool operator==(Cluster const & lhs, Cluster const & rhs);

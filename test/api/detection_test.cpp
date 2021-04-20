@@ -13,21 +13,121 @@ using seqan3::operator""_dna5;
 
 // TODO (irallia): implement test cases
 
-TEST(junction_detection, cigar_string_method_simple)
+TEST(junction_detection, cigar_string_simple_del)
 {
     std::string const read_name = "read021";
     std::string const chromosome = "chr1";
     int32_t const query_start_pos = 1;
-    std::vector<seqan3::cigar> cigar_string = {{5, 'S'_cigar_operation}, {15, 'M'_cigar_operation},
-                                               {6, 'D'_cigar_operation}, {30, 'M'_cigar_operation}}; //5S15M6D24M
+    std::vector<seqan3::cigar> cigar_string = {{5, 'S'_cigar_operation},
+                                               {15, 'M'_cigar_operation},
+                                               {6, 'D'_cigar_operation},
+                                               {30, 'M'_cigar_operation}}; //5S15M6D30M
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
+
+    // Deletion smaller than minimum variant size
+    {
+        std::vector<Junction> junctions_res{};
+        uint64_t const min_var_length = 10;
+        analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
+
+        EXPECT_EQ(junctions_res.size(), 0);
+    }
+
+    // Deletion larger than minimum variant size
+    {
+        std::vector<Junction> junctions_res{};
+        uint64_t const min_var_length = 5;
+        analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
+
+        Breakend new_breakend_1 {chromosome, 15, strand::forward};
+        Breakend new_breakend_2 {chromosome, 22, strand::forward};
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name}};
+
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
+        }
+    }
+}
+
+TEST(junction_detection, cigar_string_del_padding)
+{
+    std::string const read_name = "read021";
+    std::string const chromosome = "chr1";
+    int32_t const query_start_pos = 1;
+    std::vector<seqan3::cigar> cigar_string = {{5, 'S'_cigar_operation},
+                                               {15, 'M'_cigar_operation},
+                                               {60, 'P'_cigar_operation},
+                                               {6, 'D'_cigar_operation},
+                                               {30, 'M'_cigar_operation}}; //5S15M60P6D30M
+    seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
+
     std::vector<Junction> junctions_res{};
     uint64_t const min_var_length = 5;
     analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
-    Breakend new_breakend_1 {chromosome, 16, strand::forward};
+    Breakend new_breakend_1 {chromosome, 15, strand::forward};
     Breakend new_breakend_2 {chromosome, 22, strand::forward};
     std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name}};
+
+    ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+    for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+    {
+        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
+        EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
+    }
+}
+
+TEST(junction_detection, cigar_string_simple_ins)
+{
+    std::string const read_name = "read021";
+    std::string const chromosome = "chr1";
+    int32_t const query_start_pos = 1;
+    std::vector<seqan3::cigar> cigar_string = {{5, 'S'_cigar_operation},
+                                               {9, 'M'_cigar_operation},
+                                               {6, 'I'_cigar_operation},
+                                               {30, 'M'_cigar_operation}}; //5S9M6I30M
+    seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
+
+    std::vector<Junction> junctions_res{};
+    uint64_t const min_var_length = 5;
+    analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
+
+    Breakend new_breakend_1 {chromosome, 9, strand::forward};
+    Breakend new_breakend_2 {chromosome, 10, strand::forward};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, "ATTTCG"_dna5, read_name}};
+
+    ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+    for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+    {
+        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
+        EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
+    }
+}
+
+TEST(junction_detection, cigar_string_ins_hardclip)
+{
+    std::string const read_name = "read021";
+    std::string const chromosome = "chr1";
+    int32_t const query_start_pos = 1;
+    std::vector<seqan3::cigar> cigar_string = {{5, 'H'_cigar_operation},
+                                               {9, 'M'_cigar_operation},
+                                               {6, 'I'_cigar_operation},
+                                               {35, 'M'_cigar_operation}}; //5H9M6I35M
+    seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
+
+    std::vector<Junction> junctions_res{};
+    uint64_t const min_var_length = 5;
+    analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
+
+    Breakend new_breakend_1 {chromosome, 9, strand::forward};
+    Breakend new_breakend_2 {chromosome, 10, strand::forward};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, "GATCGA"_dna5, read_name}};
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 

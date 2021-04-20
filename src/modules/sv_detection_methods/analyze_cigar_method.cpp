@@ -37,7 +37,7 @@ void analyze_cigar(std::string const & read_name,
             {
                 // Insertions cause one junction from the insertion location to the next base
                 auto inserted_bases = query_sequence | seqan3::views::slice(pos_read, pos_read + length);
-                Junction new_junction{Breakend{chromosome, pos_ref-1, strand::forward},
+                Junction new_junction{Breakend{chromosome, pos_ref - 1, strand::forward},
                                       Breakend{chromosome, pos_ref, strand::forward},
                                       inserted_bases,
                                       read_name};
@@ -51,7 +51,7 @@ void analyze_cigar(std::string const & read_name,
             if (length >= min_length)
             {
                 // Deletions cause one junction from its start to its end
-                Junction new_junction{Breakend{chromosome, pos_ref, strand::forward},
+                Junction new_junction{Breakend{chromosome, pos_ref - 1, strand::forward},
                                       Breakend{chromosome, pos_ref + length, strand::forward},
                                       ""_dna5,
                                       read_name};

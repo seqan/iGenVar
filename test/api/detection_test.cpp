@@ -170,6 +170,43 @@ TEST(junction_detection, split_string)
         EXPECT_EQ(expected, resulting_strings);
     }
 }
+
+TEST(junction_detection, retrieve_aligned_segments)
+{
+    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
+    std::vector<AlignedSegment> segments_res{};
+    retrieve_aligned_segments(sa_tag, segments_res);
+
+    AlignedSegment aligned_segment1 {strand::forward, "chr1", 100, 60, std::vector<seqan3::cigar>{{6, 'M'_cigar_operation},
+                                                                                                  {44, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment2 {strand::forward, "chr2", 100, 60, std::vector<seqan3::cigar>{{6, 'S'_cigar_operation},
+                                                                                                  {10, 'M'_cigar_operation},
+                                                                                                  {34, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment3 {strand::forward, "chr1", 106, 60, std::vector<seqan3::cigar>{{16, 'S'_cigar_operation},
+                                                                                                  {10, 'M'_cigar_operation},
+                                                                                                  {24, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment4 {strand::reverse, "chr1", 116, 60, std::vector<seqan3::cigar>{{10, 'S'_cigar_operation},
+                                                                                                  {14, 'M'_cigar_operation},
+                                                                                                  {26, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment5 {strand::forward, "chr1", 130, 60, std::vector<seqan3::cigar>{{40, 'S'_cigar_operation},
+                                                                                                  {4, 'M'_cigar_operation},
+                                                                                                  {6, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment6 {strand::forward, "chr1", 150, 60, std::vector<seqan3::cigar>{{44, 'S'_cigar_operation},
+                                                                                                  {6, 'M'_cigar_operation}}};
+    std::vector<AlignedSegment> segments_expected_res{aligned_segment1,
+                                                      aligned_segment2,
+                                                      aligned_segment3,
+                                                      aligned_segment4,
+                                                      aligned_segment5,
+                                                      aligned_segment6};
+
+    ASSERT_EQ(segments_expected_res.size(), segments_res.size());
+
+    for (size_t i = 0; i < segments_expected_res.size(); ++i)
+    {
+        EXPECT_TRUE(segments_expected_res[i] == segments_res[i]);
+    }
+}
 {
     std::string const read_name = "read021";
     seqan3::sam_flag const flag{0u};

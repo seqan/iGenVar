@@ -47,4 +47,18 @@ inline constexpr stream_t operator<<(stream_t && stream, AlignedSegment const & 
     return stream;
 }
 
+/*! \brief An aligned segment is smaller than another, if their query start, 
+ *         query end, or mapping quality (in this order) is smaller than
+ *         the corresponding element of the other aligned segment.
+ *
+ * \param lhs - left side aligned segment
+ * \param rhs - right side aligned segment
+ */
 bool operator<(AlignedSegment const & lhs, AlignedSegment const & rhs);
+
+/*! \brief An aligned segment is equal to another, if all their members are equal.
+ *
+ * \param lhs - left side aligned segment
+ * \param rhs - right side aligned segment
+ */
+bool operator==(AlignedSegment const & lhs, AlignedSegment const & rhs);

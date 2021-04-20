@@ -138,7 +138,38 @@ TEST(junction_detection, cigar_string_ins_hardclip)
     }
 }
 
-TEST(junction_detection, split_read_method_simple)
+TEST(junction_detection, split_string)
+{
+    std::vector<std::string> test_strings{"a;a;a;aa", "b,  b,b,  bbb", "c c cccc", ";d;;d;"};
+    {
+        std::vector<std::string> resulting_strings{};
+        split_string(test_strings[0], resulting_strings, ';');      // split "a;a;a;aa"     with ';'
+        std::vector<std::string> expected{"a", "a", "a", "aa"};
+        EXPECT_EQ(expected, resulting_strings);
+    }
+    {
+        std::vector<std::string> resulting_strings{};
+        split_string(test_strings[1], resulting_strings, ',');      // split "b,  b,b,  bbb" with ','
+        std::vector<std::string> expected{ "b", "  b", "b", "  bbb" };
+        EXPECT_EQ(expected, resulting_strings);
+    }
+    {
+        std::vector<std::string> resulting_strings1{};
+        split_string(test_strings[2], resulting_strings1, ' ');     // split "c c cccc"     with ' '
+        std::vector<std::string> expected{"c", "c", "cccc"};
+        EXPECT_EQ(expected, resulting_strings1);
+
+        std::vector<std::string> resulting_strings2{};
+        split_string(test_strings[2], resulting_strings2);          // split "c c cccc"     with default ' '
+        EXPECT_EQ(resulting_strings1, resulting_strings2);
+    }
+    {
+        std::vector<std::string> resulting_strings{};
+        split_string(test_strings[3], resulting_strings, ';');      // split ";d;;d;" with ';'
+        std::vector<std::string> expected{ "", "d", "", "d" };
+        EXPECT_EQ(expected, resulting_strings);
+    }
+}
 {
     std::string const read_name = "read021";
     seqan3::sam_flag const flag{0u};

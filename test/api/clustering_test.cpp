@@ -28,21 +28,21 @@ std::vector<Junction> prepare_input_junctions()
     std::vector<Junction> input_junctions
     {
         Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
-                 Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, read_name_1}, //cluster 1
+                 Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, read_name_1},
         Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
-                 Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, read_name_2}, //cluster 1
+                 Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, read_name_2},
         Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
-                 Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, read_name_3}, //cluster 1
+                 Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, read_name_3},
         Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
-                 Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, read_name_4}, //cluster 2
+                 Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, read_name_4},
         Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
-                 Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, read_name_5}, //cluster 3
+                 Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, read_name_5},
         Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                 Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, read_name_6}, //cluster 4
+                 Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, read_name_6},
         Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                 Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, read_name_7}, //cluster 4
+                 Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, read_name_7},
         Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                 Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, read_name_8} //cluster 4
+                 Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, read_name_8}
     };
 
     std::sort(input_junctions.begin(), input_junctions.end());

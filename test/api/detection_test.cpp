@@ -173,7 +173,8 @@ TEST(junction_detection, split_string)
 
 TEST(junction_detection, retrieve_aligned_segments)
 {
-    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
+    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;"
+                               "chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
     std::vector<AlignedSegment> segments_res{};
     retrieve_aligned_segments(sa_tag, segments_res);
 
@@ -280,7 +281,8 @@ TEST(junction_detection, analyze_sa_tag)
     std::vector<seqan3::cigar> cigar_string = {{10, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
     // Supplementary alignments
-    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
+    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;"
+                               "chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
     std::vector<Junction> junctions_res{};
     analyze_sa_tag(read_name, flag, chromosome, pos, mapq, cigar_string, seq, sa_tag, junctions_res);
 

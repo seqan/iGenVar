@@ -90,10 +90,10 @@ std::vector<Junction> Cluster::get_members() const
 bool operator<(Cluster const & lhs, Cluster const & rhs)
 {
     return lhs.get_average_mate1() != rhs.get_average_mate1()
-        ? lhs.get_average_mate1() < rhs.get_average_mate1()
-        : lhs.get_average_mate2() != rhs.get_average_mate2()
-            ? lhs.get_average_mate2() < rhs.get_average_mate2()
-            : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
+           ? lhs.get_average_mate1() < rhs.get_average_mate1()
+           : lhs.get_average_mate2() != rhs.get_average_mate2()
+              ? lhs.get_average_mate2() < rhs.get_average_mate2()
+              : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
 }
 
 bool operator==(Cluster const & lhs, Cluster const & rhs)

@@ -39,22 +39,23 @@ std::string const read_name_8 = "m13456/11102/CCS";
 std::vector<Junction> prepare_input_junctions()
 {
     std::vector<Junction> input_junctions
-    {   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
-                    Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, read_name_1}, //cluster 1
+    {
+        Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
+                 Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, read_name_1}, //cluster 1
         Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
-                    Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, read_name_2}, //cluster 1
+                 Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, read_name_2}, //cluster 1
         Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
-                    Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, read_name_3}, //cluster 1
+                 Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, read_name_3}, //cluster 1
         Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
-                    Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, read_name_4}, //cluster 2
+                 Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, read_name_4}, //cluster 2
         Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
-                    Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, read_name_5}, //cluster 3
+                 Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, read_name_5}, //cluster 3
         Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                    Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, read_name_6}, //cluster 4
+                 Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, read_name_6}, //cluster 4
         Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                    Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, read_name_7}, //cluster 4
+                 Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, read_name_7}, //cluster 4
         Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                    Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, read_name_8} //cluster 4
+                 Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, read_name_8} //cluster 4
     };
 
     std::sort(input_junctions.begin(), input_junctions.end());
@@ -69,20 +70,24 @@ TEST(clustering, partitioning)
 
     std::vector<std::vector<Junction>> expected_partitions
     {
-        {   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
+        {
+            Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
                      Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, read_name_1}, //cluster 1
             Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
                      Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, read_name_2}, //cluster 1
             Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
                      Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, read_name_3}, //cluster 1
         },
-        {   Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
+        {
+            Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
                      Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, read_name_4}, //cluster 2
         },
-        {   Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
+        {
+            Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
                      Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, read_name_5}, //cluster 3
         },
-        {   Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
+        {
+            Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
                      Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, read_name_6}, //cluster 4
             Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
                      Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, read_name_7}, //cluster 4
@@ -143,11 +148,18 @@ TEST(clustering, strict_clustering)
 
     for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
     {
-        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(), clusters[cluster_index].get_cluster_size()) << "Cluster " << cluster_index << " of unexpected size";
+        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(),
+                  clusters[cluster_index].get_cluster_size())
+                  << "Cluster " << cluster_index << " of unexpected size";
 
-        for (size_t junction_index = 0; junction_index < expected_clusters[cluster_index].get_cluster_size(); ++junction_index)
+        for (size_t junction_index = 0;
+             junction_index < expected_clusters[cluster_index].get_cluster_size();
+             ++junction_index)
         {
-            EXPECT_TRUE(expected_clusters[cluster_index].get_members()[junction_index] == clusters[cluster_index].get_members()[junction_index]) << "Junction " << junction_index << " in cluster " << cluster_index << " different than expected";
+            EXPECT_EQ(expected_clusters[cluster_index].get_members()[junction_index],
+                      clusters[cluster_index].get_members()[junction_index])
+                      << "Junction " << junction_index << " in cluster "
+                      << cluster_index << " different than expected";
         }
     }
 }
@@ -200,11 +212,18 @@ TEST(clustering, clustering_10)
 
     for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
     {
-        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(), clusters[cluster_index].get_cluster_size()) << "Cluster " << cluster_index << " of unexpected size";
+        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(),
+                  clusters[cluster_index].get_cluster_size())
+                  << "Cluster " << cluster_index << " of unexpected size";
 
-        for (size_t junction_index = 0; junction_index < expected_clusters[cluster_index].get_cluster_size(); ++junction_index)
+        for (size_t junction_index = 0;
+             junction_index < expected_clusters[cluster_index].get_cluster_size();
+             ++junction_index)
         {
-            EXPECT_TRUE(expected_clusters[cluster_index].get_members()[junction_index] == clusters[cluster_index].get_members()[junction_index]) << "Junction " << junction_index << " in cluster " << cluster_index << " different than expected";
+            EXPECT_EQ(expected_clusters[cluster_index].get_members()[junction_index],
+                      clusters[cluster_index].get_members()[junction_index])
+                      << "Junction " << junction_index << " in cluster "
+                      << cluster_index << " different than expected";
         }
     }
 }
@@ -255,11 +274,18 @@ TEST(clustering, clustering_15)
 
     for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
     {
-        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(), clusters[cluster_index].get_cluster_size()) << "Cluster " << cluster_index << " of unexpected size";
+        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(),
+                  clusters[cluster_index].get_cluster_size())
+                  << "Cluster " << cluster_index << " of unexpected size";
 
-        for (size_t junction_index = 0; junction_index < expected_clusters[cluster_index].get_cluster_size(); ++junction_index)
+        for (size_t junction_index = 0;
+             junction_index < expected_clusters[cluster_index].get_cluster_size();
+             ++junction_index)
         {
-            EXPECT_TRUE(expected_clusters[cluster_index].get_members()[junction_index] == clusters[cluster_index].get_members()[junction_index]) << "Junction " << junction_index << " in cluster " << cluster_index << " different than expected";
+            EXPECT_EQ(expected_clusters[cluster_index].get_members()[junction_index],
+                      clusters[cluster_index].get_members()[junction_index])
+                      << "Junction " << junction_index << " in cluster "
+                      << cluster_index << " different than expected";
         }
     }
 }
@@ -309,11 +335,18 @@ TEST(clustering, clustering_25)
 
     for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
     {
-        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(), clusters[cluster_index].get_cluster_size()) << "Cluster " << cluster_index << " of unexpected size";
+        ASSERT_EQ(expected_clusters[cluster_index].get_cluster_size(),
+                  clusters[cluster_index].get_cluster_size())
+                  << "Cluster " << cluster_index << " of unexpected size";
 
-        for (size_t junction_index = 0; junction_index < expected_clusters[cluster_index].get_cluster_size(); ++junction_index)
+        for (size_t junction_index = 0;
+             junction_index < expected_clusters[cluster_index].get_cluster_size();
+             ++junction_index)
         {
-            EXPECT_TRUE(expected_clusters[cluster_index].get_members()[junction_index] == clusters[cluster_index].get_members()[junction_index]) << "Junction " << junction_index << " in cluster " << cluster_index << " different than expected";
+            EXPECT_EQ(expected_clusters[cluster_index].get_members()[junction_index],
+                      clusters[cluster_index].get_members()[junction_index])
+                      << "Junction " << junction_index << " in cluster "
+                      << cluster_index << " different than expected";
         }
     }
 }

@@ -4,7 +4,6 @@
 
 #include "fastcluster.h"                                          // for hclust_fast
 
-
 std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions)
 {
     // Partition based on mate 1
@@ -52,8 +51,6 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
     return final_partitions;
 }
 
-
-// Partition based on mate2
 std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition)
 {
     std::vector<Junction> current_partition{};
@@ -93,6 +90,10 @@ int junction_distance(Junction const & lhs, Junction const & rhs)
         (lhs.get_mate2().seq_name == rhs.get_mate2().seq_name) &&
         (lhs.get_mate2().orientation == rhs.get_mate2().orientation))
     {
+        // Reference:                      ................
+        // Junction 1 with mates A and B:     A------->B    (2bp inserted)
+        // Junction 2 with mates C and D:    C------>D      (5bp inserted)
+        // Distance = 1 (distance A-C) + 2 (distance B-D) + 3 (absolute insertion size difference)
         return (std::abs(lhs.get_mate1().position - rhs.get_mate1().position) +
                 std::abs(lhs.get_mate2().position - rhs.get_mate2().position) +
                 std::abs((int)(lhs.get_inserted_sequence().size() - rhs.get_inserted_sequence().size())));
@@ -139,7 +140,7 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
         std::vector<int> labels (partition_size);
         cutree_cdist(partition_size, merge.data(), height.data(), clustering_cutoff, labels.data());
 
-        std::unordered_map<int, std::vector<Junction>> label_to_junctions {};
+        std::unordered_map<int, std::vector<Junction>> label_to_junctions{};
         for (int i = 0; i < partition_size; ++i)
         {
             if (label_to_junctions.find(labels[i]) != label_to_junctions.end())
@@ -151,7 +152,7 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
             }
         }
 
-        // Add new clusters
+        // Add new clusters: junctions with the same label belong to one cluster
         for (auto & [lab, jun] : label_to_junctions )
         {
             std::sort(jun.begin(), jun.end());

@@ -2,6 +2,3 @@
 	path = lib/seqan3
 	url = https://github.com/seqan/seqan3.git
 	branch = master
-[submodule "lib/hclust"]
-	path = lib/hclust
-	url = https://github.com/cdalitz/hclust-cpp.git

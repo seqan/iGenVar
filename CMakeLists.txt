@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.8)
+cmake_minimum_required (VERSION 3.11)
 
 ## CUSTOMISE
 
@@ -26,6 +26,17 @@ set (FontReset "${Esc}[m")
 
 # Dependency: SeqAn3.
 find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
+
+# Dependency: hclust.
+include (FetchContent)
+FetchContent_Declare(
+        hclust
+        GIT_REPOSITORY https://github.com/cdalitz/hclust-cpp.git
+        GIT_TAG f902638a3ba1be40ffb6ff6a8ddafba91a150c76
+)
+FetchContent_Populate(hclust)
+add_library ("fastcluster" STATIC ${hclust_SOURCE_DIR}/fastcluster.cpp)
+target_include_directories ("fastcluster" PUBLIC ${hclust_SOURCE_DIR})
 
 add_subdirectory (src)
 message (STATUS "${FontBold}You can run `make` to build the application.${FontReset}")

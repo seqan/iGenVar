@@ -2,8 +2,9 @@
 
 #include <seqan3/core/debug_stream.hpp>
 
-void simple_clustering_method(std::vector<Junction> const & junctions, std::vector<Cluster> & clusters)
+std::vector<Cluster> simple_clustering_method(std::vector<Junction> const & junctions)
 {
+    std::vector<Cluster> clusters{};
     if (junctions.size() > 0)
     {
         std::vector<Junction> current_cluster_members = {junctions[0]};
@@ -27,4 +28,5 @@ void simple_clustering_method(std::vector<Junction> const & junctions, std::vect
     {
         seqan3::debug_stream << "No junctions found...\n";
     }
+    return clusters;
 }

@@ -5,6 +5,5 @@
 /*! \brief This method clusters junctions by merging identical junctions into a single cluster object.
  *
  * \param[in]       junctions   - a vector of junctions
- * \param[in, out]  clusters    - a vector of clusters
  */
-void simple_clustering_method(std::vector<Junction> const & junctions, std::vector<Cluster> & clusters);
+std::vector<Cluster> simple_clustering_method(std::vector<Junction> const & junctions);

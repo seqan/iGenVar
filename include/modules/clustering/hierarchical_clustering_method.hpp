@@ -24,7 +24,7 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
 std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition);
 
 /*! \brief Compute the distance between two junctions.
- *         For two junctions that connect the same referene sequences and have the same
+ *         For two junctions that connect the same reference sequences and have the same
  *         orientations, the distance is the sum of a) the distance between the first mates,
  *         b) the distance between the second mates, and c) the absolute size difference 
  *         of the inserted sequences. For other junctions, the distance takes the maximal value.

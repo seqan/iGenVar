@@ -23,10 +23,10 @@ std::string Junction::get_read_name() const
 bool operator<(Junction const & lhs, Junction const & rhs)
 {
     return lhs.get_mate1() != rhs.get_mate1()
-        ? lhs.get_mate1() < rhs.get_mate1()
-        : lhs.get_mate2() != rhs.get_mate2()
-            ? lhs.get_mate2() < rhs.get_mate2()
-            : lhs.get_inserted_sequence() < rhs.get_inserted_sequence();
+           ? lhs.get_mate1() < rhs.get_mate1()
+           : lhs.get_mate2() != rhs.get_mate2()
+             ? lhs.get_mate2() < rhs.get_mate2()
+             : lhs.get_inserted_sequence() < rhs.get_inserted_sequence();
 }
 
 bool operator==(Junction const & lhs, Junction const & rhs)

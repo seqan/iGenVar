@@ -137,3 +137,12 @@ bool operator<(AlignedSegment const & lhs, AlignedSegment const & rhs)
                 ? lhs.get_query_end() < rhs.get_query_end()
                 : lhs.mapq < rhs.mapq;
 }
+
+bool operator==(AlignedSegment const & lhs, AlignedSegment const & rhs)
+{
+    return lhs.orientation == rhs.orientation &&
+           lhs.ref_name == rhs.ref_name &&
+           lhs.pos == rhs.pos &&
+           lhs.mapq == rhs.mapq &&
+           lhs.cig == rhs.cig;
+}

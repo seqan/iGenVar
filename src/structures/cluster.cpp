@@ -90,8 +90,17 @@ std::vector<Junction> Cluster::get_members() const
 bool operator<(Cluster const & lhs, Cluster const & rhs)
 {
     return lhs.get_average_mate1() != rhs.get_average_mate1()
-        ? lhs.get_average_mate1() < rhs.get_average_mate1()
-        : lhs.get_average_mate2() != rhs.get_average_mate2()
-            ? lhs.get_average_mate2() < rhs.get_average_mate2()
-            : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
+           ? lhs.get_average_mate1() < rhs.get_average_mate1()
+           : lhs.get_average_mate2() != rhs.get_average_mate2()
+              ? lhs.get_average_mate2() < rhs.get_average_mate2()
+              : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
+}
+
+bool operator==(Cluster const & lhs, Cluster const & rhs)
+{
+    std::vector<Junction> lhs_members = lhs.get_members();
+    std::sort(lhs_members.begin(), lhs_members.end());
+    std::vector<Junction> rhs_members = rhs.get_members();
+    std::sort(rhs_members.begin(), rhs_members.end());
+    return (lhs_members == rhs_members);
 }

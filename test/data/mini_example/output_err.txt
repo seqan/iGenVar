@@ -1,23 +1,23 @@
-DEL: chr1	57	Forward	chr1	70	Forward	0	read010
-DEL: chr1	57	Forward	chr1	70	Forward	0	read011
-DEL: chr1	57	Forward	chr1	70	Forward	0	read012
-DEL: chr1	57	Forward	chr1	70	Forward	0	read013
-DEL: chr1	57	Forward	chr1	70	Forward	0	read014
-DEL: chr1	57	Forward	chr1	70	Forward	0	read015
-DEL: chr1	57	Forward	chr1	70	Forward	0	read016
-DEL: chr1	57	Forward	chr1	70	Forward	0	read017
-DEL: chr1	57	Forward	chr1	70	Forward	0	read018
+DEL: chr1	56	Forward	chr1	70	Forward	0	read010
+DEL: chr1	56	Forward	chr1	70	Forward	0	read011
+DEL: chr1	56	Forward	chr1	70	Forward	0	read012
+DEL: chr1	56	Forward	chr1	70	Forward	0	read013
+DEL: chr1	56	Forward	chr1	70	Forward	0	read014
+DEL: chr1	56	Forward	chr1	70	Forward	0	read015
+DEL: chr1	56	Forward	chr1	70	Forward	0	read016
+DEL: chr1	56	Forward	chr1	70	Forward	0	read017
+DEL: chr1	56	Forward	chr1	70	Forward	0	read018
 INS: chr1	124	Forward	chr1	125	Forward	15	read023
 INS: chr1	124	Forward	chr1	125	Forward	15	read024
 INS: chr1	124	Forward	chr1	125	Forward	15	read025
 INS: chr1	179	Forward	chr1	180	Forward	8	read031
-DEL: chr1	266	Forward	chr1	286	Forward	0	read037
-DEL: chr1	266	Forward	chr1	286	Forward	0	read038
-DEL: chr1	282	Forward	chr1	299	Forward	0	read041
-DEL: chr1	336	Forward	chr1	350	Forward	0	read042
-DEL: chr1	336	Forward	chr1	350	Forward	0	read043
-DEL: chr1	336	Forward	chr1	350	Forward	0	read044
-DEL: chr1	336	Forward	chr1	350	Forward	0	read045
+DEL: chr1	265	Forward	chr1	286	Forward	0	read037
+DEL: chr1	265	Forward	chr1	286	Forward	0	read038
+DEL: chr1	281	Forward	chr1	299	Forward	0	read041
+DEL: chr1	335	Forward	chr1	350	Forward	0	read042
+DEL: chr1	335	Forward	chr1	350	Forward	0	read043
+DEL: chr1	335	Forward	chr1	350	Forward	0	read044
+DEL: chr1	335	Forward	chr1	350	Forward	0	read045
 Start clustering...
 Done with clustering. Found 6 junction clusters.
 No refinement was selected.

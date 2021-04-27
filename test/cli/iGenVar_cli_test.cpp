@@ -292,10 +292,10 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(iGenVar_cli_test, dataset_paired_end_short_read_mini_example)
+TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         "-i", data("paired_end_short_read_mini_example.sam"),
+                                         "-i", data("paired_end_mini_example.sam"),
                                          "-l 8 -m 0 -m 1");
 
     // Check the output of junctions:

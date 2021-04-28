@@ -173,33 +173,38 @@ TEST(junction_detection, split_string)
 
 TEST(junction_detection, retrieve_aligned_segments)
 {
-    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;"
-                               "chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
+    std::string const sa_tag = "chr1,100,+,6M94S,60,0;chr2,100,+,6S10M84S,60,0;chr1,106,+,16S10M74S,60,0;"
+                               "chr1,116,-,60S14M26S,60,0;chr1,130,+,40S4M56S,60,0;chr1,150,+,44S6M50S,60,0;"
+                               "chr1,156,+,90S10M,60,0;";
     std::vector<AlignedSegment> segments_res{};
     retrieve_aligned_segments(sa_tag, segments_res);
 
     AlignedSegment aligned_segment1 {strand::forward, "chr1", 100, 60, std::vector<seqan3::cigar>{{6, 'M'_cigar_operation},
-                                                                                                  {44, 'S'_cigar_operation}}};
+                                                                                                  {94, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment2 {strand::forward, "chr2", 100, 60, std::vector<seqan3::cigar>{{6, 'S'_cigar_operation},
                                                                                                   {10, 'M'_cigar_operation},
-                                                                                                  {34, 'S'_cigar_operation}}};
+                                                                                                  {84, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment3 {strand::forward, "chr1", 106, 60, std::vector<seqan3::cigar>{{16, 'S'_cigar_operation},
                                                                                                   {10, 'M'_cigar_operation},
-                                                                                                  {24, 'S'_cigar_operation}}};
-    AlignedSegment aligned_segment4 {strand::reverse, "chr1", 116, 60, std::vector<seqan3::cigar>{{10, 'S'_cigar_operation},
+                                                                                                  {74, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment4 {strand::reverse, "chr1", 116, 60, std::vector<seqan3::cigar>{{60, 'S'_cigar_operation},
                                                                                                   {14, 'M'_cigar_operation},
                                                                                                   {26, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment5 {strand::forward, "chr1", 130, 60, std::vector<seqan3::cigar>{{40, 'S'_cigar_operation},
                                                                                                   {4, 'M'_cigar_operation},
-                                                                                                  {6, 'S'_cigar_operation}}};
+                                                                                                  {56, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment6 {strand::forward, "chr1", 150, 60, std::vector<seqan3::cigar>{{44, 'S'_cigar_operation},
-                                                                                                  {6, 'M'_cigar_operation}}};
+                                                                                                  {6, 'M'_cigar_operation},
+                                                                                                  {50, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment7 {strand::forward, "chr1", 156, 60, std::vector<seqan3::cigar>{{90, 'S'_cigar_operation},
+                                                                                                  {10, 'M'_cigar_operation}}};
     std::vector<AlignedSegment> segments_expected_res{aligned_segment1,
                                                       aligned_segment2,
                                                       aligned_segment3,
                                                       aligned_segment4,
                                                       aligned_segment5,
-                                                      aligned_segment6};
+                                                      aligned_segment6,
+                                                      aligned_segment7};
 
     ASSERT_EQ(segments_expected_res.size(), segments_res.size());
 
@@ -212,37 +217,45 @@ TEST(junction_detection, retrieve_aligned_segments)
 TEST(junction_detection, analyze_aligned_segments)
 {
     AlignedSegment aligned_segment1 {strand::forward, "chr1", 100, 60, std::vector<seqan3::cigar>{{6, 'M'_cigar_operation},
-                                                                                                  {44, 'S'_cigar_operation}}};
+                                                                                                  {94, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment2 {strand::forward, "chr2", 100, 60, std::vector<seqan3::cigar>{{6, 'S'_cigar_operation},
                                                                                                   {10, 'M'_cigar_operation},
-                                                                                                  {34, 'S'_cigar_operation}}};
+                                                                                                  {84, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment3 {strand::forward, "chr1", 106, 60, std::vector<seqan3::cigar>{{16, 'S'_cigar_operation},
                                                                                                   {10, 'M'_cigar_operation},
-                                                                                                  {24, 'S'_cigar_operation}}};
-    AlignedSegment aligned_segment4 {strand::reverse, "chr1", 116, 60, std::vector<seqan3::cigar>{{10, 'S'_cigar_operation},
+                                                                                                  {74, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment4 {strand::reverse, "chr1", 116, 60, std::vector<seqan3::cigar>{{60, 'S'_cigar_operation},
                                                                                                   {14, 'M'_cigar_operation},
                                                                                                   {26, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment5 {strand::forward, "chr1", 130, 60, std::vector<seqan3::cigar>{{40, 'S'_cigar_operation},
                                                                                                   {4, 'M'_cigar_operation},
-                                                                                                  {6, 'S'_cigar_operation}}};
+                                                                                                  {56, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment6 {strand::forward, "chr1", 150, 60, std::vector<seqan3::cigar>{{44, 'S'_cigar_operation},
-                                                                                                  {6, 'M'_cigar_operation}}};
+                                                                                                  {6, 'M'_cigar_operation},
+                                                                                                  {50, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment7 {strand::forward, "chr1", 156, 60, std::vector<seqan3::cigar>{{90, 'S'_cigar_operation},
+                                                                                                  {10, 'M'_cigar_operation}}};
     std::vector<AlignedSegment> aligned_segments{aligned_segment1,
                                                  aligned_segment2,
                                                  aligned_segment3,
                                                  aligned_segment4,
                                                  aligned_segment5,
-                                                 aligned_segment6};
-    std::vector<Junction> junctions_res{};
-    seqan3::dna5_vector query_sequence = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
-    std::string const read_name = "read021";
-    analyze_aligned_segments(aligned_segments,
-                             junctions_res,
-                             query_sequence,
-                             read_name,
-                             10,
-                             0);
-    
+                                                 aligned_segment6,
+                                                 aligned_segment7};
+
+    // Minimum variant length = 10
+    {
+        std::vector<Junction> junctions_res{};
+        seqan3::dna5_vector query_sequence = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"
+                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA"_dna5};
+        std::string const read_name = "read021";
+        analyze_aligned_segments(aligned_segments,
+                                 junctions_res,
+                                 query_sequence,
+                                 read_name,
+                                 10,
+                                 0);
+        
         Breakend new_breakend_1 {"chr1", 105, strand::forward};
         Breakend new_breakend_2 {"chr2", 100, strand::forward};
         Breakend new_breakend_3 {"chr1", 106, strand::reverse};
@@ -253,22 +266,67 @@ TEST(junction_detection, analyze_aligned_segments)
         Breakend new_breakend_8 {"chr1", 130, strand::forward};
         Breakend new_breakend_9 {"chr1", 133, strand::forward};
         Breakend new_breakend_10 {"chr1", 150, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},      //translocation
-                                                 Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},      //translocation
-                                                 Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},      //inversion
-                                                 Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name},      //inversion
-                                                 Junction{new_breakend_9, new_breakend_10, ""_dna5, read_name}};    //deletion
+        Breakend new_breakend_11 {"chr1", 155, strand::forward};
+        Breakend new_breakend_12 {"chr1", 156, strand::forward};
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},          //translocation
+                                                     Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},          //translocation
+                                                     Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},          //inversion
+                                                     Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name},          //inversion
+                                                     Junction{new_breakend_9, new_breakend_10, ""_dna5, read_name},         //deletion
+                                                     Junction{new_breakend_11,
+                                                              new_breakend_12,
+                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5, read_name}}; //insertion
 
-    ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
-    for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
+                                                                       << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                                                                       << "\nMate 2 equal: "
+                                                                       << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                                                                       << "\n";
+        }
+    }
+
+    // Minimum variant length = 20
     {
-        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
-        EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
-                                                                   << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
-                                                                   << "\nMate 2 equal: "
-                                                                   << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
-                                                                   << "\n";
+        std::vector<Junction> junctions_res{};
+        seqan3::dna5_vector query_sequence = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"
+                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA"_dna5};
+        std::string const read_name = "read021";
+        analyze_aligned_segments(aligned_segments,
+                                 junctions_res,
+                                 query_sequence,
+                                 read_name,
+                                 20,
+                                 0);
+        
+        Breakend new_breakend_1 {"chr1", 105, strand::forward};
+        Breakend new_breakend_2 {"chr2", 100, strand::forward};
+        Breakend new_breakend_3 {"chr1", 106, strand::reverse};
+        Breakend new_breakend_4 {"chr2", 109, strand::reverse};
+        Breakend new_breakend_11 {"chr1", 155, strand::forward};
+        Breakend new_breakend_12 {"chr1", 156, strand::forward};
+        // The inversion and deletion are smaller than 20 bp and therefore not returned
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},          //translocation
+                                                     Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},          //translocation
+                                                     Junction{new_breakend_11,
+                                                              new_breakend_12,
+                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5, read_name}}; //insertion
+
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
+                                                                       << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                                                                       << "\nMate 2 equal: "
+                                                                       << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                                                                       << "\n";
+        }
     }
 }
 
@@ -281,10 +339,12 @@ TEST(junction_detection, analyze_sa_tag)
     int32_t const pos = 116;
     uint8_t const mapq = 60;
     std::vector<seqan3::cigar> test_cigar = {{10, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
-    seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
+    seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"
+                               "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA"_dna5};
     // Supplementary alignments
-    std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;"
-                               "chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
+    std::string const sa_tag = "chr1,100,+,6M94S,60,0;chr2,100,+,6S10M84S,60,0;chr1,106,+,16S10M74S,60,0;"
+                               "chr1,116,-,60S14M26S,60,0;chr1,130,+,40S4M56S,60,0;chr1,150,+,44S6M50S,60,0;"
+                               "chr1,156,+,90S10M,60,0;";
     std::vector<Junction> junctions_res{};
     // Args
     cmd_arguments args{std::filesystem::path{},
@@ -308,11 +368,16 @@ TEST(junction_detection, analyze_sa_tag)
     Breakend new_breakend_8 {"chr1", 130, strand::forward};
     Breakend new_breakend_9 {"chr1", 133, strand::forward};
     Breakend new_breakend_10 {"chr1", 150, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},      //translocation
-                                                 Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},      //translocation
-                                                 Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},      //inversion
-                                                 Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name},      //inversion
-                                                 Junction{new_breakend_9, new_breakend_10, ""_dna5, read_name}};    //deletion
+    Breakend new_breakend_11 {"chr1", 155, strand::forward};
+    Breakend new_breakend_12 {"chr1", 156, strand::forward};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},          //translocation
+                                                 Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},          //translocation
+                                                 Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},          //inversion
+                                                 Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name},          //inversion
+                                                 Junction{new_breakend_9, new_breakend_10, ""_dna5, read_name},         //deletion
+                                                 Junction{new_breakend_11,
+                                                          new_breakend_12,
+                                                          "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5, read_name}}; //insertion
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 

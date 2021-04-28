@@ -46,10 +46,15 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 {
     std::vector<Junction> junctions_res{};
 
+    cmd_arguments args{default_alignment_short_reads_file_path,
+                       "",
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       sVirl_refinement_method,
+                       sv_default_length};
     detect_junctions_in_short_reads_sam_file(junctions_res,
-                                             default_alignment_short_reads_file_path,
-                                             default_methods,
-                                             sv_default_length);
+                                             args);
 
     std::vector<Junction> junctions_expected_res{};
 
@@ -72,10 +77,15 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
     std::vector<Junction> junctions_res{};
 
+    cmd_arguments args{"",
+                       default_alignment_long_reads_file_path,
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       sVirl_refinement_method,
+                       sv_default_length};
     detect_junctions_in_long_reads_sam_file(junctions_res,
-                                            default_alignment_long_reads_file_path,
-                                            default_methods,
-                                            sv_default_length);
+                                            args);
 
     std::string const chromosome_1 = "chr21";
     std::string const chromosome_2 = "chr22";
@@ -168,10 +178,15 @@ TEST(input_file, long_read_sam_file_unsorted)
                     "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
     unsorted_sam.close();
 
+    cmd_arguments args{"",
+                       unsorted_sam_path,
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       no_refinement,
+                       sv_default_length};
     EXPECT_THROW(detect_junctions_in_long_reads_sam_file(junctions_res,
-                                                         unsorted_sam_path,
-                                                         default_methods,
-                                                         sv_default_length), seqan3::format_error);
+                                                         args), seqan3::format_error);
 
     std::filesystem::remove(unsorted_sam_path);
 }

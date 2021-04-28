@@ -79,16 +79,19 @@ std::string const help_page_advanced
     "          Choose the refinement method to be used. Default: no_refinement.\n"
     "          Value must be one of (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
-    "    -l, --min_var_length (unsigned 64 bit integer)\n"
+    "    -l, --min_var_length (unsigned 32 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be\n"
     "          detected. Default: 30.\n"
-    "    -x, --max_var_length (unsigned 64 bit integer)\n"
+    "    -x, --max_var_length (unsigned 32 bit integer)\n"
     "          Specify what should be the maximum length of your SVs to be\n"
     "          detected. SVs larger than this threshold can still be output as\n"
     "          translocations. Default: 1000000.\n"
-    "    -t, --max_tol_inserted_length (unsigned 64 bit integer)\n"
+    "    -t, --max_tol_inserted_length (unsigned 32 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
     "          sites of non-INS SVs. Default: 5.\n"
+    "    -p, --max_overlap (unsigned 32 bit integer)\n"
+    "          Specify the maximum allowed overlap between two alignment segments.\n"
+    "          Default: 10.\n"
 };
 
 // std::string expected_res_default

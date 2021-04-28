@@ -130,7 +130,16 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                         std::string const sa_tag = tags.get<"SA"_tag>();
                         if (!sa_tag.empty())
                         {
-                            analyze_sa_tag(query_name, flag, ref_name, ref_pos, mapq, cigar, seq, sa_tag, junctions);
+                            analyze_sa_tag(query_name,
+                                           flag,
+                                           ref_name,
+                                           ref_pos,
+                                           mapq,
+                                           cigar,
+                                           seq,
+                                           sa_tag,
+                                           args,
+                                           junctions);
                         }
                     }
                     break;

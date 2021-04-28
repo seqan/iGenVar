@@ -36,4 +36,4 @@ void analyze_cigar(std::string const & read_name,
                    std::vector<seqan3::cigar> & cigar_string,
                    seqan3::dna5_vector const & query_sequence,
                    std::vector<Junction> & junctions,
-                   uint64_t const min_length);
+                   uint32_t const min_length);

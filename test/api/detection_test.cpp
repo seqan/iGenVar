@@ -239,7 +239,9 @@ TEST(junction_detection, analyze_aligned_segments)
     analyze_aligned_segments(aligned_segments,
                              junctions_res,
                              query_sequence,
-                             read_name);
+                             read_name,
+                             10,
+                             0);
     
     Breakend new_breakend_1 {"chr1", 106, strand::forward};
     Breakend new_breakend_2 {"chr2", 100, strand::forward};
@@ -278,13 +280,23 @@ TEST(junction_detection, analyze_sa_tag)
     std::string const chromosome = "chr1";
     int32_t const pos = 116;
     uint8_t const mapq = 60;
-    std::vector<seqan3::cigar> cigar_string = {{10, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
+    std::vector<seqan3::cigar> test_cigar = {{10, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
     // Supplementary alignments
     std::string const sa_tag = "chr1,100,+,6M44S,60,0;chr2,100,+,6S10M34S,60,0;chr1,106,+,16S10M24S,60,0;"
                                "chr1,116,-,10S14M26S,60,0;chr1,130,+,40S4M6S,60,0;chr1,150,+,44S6M,60,0;";
     std::vector<Junction> junctions_res{};
-    analyze_sa_tag(read_name, flag, chromosome, pos, mapq, cigar_string, seq, sa_tag, junctions_res);
+    // Args
+    cmd_arguments args{std::filesystem::path{},
+                       std::filesystem::path{},
+                       std::filesystem::path{},
+                       std::vector<detection_methods>{cigar_string, split_read, read_pairs, read_depth},
+                       simple_clustering,
+                       sVirl_refinement_method,
+                       10,
+                       0};
+
+    analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 
     Breakend new_breakend_1 {"chr1", 106, strand::forward};
     Breakend new_breakend_2 {"chr2", 100, strand::forward};

@@ -1,6 +1,9 @@
 #pragma once
 
-#include "structures/aligned_segment.hpp"   // for struct AlignedSegment
+#include "iGenVar.hpp"                          // for struct cmd_arguments
+#include "structures/aligned_segment.hpp"       // for struct AlignedSegment
+#include "structures/junction.hpp"              // for class Junction
+#include "variant_detection/bam_functions.hpp"  // for seqan3::sam_flag and hasFlag* functions
 
 /*! \brief Splits a string by a given delimiter and stores substrings in a given container.
  *
@@ -39,11 +42,15 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
  * \param[in, out]  junctions           - vector for storing junctions
  * \param[in, out]  query_sequence      - SEQ field of the SAM/BAM file
  * \param[in]       read_name           - QNAME field of the SAM/BAM file
+ * \param[in]       min_length          - minimum length of variants to detect
+ * \param[in]       max_overlap         - maximum overlap between alignment segments
  */
 void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segments,
                               std::vector<Junction> & junctions,
                               seqan3::dna5_vector const & query_sequence,
-                              std::string const & read_name);
+                              std::string const & read_name,
+                              uint32_t const min_length,
+                              uint32_t const max_overlap);
 
 /*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
  *         [aligned_segments](\ref AlignedSegment), one for each alignment segment of the read.
@@ -57,6 +64,9 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
  * \param[in]       cigar       - CIGAR field of the SAM/BAM file
  * \param[in]       seq         - SEQ field of the SAM/BAM file
  * \param[in]       sa_tag      - SA tag, one tag from the read of the SAM/BAM file
+ * \param[in]       args        - command line arguments:\n
+ *                                **args.min_var_length** - minimum length of variants to detect\n
+ *                                **args.max_overlap** - maximum overlap between alignment segments
  * \param[in, out]  junctions   - vector for storing junctions
  */
 void analyze_sa_tag(std::string const & query_name,
@@ -67,4 +77,5 @@ void analyze_sa_tag(std::string const & query_name,
                     std::vector<seqan3::cigar> const & cigar,
                     seqan3::dna5_vector const & seq,
                     std::string const & sa_tag,
+                    cmd_arguments const & args,
                     std::vector<Junction> & junctions);

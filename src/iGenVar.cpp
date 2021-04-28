@@ -65,6 +65,9 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_option(args.max_tol_inserted_length, 't', "max_tol_inserted_length",
                       "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs.",
                       seqan3::option_spec::advanced);
+    parser.add_option(args.max_overlap, 'p', "max_overlap",
+                      "Specify the maximum allowed overlap between two alignment segments.",
+                      seqan3::option_spec::advanced);
 }
 
 void detect_variants_in_alignment_file(cmd_arguments const & args)

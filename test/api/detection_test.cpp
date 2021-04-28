@@ -243,16 +243,16 @@ TEST(junction_detection, analyze_aligned_segments)
                              10,
                              0);
     
-    Breakend new_breakend_1 {"chr1", 106, strand::forward};
-    Breakend new_breakend_2 {"chr2", 100, strand::forward};
-    Breakend new_breakend_3 {"chr1", 106, strand::reverse};
-    Breakend new_breakend_4 {"chr2", 110, strand::reverse};
-    Breakend new_breakend_5 {"chr1", 116, strand::forward};
-    Breakend new_breakend_6 {"chr1", 130, strand::reverse};
-    Breakend new_breakend_7 {"chr1", 116, strand::reverse};
-    Breakend new_breakend_8 {"chr1", 130, strand::forward};
-    Breakend new_breakend_9 {"chr1", 134, strand::forward};
-    Breakend new_breakend_10 {"chr1", 150, strand::forward};
+        Breakend new_breakend_1 {"chr1", 105, strand::forward};
+        Breakend new_breakend_2 {"chr2", 100, strand::forward};
+        Breakend new_breakend_3 {"chr1", 106, strand::reverse};
+        Breakend new_breakend_4 {"chr2", 109, strand::reverse};
+        Breakend new_breakend_5 {"chr1", 115, strand::forward};
+        Breakend new_breakend_6 {"chr1", 129, strand::reverse};
+        Breakend new_breakend_7 {"chr1", 116, strand::reverse};
+        Breakend new_breakend_8 {"chr1", 130, strand::forward};
+        Breakend new_breakend_9 {"chr1", 133, strand::forward};
+        Breakend new_breakend_10 {"chr1", 150, strand::forward};
     std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},      //translocation
                                                  Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},      //translocation
                                                  Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},      //inversion
@@ -298,15 +298,15 @@ TEST(junction_detection, analyze_sa_tag)
 
     analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 
-    Breakend new_breakend_1 {"chr1", 106, strand::forward};
+    Breakend new_breakend_1 {"chr1", 105, strand::forward};
     Breakend new_breakend_2 {"chr2", 100, strand::forward};
     Breakend new_breakend_3 {"chr1", 106, strand::reverse};
-    Breakend new_breakend_4 {"chr2", 110, strand::reverse};
-    Breakend new_breakend_5 {"chr1", 116, strand::forward};
-    Breakend new_breakend_6 {"chr1", 130, strand::reverse};
+    Breakend new_breakend_4 {"chr2", 109, strand::reverse};
+    Breakend new_breakend_5 {"chr1", 115, strand::forward};
+    Breakend new_breakend_6 {"chr1", 129, strand::reverse};
     Breakend new_breakend_7 {"chr1", 116, strand::reverse};
     Breakend new_breakend_8 {"chr1", 130, strand::forward};
-    Breakend new_breakend_9 {"chr1", 134, strand::forward};
+    Breakend new_breakend_9 {"chr1", 133, strand::forward};
     Breakend new_breakend_10 {"chr1", 150, strand::forward};
     std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},      //translocation
                                                  Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},      //translocation

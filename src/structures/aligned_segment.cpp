@@ -33,7 +33,8 @@ int32_t AlignedSegment::get_reference_end() const
                 break;
         }
     }
-    return current_pos;
+    // Decrement by 1 to jump back to the last aligned base
+    return current_pos - 1;
 }
 
 int32_t AlignedSegment::get_left_soft_clip() const

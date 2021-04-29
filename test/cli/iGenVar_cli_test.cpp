@@ -98,7 +98,7 @@ std::string expected_res_default
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
-    "chr21\t41972615\t.\tN\t<INS>\t60\tPASS\tEND=41972615;SVLEN=1681;SVTYPE=INS\n"
+    "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\n"
 };
 
 std::string expected_res_empty
@@ -369,15 +369,21 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
                                          "-l 8 -m 0 -m 1");
 
     // Check the output of junctions:
-    // seqan3::debug_stream << "Check the output of junctions... " << '\n';
-    // EXPECT_EQ(result.out, expected_res_default);
-    // seqan3::debug_stream << "done. " << '\n';
+    seqan3::debug_stream << "Check the output of junctions... " << '\n';
+    std::ifstream output_res_file("../../data/output_res.txt");
+    std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
+                                std::istreambuf_iterator<char>());
+    //Todo(eldariont): Correct output_res.txt after merging #113:
+    //line 8: DEL should be at chr1:97-125 (SVLEN=-28)
+    //line 12: DEL should be at chr1:266-287 (SVLEN=-20) and merged with line 11
+    EXPECT_EQ(result.out, output_res_str);
+    seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:
     seqan3::debug_stream << "Check the debug output of junctions... " << '\n';
-    std::ifstream txt_test_file("../../data/output_err.txt");
-    std::string txt_test_file_str((std::istreambuf_iterator<char>(txt_test_file)),
-                                   std::istreambuf_iterator<char>());
-    EXPECT_EQ(result.err, txt_test_file_str);
+    std::ifstream output_err_file("../../data/output_err.txt");
+    std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
+                                std::istreambuf_iterator<char>());
+    EXPECT_EQ(result.err, output_err_str);
     seqan3::debug_stream << "done. " << '\n';
 }

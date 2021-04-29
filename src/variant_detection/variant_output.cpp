@@ -19,6 +19,7 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
     {
         Breakend mate1 = clusters[i].get_average_mate1();
         Breakend mate2 = clusters[i].get_average_mate2();
+        size_t cluster_size = clusters[i].get_cluster_size();
         if (mate1.orientation == mate2.orientation)
         {
             if (mate1.seq_name == mate2.seq_name)
@@ -36,11 +37,14 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
                     {
                         variant_record tmp{};
                         tmp.set_chrom(mate1.seq_name);
-                        tmp.set_qual(60);
+                        tmp.set_qual(cluster_size);
                         tmp.set_alt("<DEL>");
                         tmp.add_info("SVTYPE", "DEL");
-                        tmp.set_pos(mate1_pos);
-                        tmp.add_info("SVLEN", std::to_string(-distance));
+                        // Increment position by 1 because VCF is 1-based
+                        tmp.set_pos(mate1_pos + 1);
+                        tmp.add_info("SVLEN", std::to_string(-distance + 1));
+                        // Increment end by 1 because VCF is 1-based
+                        // Decrement end by 1 because deletion ends one base before mate2 begins
                         tmp.add_info("END", std::to_string(mate2_pos));
                         tmp.print(out_stream);
                     }
@@ -50,12 +54,14 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
                     {
                         variant_record tmp{};
                         tmp.set_chrom(mate1.seq_name);
-                        tmp.set_qual(60);
+                        tmp.set_qual(cluster_size);
                         tmp.set_alt("<INS>");
                         tmp.add_info("SVTYPE", "INS");
-                        tmp.set_pos(mate1_pos);
+                        // Increment position by 1 because VCF is 1-based
+                        tmp.set_pos(mate1_pos + 1);
                         tmp.add_info("SVLEN", std::to_string(insert_size));
-                        tmp.add_info("END", std::to_string(mate1_pos));
+                        // Increment end by 1 because VCF is 1-based
+                        tmp.add_info("END", std::to_string(mate1_pos + 1));
                         tmp.print(out_stream);
                     }
                 }

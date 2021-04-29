@@ -2,7 +2,18 @@
 
 #include <seqan3/argument_parser/argument_parser.hpp>   // for seqan3::argument_parser
 
-struct cmd_arguments;
+#include "variant_detection/method_enums.hpp"           // for enum detection_methods, clustering_methods and refinement_methods
+
+struct cmd_arguments
+{
+    std::filesystem::path alignment_short_reads_file_path{""};
+    std::filesystem::path alignment_long_reads_file_path{""};
+    std::filesystem::path output_file_path{};
+    std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
+    clustering_methods clustering_method{simple_clustering};                                    // default: simple clustering method
+    refinement_methods refinement_method{no_refinement};                                        // default: no refinement
+    uint64_t min_var_length = 30;
+};
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
 

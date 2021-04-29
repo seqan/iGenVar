@@ -1,7 +1,8 @@
+#include "variant_detection/variant_output.hpp"
+
 #include <iostream> // for std::cout
 
 #include "structures/junction.hpp"              // for class Junction
-#include "variant_detection/variant_output.hpp"
 #include "variant_parser/variant_record.hpp"    // for class variant_header
 
 void find_and_output_variants(std::vector<Cluster> const & clusters,
@@ -24,10 +25,14 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
             {
                 int32_t mate1_pos = mate1.position;
                 int32_t mate2_pos = mate2.position;
+                int32_t insert_size = clusters[i].get_average_inserted_sequence_size();
                 if (mate1.orientation == strand::forward)
                 {
                     int32_t distance = mate2_pos - mate1_pos;
-                    if (distance > 40 && distance < 100000)
+                    //Deletion
+                    if (distance >= args.min_var_length &&
+                        distance < 1000000 &&
+                        insert_size < 5)
                     {
                         variant_record tmp{};
                         tmp.set_chrom(mate1.seq_name);
@@ -39,19 +44,17 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
                         tmp.add_info("END", std::to_string(mate2_pos));
                         tmp.print(out_stream);
                     }
-                }
-                else if (mate1.orientation == strand::reverse)
-                {
-                    int32_t distance = mate1_pos - mate2_pos;
-                    if (distance > 40 && distance < 100000)
+                    //Insertion
+                    else if (distance == 1 &&
+                             insert_size >= args.min_var_length)
                     {
                         variant_record tmp{};
                         tmp.set_chrom(mate1.seq_name);
                         tmp.set_qual(60);
-                        tmp.set_alt("<DEL>");
-                        tmp.add_info("SVTYPE", "DEL");
-                        tmp.set_pos(mate2_pos);
-                        tmp.add_info("SVLEN", std::to_string(-distance));
+                        tmp.set_alt("<INS>");
+                        tmp.add_info("SVTYPE", "INS");
+                        tmp.set_pos(mate1_pos);
+                        tmp.add_info("SVLEN", std::to_string(insert_size));
                         tmp.add_info("END", std::to_string(mate1_pos));
                         tmp.print(out_stream);
                     }

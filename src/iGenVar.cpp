@@ -132,7 +132,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             break;
     }
 
-    find_and_output_variants(clusters, args.output_file_path);
+    find_and_output_variants(clusters, args, args.output_file_path);
 }
 
 int main(int argc, char ** argv)

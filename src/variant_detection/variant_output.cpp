@@ -4,7 +4,9 @@
 #include "variant_detection/variant_output.hpp"
 #include "variant_parser/variant_record.hpp"    // for class variant_header
 
-void find_and_output_variants(std::vector<Cluster> const & clusters, std::ostream & out_stream)
+void find_and_output_variants(std::vector<Cluster> const & clusters,
+                              cmd_arguments const & args,
+                              std::ostream & out_stream)
 {
     variant_header header{};
     header.set_fileformat("VCFv4.3");
@@ -61,11 +63,12 @@ void find_and_output_variants(std::vector<Cluster> const & clusters, std::ostrea
 
 //!\overload
 void find_and_output_variants(std::vector<Cluster> const & clusters,
-                             std::filesystem::path const & output_file_path)
+                              cmd_arguments const & args,
+                              std::filesystem::path const & output_file_path)
 {
     if (output_file_path.empty())
     {
-        find_and_output_variants(clusters, std::cout);
+        find_and_output_variants(clusters, args, std::cout);
     }
     else
     {
@@ -74,7 +77,7 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
         {
             throw std::runtime_error{"Could not open file '" + output_file_path.string() + "' for reading."};
         }
-        find_and_output_variants(clusters, out_file);
+        find_and_output_variants(clusters, args, out_file);
         out_file.close();
     }
 }

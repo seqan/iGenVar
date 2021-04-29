@@ -2,7 +2,7 @@
 
 #include <seqan3/core/debug_stream.hpp>
 
-using seqan3::operator""_tag;
+using seqan3::operator""_dna5;
 
 template <class Container>
 void split_string(std::string const & str, Container & cont, char const delim)
@@ -107,10 +107,17 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 Breakend mate2{next.ref_name,
                                mate2_pos,
                                next.orientation};
-                auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(), next.get_query_start());
-                Junction new_junction{mate1, mate2, inserted_bases, read_name};
-                seqan3::debug_stream << "BND: " << new_junction << "\n";
-                junctions.push_back(std::move(new_junction));
+                if (distance_on_read < 0)
+                {
+                    // No inserted sequence between overlapping alignment segments
+                    junctions.emplace_back(mate1, mate2, ""_dna5, read_name);
+                }
+                else
+                {
+                    auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(), next.get_query_start());
+                    junctions.emplace_back(mate1, mate2, inserted_bases, read_name);
+                }
+                seqan3::debug_stream << "BND: " << junctions.back() << "\n";
             }
         }
     }

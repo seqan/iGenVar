@@ -330,6 +330,42 @@ TEST(junction_detection, analyze_aligned_segments)
     }
 }
 
+TEST(junction_detection, overlapping_segments)
+{
+    AlignedSegment aligned_segment1 {strand::forward, "chr1", 100, 60, std::vector<seqan3::cigar>{{20, 'M'_cigar_operation},
+                                                                                                  {30, 'S'_cigar_operation}}};
+    AlignedSegment aligned_segment2 {strand::forward, "chr1", 200, 60, std::vector<seqan3::cigar>{{15, 'S'_cigar_operation},
+                                                                                                  {35, 'M'_cigar_operation}}};
+    std::vector<AlignedSegment> aligned_segments{aligned_segment1, aligned_segment2};
+
+    std::vector<Junction> junctions_res{};
+    seqan3::dna5_vector query_sequence = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
+    std::string const read_name = "read021";
+    ASSERT_NO_THROW(analyze_aligned_segments(aligned_segments,
+                                             junctions_res,
+                                             query_sequence,
+                                             read_name,
+                                             10,
+                                             10));
+
+    // Deletion from two overlapping alignment segments (overlap of 5bp)
+    Breakend new_breakend_1 {"chr1", 119, strand::forward};
+    Breakend new_breakend_2 {"chr1", 205, strand::forward};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name}};
+
+    ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+    for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+    {
+        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+        EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
+                                                                   << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                                                                   << "\nMate 2 equal: "
+                                                                   << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                                                                   << "\n";
+    }
+}
+
 TEST(junction_detection, analyze_sa_tag)
 {
     // Primary alignment: chr1,116,-,10S14M26S,60,0;

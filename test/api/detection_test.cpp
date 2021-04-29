@@ -173,9 +173,9 @@ TEST(junction_detection, split_string)
 
 TEST(junction_detection, retrieve_aligned_segments)
 {
-    std::string const sa_tag = "chr1,100,+,6M94S,60,0;chr2,100,+,6S10M84S,60,0;chr1,106,+,16S10M74S,60,0;"
-                               "chr1,116,-,60S14M26S,60,0;chr1,130,+,40S4M56S,60,0;chr1,150,+,44S6M50S,60,0;"
-                               "chr1,156,+,90S10M,60,0;";
+    std::string const sa_tag = "chr1,101,+,6M94S,60,0;chr2,101,+,6S10M84S,60,0;chr1,107,+,16S10M74S,60,0;"
+                               "chr1,117,-,60S14M26S,60,0;chr1,131,+,40S4M56S,60,0;chr1,151,+,44S6M50S,60,0;"
+                               "chr1,157,+,90S10M,60,0;";
     std::vector<AlignedSegment> segments_res{};
     retrieve_aligned_segments(sa_tag, segments_res);
 
@@ -374,13 +374,13 @@ TEST(junction_detection, analyze_sa_tag)
     std::string const chromosome = "chr1";
     int32_t const pos = 116;
     uint8_t const mapq = 60;
-    std::vector<seqan3::cigar> test_cigar = {{10, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
+    std::vector<seqan3::cigar> test_cigar = {{60, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"
                                "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA"_dna5};
     // Supplementary alignments
-    std::string const sa_tag = "chr1,100,+,6M94S,60,0;chr2,100,+,6S10M84S,60,0;chr1,106,+,16S10M74S,60,0;"
-                               "chr1,116,-,60S14M26S,60,0;chr1,130,+,40S4M56S,60,0;chr1,150,+,44S6M50S,60,0;"
-                               "chr1,156,+,90S10M,60,0;";
+    std::string const sa_tag = "chr1,101,+,6M94S,60,0;chr2,101,+,6S10M84S,60,0;chr1,107,+,16S10M74S,60,0;"
+                               "chr1,117,-,60S14M26S,60,0;chr1,131,+,40S4M56S,60,0;chr1,151,+,44S6M50S,60,0;"
+                               "chr1,157,+,90S10M,60,0;";
     std::vector<Junction> junctions_res{};
     // Args
     cmd_arguments args{std::filesystem::path{},

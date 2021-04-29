@@ -94,9 +94,9 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
     std::string const chromosome_2 = "chr22";
     int32_t const pos_ref_1 = 41972615;
     int32_t const pos_ref_2 = 41972616;
-    int32_t const pos_ref_3 = 17458416;
+    int32_t const pos_ref_3 = 17458415;
     int32_t const pos_ref_4 = 41972615;
-    int32_t const pos_ref_5 = 17458417;
+    int32_t const pos_ref_5 = 17458416;
     int32_t const pos_ref_6 = 41972616;
     // std::string const insertion_allele_id_1 = "0";
 

@@ -25,7 +25,8 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
         if (fields.size() == 6)
         {
             std::string ref_name = fields[0];
-            int32_t pos = std::stoi(fields[1]);
+            // Decrement by 1 because position in SA tag is stored as string and 1-based unlike other coordinates
+            int32_t pos = std::stoi(fields[1]) - 1;
             strand orientation;
             if (fields[2] == "+")
             {

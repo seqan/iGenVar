@@ -47,6 +47,10 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
             int32_t mapq = std::stoi(fields[4]);
             aligned_segments.push_back(AlignedSegment{orientation, ref_name, pos, mapq, cigar_vector});
         }
+        else
+        {
+            seqan3::debug_stream << "Your SA tag has a wrong format (wrong amount of parameters): " << sa_tag << '\n';
+        }
     }
 }
 

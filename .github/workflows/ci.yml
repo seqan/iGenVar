@@ -268,7 +268,7 @@ jobs:
         if: matrix.build == 'coverage'
         run: |
           lcov --directory ./app-build/ --capture --output-file ./app-build/app_coverage --gcov-tool gcov-10
-          lcov --remove ./app-build/app_coverage '/usr/*' "${HOME}"'/.cache/*' '*/lib/*' --output-file ./app-build/app_coverage
+          lcov --remove ./app-build/app_coverage '/usr/*' "${{ github.workspace }}"'/app/lib/*' "${{ github.workspace }}"'/app-build/vendor/*' --output-file ./app-build/app_coverage
           lcov --list ./app-build/app_coverage
 
       - name: Submit coverage build

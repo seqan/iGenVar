@@ -122,6 +122,15 @@ jobs:
             build: unit
             build_type: Release
 
+          - name: "CodeCoverage"
+            os: ubuntu-20.04
+            requires_toolchain: true
+            requires_ccache: true
+            cxx: "g++-10"
+            cc: "gcc-10"
+            build: coverage
+            build_type: Debug
+
           - name: "Documentation"
             os: ubuntu-20.04
             requires_toolchain: false
@@ -203,7 +212,7 @@ jobs:
         if: matrix.build == 'coverage'
         run: |
           sudo apt-get install --yes lcov
-          sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-7 100
+          sudo update-alternatives --install /usr/bin/gcov gcov /usr/bin/gcov-10 100
 
       - name: Get cached build
         if: matrix.requires_ccache
@@ -224,9 +233,13 @@ jobs:
         run: |
           mkdir app-build
           cd app-build
-          cmake ../app -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+          if [[ "${{ matrix.build }}" =~ ^(coverage)$ ]]; then
+            cmake ../app -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+          else
+            cmake ../app -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+          fi
 
-      - name: Build tests
+      - name: Build app
         env:
           CCACHE_BASEDIR: ${{ github.workspace }}
           CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -242,8 +255,7 @@ jobs:
             make -k -j2
           fi
 
-      - name: Run tests
-        if: matrix.build != 'coverage' # Already ran by the make call
+      - name: Build and run tests
         run: |
           cd app-build
           if [[ "${{ matrix.build }}" =~ ^(documentation)$ ]]; then
@@ -251,6 +263,13 @@ jobs:
           else
             ctest . -j2 --output-on-failure
           fi
+
+      - name: Run lcov
+        if: matrix.build == 'coverage'
+        run: |
+          lcov --directory ./app-build/ --capture --output-file ./app-build/app_coverage --gcov-tool gcov-10
+          lcov --remove ./app-build/app_coverage '/usr/*' "${HOME}"'/.cache/*' '*/lib/*' --output-file ./app-build/app_coverage
+          lcov --list ./app-build/app_coverage
 
       - name: Submit coverage build
         if: matrix.build == 'coverage'

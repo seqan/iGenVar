@@ -9,4 +9,4 @@ add_executable ("${PROJECT_NAME}" main.cpp)
 target_link_libraries ("${PROJECT_NAME}" PRIVATE "${PROJECT_NAME}_lib")
 
 # Include code-coverage settings:
-target_link_libraries("${PROJECT_NAME}" PUBLIC coverage_config)
+target_link_libraries ("${PROJECT_NAME}" PUBLIC seqan_app_coverage_config)

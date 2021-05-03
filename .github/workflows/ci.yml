@@ -234,7 +234,7 @@ jobs:
           mkdir app-build
           cd app-build
           if [[ "${{ matrix.build }}" =~ ^(coverage)$ ]]; then
-            cmake ../app -DCODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+            cmake ../app -DSEQAN_APP_CODE_COVERAGE=ON -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
           else
             cmake ../app -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
           fi

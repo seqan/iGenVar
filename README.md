@@ -18,5 +18,6 @@ Instructions:
 
 (Built using the [SeqAn3 App Template](https://github.com/seqan/app-template))
 
-We created a small example, which you can use to test run our app:
-`./bin/iGenVar -j ./test/data/mini_example.sam -o ./test/data/output.vcf -m cigar_string -m split_read -l 5`
+We created small examples, which you can use to test our app:
+`./bin/iGenVar -i ./test/data/paired_end_short_read_mini_example.sam -j ./test/data/single_end_mini_example.sam `
+`-o ./test/data/output.vcf -m cigar_string -m split_read -l 5`

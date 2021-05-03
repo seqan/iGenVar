@@ -28,3 +28,10 @@ CCCCGGGGCCAATTT
 AS: Alignment score (Match=+1, Mismatch=-1, Gapöffnung=-3,Gapverlängerung=-0,1)
 NM: Edit distance to the reference
 SA: Other canonical alignments in a chimeric ailgnment
+
+
+paired end read mates:
+-----------------------------ref---------------------------->
+---read1-mate1-50bp---> ... 50 bp ...
+<------------------------rev-comp-ref------------------------
+                        ... 50 bp ... <---read1-mate2-50bp---

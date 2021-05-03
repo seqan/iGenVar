@@ -292,10 +292,31 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
     EXPECT_EQ(result.err, expected_err);
 }
 
-TEST_F(iGenVar_cli_test, dataset_mini_example)
+TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
-                                         "-j", data("mini_example.sam"),
+                                         "-i", data("paired_end_mini_example.sam"),
+                                         "-l 8 -m 0 -m 1");
+
+    // Check the output of junctions:
+    seqan3::debug_stream << "Check the output of junctions... " << '\n';
+    EXPECT_EQ(result.out, "");
+    seqan3::debug_stream << "done. " << '\n';
+
+    // Check the debug output of junctions:
+    seqan3::debug_stream << "Check the debug output of junctions... " << '\n';
+    std::string expected_err
+    {
+        "Short reads are currently not supported.\n"
+    };
+    EXPECT_EQ(result.err, expected_err);
+    seqan3::debug_stream << "done. " << '\n';
+}
+
+TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data("single_end_mini_example.sam"),
                                          "-l 8 -m 0 -m 1");
 
     // Check the output of junctions:

@@ -1,3 +1,4 @@
+Detect junctions in long reads...
 DEL: chr1	56	Forward	chr1	70	Forward	0	read010
 DEL: chr1	56	Forward	chr1	70	Forward	0	read011
 DEL: chr1	56	Forward	chr1	70	Forward	0	read012

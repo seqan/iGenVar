@@ -8,8 +8,7 @@
 
 using seqan3::operator""_dna5;
 
-// TODO (irallia): Add a test for short read files.
-// std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_mini_example.sam";
+std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_mini_example.sam";
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path const empty_output_path{};
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
@@ -52,15 +51,39 @@ void check_output(std::string const expected_res)
     return;
 }
 
-std::vector<Junction> junctions_res{};
+TEST(input_file, detect_junctions_in_short_read_sam_file)
+{
+    std::vector<Junction> junctions_res{};
+
+    detect_junctions_in_short_reads_sam_file(junctions_res,
+                                             default_alignment_short_reads_file_path,
+                                             default_methods,
+                                             sv_default_length);
+
+    std::vector<Junction> junctions_expected_res{};
+
+    ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+    for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+    {
+        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
+        EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
+        // For debugging #include <seqan3/core/debug_stream.hpp> and use:
+        // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
+        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ": \n"
+        //                      << junctions_expected_res[i].get_mate1() << " == " << junctions_res[i].get_mate1() << "\n"
+        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ": \n"
+        //                      << junctions_expected_res[i].get_mate2() << " == " << junctions_res[i].get_mate2() << "\n";
+    }
+}
 
 TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
+    std::vector<Junction> junctions_res{};
+
     detect_junctions_in_long_reads_sam_file(junctions_res,
                                             default_alignment_long_reads_file_path,
                                             default_methods,
-                                            simple_clustering,
-                                            sVirl_refinement_method,
                                             sv_default_length);
 
     std::string const chromosome_1 = "chr21";
@@ -144,6 +167,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
 
 TEST(input_file, long_read_sam_file_unsorted)
 {
+    std::vector<Junction> junctions_res{};
     // Create a blank SAM file without a sorting indicator.
     std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
     std::filesystem::path unsorted_sam_path{tmp_dir/"unsorted.sam"};
@@ -156,8 +180,6 @@ TEST(input_file, long_read_sam_file_unsorted)
     EXPECT_THROW(detect_junctions_in_long_reads_sam_file(junctions_res,
                                                          unsorted_sam_path,
                                                          default_methods,
-                                                         simple_clustering,
-                                                         no_refinement,
                                                          sv_default_length), seqan3::format_error);
 
     std::filesystem::remove(unsorted_sam_path);

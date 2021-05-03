@@ -4,6 +4,7 @@ cmake_minimum_required (VERSION 3.11)
 add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_clustering_method.cpp
                                           modules/clustering/simple_clustering_method.cpp                                          
                                           modules/sv_detection_methods/analyze_cigar_method.cpp
+                                          modules/sv_detection_methods/analyze_read_pair_method.cpp
                                           modules/sv_detection_methods/analyze_sa_tag_method.cpp
                                           structures/aligned_segment.cpp
                                           structures/breakend.cpp

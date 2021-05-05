@@ -32,8 +32,8 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
                     int32_t distance = mate2_pos - mate1_pos;
                     //Deletion
                     if (distance >= args.min_var_length &&
-                        distance < 1000000 &&
-                        insert_size < 5)
+                        distance <= args.max_var_length &&
+                        insert_size <= args.max_tol_inserted_length)
                     {
                         variant_record tmp{};
                         tmp.set_chrom(mate1.seq_name);

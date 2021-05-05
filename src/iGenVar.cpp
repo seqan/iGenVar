@@ -58,6 +58,13 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_option(args.min_var_length, 'l', "min_var_length",
                       "Specify what should be the minimum length of your SVs to be detected (default 30 bp).",
                       seqan3::option_spec::advanced);
+    parser.add_option(args.max_var_length, 'x', "max_var_length",
+                      "Specify what should be the maximum length of your SVs to be detected (default 1,000,000 bp). "
+                      "SVs larger than this threshold can still be output as translocations.",
+                      seqan3::option_spec::advanced);
+    parser.add_option(args.max_tol_inserted_length, 't', "max_tol_inserted_length",
+                      "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs (default 5 bp).",
+                      seqan3::option_spec::advanced);
 }
 
 void detect_variants_in_alignment_file(cmd_arguments const & args)

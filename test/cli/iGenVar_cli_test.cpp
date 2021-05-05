@@ -81,6 +81,13 @@ std::string const help_page_advanced
     "    -l, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be detected\n"
     "          (default 30 bp). Default: 30.\n"
+    "    -x, --max_var_length (unsigned 64 bit integer)\n"
+    "          Specify what should be the maximum length of your SVs to be detected\n"
+    "          (default 1,000,000 bp). SVs larger than this threshold can still be\n"
+    "          output as translocations. Default: 1000000.\n"
+    "    -t, --max_tol_inserted_length (unsigned 64 bit integer)\n"
+    "          Specify what should be the longest tolerated inserted sequence at\n"
+    "          sites of non-INS SVs (default 5 bp). Default: 5.\n"
 };
 
 // std::string expected_res_default
@@ -175,11 +182,11 @@ TEST_F(iGenVar_cli_test, fail_unknown_option)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-x 0");
+                                         "-y 0");
 
     std::string expected_err
     {
-        "[Error] Unknown option -x. In case this is meant to be a non-option/argument/parameter, please specify the "
+        "[Error] Unknown option -y. In case this is meant to be a non-option/argument/parameter, please specify the "
         "start of non-options with '--'. See -h/--help for program information.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);

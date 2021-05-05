@@ -81,6 +81,13 @@ std::string const help_page_advanced
     "    -l, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be detected\n"
     "          (default 30 bp). Default: 30.\n"
+    "    -x, --max_var_length (unsigned 64 bit integer)\n"
+    "          Specify what should be the maximum length of your SVs to be detected\n"
+    "          (default 1,000,000 bp). SVs larger than this threshold can still be\n"
+    "          output as translocations. Default: 1000000.\n"
+    "    -t, --max_tol_inserted_length (unsigned 64 bit integer)\n"
+    "          Specify what should be the longest tolerated inserted sequence at\n"
+    "          sites of non-INS SVs (default 5 bp). Default: 5.\n"
 };
 
 // std::string expected_res_default
@@ -97,7 +104,18 @@ std::string expected_res_default
     "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
+    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
+    "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\n"
+};
+
+std::string expected_res_empty
+{
+    "##fileformat=VCFv4.3\n"
+    "##source=iGenVarCaller\n"
+    "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
 };
 
 std::string expected_err_default_no_err
@@ -164,11 +182,11 @@ TEST_F(iGenVar_cli_test, fail_unknown_option)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-x 0");
+                                         "-y 0");
 
     std::string expected_err
     {
-        "[Error] Unknown option -x. In case this is meant to be a non-option/argument/parameter, please specify the "
+        "[Error] Unknown option -y. In case this is meant to be a non-option/argument/parameter, please specify the "
         "start of non-options with '--'. See -h/--help for program information.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
@@ -298,7 +316,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out, expected_res_empty);
     seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:
@@ -359,14 +377,20 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';
-    EXPECT_EQ(result.out, expected_res_default);
+    std::ifstream output_res_file("../../data/output_res.txt");
+    std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
+                                std::istreambuf_iterator<char>());
+    //Todo(eldariont): Correct output_res.txt after merging #113:
+    //line 8: DEL should be at chr1:97-125 (SVLEN=-28)
+    //line 12: DEL should be at chr1:266-287 (SVLEN=-20) and merged with line 11
+    EXPECT_EQ(result.out, output_res_str);
     seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:
     seqan3::debug_stream << "Check the debug output of junctions... " << '\n';
-    std::ifstream txt_test_file("../../data/output_err.txt");
-    std::string txt_test_file_str((std::istreambuf_iterator<char>(txt_test_file)),
-                                   std::istreambuf_iterator<char>());
-    EXPECT_EQ(result.err, txt_test_file_str);
+    std::ifstream output_err_file("../../data/output_err.txt");
+    std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
+                                std::istreambuf_iterator<char>());
+    EXPECT_EQ(result.err, output_err_str);
     seqan3::debug_stream << "done. " << '\n';
 }

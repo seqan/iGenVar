@@ -5,6 +5,7 @@ add_dependencies (iGenVar_cli_test "iGenVar")
 target_use_datasources (iGenVar_cli_test FILES simulated.minimap2.hg19.coordsorted_cutoff.sam)
 target_use_datasources (iGenVar_cli_test FILES paired_end_mini_example.sam)
 target_use_datasources (iGenVar_cli_test FILES single_end_mini_example.sam)
+target_use_datasources (iGenVar_cli_test FILES output_res.txt)
 target_use_datasources (iGenVar_cli_test FILES output_err.txt)
 
 # add_cli_test (iGenVar_options_test.cpp)

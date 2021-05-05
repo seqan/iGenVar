@@ -9,17 +9,6 @@
 #include "variant_detection/variant_detection.hpp"                  // for detect_junctions_in_long_reads_sam_file()
 #include "variant_detection/variant_output.hpp"                     // for find_and_output_variants()
 
-struct cmd_arguments
-{
-    std::filesystem::path alignment_short_reads_file_path{""};
-    std::filesystem::path alignment_long_reads_file_path{""};
-    std::filesystem::path output_file_path{};
-    std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
-    clustering_methods clustering_method{simple_clustering};                                    // default: simple clustering method
-    refinement_methods refinement_method{no_refinement};                                        // default: no refinement
-    uint64_t min_var_length = 30;
-};
-
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
 {
     parser.info.author = "Lydia Buntrock, David Heller, Joshua Kim";
@@ -68,6 +57,13 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     // Options - SV specifications:
     parser.add_option(args.min_var_length, 'l', "min_var_length",
                       "Specify what should be the minimum length of your SVs to be detected (default 30 bp).",
+                      seqan3::option_spec::advanced);
+    parser.add_option(args.max_var_length, 'x', "max_var_length",
+                      "Specify what should be the maximum length of your SVs to be detected (default 1,000,000 bp). "
+                      "SVs larger than this threshold can still be output as translocations.",
+                      seqan3::option_spec::advanced);
+    parser.add_option(args.max_tol_inserted_length, 't', "max_tol_inserted_length",
+                      "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs (default 5 bp).",
                       seqan3::option_spec::advanced);
 }
 
@@ -132,7 +128,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             break;
     }
 
-    find_and_output_variants(clusters, args.output_file_path);
+    find_and_output_variants(clusters, args, args.output_file_path);
 }
 
 int main(int argc, char ** argv)

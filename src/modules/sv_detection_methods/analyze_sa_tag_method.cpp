@@ -93,7 +93,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 else
                     mate2_pos = next.get_reference_end();
             }
-            int32_t distance_on_ref = mate2_pos - mate1_pos;
+            int32_t distance_on_ref = mate2_pos - mate1_pos - 1;
             // Check that the two consecutive alignment segments either
             // map to different reference sequences (e.g. translocation, interspersed duplication),
             // have a large distance on the reference (e.g. deletion, inversion, tandem duplication), or

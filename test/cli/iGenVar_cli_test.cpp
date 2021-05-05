@@ -394,9 +394,6 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
     std::ifstream output_res_file("../../data/output_res.txt");
     std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                 std::istreambuf_iterator<char>());
-    //Todo(eldariont): Correct output_res.txt after merging #113:
-    //line 8: DEL should be at chr1:97-125 (SVLEN=-28)
-    //line 12: DEL should be at chr1:266-287 (SVLEN=-20) and merged with line 11
     EXPECT_EQ(result.out, output_res_str);
     seqan3::debug_stream << "done. " << '\n';
 

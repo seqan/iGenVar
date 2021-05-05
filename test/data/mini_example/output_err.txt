@@ -34,5 +34,5 @@ DEL: chr1	335	Forward	chr1	350	Forward	0	read043
 DEL: chr1	335	Forward	chr1	350	Forward	0	read044
 DEL: chr1	335	Forward	chr1	350	Forward	0	read045
 Start clustering...
-Done with clustering. Found 10 junction clusters.
+Done with clustering. Found 11 junction clusters.
 No refinement was selected.

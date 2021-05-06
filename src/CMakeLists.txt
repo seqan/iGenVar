@@ -6,4 +6,7 @@ target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC seqan3::seqan3)
 target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 
 add_executable ("${PROJECT_NAME}" main.cpp)
-target_link_libraries ("${PROJECT_NAME}" "${PROJECT_NAME}_lib")
+target_link_libraries ("${PROJECT_NAME}" PRIVATE "${PROJECT_NAME}_lib")
+
+# Include code-coverage settings:
+target_link_libraries ("${PROJECT_NAME}" PUBLIC seqan_app_coverage_config)

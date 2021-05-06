@@ -27,6 +27,25 @@ set (FontReset "${Esc}[m")
 # Dependency: SeqAn3.
 find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
 
+# Code Coverage Configuration
+add_library (seqan_app_coverage_config INTERFACE)
+
+option (SEQAN_APP_CODE_COVERAGE "Enable coverage reporting" OFF)
+if (SEQAN_APP_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
+  # Add required flags (GCC & LLVM/Clang)
+  target_compile_options (seqan_app_coverage_config INTERFACE
+    --coverage # sets all required flags
+  )
+  if (CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
+    message (WARNING "Please use build type debug, e.g. cmake -DCMAKE_BUILD_TYPE=DEBUG ...")
+  endif ()
+  if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    target_link_options (seqan_app_coverage_config INTERFACE --coverage)
+  else ()
+    target_link_libraries (seqan_app_coverage_config INTERFACE --coverage)
+  endif ()
+endif ()
+
 add_subdirectory (src)
 message (STATUS "${FontBold}You can run `make` to build the application.${FontReset}")
 

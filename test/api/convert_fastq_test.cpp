@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include <seqan3/core/detail/debug_stream_alphabet.hpp>
 #include <seqan3/test/expect_range_eq.hpp>
 
 #include "fastq_conversion.hpp"

@@ -3,6 +3,9 @@
 #include <vector>                // vectors
 
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
+#include <seqan3/core/detail/debug_stream_alphabet.hpp>
+#include <seqan3/core/detail/debug_stream_tuple.hpp>
+#include <seqan3/core/detail/debug_stream_type.hpp>
 #include <seqan3/io/sequence_file/input.hpp>
 
 #include "cli_test.hpp"

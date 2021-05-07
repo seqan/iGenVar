@@ -27,6 +27,9 @@ set (FontReset "${Esc}[m")
 # Dependency: SeqAn3.
 find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
 
+include ("${SEQAN3_CLONE_DIR}/test/cmake/seqan3_require_ccache.cmake")
+seqan3_require_ccache ()
+
 # Code Coverage Configuration
 add_library (seqan_app_coverage_config INTERFACE)
 
@@ -36,8 +39,8 @@ if (SEQAN_APP_CODE_COVERAGE AND CMAKE_CXX_COMPILER_ID MATCHES "GNU")
   target_compile_options (seqan_app_coverage_config INTERFACE
     --coverage # sets all required flags
   )
-  if (CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE MATCHES "DEBUG")
-    message (WARNING "Please use build type debug, e.g. cmake -DCMAKE_BUILD_TYPE=DEBUG ...")
+  if (CMAKE_BUILD_TYPE AND NOT CMAKE_BUILD_TYPE MATCHES "Debug")
+    message (WARNING "Please build code coverage in Debug, i.e., cmake -DCMAKE_BUILD_TYPE=Debug")
   endif ()
   if (CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
     target_link_options (seqan_app_coverage_config INTERFACE --coverage)

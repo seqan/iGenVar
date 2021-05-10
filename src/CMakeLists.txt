@@ -2,7 +2,7 @@ cmake_minimum_required (VERSION 3.11)
 
 # An object library (without main) to be used in multiple targets.
 add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_clustering_method.cpp
-                                          modules/clustering/simple_clustering_method.cpp                                          
+                                          modules/clustering/simple_clustering_method.cpp
                                           modules/sv_detection_methods/analyze_cigar_method.cpp
                                           modules/sv_detection_methods/analyze_read_pair_method.cpp
                                           modules/sv_detection_methods/analyze_sa_tag_method.cpp
@@ -18,8 +18,8 @@ target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC seqan3::seqan3)
 target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC fastcluster)
 target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 
-# add_executable ("${PROJECT_NAME}" main.cpp)
-# target_link_libraries ("${PROJECT_NAME}" "${PROJECT_NAME}_lib")
+add_executable ("${PROJECT_NAME}" iGenVar.cpp)
+target_link_libraries ("${PROJECT_NAME}" PRIVATE "${PROJECT_NAME}_lib")
 
-add_executable (iGenVar iGenVar.cpp)
-target_link_libraries (iGenVar "${PROJECT_NAME}_lib")
+# Include code-coverage settings:
+target_link_libraries ("${PROJECT_NAME}" PUBLIC igenvar_coverage_config)

@@ -31,10 +31,10 @@ jobs:
             build: coverage
             build_type: Debug
 
-          - name: "gcc11"
-            cxx: "g++-11"
-            cc: "gcc-11"
-            build_type: Release
+          # - name: "gcc11"
+          #   cxx: "g++-11"
+          #   cc: "gcc-11"
+          #   build_type: Release
 
           - name: "gcc10"
             cxx: "g++-10"

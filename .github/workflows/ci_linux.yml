@@ -29,7 +29,7 @@ jobs:
             cxx: "g++-10"
             cc: "gcc-10"
             build: coverage
-            build_type: Debug
+            build_type: Coverage
 
           - name: "gcc11"
             cxx: "g++-11"
@@ -66,10 +66,7 @@ jobs:
           submodules: recursive
 
       - name: Add package source
-        run: |
-          sudo add-apt-repository --no-update --yes ppa:ubuntu-toolchain-r/ppa
-          sudo add-apt-repository --no-update --yes ppa:ubuntu-toolchain-r/test
-          sudo apt-get update
+        run: bash ./src/lib/seqan3/.github/workflows/scripts/configure_apt.sh
 
       - name: Install CMake
         run: bash ./src/lib/seqan3/.github/workflows/scripts/install_cmake.sh
@@ -109,9 +106,9 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ../src -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}" -DSEQAN_APP_CODE_COVERAGE=${{ matrix.build == 'coverage' && 'ON' || 'OFF' }}
+          cmake ../src -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
 
-      - name: Build application
+      - name: Build tests
         env:
           CCACHE_BASEDIR: ${{ github.workspace }}
           CCACHE_DIR: ${{ github.workspace }}/.ccache
@@ -121,26 +118,26 @@ jobs:
         run: |
           ccache -p || true
           cd build
-          make -k -j2
+          make -k -j2 api_test cli_test
           ccache -s || true
 
-      - name: Build and run tests
-        env:
-          CCACHE_BASEDIR: ${{ github.workspace }}
-          CCACHE_DIR: ${{ github.workspace }}/.ccache
-          CCACHE_COMPRESS: true
-          CCACHE_COMPRESSLEVEL: 6
-          CCACHE_MAXSIZE: 500M
+      - name: Generate coverage baseline
+        if: matrix.build == 'coverage'
+        run: |
+          lcov --directory ./build/ --zerocounters
+          lcov --directory ./build/ --capture --initial --output-file ./build/coverage_report.baseline
+
+      - name: Run tests
         run: |
           cd build
           ctest . -j2 --output-on-failure
 
-      - name: Run lcov
+      - name: Generate coverage report
         if: matrix.build == 'coverage'
         run: |
-          lcov --directory ./build/ --capture --output-file ./build/coverage_report --gcov-tool gcov-10
-          lcov --remove ./build/coverage_report '/usr/*' '${{ github.workspace }}/src/lib/*' '${{ github.workspace }}/build/vendor/*' --output-file ./build/coverage_report
-          lcov --list ./build/coverage_report
+          lcov --directory ./build/ --capture --output-file ./build/coverage_report.captured
+          lcov -a ./build/coverage_report.baseline -a ./build/coverage_report.captured --output-file ./build/coverage_report.total
+          lcov --remove ./build/coverage_report.total '/usr/*' '${{ github.workspace }}/src/lib/*' '${{ github.workspace }}/src/test/*' '${{ github.workspace }}/build/vendor/*' --output-file ./build/coverage_report
 
       - name: Submit coverage report
         if: matrix.build == 'coverage'

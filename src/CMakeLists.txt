@@ -20,6 +20,3 @@ target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 
 add_executable ("${PROJECT_NAME}" iGenVar.cpp)
 target_link_libraries ("${PROJECT_NAME}" PRIVATE "${PROJECT_NAME}_lib")
-
-# Include code-coverage settings:
-target_link_libraries ("${PROJECT_NAME}" PUBLIC igenvar_coverage_config)

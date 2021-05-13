@@ -43,6 +43,9 @@ jobs:
           fetch-depth: 2
           submodules: recursive
 
+      - name: Add package source
+        run: bash ./src/lib/seqan3/.github/workflows/scripts/configure_apt.sh
+
       - name: Install CMake
         env:
           BUILD: ${{ matrix.build }}

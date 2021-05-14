@@ -301,7 +301,7 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
     std::string expected_err
     {
         "[Error] You have chosen an invalid input value: 9. "
-        "Please use one of: [read_depth,3,read_pairs,2,split_read,1,cigar_string,0]\n"
+        "Please use one of: [0,cigar_string,1,split_read,2,read_pairs,3,read_depth]\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

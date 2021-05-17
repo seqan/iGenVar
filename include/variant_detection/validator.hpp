@@ -70,18 +70,21 @@ public:
     //!\brief Returns a message that can be appended to the (positional) options help page info.
     std::string get_help_page_message() const
     {
-        std::vector<std::string> possible_values;
-        for (auto && entry : values)
-        {
-            for (auto & [key, value] : seqan3::enumeration_names<option_value_t>)
+        auto map = seqan3::enumeration_names<option_value_t>;
+        std::vector<std::pair<std::string_view, option_value_t>> key_value_pairs(map.begin(), map.end());
+        std::ranges::sort(key_value_pairs, [] (auto pair1, auto pair2)
             {
-                if (entry == value)
+                if constexpr (std::totally_ordered<option_value_t>)
                 {
-                    possible_values.emplace_back(key);
+                    if (pair1.second != pair2.second)
+                        return pair1.second < pair2.second;
                 }
-            }
-        }
-        return seqan3::detail::to_string("Value must be one of (method name or number) ", possible_values, ".");
+                return pair1.first < pair2.first;
+            });
+
+        return seqan3::detail::to_string("Value must be one of (method name or number) ",
+                                         key_value_pairs | std::views::keys,
+                                         ".");
     }
 
 private:

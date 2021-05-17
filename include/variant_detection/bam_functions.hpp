@@ -131,7 +131,7 @@ inline constexpr std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parse_
     // -------------------------------------------------------------------------------------------------------------
     while (std::ranges::begin(cigar_view) != std::ranges::end(cigar_view)) // until stream is not empty
     {
-        auto buff_end = (std::ranges::copy(cigar_view | seqan3::views::take_until_or_throw(!seqan3::is_digit), buffer.data())).out;
+        auto buff_end = (std::ranges::copy(cigar_view | std::views::take_while(seqan3::is_digit), buffer.data())).out;
         cigar_operation = *std::ranges::begin(cigar_view);
         std::ranges::next(std::ranges::begin(cigar_view));
 

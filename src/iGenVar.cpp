@@ -1,5 +1,7 @@
 #include "iGenVar.hpp"
 
+#include <map>
+
 #include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
 
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
@@ -78,21 +80,20 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 {
     // Store junctions
     std::vector<Junction> junctions{};
+    std::map<std::string, int32_t> references_lengths{};
 
     // short reads
     if (args.alignment_short_reads_file_path != "")
     {
         seqan3::debug_stream << "Detect junctions in short reads...\n";
-        detect_junctions_in_short_reads_sam_file(junctions,
-                                                 args);
+        detect_junctions_in_short_reads_sam_file(junctions, references_lengths, args);
     }
 
     // long reads
     if (args.alignment_long_reads_file_path != "")
     {
         seqan3::debug_stream << "Detect junctions in long reads...\n";
-        detect_junctions_in_long_reads_sam_file(junctions,
-                                                args);
+        detect_junctions_in_long_reads_sam_file(junctions, references_lengths, args);
     }
 
     std::sort(junctions.begin(), junctions.end());
@@ -131,7 +132,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             break;
     }
 
-    find_and_output_variants(clusters, args, args.output_file_path);
+    find_and_output_variants(references_lengths, clusters, args, args.output_file_path);
 }
 
 int main(int argc, char ** argv)

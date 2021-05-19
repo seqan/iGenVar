@@ -66,16 +66,21 @@ public:
      *
      * \tparam stream_type - a stream to print the output to
      *
-     * \param[in, out] out_stream - the output stream to print to
+     * \param[in]       references_lengths - references sequence dictionary parsed from \@SQ header lines
+     * \param[in, out]  out_stream - the output stream to print to
      */
     template<typename stream_type>
     //!cond
         requires seqan3::output_stream<stream_type>
     //!endcond
-    void print(stream_type & out_stream)
+    void print(std::map<std::string, int32_t> & references_lengths, stream_type & out_stream)
     {
         out_stream << "##fileformat=" << fileformat << '\n';
         out_stream << "##source=" << source << '\n';
+
+        for(auto const& [id, length] : references_lengths)
+            out_stream << "##contig=<ID=" << id << ",length=" << length << ">\n";
+
         for (auto const & i : info)
         {
             out_stream << "##INFO=<ID=" << i.key << ",Number=" << std::to_string(i.number) << ",Type=" << i.type

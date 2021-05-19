@@ -5,7 +5,8 @@
 #include "structures/junction.hpp"              // for class Junction
 #include "variant_parser/variant_record.hpp"    // for class variant_header
 
-void find_and_output_variants(std::vector<Cluster> const & clusters,
+void find_and_output_variants(std::map<std::string, int32_t> & references_lengths,
+                              std::vector<Cluster> const & clusters,
                               cmd_arguments const & args,
                               std::ostream & out_stream)
 {
@@ -14,7 +15,7 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
     header.add_meta_info("SVTYPE", 1, "String", "Type of SV called.", "iGenVarCaller", "1.0");
     header.add_meta_info("SVLEN", 1, "Integer", "Length of SV called.", "iGenVarCaller", "1.0");
     header.add_meta_info("END", 1, "Integer", "End position of SV called.", "iGenVarCaller", "1.0");
-    header.print(out_stream);
+    header.print(references_lengths, out_stream);
     for (size_t i = 0; i < clusters.size(); ++i)
     {
         Breakend mate1 = clusters[i].get_average_mate1();
@@ -71,13 +72,14 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
 }
 
 //!\overload
-void find_and_output_variants(std::vector<Cluster> const & clusters,
+void find_and_output_variants(std::map<std::string, int32_t> & references_lengths,
+                              std::vector<Cluster> const & clusters,
                               cmd_arguments const & args,
                               std::filesystem::path const & output_file_path)
 {
     if (output_file_path.empty())
     {
-        find_and_output_variants(clusters, args, std::cout);
+        find_and_output_variants(references_lengths, clusters, args, std::cout);
     }
     else
     {
@@ -86,7 +88,7 @@ void find_and_output_variants(std::vector<Cluster> const & clusters,
         {
             throw std::runtime_error{"Could not open file '" + output_file_path.string() + "' for reading."};
         }
-        find_and_output_variants(clusters, args, out_file);
+        find_and_output_variants(references_lengths, clusters, args, out_file);
         out_file.close();
     }
 }

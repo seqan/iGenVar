@@ -71,23 +71,24 @@ std::string const help_page_advanced
     "          of (method name or number)\n"
     "          [0,cigar_string,1,split_read,2,read_pairs,3,read_depth].\n"
     "    -c, --clustering_method (clustering_methods)\n"
-    "          Choose the clustering method to be used. Default: simple_clustering.\n"
-    "          Value must be one of (method name or number)\n"
+    "          Choose the clustering method to be used. Default:\n"
+    "          hierarchical_clustering. Value must be one of (method name or\n"
+    "          number)\n"
     "          [0,simple_clustering,1,hierarchical_clustering,2,self_balancing_binary_tree,3,candidate_selection_based_on_voting].\n"
     "    -r, --refinement_method (refinement_methods)\n"
     "          Choose the refinement method to be used. Default: no_refinement.\n"
     "          Value must be one of (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
     "    -l, --min_var_length (unsigned 64 bit integer)\n"
-    "          Specify what should be the minimum length of your SVs to be detected\n"
-    "          (default 30 bp). Default: 30.\n"
+    "          Specify what should be the minimum length of your SVs to be\n"
+    "          detected. Default: 30.\n"
     "    -x, --max_var_length (unsigned 64 bit integer)\n"
-    "          Specify what should be the maximum length of your SVs to be detected\n"
-    "          (default 1,000,000 bp). SVs larger than this threshold can still be\n"
-    "          output as translocations. Default: 1000000.\n"
+    "          Specify what should be the maximum length of your SVs to be\n"
+    "          detected. SVs larger than this threshold can still be output as\n"
+    "          translocations. Default: 1000000.\n"
     "    -t, --max_tol_inserted_length (unsigned 64 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
-    "          sites of non-INS SVs (default 5 bp). Default: 5.\n"
+    "          sites of non-INS SVs. Default: 5.\n"
 };
 
 // std::string expected_res_default
@@ -126,7 +127,7 @@ std::string expected_err_default_no_err
     "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm21263/13017/CCS\n"
     "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
     "Start clustering...\n"
-    "Done with clustering. Found 3 junction clusters.\n"
+    "Done with clustering. Found 2 junction clusters.\n"
     "No refinement was selected.\n"
 };
 
@@ -235,7 +236,7 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
         "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
         "Start clustering...\n"
-        "Done with clustering. Found 3 junction clusters.\n"
+        "Done with clustering. Found 2 junction clusters.\n"
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
@@ -287,7 +288,7 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-m 0 -m 1 -c 0 -r 0");
+                                         "-m 0 -m 1 -c 1 -r 0");
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err);
@@ -361,7 +362,6 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
         "The read pair method is not yet implemented.\n"
         "The read pair method is not yet implemented.\n"
         "Start clustering...\n"
-        "No junctions found...\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
     };

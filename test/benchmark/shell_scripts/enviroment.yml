@@ -1,0 +1,12 @@
+name: iGenVar_benchmark
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3
+  - samtools
+  - tabix
+  - pip
+  - pip:
+    - truvari

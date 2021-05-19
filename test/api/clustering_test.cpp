@@ -49,7 +49,7 @@ std::vector<Junction> prepare_input_junctions()
     return input_junctions;
 }
 
-TEST(clustering, clustering_method_simple)
+TEST(simple_clustering, all_separate)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
     std::vector<Cluster> resulting_clusters{};
@@ -93,7 +93,55 @@ TEST(clustering, clustering_method_simple)
     }
 }
 
-TEST(clustering, partitioning)
+TEST(simple_clustering, clustered)
+{
+    std::vector<Junction> input_junctions
+    {
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom2, chrom2_position1, strand::forward}, ""_dna5, read_name_1},
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom2, chrom2_position1, strand::forward}, ""_dna5, read_name_2}
+    };
+    std::vector<Cluster> resulting_clusters{};
+    resulting_clusters = simple_clustering_method(input_junctions);
+
+    // Both junctions in the same cluster
+    std::vector<Cluster> expected_clusters
+    {
+        Cluster{{   Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                             Breakend{chrom2, chrom2_position1, strand::forward}, ""_dna5, read_name_1},
+                    Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                             Breakend{chrom2, chrom2_position1, strand::forward}, ""_dna5, read_name_2}
+        }}
+    };
+    std::sort(expected_clusters.begin(), expected_clusters.end());
+
+    ASSERT_EQ(1, resulting_clusters.size());
+
+    for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
+    {
+        EXPECT_TRUE(expected_clusters[cluster_index] == resulting_clusters[cluster_index]) << "Cluster " << cluster_index << " unequal";
+    }
+}
+
+TEST(simple_clustering, empty_junction_vector)
+{
+    testing::internal::CaptureStdout();
+    testing::internal::CaptureStderr();
+
+    std::vector<Junction> input_junctions{};
+    std::vector<Cluster> resulting_clusters{};
+    resulting_clusters = simple_clustering_method(input_junctions);
+
+    ASSERT_EQ(0, resulting_clusters.size());
+
+    std::string result_out = testing::internal::GetCapturedStdout();
+    EXPECT_EQ("", result_out);
+    std::string result_err = testing::internal::GetCapturedStderr();
+    EXPECT_EQ("No junctions found...\n", result_err);
+}
+
+TEST(hierarchical_clustering, partitioning)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
     std::vector<std::vector<Junction>> partitions = partition_junctions(input_junctions);
@@ -139,7 +187,7 @@ TEST(clustering, partitioning)
 }
 
 
-TEST(clustering, strict_clustering)
+TEST(hierarchical_clustering, strict_clustering)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
     std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0);
@@ -195,7 +243,7 @@ TEST(clustering, strict_clustering)
 }
 
 
-TEST(clustering, clustering_10)
+TEST(hierarchical_clustering, clustering_10)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
     std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 10);
@@ -259,7 +307,7 @@ TEST(clustering, clustering_10)
 }
 
 
-TEST(clustering, clustering_15)
+TEST(hierarchical_clustering, clustering_15)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
     std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 15);
@@ -321,7 +369,7 @@ TEST(clustering, clustering_15)
 }
 
 
-TEST(clustering, clustering_25)
+TEST(hierarchical_clustering, clustering_25)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
     std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 25);

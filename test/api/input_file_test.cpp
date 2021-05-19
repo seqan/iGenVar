@@ -42,15 +42,6 @@ std::string empty_res
     "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
 };
 
-
-void check_output(std::string const expected_res)
-{
-    std::string std_cout = testing::internal::GetCapturedStdout();
-    EXPECT_EQ(expected_res, std_cout);
-
-    return;
-}
-
 TEST(input_file, detect_junctions_in_short_read_sam_file)
 {
     std::vector<Junction> junctions_res{};

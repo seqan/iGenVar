@@ -288,10 +288,21 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-m 0 -m 1 -c 1 -r 0");
+                                         "-m 0 -m 1 -c 0 -r 0");
+    std::string expected_err
+    {
+        "Detect junctions in long reads...\n"
+        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
+        "BND: chr21\t41972615\tReverse\tchr22\t17458417\tReverse\t2\tm41327/11677/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm21263/13017/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
+        "Start clustering...\n"
+        "Done with clustering. Found 3 junction clusters.\n"
+        "No refinement was selected.\n"
+    };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err);
+    EXPECT_EQ(result.err, expected_err);
 }
 
 TEST_F(iGenVar_cli_test, test_unknown_argument)

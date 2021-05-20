@@ -27,7 +27,7 @@ TEST(junction_detection, cigar_string_simple_del)
     // Deletion smaller than minimum variant size
     {
         std::vector<Junction> junctions_res{};
-        uint64_t const min_var_length = 10;
+        int32_t const min_var_length = 10;
         analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
         EXPECT_EQ(junctions_res.size(), 0);
@@ -36,7 +36,7 @@ TEST(junction_detection, cigar_string_simple_del)
     // Deletion larger than minimum variant size
     {
         std::vector<Junction> junctions_res{};
-        uint64_t const min_var_length = 5;
+        int32_t const min_var_length = 5;
         analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
         Breakend new_breakend_1 {chromosome, 15, strand::forward};
@@ -66,7 +66,7 @@ TEST(junction_detection, cigar_string_del_padding)
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
 
     std::vector<Junction> junctions_res{};
-    uint64_t const min_var_length = 5;
+    int32_t const min_var_length = 5;
     analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
     Breakend new_breakend_1 {chromosome, 15, strand::forward};
@@ -94,7 +94,7 @@ TEST(junction_detection, cigar_string_simple_ins)
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
 
     std::vector<Junction> junctions_res{};
-    uint64_t const min_var_length = 5;
+    int32_t const min_var_length = 5;
     analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
     Breakend new_breakend_1 {chromosome, 9, strand::forward};
@@ -122,7 +122,7 @@ TEST(junction_detection, cigar_string_ins_hardclip)
     seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5};
 
     std::vector<Junction> junctions_res{};
-    uint64_t const min_var_length = 5;
+    int32_t const min_var_length = 5;
     analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
     Breakend new_breakend_1 {chromosome, 9, strand::forward};

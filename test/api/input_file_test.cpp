@@ -12,8 +12,8 @@ std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_m
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path const empty_output_path{};
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
-constexpr uint64_t default_min_length = 30;
-constexpr uint64_t default_max_overlap = 10;
+constexpr int32_t default_min_length = 30;
+constexpr int32_t default_max_overlap = 10;
 
 // Explanation for the strings:
 // chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681

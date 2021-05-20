@@ -56,17 +56,21 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
 
     // Options - SV specifications:
     parser.add_option(args.min_var_length, 'l', "min_var_length",
-                      "Specify what should be the minimum length of your SVs to be detected.",
+                      "Specify what should be the minimum length of your SVs to be detected. "
+                      "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.max_var_length, 'x', "max_var_length",
                       "Specify what should be the maximum length of your SVs to be detected. "
-                      "SVs larger than this threshold can still be output as translocations.",
+                      "SVs larger than this threshold can still be output as translocations. "
+                      "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.max_tol_inserted_length, 't', "max_tol_inserted_length",
-                      "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs.",
+                      "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs. "
+                      "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.max_overlap, 'p', "max_overlap",
-                      "Specify the maximum allowed overlap between two alignment segments.",
+                      "Specify the maximum allowed overlap between two alignment segments. "
+                      "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
 }
 
@@ -164,6 +168,28 @@ int main(int argc, char ** argv)
     {
         seqan3::debug_stream << "[Error] The same detection method was selected multiple times.\n";
         seqan3::debug_stream << "Methods to be used: " << args.methods << '\n';
+        return -1;
+    }
+
+    // Check that the given parameters are non-negative.
+    if (args.min_var_length < 0)
+    {
+        seqan3::debug_stream << "[Error] You gave a negative min_var_length parameter.\n";
+        return -1;
+    }
+    if (args.max_var_length < 0)
+    {
+        seqan3::debug_stream << "[Error] You gave a negative max_var_length parameter.\n";
+        return -1;
+    }
+    if (args.max_tol_inserted_length < 0)
+    {
+        seqan3::debug_stream << "[Error] You gave a negative max_tol_inserted_length parameter.\n";
+        return -1;
+    }
+    if (args.max_overlap < 0)
+    {
+        seqan3::debug_stream << "[Error] You gave a negative max_overlap parameter.\n";
         return -1;
     }
 

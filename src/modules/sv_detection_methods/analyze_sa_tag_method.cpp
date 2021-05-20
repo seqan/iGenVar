@@ -57,8 +57,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                               std::vector<Junction> & junctions,
                               seqan3::dna5_vector const & query_sequence,
                               std::string const & read_name,
-                              uint32_t const min_length,
-                              uint32_t const max_overlap)
+                              int32_t const min_length,
+                              int32_t const max_overlap)
 {
     for (size_t i = 1; i < aligned_segments.size(); i++)
     {
@@ -67,7 +67,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
         int32_t distance_on_read = next.get_query_start() - current.get_query_end();
         // Check that the overlap between two consecutive alignment segments
         // of the read is lower than the given threshold
-        if (distance_on_read >= -static_cast<int32_t>(max_overlap))
+        if (distance_on_read >= -max_overlap)
         {
             int32_t mate1_pos;
             if (current.orientation == strand::forward)
@@ -99,7 +99,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
             // have a large distance on the reference (e.g. deletion, inversion, tandem duplication), or
             // have a large distance on the read (e.g. insertion)
             if (current.ref_name != next.ref_name ||
-                abs(distance_on_ref) >= min_length ||
+                std::abs(distance_on_ref) >= min_length ||
                 distance_on_read >= min_length)
             {
                 Breakend mate1{current.ref_name,

@@ -79,19 +79,21 @@ std::string const help_page_advanced
     "          Choose the refinement method to be used. Default: no_refinement.\n"
     "          Value must be one of (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
-    "    -l, --min_var_length (unsigned 32 bit integer)\n"
+    "    -l, --min_var_length (signed 32 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be\n"
-    "          detected. Default: 30.\n"
-    "    -x, --max_var_length (unsigned 32 bit integer)\n"
+    "          detected. This value needs to be non-negative. Default: 30.\n"
+    "    -x, --max_var_length (signed 32 bit integer)\n"
     "          Specify what should be the maximum length of your SVs to be\n"
     "          detected. SVs larger than this threshold can still be output as\n"
-    "          translocations. Default: 1000000.\n"
-    "    -t, --max_tol_inserted_length (unsigned 32 bit integer)\n"
+    "          translocations. This value needs to be non-negative. Default:\n"
+    "          1000000.\n"
+    "    -t, --max_tol_inserted_length (signed 32 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
-    "          sites of non-INS SVs. Default: 5.\n"
-    "    -p, --max_overlap (unsigned 32 bit integer)\n"
+    "          sites of non-INS SVs. This value needs to be non-negative. Default:\n"
+    "          5.\n"
+    "    -p, --max_overlap (signed 32 bit integer)\n"
     "          Specify the maximum allowed overlap between two alignment segments.\n"
-    "          Default: 10.\n"
+    "          This value needs to be non-negative. Default: 10.\n"
 };
 
 // std::string expected_res_default
@@ -217,6 +219,62 @@ TEST_F(iGenVar_cli_test, fail_no_input_file)
     {
         "[Error] You need to input at least one sam/bam file.\n"
         "Please use -i or -input_short_reads to pass a short read file or -j or -input_long_reads for a long read file.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-l -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative min_var_length parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-x -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative max_var_length parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-t -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative max_tol_inserted_length parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-p -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative max_overlap parameter.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

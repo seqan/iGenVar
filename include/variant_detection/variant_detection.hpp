@@ -32,8 +32,8 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
  *                         **args.alignment_long_reads_file_path** - long reads input file, path to the sam/bam file\n
  *                         **args.methods** - list of methods for detecting junctions
  *                            (0: cigar_string, 1: split_read, 2: read_pairs, 3: read_depth) - *default: all methods*\n
- *                         **args.min_var_length** - minimum length of variants to detect - *default: 30 bp*\n
- *                         **args.max_overlap** - maximum overlap between alignment segments - *default: 10 bp*
+ *                         **args.min_var_length** - minimum length of variants to detect (expected to be non-negative) - *default: 30 bp*\n
+ *                         **args.max_overlap** - maximum overlap between alignment segments (expected to be non-negative) - *default: 10 bp*
  *
  *
  * \details Detects junctions from the CIGAR strings and supplementary alignment tags of read alignment records.

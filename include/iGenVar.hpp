@@ -12,10 +12,10 @@ struct cmd_arguments
     std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
     clustering_methods clustering_method{hierarchical_clustering};                              // default: hierarchical clustering method
     refinement_methods refinement_method{no_refinement};                                        // default: no refinement
-    uint32_t min_var_length = 30;
-    uint32_t max_var_length = 1000000;
-    uint32_t max_tol_inserted_length = 5;
-    uint32_t max_overlap = 10;
+    int32_t min_var_length = 30;
+    int32_t max_var_length = 1000000;
+    int32_t max_tol_inserted_length = 5;
+    int32_t max_overlap = 10;
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
@@ -38,10 +38,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
  *                      (0: no_refinement,
  *                       1: sViper_refinement_method,
  *                       2: sVirl_refinement_method) - *default: no refinement*\n
- *                   **args.min_var_length** - minimum length of variants to detect - *default: 30 bp*\n
- *                   **args.max_var_length** - maximum length of variants to detect - *default: 1,000,000 bp*\n
- *                   **args.max_tol_inserted_length** - longest tolerated inserted sequence at non-INS SV types - *default: 5 bp*\n
- *                   **args.max_overlap** - maximum overlap between alignment segments - *default: 10 bp*
+ *                   **args.min_var_length** - minimum length of variants to detect (expected to be non-negative) - *default: 30 bp*\n
+ *                   **args.max_var_length** - maximum length of variants to detect (expected to be non-negative) - *default: 1,000,000 bp*\n
+ *                   **args.max_tol_inserted_length** - longest tolerated inserted sequence at non-INS SV types (expected to be non-negative) - *default: 5 bp*\n
+ *                   **args.max_overlap** - maximum overlap between alignment segments (expected to be non-negative) - *default: 10 bp*
  *
  *
  * \details Detects novel junctions from read alignment records using different detection methods.

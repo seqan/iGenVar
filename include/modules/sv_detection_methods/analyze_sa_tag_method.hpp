@@ -42,15 +42,15 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
  * \param[in, out]  junctions           - vector for storing junctions
  * \param[in, out]  query_sequence      - SEQ field of the SAM/BAM file
  * \param[in]       read_name           - QNAME field of the SAM/BAM file
- * \param[in]       min_length          - minimum length of variants to detect
- * \param[in]       max_overlap         - maximum overlap between alignment segments
+ * \param[in]       min_length          - minimum length of variants to detect (expected to be non-negative)
+ * \param[in]       max_overlap         - maximum overlap between alignment segments (expected to be non-negative)
  */
 void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segments,
                               std::vector<Junction> & junctions,
                               seqan3::dna5_vector const & query_sequence,
                               std::string const & read_name,
-                              uint32_t const min_length,
-                              uint32_t const max_overlap);
+                              int32_t const min_length,
+                              int32_t const max_overlap);
 
 /*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
  *         [aligned_segments](\ref AlignedSegment), one for each alignment segment of the read.
@@ -65,8 +65,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
  * \param[in]       seq         - SEQ field of the SAM/BAM file
  * \param[in]       sa_tag      - SA tag, one tag from the read of the SAM/BAM file
  * \param[in]       args        - command line arguments:\n
- *                                **args.min_var_length** - minimum length of variants to detect\n
- *                                **args.max_overlap** - maximum overlap between alignment segments
+ *                                **args.min_var_length** - minimum length of variants to detect (expected to be non-negative)\n
+ *                                **args.max_overlap** - maximum overlap between alignment segments (expected to be non-negative)
  * \param[in, out]  junctions   - vector for storing junctions
  */
 void analyze_sa_tag(std::string const & query_name,

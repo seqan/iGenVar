@@ -15,7 +15,7 @@ void analyze_cigar(std::string const & read_name,
                    std::vector<seqan3::cigar> & cigar_string,
                    seqan3::dna5_vector const & query_sequence,
                    std::vector<Junction> & junctions,
-                   uint32_t const min_length)
+                   int32_t const min_length)
 {
     // Step through CIGAR string and store current position in reference and read
     int32_t pos_ref = query_start_pos;

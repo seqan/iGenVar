@@ -10,7 +10,7 @@ struct cmd_arguments
     std::filesystem::path alignment_long_reads_file_path{""};
     std::filesystem::path output_file_path{};
     std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
-    clustering_methods clustering_method{simple_clustering};                                    // default: simple clustering method
+    clustering_methods clustering_method{hierarchical_clustering};                              // default: hierarchical clustering method
     refinement_methods refinement_method{no_refinement};                                        // default: no refinement
     uint64_t min_var_length = 30;
     uint64_t max_var_length = 1000000;

@@ -87,7 +87,8 @@ public:
                        << ",Description=\"" << i.description << "\",Source=\"" << i.source << "\",Version=\""
                        << i.version << "\">" << '\n';
         }
-        out_stream << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO" << '\n';
+        out_stream << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" << '\n';
+        out_stream << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tHG002" << '\n';
     }
 
 private:

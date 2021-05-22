@@ -9,6 +9,7 @@ struct cmd_arguments
     std::filesystem::path alignment_short_reads_file_path{""};
     std::filesystem::path alignment_long_reads_file_path{""};
     std::filesystem::path output_file_path{};
+    std::string vcf_sample_name{"GENOTYPE"};
     std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
     clustering_methods clustering_method{hierarchical_clustering};                              // default: hierarchical clustering method
     refinement_methods refinement_method{no_refinement};                                        // default: no refinement
@@ -28,6 +29,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
  *                   **args.alignment_short_reads_file_path** - short reads input file, path to the sam/bam file\n
  *                   **args.alignment_long_reads_file_path** - long reads input file, path to the sam/bam file\n
  *                   **args.output_file_path** output file - path for the VCF file - *default: standard output*\n
+ *                   **args.vcf_sample_name - Name of the sample for the vcf header line*\n
  *                   **args.methods** - list of methods for detecting junctions
  *                      (1: cigar_string, 2: split_read, 3: read_pairs, 4: read_depth) - *default: all methods*\n
  *                   **args.clustering_method** - method for clustering junctions

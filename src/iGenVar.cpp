@@ -49,6 +49,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::option_spec::standard,
                       seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create, {"vcf"}});
 
+    // Options - VCF:
+    parser.add_option(args.vcf_sample_name, 's', "vcf_sample_name",
+                      "Specify your sample name for the vcf header line.",
+                      seqan3::option_spec::standard);
+
     // Options - Other parameters:
     parser.add_option(args.threads, 't', "threads",
                       "Specify the number of decompression threads used for reading BAM files.",

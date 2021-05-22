@@ -15,7 +15,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
     header.add_meta_info("SVTYPE", 1, "String", "Type of SV called.", "iGenVarCaller", "1.0");
     header.add_meta_info("SVLEN", 1, "Integer", "Length of SV called.", "iGenVarCaller", "1.0");
     header.add_meta_info("END", 1, "Integer", "End position of SV called.", "iGenVarCaller", "1.0");
-    header.print(references_lengths, out_stream);
+    header.print(references_lengths, args.vcf_sample_name, out_stream);
     for (size_t i = 0; i < clusters.size(); ++i)
     {
         Breakend mate1 = clusters[i].get_average_mate1();

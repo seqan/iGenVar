@@ -67,13 +67,14 @@ public:
      * \tparam stream_type - a stream to print the output to
      *
      * \param[in]       references_lengths - references sequence dictionary parsed from \@SQ header lines
+     * \param[in]       vcf_sample_name - name of the sample for the vcf header line
      * \param[in, out]  out_stream - the output stream to print to
      */
     template<typename stream_type>
     //!cond
         requires seqan3::output_stream<stream_type>
     //!endcond
-    void print(std::map<std::string, int32_t> & references_lengths, stream_type & out_stream)
+    void print(std::map<std::string, int32_t> & references_lengths, std::string const & vcf_sample_name, stream_type & out_stream)
     {
         out_stream << "##fileformat=" << fileformat << '\n';
         out_stream << "##source=" << source << '\n';
@@ -88,7 +89,7 @@ public:
                        << i.version << "\">" << '\n';
         }
         out_stream << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" << '\n';
-        out_stream << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tHG002" << '\n';
+        out_stream << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" << vcf_sample_name << '\n';
     }
 
 private:

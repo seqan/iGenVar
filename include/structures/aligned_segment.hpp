@@ -21,8 +21,10 @@ struct AlignedSegment
     int32_t mapq;
     std::vector<seqan3::cigar> cig;
 
+    //! \brief Returns the reference position of the first aligned based.
     int32_t get_reference_start() const;
 
+    //! \brief Returns the reference position of the last aligned based.
     int32_t get_reference_end() const;
 
     int32_t get_left_soft_clip() const;

@@ -79,16 +79,21 @@ std::string const help_page_advanced
     "          Choose the refinement method to be used. Default: no_refinement.\n"
     "          Value must be one of (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
-    "    -l, --min_var_length (unsigned 64 bit integer)\n"
+    "    -l, --min_var_length (signed 32 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be\n"
-    "          detected. Default: 30.\n"
-    "    -x, --max_var_length (unsigned 64 bit integer)\n"
+    "          detected. This value needs to be non-negative. Default: 30.\n"
+    "    -x, --max_var_length (signed 32 bit integer)\n"
     "          Specify what should be the maximum length of your SVs to be\n"
     "          detected. SVs larger than this threshold can still be output as\n"
-    "          translocations. Default: 1000000.\n"
-    "    -t, --max_tol_inserted_length (unsigned 64 bit integer)\n"
+    "          translocations. This value needs to be non-negative. Default:\n"
+    "          1000000.\n"
+    "    -t, --max_tol_inserted_length (signed 32 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
-    "          sites of non-INS SVs. Default: 5.\n"
+    "          sites of non-INS SVs. This value needs to be non-negative. Default:\n"
+    "          5.\n"
+    "    -p, --max_overlap (signed 32 bit integer)\n"
+    "          Specify the maximum allowed overlap between two alignment segments.\n"
+    "          This value needs to be non-negative. Default: 10.\n"
 };
 
 // std::string expected_res_default
@@ -123,9 +128,9 @@ std::string expected_err_default_no_err
 {
     "Detect junctions in long reads...\n"
     "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
-    "BND: chr21\t41972615\tReverse\tchr22\t17458417\tReverse\t2\tm41327/11677/CCS\n"
-    "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm21263/13017/CCS\n"
-    "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
+    "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\tm41327/11677/CCS\n"
+    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm21263/13017/CCS\n"
+    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm38637/7161/CCS\n"
     "Start clustering...\n"
     "Done with clustering. Found 2 junction clusters.\n"
     "No refinement was selected.\n"
@@ -220,6 +225,62 @@ TEST_F(iGenVar_cli_test, fail_no_input_file)
     EXPECT_EQ(result.err, expected_err);
 }
 
+TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-l -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative min_var_length parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-x -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative max_var_length parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-t -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative max_tol_inserted_length parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-p -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative max_overlap parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
 TEST_F(iGenVar_cli_test, with_default_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
@@ -229,11 +290,11 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
         "Detect junctions in long reads...\n"
         "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972615\tReverse\tchr22\t17458417\tReverse\t2\tm41327/11677/CCS\n"
+        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\tm41327/11677/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm21263/13017/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm21263/13017/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm38637/7161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
         "Start clustering...\n"
         "Done with clustering. Found 2 junction clusters.\n"
@@ -293,9 +354,9 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
     {
         "Detect junctions in long reads...\n"
         "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
-        "BND: chr21\t41972615\tReverse\tchr22\t17458417\tReverse\t2\tm41327/11677/CCS\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm21263/13017/CCS\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458418\tReverse\t0\tm38637/7161/CCS\n"
+        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\tm41327/11677/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm21263/13017/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm38637/7161/CCS\n"
         "Start clustering...\n"
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
@@ -391,9 +452,6 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
     std::ifstream output_res_file("../../data/output_res.txt");
     std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                 std::istreambuf_iterator<char>());
-    //Todo(eldariont): Correct output_res.txt after merging #113:
-    //line 8: DEL should be at chr1:97-125 (SVLEN=-28)
-    //line 12: DEL should be at chr1:266-287 (SVLEN=-20) and merged with line 11
     EXPECT_EQ(result.out, output_res_str);
     seqan3::debug_stream << "done. " << '\n';
 

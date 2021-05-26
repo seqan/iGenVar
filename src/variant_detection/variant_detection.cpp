@@ -11,9 +11,7 @@
 using seqan3::operator""_tag;
 
 void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
-                                              std::filesystem::path const & alignment_short_reads_file_path,
-                                              std::vector<detection_methods> const & methods,
-                                              uint64_t const min_var_length)
+                                              cmd_arguments const & args)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::flag,       // 2: FLAG
@@ -22,7 +20,7 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
                                      seqan3::field::mapq,       // 5: MAPQ
                                      seqan3::field::header_ptr>;
 
-    seqan3::sam_file_input alignment_short_reads_file{alignment_short_reads_file_path, my_fields{}};
+    seqan3::sam_file_input alignment_short_reads_file{args.alignment_short_reads_file_path, my_fields{}};
 
     // Check that the file is sorted before proceeding.
     if (alignment_short_reads_file.header().sorting != "coordinate")
@@ -45,7 +43,7 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
             continue;
 
         std::string const ref_name = ref_ids[ref_id];
-        for (detection_methods method : methods) {
+        for (detection_methods method : args.methods) {
             switch (method)
             {
                 case detection_methods::cigar_string: // Detect junctions from CIGAR string
@@ -75,9 +73,7 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
 }
 
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
-                                             std::filesystem::path const & alignment_long_reads_file_path,
-                                             std::vector<detection_methods> const & methods,
-                                             uint64_t const min_var_length)
+                                             cmd_arguments const & args)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::id,         // 1: QNAME
@@ -89,8 +85,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                      seqan3::field::seq,        // 10:SEQ
                                      seqan3::field::tags,
                                      seqan3::field::header_ptr>;
-
-    seqan3::sam_file_input alignment_long_reads_file{alignment_long_reads_file_path, my_fields{}};
+    seqan3::sam_file_input alignment_long_reads_file{args.alignment_long_reads_file_path, my_fields{}};
 
     // Check that the file is sorted before proceeding.
     if (alignment_long_reads_file.header().sorting != "coordinate")
@@ -117,7 +112,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
             continue;
 
         std::string const ref_name = ref_ids[ref_id];
-        for (detection_methods method : methods) {
+        for (detection_methods method : args.methods) {
             switch (method)
             {
                 case detection_methods::cigar_string: // Detect junctions from CIGAR string
@@ -127,7 +122,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                   cigar,
                                   seq,
                                   junctions,
-                                  min_var_length);
+                                  args.min_var_length);
                     break;
                 case detection_methods::split_read:     // Detect junctions from split read evidence (SA tag,
                     if (!hasFlagSupplementary(flag))    //                                  primary alignments only)
@@ -135,7 +130,16 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                         std::string const sa_tag = tags.get<"SA"_tag>();
                         if (!sa_tag.empty())
                         {
-                            analyze_sa_tag(query_name, flag, ref_name, ref_pos, mapq, cigar, seq, sa_tag, junctions);
+                            analyze_sa_tag(query_name,
+                                           flag,
+                                           ref_name,
+                                           ref_pos,
+                                           mapq,
+                                           cigar,
+                                           seq,
+                                           sa_tag,
+                                           args,
+                                           junctions);
                         }
                     }
                     break;

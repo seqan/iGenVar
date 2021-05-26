@@ -10,7 +10,7 @@
  * \param[in]       cigar_string    - CIGAR field of the SAM/BAM file
  * \param[in]       query_sequence  - SEQ field of the SAM/BAM file
  * \param[in, out]  junctions       - vector for storing junctions
- * \param[in]       min_length      - minimum length of variants to detect (default 30 bp)
+ * \param[in]       min_length      - minimum length of variants to detect (default 30 bp, expected to be non-negative)
  *
  * \details This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *          We distinguish 4 cases of CIGAR operation characters:
@@ -36,4 +36,4 @@ void analyze_cigar(std::string const & read_name,
                    std::vector<seqan3::cigar> & cigar_string,
                    seqan3::dna5_vector const & query_sequence,
                    std::vector<Junction> & junctions,
-                   uint64_t const min_length);
+                   int32_t const min_length);

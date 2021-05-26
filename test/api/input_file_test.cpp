@@ -12,7 +12,8 @@ std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_m
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path const empty_output_path{};
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
-constexpr uint64_t sv_default_length = 30;
+constexpr int32_t default_min_length = 30;
+constexpr int32_t default_max_overlap = 10;
 
 // Explanation for the strings:
 // chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681
@@ -46,10 +47,16 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 {
     std::vector<Junction> junctions_res{};
 
+    cmd_arguments args{default_alignment_short_reads_file_path,
+                       "",
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       sVirl_refinement_method,
+                       default_min_length,
+                       default_max_overlap};
     detect_junctions_in_short_reads_sam_file(junctions_res,
-                                             default_alignment_short_reads_file_path,
-                                             default_methods,
-                                             sv_default_length);
+                                             args);
 
     std::vector<Junction> junctions_expected_res{};
 
@@ -72,18 +79,25 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
     std::vector<Junction> junctions_res{};
 
+    cmd_arguments args{"",
+                       default_alignment_long_reads_file_path,
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       sVirl_refinement_method,
+                       default_min_length,
+                       default_max_overlap};
     detect_junctions_in_long_reads_sam_file(junctions_res,
-                                            default_alignment_long_reads_file_path,
-                                            default_methods,
-                                            sv_default_length);
+                                            args);
 
     std::string const chromosome_1 = "chr21";
     std::string const chromosome_2 = "chr22";
     int32_t const pos_ref_1 = 41972615;
-    int32_t const pos_ref_2 = 17458417;
-    int32_t const pos_ref_3 = 41972615;
-    int32_t const pos_ref_4 = 17458418;
-    int32_t const pos_ref_5 = 41972616;
+    int32_t const pos_ref_2 = 41972616;
+    int32_t const pos_ref_3 = 17458415;
+    int32_t const pos_ref_4 = 41972615;
+    int32_t const pos_ref_5 = 17458416;
+    int32_t const pos_ref_6 = 41972616;
     // std::string const insertion_allele_id_1 = "0";
 
     seqan3::dna5_vector const insertion_sequence_1 = "GAGTGGACCTCAGCAAACTCCCAGTAGAGCTGCAGCAGAGGGGGTCTGAC"
@@ -122,12 +136,11 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
                                                      "CTAATACAGGCACACCCAGATTCATAAAGCA"_dna5;
 
     Breakend new_breakend_1 {chromosome_1, pos_ref_1, strand::forward};
-    Breakend new_breakend_2 {chromosome_1, pos_ref_1+1, strand::forward};
-    Breakend new_breakend_5 {chromosome_2, pos_ref_2, strand::forward};
-    Breakend new_breakend_6 {chromosome_1, pos_ref_3, strand::forward};
-    Breakend new_breakend_7 {chromosome_2, pos_ref_4, strand::forward};
-    Breakend new_breakend_8 {chromosome_1, pos_ref_5, strand::forward};
-    Breakend new_breakend_9 {chromosome_1, pos_ref_5, strand::forward};
+    Breakend new_breakend_2 {chromosome_1, pos_ref_2, strand::forward};
+    Breakend new_breakend_5 {chromosome_2, pos_ref_3, strand::forward};
+    Breakend new_breakend_6 {chromosome_1, pos_ref_4, strand::forward};
+    Breakend new_breakend_7 {chromosome_2, pos_ref_5, strand::forward};
+    Breakend new_breakend_8 {chromosome_1, pos_ref_6, strand::forward};
 
     std::string const read_name_1 = "m2257/8161/CCS";
     std::string const read_name_2 = "m41327/11677/CCS";
@@ -138,7 +151,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
     {   Junction{new_breakend_1, new_breakend_2, insertion_sequence_1, read_name_1},
         Junction{new_breakend_5, new_breakend_6, "TA"_dna5, read_name_2},
         Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name_3},
-        Junction{new_breakend_7, new_breakend_9, ""_dna5, read_name_4}
+        Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name_4}
     };
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
@@ -168,10 +181,16 @@ TEST(input_file, long_read_sam_file_unsorted)
                     "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
     unsorted_sam.close();
 
+    cmd_arguments args{"",
+                       unsorted_sam_path,
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       no_refinement,
+                       default_min_length,
+                       default_max_overlap};
     EXPECT_THROW(detect_junctions_in_long_reads_sam_file(junctions_res,
-                                                         unsorted_sam_path,
-                                                         default_methods,
-                                                         sv_default_length), seqan3::format_error);
+                                                         args), seqan3::format_error);
 
     std::filesystem::remove(unsorted_sam_path);
 }

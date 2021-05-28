@@ -49,7 +49,7 @@ std::string const help_page_part_2
     "VERSION\n"
     "    Last update: 30-03-2021\n"
     "    iGenVar version: 0.0.3\n"
-    "    SeqAn version: 3.0.3\n"
+    "    SeqAn version: 3.1.0-rc.1\n"
     "\n"
     "URL\n"
     "    https://github.com/seqan/iGenVar/\n"

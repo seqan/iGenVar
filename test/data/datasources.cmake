@@ -29,4 +29,4 @@ declare_datasource (FILE output_err.txt
 # copies file to <build>/data/output_res.txt
 declare_datasource (FILE output_res.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_res.txt
-                    URL_HASH SHA256=fd5fc68a2400873ad569289da1c2a3ddf9bb8b8a26c4be9a94c13416c1684b96)
+                    URL_HASH SHA256=0fbc343911187b043352d8aed03d0e9e1d7316b0ef04dd394ffa0c61e911e6d8)

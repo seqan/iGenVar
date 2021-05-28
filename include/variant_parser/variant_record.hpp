@@ -210,7 +210,9 @@ public:
             }
             out_stream << (*it).first << "=" << (*it).second << ";";
         }
-        out_stream << (*last).first << "=" << (*last).second << '\n';
+        out_stream << (*last).first << "=" << (*last).second << '\t';
+        out_stream << format << '\t';
+        out_stream << genotype << '\n';
     }
 
 private:
@@ -222,4 +224,6 @@ private:
     float qual{};
     std::string filter{"PASS"};
     std::map<std::string, std::string> info{};
+    std::string format{"GT"};
+    std::string genotype{"./."};
 };

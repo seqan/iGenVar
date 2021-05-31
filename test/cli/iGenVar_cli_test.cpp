@@ -41,6 +41,9 @@ std::string const help_page_part_1
     "          The path of the vcf output file. If no path is given, will output to\n"
     "          standard output. Default: \"\". Write permissions must be granted.\n"
     "          Valid file extensions are: [vcf].\n"
+    "    -t, --threads (signed 16 bit integer)\n"
+    "          Specify the number of decompression threads used for reading BAM\n"
+    "          files. Default: 1.\n"
 };
 
 std::string const help_page_part_2
@@ -87,7 +90,7 @@ std::string const help_page_advanced
     "          detected. SVs larger than this threshold can still be output as\n"
     "          translocations. This value needs to be non-negative. Default:\n"
     "          1000000.\n"
-    "    -t, --max_tol_inserted_length (signed 32 bit integer)\n"
+    "    -q, --max_tol_inserted_length (signed 32 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
     "          sites of non-INS SVs. This value needs to be non-negative. Default:\n"
     "          5.\n"
@@ -259,7 +262,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-t -30");
+                                         "-q -30");
     std::string expected_err
     {
         "[Error] You gave a negative max_tol_inserted_length parameter.\n"

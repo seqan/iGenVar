@@ -16,6 +16,7 @@ struct cmd_arguments
     int32_t max_var_length = 1000000;
     int32_t max_tol_inserted_length = 5;
     int32_t max_overlap = 10;
+    int16_t threads = 1;
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);

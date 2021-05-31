@@ -2,6 +2,7 @@
 
 #include <map>
 
+#include <seqan3/contrib/stream/bgzf_stream_util.hpp>       // for bgzf_thread_count
 #include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
 
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
@@ -48,6 +49,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::option_spec::standard,
                       seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create, {"vcf"}});
 
+    // Options - Other parameters:
+    parser.add_option(args.threads, 't', "threads",
+                      "Specify the number of decompression threads used for reading BAM files.",
+                      seqan3::option_spec::standard);
+
     // Options - Methods:
     parser.add_option(args.methods, 'm', "method", "Choose the detection method(s) to be used.",
                       seqan3::option_spec::advanced, detection_method_validator);
@@ -66,7 +72,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "SVs larger than this threshold can still be output as translocations. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
-    parser.add_option(args.max_tol_inserted_length, 't', "max_tol_inserted_length",
+    parser.add_option(args.max_tol_inserted_length, 'q', "max_tol_inserted_length",
                       "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
@@ -81,6 +87,8 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     // Store junctions
     std::vector<Junction> junctions{};
     std::map<std::string, int32_t> references_lengths{};
+    // Set number of decompression threads
+    seqan3::contrib::bgzf_thread_count = args.threads;
 
     // short reads
     if (args.alignment_short_reads_file_path != "")

@@ -46,6 +46,7 @@ std::string empty_res
 TEST(input_file, detect_junctions_in_short_read_sam_file)
 {
     std::vector<Junction> junctions_res{};
+    std::map<std::string, int32_t> references_lengths{};
 
     cmd_arguments args{default_alignment_short_reads_file_path,
                        "",
@@ -55,8 +56,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
                        sVirl_refinement_method,
                        default_min_length,
                        default_max_overlap};
-    detect_junctions_in_short_reads_sam_file(junctions_res,
-                                             args);
+    detect_junctions_in_short_reads_sam_file(junctions_res, references_lengths, args);
 
     std::vector<Junction> junctions_expected_res{};
 
@@ -78,6 +78,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
     std::vector<Junction> junctions_res{};
+    std::map<std::string, int32_t> references_lengths{};
 
     cmd_arguments args{"",
                        default_alignment_long_reads_file_path,
@@ -87,8 +88,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
                        sVirl_refinement_method,
                        default_min_length,
                        default_max_overlap};
-    detect_junctions_in_long_reads_sam_file(junctions_res,
-                                            args);
+    detect_junctions_in_long_reads_sam_file(junctions_res, references_lengths, args);
 
     std::string const chromosome_1 = "chr21";
     std::string const chromosome_2 = "chr22";
@@ -172,13 +172,15 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
 TEST(input_file, long_read_sam_file_unsorted)
 {
     std::vector<Junction> junctions_res{};
+    std::map<std::string, int32_t> references_lengths{};
+
     // Create a blank SAM file without a sorting indicator.
     std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
     std::filesystem::path unsorted_sam_path{tmp_dir/"unsorted.sam"};
     std::ofstream unsorted_sam{unsorted_sam_path.c_str()};
-    unsorted_sam << "@HD\tVN:1.6\n" <<
-                    "@SQ\tSN:testchr\tLN:1000\n" <<
-                    "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
+    unsorted_sam << "@HD\tVN:1.6\n"
+                 << "@SQ\tSN:testchr\tLN:1000\n"
+                 << "test1\t16\ttestchr\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
     unsorted_sam.close();
 
     cmd_arguments args{"",
@@ -190,7 +192,82 @@ TEST(input_file, long_read_sam_file_unsorted)
                        default_min_length,
                        default_max_overlap};
     EXPECT_THROW(detect_junctions_in_long_reads_sam_file(junctions_res,
+                                                         references_lengths,
                                                          args), seqan3::format_error);
 
     std::filesystem::remove(unsorted_sam_path);
+}
+
+TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
+{
+    testing::internal::CaptureStdout();
+    testing::internal::CaptureStderr();
+
+    std::string const expected_err
+    {
+        "The cigar string method for short reads is not yet implemented.\n"
+        "The split read method for short reads is not yet implemented.\n"
+        "The read depth method for short reads is not yet implemented.\n"
+        "The cigar string method for short reads is not yet implemented.\n"
+        "The split read method for short reads is not yet implemented.\n"
+        "The read depth method for short reads is not yet implemented.\n"
+        "The cigar string method for short reads is not yet implemented.\n"
+        "The split read method for short reads is not yet implemented.\n"
+        "The read depth method for short reads is not yet implemented.\n"
+        "Warning: The reference id chr2 was found twice in the input files with different length: 1001 and 1005\n"
+        "Warning: The reference id chr4 was found twice in the input files with different length: 1004 and 1005\n"
+        "The read depth method for long reads is not yet implemented.\n"
+        "The read depth method for long reads is not yet implemented.\n"
+        "The read depth method for long reads is not yet implemented.\n"
+    };
+
+    std::vector<Junction> junctions_res{};
+    std::map<std::string, int32_t> references_lengths{};
+
+    std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
+
+    // Create a blank short read SAM file with SQ header tag with different length of one reference.
+    std::filesystem::path short_sam_path{tmp_dir/"short.sam"};
+    std::ofstream short_sam{short_sam_path.c_str()};
+    short_sam << "@HD\tVN:1.6\tSO:coordinate\n"
+              << "@SQ\tSN:chr1\tLN:1000\n"          // chr1 present in both files with same length
+              << "@SQ\tSN:chr2\tLN:1001\n"          // chr2 present in both files with different length -> Warning
+              << "@SQ\tSN:chr3\tLN:1002\n"          // chr3 present in same file twice with same length
+              << "@SQ\tSN:chr3\tLN:1002\n"
+              << "test1\t16\tchr1\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n"
+              << "test1\t16\tchr2\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n"
+              << "test1\t16\tchr3\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
+    short_sam.close();
+
+    // Create a blank long read SAM file with SQ header tag with different length of one reference.
+    std::filesystem::path long_sam_path{tmp_dir/"long.sam"};
+    std::ofstream long_sam{long_sam_path.c_str()};
+    long_sam << "@HD\tVN:1.6\tSO:coordinate\n"
+             << "@SQ\tSN:chr1\tLN:1000\n"
+             << "@SQ\tSN:chr2\tLN:1005\n"
+             << "@SQ\tSN:chr4\tLN:1004\n"           // chr4 present in same file twice with different length -> Warning
+             << "@SQ\tSN:chr4\tLN:1005\n"
+             << "test1\t16\tchr1\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n"
+             << "test1\t16\tchr2\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n"
+             << "test1\t16\tchr4\t1\t60\t10M\t=\t1\t0\tGCGCGCGCGC\tFFFFFFFFFF\n";
+    long_sam.close();
+
+    cmd_arguments args{short_sam_path,
+                       long_sam_path,
+                       empty_output_path,
+                       default_methods,
+                       simple_clustering,
+                       no_refinement,
+                       default_min_length,
+                       default_max_overlap};
+    EXPECT_NO_THROW(detect_junctions_in_short_reads_sam_file(junctions_res, references_lengths, args));
+    EXPECT_NO_THROW(detect_junctions_in_long_reads_sam_file(junctions_res, references_lengths, args));
+
+    std::string result_out = testing::internal::GetCapturedStdout();
+    EXPECT_EQ("", result_out);
+    std::string result_err = testing::internal::GetCapturedStderr();
+    EXPECT_EQ(expected_err, result_err);
+
+    std::filesystem::remove(short_sam_path);
+    std::filesystem::remove(long_sam_path);
 }

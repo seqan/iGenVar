@@ -10,23 +10,52 @@
 
 using seqan3::operator""_tag;
 
+std::deque<std::string> read_header_information(auto & alignment_file,
+                                                std::map<std::string, int32_t> & references_lengths)
+{
+    // Check that the file is sorted before proceeding.
+    if (alignment_file.header().sorting != "coordinate")
+    {
+        throw seqan3::format_error{"ERROR: Input file must be sorted by coordinate (e.g. samtools sort)"};
+    }
+
+    // Get the information from \@SQ tag, more precise the values of the SN and LN tags
+    std::deque<std::string> const ref_ids = alignment_file.header().ref_ids();
+    std::vector<std::tuple<int32_t, std::string>> ref_id_info = alignment_file.header().ref_id_info;
+
+    size_t i = 0;
+    for(std::string const & ref_id : ref_ids)
+    {
+        int32_t ref_length = std::get<0>(ref_id_info[i]);
+        if (references_lengths.find(ref_id) != references_lengths.end())
+        {
+            if (references_lengths[ref_id] != ref_length)
+            {
+                std::cerr << "Warning: The reference id " << ref_id << " was found twice in the input files with "
+                          << "different length: " << references_lengths[ref_id] << " and " << ref_length << '\n';
+            }
+        } else {
+            references_lengths.emplace(ref_id, ref_length);
+        }
+        ++i;
+    }
+
+    return ref_ids;
+}
+
 void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
+                                              std::map<std::string, int32_t> & references_lengths,
                                               cmd_arguments const & args)
 {
     // Open input alignment file
     using my_fields = seqan3::fields<seqan3::field::flag,       // 2: FLAG
                                      seqan3::field::ref_id,     // 3: RNAME
                                      seqan3::field::ref_offset, // 4: POS
-                                     seqan3::field::mapq,       // 5: MAPQ
-                                     seqan3::field::header_ptr>;
+                                     seqan3::field::mapq>;      // 5: MAPQ
 
     seqan3::sam_file_input alignment_short_reads_file{args.alignment_short_reads_file_path, my_fields{}};
 
-    // Check that the file is sorted before proceeding.
-    if (alignment_short_reads_file.header().sorting != "coordinate")
-    {
-        throw seqan3::format_error{"ERROR: Input file must be sorted by coordinate (e.g. samtools sort)"};
-    }
+    std::deque<std::string> const ref_ids = read_header_information(alignment_short_reads_file, references_lengths);
     uint16_t num_good = 0;
 
     for (auto & record : alignment_short_reads_file)
@@ -35,14 +64,10 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
         int32_t const ref_id                = record.reference_id().value_or(-1);       // 3: RNAME
         int32_t const ref_pos               = record.reference_position().value_or(-1); // 4: POS
         uint8_t const mapq                  = record.mapping_quality();                 // 5: MAPQ
-        auto const header_ptr               = record.header_ptr();
-        auto const ref_ids = header_ptr->ref_ids();
-
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
             ref_id < 0 || ref_pos < 0)
             continue;
 
-        std::string const ref_name = ref_ids[ref_id];
         for (detection_methods method : args.methods) {
             switch (method)
             {
@@ -73,6 +98,7 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
 }
 
 void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
+                                             std::map<std::string, int32_t> & references_lengths,
                                              cmd_arguments const & args)
 {
     // Open input alignment file
@@ -83,15 +109,11 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                      seqan3::field::mapq,       // 5: MAPQ
                                      seqan3::field::cigar,      // 6: CIGAR
                                      seqan3::field::seq,        // 10:SEQ
-                                     seqan3::field::tags,
-                                     seqan3::field::header_ptr>;
+                                     seqan3::field::tags>;
+
     seqan3::sam_file_input alignment_long_reads_file{args.alignment_long_reads_file_path, my_fields{}};
 
-    // Check that the file is sorted before proceeding.
-    if (alignment_long_reads_file.header().sorting != "coordinate")
-    {
-        throw seqan3::format_error{"ERROR: Input file must be sorted by coordinate (e.g. samtools sort)"};
-    }
+    std::deque<std::string> const ref_ids = read_header_information(alignment_long_reads_file, references_lengths);
     uint16_t num_good = 0;
 
     for (auto & record : alignment_long_reads_file)
@@ -104,8 +126,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
         std::vector<seqan3::cigar> cigar    = record.cigar_sequence();                  // 6: CIGAR
         seqan3::dna5_vector const seq       = record.sequence();                        // 10:SEQ
         auto tags                           = record.tags();
-        auto const header_ptr               = record.header_ptr();
-        auto const ref_ids = header_ptr->ref_ids();
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
             ref_id < 0 || ref_pos < 0)

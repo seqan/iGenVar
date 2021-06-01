@@ -49,7 +49,7 @@ std::string const help_page_part_2
     "VERSION\n"
     "    Last update: 30-03-2021\n"
     "    iGenVar version: 0.0.3\n"
-    "    SeqAn version: 3.0.3\n"
+    "    SeqAn version: 3.1.0-rc.1\n"
     "\n"
     "URL\n"
     "    https://github.com/seqan/iGenVar/\n"
@@ -107,6 +107,7 @@ std::string expected_res_default
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
+    "##contig=<ID=chr21,length=46709983>\n"
     "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
@@ -118,6 +119,7 @@ std::string expected_res_empty
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
+    "##contig=<ID=chr1,length=368>\n"
     "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"

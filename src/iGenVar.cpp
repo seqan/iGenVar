@@ -85,6 +85,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Specify the maximum allowed overlap between two alignment segments. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
+    parser.add_option(args.min_qual, 'u', "min_qual",
+                      "Specify the minimum quality (amount of supporting reads) of a structural variant to be reported "
+                      "in the vcf output file. This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
 }
 
 void detect_variants_in_alignment_file(cmd_arguments const & args)
@@ -204,6 +208,11 @@ int main(int argc, char ** argv)
     if (args.max_overlap < 0)
     {
         seqan3::debug_stream << "[Error] You gave a negative max_overlap parameter.\n";
+        return -1;
+    }
+    if (args.min_qual < 0)
+    {
+        seqan3::debug_stream << "[Error] You gave a negative min_qual parameter.\n";
         return -1;
     }
 

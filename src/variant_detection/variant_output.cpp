@@ -18,52 +18,55 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
     header.print(references_lengths, args.vcf_sample_name, out_stream);
     for (size_t i = 0; i < clusters.size(); ++i)
     {
-        Breakend mate1 = clusters[i].get_average_mate1();
-        Breakend mate2 = clusters[i].get_average_mate2();
         size_t cluster_size = clusters[i].get_cluster_size();
-        if (mate1.orientation == mate2.orientation)
+        if (cluster_size >= args.min_qual)
         {
-            if (mate1.seq_name == mate2.seq_name)
+            Breakend mate1 = clusters[i].get_average_mate1();
+            Breakend mate2 = clusters[i].get_average_mate2();
+            if (mate1.orientation == mate2.orientation)
             {
-                int32_t mate1_pos = mate1.position;
-                int32_t mate2_pos = mate2.position;
-                int32_t insert_size = clusters[i].get_average_inserted_sequence_size();
-                if (mate1.orientation == strand::forward)
+                if (mate1.seq_name == mate2.seq_name)
                 {
-                    int32_t distance = mate2_pos - mate1_pos;
-                    //Deletion
-                    if (distance >= args.min_var_length &&
-                        distance <= args.max_var_length &&
-                        insert_size <= args.max_tol_inserted_length)
+                    int32_t mate1_pos = mate1.position;
+                    int32_t mate2_pos = mate2.position;
+                    int32_t insert_size = clusters[i].get_average_inserted_sequence_size();
+                    if (mate1.orientation == strand::forward)
                     {
-                        variant_record tmp{};
-                        tmp.set_chrom(mate1.seq_name);
-                        tmp.set_qual(cluster_size);
-                        tmp.set_alt("<DEL>");
-                        tmp.add_info("SVTYPE", "DEL");
-                        // Increment position by 1 because VCF is 1-based
-                        tmp.set_pos(mate1_pos + 1);
-                        tmp.add_info("SVLEN", std::to_string(-distance + 1));
-                        // Increment end by 1 because VCF is 1-based
-                        // Decrement end by 1 because deletion ends one base before mate2 begins
-                        tmp.add_info("END", std::to_string(mate2_pos));
-                        tmp.print(out_stream);
-                    }
-                    //Insertion
-                    else if (distance == 1 &&
-                             insert_size >= args.min_var_length)
-                    {
-                        variant_record tmp{};
-                        tmp.set_chrom(mate1.seq_name);
-                        tmp.set_qual(cluster_size);
-                        tmp.set_alt("<INS>");
-                        tmp.add_info("SVTYPE", "INS");
-                        // Increment position by 1 because VCF is 1-based
-                        tmp.set_pos(mate1_pos + 1);
-                        tmp.add_info("SVLEN", std::to_string(insert_size));
-                        // Increment end by 1 because VCF is 1-based
-                        tmp.add_info("END", std::to_string(mate1_pos + 1));
-                        tmp.print(out_stream);
+                        int32_t distance = mate2_pos - mate1_pos;
+                        //Deletion
+                        if (distance >= args.min_var_length &&
+                            distance <= args.max_var_length &&
+                            insert_size <= args.max_tol_inserted_length)
+                        {
+                            variant_record tmp{};
+                            tmp.set_chrom(mate1.seq_name);
+                            tmp.set_qual(cluster_size);
+                            tmp.set_alt("<DEL>");
+                            tmp.add_info("SVTYPE", "DEL");
+                            // Increment position by 1 because VCF is 1-based
+                            tmp.set_pos(mate1_pos + 1);
+                            tmp.add_info("SVLEN", std::to_string(-distance + 1));
+                            // Increment end by 1 because VCF is 1-based
+                            // Decrement end by 1 because deletion ends one base before mate2 begins
+                            tmp.add_info("END", std::to_string(mate2_pos));
+                            tmp.print(out_stream);
+                        }
+                        //Insertion
+                        else if (distance == 1 &&
+                                insert_size >= args.min_var_length)
+                        {
+                            variant_record tmp{};
+                            tmp.set_chrom(mate1.seq_name);
+                            tmp.set_qual(cluster_size);
+                            tmp.set_alt("<INS>");
+                            tmp.add_info("SVTYPE", "INS");
+                            // Increment position by 1 because VCF is 1-based
+                            tmp.set_pos(mate1_pos + 1);
+                            tmp.add_info("SVLEN", std::to_string(insert_size));
+                            // Increment end by 1 because VCF is 1-based
+                            tmp.add_info("END", std::to_string(mate1_pos + 1));
+                            tmp.print(out_stream);
+                        }
                     }
                 }
             }

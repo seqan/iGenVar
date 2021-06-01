@@ -19,6 +19,7 @@ struct cmd_arguments
     int32_t max_overlap = 10;
     int16_t threads = 1;
     int32_t min_qual = 1;
+    double hierarchical_clustering_cutoff = 10;
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
@@ -52,6 +53,8 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
  *                                          (expected to be non-negative) - *default: 10 bp*\n
  *                   **args.min_qual** - minimum quality (amount of supporting reads) of a structural variant
  *                                       (expected to be non-negative) - *default: 1 supporting read*\n
+ *                   **args.hierarchical_clustering_cutoff** - distance cutoff for the hierarchical clustering
+ *                                                             (expected to be non-negative) - *default: 10*
  *
  *
  * \details Detects novel junctions from read alignment records using different detection methods.

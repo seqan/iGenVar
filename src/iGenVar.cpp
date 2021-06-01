@@ -89,6 +89,12 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Specify the minimum quality (amount of supporting reads) of a structural variant to be reported "
                       "in the vcf output file. This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
+
+    // Options - Clustering specifications:
+    parser.add_option(args.hierarchical_clustering_cutoff, 'z', "hierarchical_clustering_cutoff",
+                      "Specify the distance cutoff for the hierarchical clustering. "
+                      "This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
 }
 
 void detect_variants_in_alignment_file(cmd_arguments const & args)
@@ -124,7 +130,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             clusters = simple_clustering_method(junctions);
             break;
         case 1: // hierarchical clustering
-            clusters = hierarchical_clustering_method(junctions, 10.0);
+            clusters = hierarchical_clustering_method(junctions, args.hierarchical_clustering_cutoff);
             break;
         case 2: // self-balancing_binary_tree,
             seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";
@@ -213,6 +219,11 @@ int main(int argc, char ** argv)
     if (args.min_qual < 0)
     {
         seqan3::debug_stream << "[Error] You gave a negative min_qual parameter.\n";
+        return -1;
+    }
+    if (args.hierarchical_clustering_cutoff < 0)
+    {
+        seqan3::debug_stream << "[Error] You gave a negative hierarchical_clustering_cutoff parameter.\n";
         return -1;
     }
 

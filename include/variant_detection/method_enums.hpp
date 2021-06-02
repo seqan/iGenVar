@@ -11,7 +11,7 @@ enum detection_methods
     read_pairs = 2,
     read_depth = 3,
 
-    // Also add new methods to the default values in the argument parsers
+    // Also add new methods to the default values in the argument parser
 
     //!\cond
     // ATTENTION: Must always be the last item; will be used to determine the number of ids.

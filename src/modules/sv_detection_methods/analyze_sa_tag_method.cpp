@@ -41,8 +41,7 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
                 continue;
             }
             std::string cigar_field = fields[3];
-            std::tuple<std::vector<seqan3::cigar>, int32_t, int32_t> parsed_cigar = parse_cigar(cigar_field);
-            std::vector<seqan3::cigar> cigar_vector = std::get<0>(parsed_cigar);
+            std::vector<seqan3::cigar> cigar_vector = std::get<0>(seqan3::detail::parse_cigar(cigar_field));
             int32_t mapq = std::stoi(fields[4]);
             aligned_segments.push_back(AlignedSegment{orientation, ref_name, pos, mapq, cigar_vector});
         }

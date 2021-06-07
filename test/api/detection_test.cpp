@@ -255,7 +255,7 @@ TEST(junction_detection, analyze_aligned_segments)
                                  read_name,
                                  10,
                                  0);
-        
+
         Breakend new_breakend_1 {"chr1", 105, strand::forward};
         Breakend new_breakend_2 {"chr2", 100, strand::forward};
         Breakend new_breakend_3 {"chr1", 106, strand::reverse};
@@ -302,7 +302,7 @@ TEST(junction_detection, analyze_aligned_segments)
                                  read_name,
                                  20,
                                  0);
-        
+
         Breakend new_breakend_1 {"chr1", 105, strand::forward};
         Breakend new_breakend_2 {"chr2", 100, strand::forward};
         Breakend new_breakend_3 {"chr1", 106, strand::reverse};
@@ -386,6 +386,7 @@ TEST(junction_detection, analyze_sa_tag)
     cmd_arguments args{std::filesystem::path{},
                        std::filesystem::path{},
                        std::filesystem::path{},
+                       "GENOTYPE",
                        std::vector<detection_methods>{cigar_string, split_read, read_pairs, read_depth},
                        simple_clustering,
                        sVirl_refinement_method,

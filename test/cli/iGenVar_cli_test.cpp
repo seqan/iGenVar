@@ -80,7 +80,7 @@ std::string const help_page_advanced
     "          The path of the optional cluster output file. If no path is given,\n"
     "          clusters will not be output. Default: \"\". Write permissions must be\n"
     "          granted.\n"
-    "    -m, --method (List of detection_methods)\n"
+    "    -d, --method (List of detection_methods)\n"
     "          Choose the detection method(s) to be used. Value must be one of\n"
     "          (method name or number)\n"
     "          [0,cigar_string,1,split_read,2,read_pairs,3,read_depth]. Default:\n"
@@ -95,26 +95,26 @@ std::string const help_page_advanced
     "          (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
     "          Default: no_refinement.\n"
-    "    -l, --min_var_length (signed 32 bit integer)\n"
+    "    -k, --min_var_length (signed 32 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be\n"
     "          detected. This value needs to be non-negative. Default: 30.\n"
-    "    -x, --max_var_length (signed 32 bit integer)\n"
+    "    -l, --max_var_length (signed 32 bit integer)\n"
     "          Specify what should be the maximum length of your SVs to be\n"
     "          detected. SVs larger than this threshold can still be output as\n"
     "          translocations. This value needs to be non-negative. Default:\n"
     "          1000000.\n"
-    "    -q, --max_tol_inserted_length (signed 32 bit integer)\n"
+    "    -m, --max_tol_inserted_length (signed 32 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
     "          sites of non-INS SVs. This value needs to be non-negative. Default:\n"
     "          5.\n"
-    "    -p, --max_overlap (signed 32 bit integer)\n"
+    "    -n, --max_overlap (signed 32 bit integer)\n"
     "          Specify the maximum allowed overlap between two alignment segments.\n"
     "          This value needs to be non-negative. Default: 10.\n"
-    "    -u, --min_qual (signed 32 bit integer)\n"
+    "    -q, --min_qual (signed 32 bit integer)\n"
     "          Specify the minimum quality (amount of supporting reads) of a\n"
     "          structural variant to be reported in the vcf output file. This value\n"
     "          needs to be non-negative. Default: 1.\n"
-    "    -z, --hierarchical_clustering_cutoff (double)\n"
+    "    -w, --hierarchical_clustering_cutoff (double)\n"
     "          Specify the distance cutoff for the hierarchical clustering. This\n"
     "          value needs to be non-negative. Default: 10.\n"
 };
@@ -241,7 +241,7 @@ TEST_F(iGenVar_cli_test, fail_missing_value)
 
 TEST_F(iGenVar_cli_test, fail_no_input_file)
 {
-    cli_test_result result = execute_app("iGenVar", "-m 0");
+    cli_test_result result = execute_app("iGenVar", "--method 0");
     std::string expected_err
     {
         "[Error] You need to input at least one sam/bam file.\n"
@@ -256,7 +256,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-l -30");
+                                         "--min_var_length -30");
     std::string expected_err
     {
         "[Error] You gave a negative min_var_length parameter.\n"
@@ -270,7 +270,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-x -30");
+                                         "--max_var_length -30");
     std::string expected_err
     {
         "[Error] You gave a negative max_var_length parameter.\n"
@@ -284,7 +284,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-q -30");
+                                         "--max_tol_inserted_length -30");
     std::string expected_err
     {
         "[Error] You gave a negative max_tol_inserted_length parameter.\n"
@@ -298,7 +298,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-p -30");
+                                         "--max_overlap -30");
     std::string expected_err
     {
         "[Error] You gave a negative max_overlap parameter.\n"
@@ -312,7 +312,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_qual)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-u -30");
+                                         "--min_qual -30");
     std::string expected_err
     {
         "[Error] You gave a negative min_qual parameter.\n"
@@ -326,7 +326,7 @@ TEST_F(iGenVar_cli_test, fail_negative_hierarchical_clustering_cutoff)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-z -30");
+                                         "--hierarchical_clustering_cutoff -30");
     std::string expected_err
     {
         "[Error] You gave a negative hierarchical_clustering_cutoff parameter.\n"
@@ -404,7 +404,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-m 0 -m 1");
+                                         "--method 0 --method 1");
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err);
@@ -414,7 +414,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-m 0 -m 0");
+                                         "--method 0 --method 0");
     std::string expected_err
     {
         "[Error] The same detection method was selected multiple times.\n"
@@ -429,7 +429,7 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-m 0 -m 1 -c 0 -r 0");
+                                         "--method 0 --method 1 --clustering_method 0 --refinement_method 0");
     std::string expected_err
     {
         "Detect junctions in long reads...\n"
@@ -450,7 +450,7 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "-m 9");
+                                         "--method 9");
     std::string expected_err
     {
         "[Error] You have chosen an invalid input value: 9. "
@@ -465,7 +465,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-i", data("paired_end_mini_example.sam"),
-                                         "-m 2");
+                                         "--method 2");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';
@@ -525,7 +525,7 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("single_end_mini_example.sam"),
-                                         "-l 8 -m 0 -m 1");
+                                         "--min_var_length 8 --method 0 --method 1");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';

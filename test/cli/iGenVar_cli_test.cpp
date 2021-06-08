@@ -44,7 +44,7 @@ std::string const help_page_part_1
     "          standard output. Default: \"\". Write permissions must be granted.\n"
     "          Valid file extensions are: [vcf].\n"
     "    -s, --vcf_sample_name (std::string)\n"
-    "          Specify your sample name for the vcf header line. Default: GENOTYPE.\n"
+    "          Specify your sample name for the vcf header line. Default: MYSAMPLE.\n"
     "    -t, --threads (signed 16 bit integer)\n"
     "          Specify the number of decompression threads used for reading BAM\n"
     "          files. Default: 1.\n"
@@ -135,7 +135,7 @@ std::string expected_res_default
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
-    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tGENOTYPE\n"
+    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
     "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
 };
 
@@ -148,7 +148,7 @@ std::string expected_res_empty
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
-    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tGENOTYPE\n"
+    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
 };
 
 std::string expected_err_default_no_err

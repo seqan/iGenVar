@@ -386,7 +386,7 @@ TEST(junction_detection, analyze_sa_tag)
     cmd_arguments args{std::filesystem::path{},
                        std::filesystem::path{},
                        std::filesystem::path{},
-                       "GENOTYPE",
+                       "MYSAMPLE",
                        std::filesystem::path{},
                        std::filesystem::path{},
                        1,

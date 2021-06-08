@@ -99,6 +99,13 @@ std::string const help_page_advanced
     "    -p, --max_overlap (signed 32 bit integer)\n"
     "          Specify the maximum allowed overlap between two alignment segments.\n"
     "          This value needs to be non-negative. Default: 10.\n"
+    "    -u, --min_qual (signed 32 bit integer)\n"
+    "          Specify the minimum quality (amount of supporting reads) of a\n"
+    "          structural variant to be reported in the vcf output file. This value\n"
+    "          needs to be non-negative. Default: 1.\n"
+    "    -z, --hierarchical_clustering_cutoff (double)\n"
+    "          Specify the distance cutoff for the hierarchical clustering. This\n"
+    "          value needs to be non-negative. Default: 10.\n"
 };
 
 // std::string expected_res_default
@@ -284,6 +291,34 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
     std::string expected_err
     {
         "[Error] You gave a negative max_overlap parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_min_qual)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-u -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative min_qual parameter.\n"
+    };
+    EXPECT_EQ(result.exit_code, 65280);
+    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.err, expected_err);
+}
+
+TEST_F(iGenVar_cli_test, fail_negative_hierarchical_clustering_cutoff)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "-z -30");
+    std::string expected_err
+    {
+        "[Error] You gave a negative hierarchical_clustering_cutoff parameter.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

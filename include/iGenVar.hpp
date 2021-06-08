@@ -18,6 +18,8 @@ struct cmd_arguments
     int32_t max_tol_inserted_length = 5;
     int32_t max_overlap = 10;
     int16_t threads = 1;
+    int32_t min_qual = 1;
+    double hierarchical_clustering_cutoff = 10;
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
@@ -41,10 +43,18 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
  *                      (0: no_refinement,
  *                       1: sViper_refinement_method,
  *                       2: sVirl_refinement_method) - *default: no refinement*\n
- *                   **args.min_var_length** - minimum length of variants to detect (expected to be non-negative) - *default: 30 bp*\n
- *                   **args.max_var_length** - maximum length of variants to detect (expected to be non-negative) - *default: 1,000,000 bp*\n
- *                   **args.max_tol_inserted_length** - longest tolerated inserted sequence at non-INS SV types (expected to be non-negative) - *default: 5 bp*\n
- *                   **args.max_overlap** - maximum overlap between alignment segments (expected to be non-negative) - *default: 10 bp*
+ *                   **args.min_var_length** - minimum length of variants to detect
+ *                                             (expected to be non-negative) - *default: 30 bp*\n
+ *                   **args.max_var_length** - maximum length of variants to detect
+ *                                             (expected to be non-negative) - *default: 1,000,000 bp*\n
+ *                   **args.max_tol_inserted_length** - longest tolerated inserted sequence at non-INS SV types
+ *                                                      (expected to be non-negative) - *default: 5 bp*\n
+ *                   **args.max_overlap** - maximum overlap between alignment segments
+ *                                          (expected to be non-negative) - *default: 10 bp*\n
+ *                   **args.min_qual** - minimum quality (amount of supporting reads) of a structural variant
+ *                                       (expected to be non-negative) - *default: 1 supporting read*\n
+ *                   **args.hierarchical_clustering_cutoff** - distance cutoff for the hierarchical clustering
+ *                                                             (expected to be non-negative) - *default: 10*
  *
  *
  * \details Detects novel junctions from read alignment records using different detection methods.

@@ -26,7 +26,7 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
 /*! \brief Compute the distance between two junctions.
  *         For two junctions that connect the same reference sequences and have the same
  *         orientations, the distance is the sum of a) the distance between the first mates,
- *         b) the distance between the second mates, and c) the absolute size difference 
+ *         b) the distance between the second mates, and c) the absolute size difference
  *         of the inserted sequences. For other junctions, the distance takes the maximal value.
  *
  * \param[in] lhs - left side junction
@@ -39,6 +39,9 @@ int junction_distance(Junction const & lhs, Junction const & rhs);
  *
  * \param[in] junctions - a vector of junctions (needs to be sorted)
  * \param[in] clustering_cutoff - distance cutoff for clustering
+ *
+ * \details For the algorithms we use the library hclust.
+ * \see https://lionel.kr.hs-niederrhein.de/~dalitz/data/hclust/ (last access 01.06.2021).
  */
 std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
                                                     double clustering_cutoff);

@@ -383,18 +383,22 @@ TEST(junction_detection, analyze_sa_tag)
                                "chr1,157,+,90S10M,60,0;";
     std::vector<Junction> junctions_res{};
     // Args
-    cmd_arguments args{std::filesystem::path{},
-                       std::filesystem::path{},
-                       std::filesystem::path{},
-                       "MYSAMPLE",
-                       std::filesystem::path{},
-                       std::filesystem::path{},
-                       1,
+    cmd_arguments args{std::filesystem::path{}, // alignment_short_reads_file_path
+                       std::filesystem::path{}, // alignment_long_reads_file_path
+                       std::filesystem::path{}, // output_file_path
+                       "MYSAMPLE",              // vcf_sample_name
+                       std::filesystem::path{}, // junctions_file_path
+                       std::filesystem::path{}, // clusters_file_path
+                       1,                       // threads
                        std::vector<detection_methods>{cigar_string, split_read, read_pairs, read_depth},
                        simple_clustering,
                        sVirl_refinement_method,
-                       10,
-                       0};
+                       10,                      // min_var_length,
+                       1000000,                 // default max_var_length,
+                       5,                       // default max_tol_inserted_length,
+                       0,                       // max_overlap,
+                       1,                       // default min_qual,
+                       10};                     // default hierarchical_clustering_cutoff
 
     analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 

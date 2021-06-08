@@ -37,7 +37,7 @@ enum refinement_methods
 };
 
 /*! \brief Specialise a mapping from an identifying string to the respective value of your type detection_methods. With
- *         the help of this function, you're able to call ./detect_breackends with --method 1 and --method cigar_string
+ *         the help of this function, you're able to call ./detect_breackends with --method 0 and --method cigar_string
  *         and get the same result.
  */
 std::unordered_map<std::string, detection_methods> enumeration_names(detection_methods);

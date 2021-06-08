@@ -10,12 +10,16 @@ using seqan3::operator""_dna5;
 
 std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_mini_example.sam";
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
-std::filesystem::path const empty_output_path{};
-std::filesystem::path const empty_junctions_path{};
-std::filesystem::path const empty_clusters_path{};
+std::filesystem::path const empty_path{};
+std::string default_vcf_sample_name{"MYSAMPLE"};
+constexpr int16_t default_threads = 1;
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
 constexpr int32_t default_min_length = 30;
+constexpr int32_t default_max_var_length = 1000000;
+constexpr int32_t default_max_tol_inserted_length = 5;
 constexpr int32_t default_max_overlap = 10;
+constexpr int32_t default_min_qual = 1;
+constexpr double default_hierarchical_clustering_cutoff = 10;
 
 // Explanation for the strings:
 // chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681
@@ -52,16 +56,20 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 
     cmd_arguments args{default_alignment_short_reads_file_path,
                        "",
-                       empty_output_path,
-                       "MYSAMPLE",
-                       empty_junctions_path,
-                       empty_clusters_path,
-                       1,
+                       empty_path, // empty output path,
+                       default_vcf_sample_name,
+                       empty_path, // empty junctions path,
+                       empty_path, // empty clusters path,
+                       default_threads,
                        default_methods,
                        simple_clustering,
                        sVirl_refinement_method,
                        default_min_length,
-                       default_max_overlap};
+                       default_max_var_length,
+                       default_max_tol_inserted_length,
+                       default_max_overlap,
+                       default_min_qual,
+                       default_hierarchical_clustering_cutoff};
     detect_junctions_in_short_reads_sam_file(junctions_res, references_lengths, args);
 
     std::vector<Junction> junctions_expected_res{};
@@ -88,16 +96,20 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
 
     cmd_arguments args{"",
                        default_alignment_long_reads_file_path,
-                       empty_output_path,
-                       "MYSAMPLE",
-                       empty_junctions_path,
-                       empty_clusters_path,
-                       1,
+                       empty_path, // empty output path,
+                       default_vcf_sample_name,
+                       empty_path, // empty junctions path,
+                       empty_path, // empty clusters path,
+                       default_threads,
                        default_methods,
                        simple_clustering,
                        sVirl_refinement_method,
                        default_min_length,
-                       default_max_overlap};
+                       default_max_var_length,
+                       default_max_tol_inserted_length,
+                       default_max_overlap,
+                       default_min_qual,
+                       default_hierarchical_clustering_cutoff};
     detect_junctions_in_long_reads_sam_file(junctions_res, references_lengths, args);
 
     std::string const chromosome_1 = "chr21";
@@ -195,16 +207,20 @@ TEST(input_file, long_read_sam_file_unsorted)
 
     cmd_arguments args{"",
                        unsorted_sam_path,
-                       empty_output_path,
-                       "MYSAMPLE",
-                       empty_junctions_path,
-                       empty_clusters_path,
-                       1,
+                       empty_path, // empty output path,
+                       default_vcf_sample_name,
+                       empty_path, // empty junctions path,
+                       empty_path, // empty clusters path,
+                       default_threads,
                        default_methods,
                        simple_clustering,
                        no_refinement,
                        default_min_length,
-                       default_max_overlap};
+                       default_max_var_length,
+                       default_max_tol_inserted_length,
+                       default_max_overlap,
+                       default_min_qual,
+                       default_hierarchical_clustering_cutoff};
     EXPECT_THROW(detect_junctions_in_long_reads_sam_file(junctions_res,
                                                          references_lengths,
                                                          args), seqan3::format_error);
@@ -268,16 +284,20 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
 
     cmd_arguments args{short_sam_path,
                        long_sam_path,
-                       empty_output_path,
-                       "MYSAMPLE",
-                       empty_junctions_path,
-                       empty_clusters_path,
-                       1,
+                       empty_path, // empty output path
+                       default_vcf_sample_name,
+                       empty_path, // empty junctions path
+                       empty_path, // empty clusters path
+                       default_threads,
                        default_methods,
                        simple_clustering,
                        no_refinement,
                        default_min_length,
-                       default_max_overlap};
+                       default_max_var_length,
+                       default_max_tol_inserted_length,
+                       default_max_overlap,
+                       default_min_qual,
+                       default_hierarchical_clustering_cutoff};
     EXPECT_NO_THROW(detect_junctions_in_short_reads_sam_file(junctions_res, references_lengths, args));
     EXPECT_NO_THROW(detect_junctions_in_long_reads_sam_file(junctions_res, references_lengths, args));
 

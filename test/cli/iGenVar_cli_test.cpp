@@ -241,7 +241,7 @@ TEST_F(iGenVar_cli_test, fail_missing_value)
 
 TEST_F(iGenVar_cli_test, fail_no_input_file)
 {
-    cli_test_result result = execute_app("iGenVar", "--method 0");
+    cli_test_result result = execute_app("iGenVar", "--method cigar_string");
     std::string expected_err
     {
         "[Error] You need to input at least one sam/bam file.\n"
@@ -404,7 +404,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "--method 0 --method 1");
+                                         "--method cigar_string --method split_read");
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err);
@@ -414,7 +414,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "--method 0 --method 0");
+                                         "--method cigar_string --method cigar_string");
     std::string expected_err
     {
         "[Error] The same detection method was selected multiple times.\n"
@@ -429,7 +429,8 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
-                                         "--method 0 --method 1 --clustering_method 0 --refinement_method 0");
+                                         "--method cigar_string --method split_read "
+                                         "--clustering_method 0 --refinement_method 0");
     std::string expected_err
     {
         "Detect junctions in long reads...\n"
@@ -465,7 +466,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-i", data("paired_end_mini_example.sam"),
-                                         "--method 2");
+                                         "--method read_pairs");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';
@@ -525,7 +526,7 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("single_end_mini_example.sam"),
-                                         "--min_var_length 8 --method 0 --method 1");
+                                         "--method cigar_string --method split_read --min_var_length 8");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';

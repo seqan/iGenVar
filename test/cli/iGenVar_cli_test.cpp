@@ -8,6 +8,8 @@
 
 std::string const default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::string const vcf_out_file_path = "variants_file_out.vcf";
+std::string const junctions_out_file_path = "junctions_file_out.txt";
+std::string const clusters_out_file_path = "clusters_file_out.txt";
 
 std::string const help_page_part_1
 {
@@ -70,6 +72,14 @@ std::string const help_page_part_2
 
 std::string const help_page_advanced
 {
+    "    -a, --junctions (std::filesystem::path)\n"
+    "          The path of the optional junction output file. If no path is given,\n"
+    "          junctions will not be output. Default: \"\". Write permissions must be\n"
+    "          granted.\n"
+    "    -b, --clusters (std::filesystem::path)\n"
+    "          The path of the optional cluster output file. If no path is given,\n"
+    "          clusters will not be output. Default: \"\". Write permissions must be\n"
+    "          granted.\n"
     "    -m, --method (List of detection_methods)\n"
     "          Choose the detection method(s) to be used. Default:\n"
     "          [cigar_string,split_read,read_pairs,read_depth]. Value must be one\n"
@@ -362,6 +372,31 @@ TEST_F(iGenVar_cli_test, test_outfile)
     //this does not specifically check if file exists, rather if its readable.
     EXPECT_TRUE(f.is_open());
     EXPECT_EQ(buffer.str(), expected_res_default);
+}
+
+TEST_F(iGenVar_cli_test, test_intermediate_result_output)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j ", data(default_alignment_long_reads_file_path),
+                                         "-a ", junctions_out_file_path,
+                                         "-b ", clusters_out_file_path);
+    std::ifstream f1;
+    f1.open(junctions_out_file_path);
+    std::stringstream buffer1;
+    buffer1 << f1.rdbuf();
+
+    // This does not specifically check if file exists, rather if its readable.
+    EXPECT_TRUE(f1.is_open());
+    EXPECT_NE(buffer1.str(), "");
+
+    std::ifstream f2;
+    f2.open(clusters_out_file_path);
+    std::stringstream buffer2;
+    buffer2 << f2.rdbuf();
+
+    // This does not specifically check if file exists, rather if its readable.
+    EXPECT_TRUE(f2.is_open());
+    EXPECT_NE(buffer2.str(), "");
 }
 
 TEST_F(iGenVar_cli_test, with_detection_method_arguments)

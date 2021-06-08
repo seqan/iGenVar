@@ -11,6 +11,8 @@ using seqan3::operator""_dna5;
 std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_mini_example.sam";
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
 std::filesystem::path const empty_output_path{};
+std::filesystem::path const empty_junctions_path{};
+std::filesystem::path const empty_clusters_path{};
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
 constexpr int32_t default_min_length = 30;
 constexpr int32_t default_max_overlap = 10;
@@ -52,6 +54,8 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
                        "",
                        empty_output_path,
                        "GENOTYPE",
+                       empty_junctions_path,
+                       empty_clusters_path,
                        default_methods,
                        simple_clustering,
                        sVirl_refinement_method,
@@ -85,6 +89,8 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
                        default_alignment_long_reads_file_path,
                        empty_output_path,
                        "GENOTYPE",
+                       empty_junctions_path,
+                       empty_clusters_path,
                        default_methods,
                        simple_clustering,
                        sVirl_refinement_method,
@@ -189,6 +195,8 @@ TEST(input_file, long_read_sam_file_unsorted)
                        unsorted_sam_path,
                        empty_output_path,
                        "GENOTYPE",
+                       empty_junctions_path,
+                       empty_clusters_path,
                        default_methods,
                        simple_clustering,
                        no_refinement,
@@ -259,6 +267,8 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
                        long_sam_path,
                        empty_output_path,
                        "GENOTYPE",
+                       empty_junctions_path,
+                       empty_clusters_path,
                        default_methods,
                        simple_clustering,
                        no_refinement,

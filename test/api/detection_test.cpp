@@ -387,6 +387,8 @@ TEST(junction_detection, analyze_sa_tag)
                        std::filesystem::path{},
                        std::filesystem::path{},
                        "GENOTYPE",
+                       std::filesystem::path{},
+                       std::filesystem::path{},
                        std::vector<detection_methods>{cigar_string, split_read, read_pairs, read_depth},
                        simple_clustering,
                        sVirl_refinement_method,

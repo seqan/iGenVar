@@ -59,6 +59,16 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Specify the number of decompression threads used for reading BAM files.",
                       seqan3::option_spec::standard);
 
+    // Options - Optional output:
+    parser.add_option(args.junctions_file_path, 'a', "junctions",
+                      "The path of the optional junction output file. If no path is given, junctions will not be output.",
+                      seqan3::option_spec::advanced,
+                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create});
+    parser.add_option(args.clusters_file_path, 'b', "clusters",
+                      "The path of the optional cluster output file. If no path is given, clusters will not be output.",
+                      seqan3::option_spec::advanced,
+                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create});
+
     // Options - Methods:
     parser.add_option(args.methods, 'm', "method", "Choose the detection method(s) to be used.",
                       seqan3::option_spec::advanced, detection_method_validator);
@@ -121,6 +131,20 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 
     std::sort(junctions.begin(), junctions.end());
 
+    if (args.junctions_file_path != "")
+    {
+        std::ofstream junctions_file{args.junctions_file_path};
+        if (!junctions_file.good() || !junctions_file.is_open())
+        {
+            throw std::runtime_error{"Could not open file '" + args.junctions_file_path.string() + "' for writing."};
+        }
+        for (Junction const & junction : junctions)
+        {
+            junctions_file << junction << "\n";
+        }
+        junctions_file.close();
+    }
+
     seqan3::debug_stream << "Start clustering...\n";
 
     std::vector<Cluster> clusters;
@@ -141,6 +165,20 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     }
 
     seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
+
+    if (args.clusters_file_path != "")
+    {
+        std::ofstream clusters_file{args.clusters_file_path};
+        if (!clusters_file.good() || !clusters_file.is_open())
+        {
+            throw std::runtime_error{"Could not open file '" + args.clusters_file_path.string() + "' for writing."};
+        }
+        for (Cluster const & cluster : clusters)
+        {
+            clusters_file << cluster << "\n";
+        }
+        clusters_file.close();
+    }
 
     switch (args.refinement_method)
     {

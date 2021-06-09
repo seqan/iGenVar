@@ -58,7 +58,7 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
     seqan3::sam_file_input alignment_short_reads_file{args.alignment_short_reads_file_path, my_fields{}};
 
     std::deque<std::string> const ref_ids = read_header_information(alignment_short_reads_file, references_lengths);
-    uint16_t num_good = 0;
+    uint32_t num_good = 0;
 
     for (auto & record : alignment_short_reads_file)
     {
@@ -118,7 +118,7 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
     seqan3::sam_file_input alignment_long_reads_file{args.alignment_long_reads_file_path, my_fields{}};
 
     std::deque<std::string> const ref_ids = read_header_information(alignment_long_reads_file, references_lengths);
-    uint16_t num_good = 0;
+    uint32_t num_good = 0;
 
     for (auto & record : alignment_long_reads_file)
     {

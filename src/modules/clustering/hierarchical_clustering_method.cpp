@@ -1,6 +1,9 @@
 #include "modules/clustering/hierarchical_clustering_method.hpp"
 
 #include <limits>                                                 // for infinity
+#include <random>                                                 // for random_device
+
+#include <seqan3/core/debug_stream.hpp>
 
 #include "fastcluster.h"                                          // for hclust_fast
 
@@ -104,11 +107,23 @@ int junction_distance(Junction const & lhs, Junction const & rhs)
     }
 }
 
+inline std::vector<Junction> subsample_partition(std::vector<Junction> const & partition, uint16_t const sample_size)
+{
+    assert(partition.size() >= sample_size);
+    std::vector<Junction> subsample{};
+    std::sample(partition.begin(), partition.end(), std::back_inserter(subsample),
+                sample_size, std::mt19937{std::random_device{}()});
+    return subsample;
+}
+
 std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
                                                     double clustering_cutoff)
 {
     auto partitions = partition_junctions(junctions);
     std::vector<Cluster> clusters{};
+    // Set the maximum partition size that is still feasible to cluster in reasonable time
+    // A trade-off between reducing runtime and keeping as many junctions as possible has to be made
+    const size_t max_partition_size = 200;
     for (std::vector<Junction> & partition : partitions)
     {
         size_t partition_size = partition.size();
@@ -116,6 +131,20 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
         {
             clusters.emplace_back(std::move(partition));
             continue;
+        }
+        if (partition_size > max_partition_size)
+        {
+            seqan3::debug_stream << "A partition exceeds the maximum size ("
+                                 << partition_size
+                                 << ">"
+                                 << max_partition_size
+                                 << ") and has to be subsampled. Representative partition member:\n["
+                                 << partition[0].get_mate1()
+                                 << "] -> ["
+                                 << partition[0].get_mate2()
+                                 << "]\n";
+            partition = subsample_partition(partition, max_partition_size);
+            partition_size = max_partition_size;
         }
         // Compute condensed distance matrix (upper triangle of the full distance matrix)
         std::vector<double> distmat ((partition_size * (partition_size - 1)) / 2);

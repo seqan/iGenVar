@@ -17,6 +17,7 @@ add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_cluste
 
 target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC seqan3::seqan3)
 target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC fastcluster)
+target_link_libraries ("${PROJECT_NAME}_lib" PUBLIC bamit)
 target_include_directories ("${PROJECT_NAME}_lib" PUBLIC ../include)
 target_compile_options ("${PROJECT_NAME}_lib" PUBLIC "-pedantic" "-Wall" "-Wextra")
 

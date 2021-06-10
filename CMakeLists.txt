@@ -42,6 +42,9 @@ FetchContent_Populate(hclust)
 add_library ("fastcluster" STATIC ${hclust_SOURCE_DIR}/fastcluster.cpp)
 target_include_directories ("fastcluster" PUBLIC ${hclust_SOURCE_DIR})
 
+add_library ("bamit" INTERFACE)
+target_include_directories ("bamit" INTERFACE lib/BAMIntervalTree/include/)
+
 # Add the application.
 add_subdirectory (src)
 message (STATUS "${FontBold}You can run `make` to build the application.${FontReset}")

@@ -47,43 +47,127 @@ cd ../..
 
 cd results/${current_date}
 
-for min_qual in 1 5 10
+for min_var_length in 10 30 50 100 500 1000 2000
 do
-    echo "Looping min_qual number $min_qual"
+    echo "Looping min_var_length number $min_var_length"
 
-    for hierarchical_clustering_cutoff in 10 50 100 150
-    do
-        echo "Looping hierarchical_clustering_cutoff number $hierarchical_clustering_cutoff"
+    vcf_file_name=min_var_length_${min_var_length}_output.vcf
+    bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
+    tabix -p vcf ${vcf_file_name}.gz
+done
 
-        vcf_file_name=${min_qual}_${hierarchical_clustering_cutoff}_output.vcf
-        bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
-        tabix -p vcf ${vcf_file_name}.gz
-    done
+
+for max_var_length in 500000 1000000 2000000
+do
+    echo "Looping max_var_length number $min_var_length"
+
+    vcf_file_name=min_var_length_${max_var_length}_output.vcf
+    bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
+    tabix -p vcf ${vcf_file_name}.gz
+done
+
+for max_tol_inserted_length in 1 5 10
+do
+    echo "Looping max_tol_inserted_length number $max_tol_inserted_length"
+
+    vcf_file_name=max_tol_inserted_length_${max_tol_inserted_length}_output.vcf
+    bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
+    tabix -p vcf ${vcf_file_name}.gz
+done
+
+for max_overlap in 5 10 20
+do
+    echo "Looping max_overlap number $max_overlap"
+
+    vcf_file_name=max_overlap_${max_overlap}_output.vcf
+    bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
+    tabix -p vcf ${vcf_file_name}.gz
+done
+
+for hierarchical_clustering_cutoff in 10 50 100 150
+do
+    echo "Looping hierarchical_clustering_cutoff number $hierarchical_clustering_cutoff"
+
+    vcf_file_name=hc_cutoff_${hierarchical_clustering_cutoff}_output.vcf
+    bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
+    tabix -p vcf ${vcf_file_name}.gz
 done
 
 echo "$(tput setaf 1)$(tput setab 7)------- truvari init done (2/3) --------$(tput sgr 0)" 1>&3
 
 # -------- -------- run truvari -------- -------- #
 
-for min_qual in 1 5 10
+for min_var_length in 10 30 50 100 500 1000 2000
 do
-    echo "Looping min_qual number $min_qual"
+    echo "Looping min_var_length number $min_var_length"
+    vcf_file_name=min_var_length_${min_var_length}_output.vcf
 
-    for hierarchical_clustering_cutoff in 10 50 100 150
-    do
-        echo "Looping hierarchical_clustering_cutoff number $hierarchical_clustering_cutoff"
-        vcf_file_name=${min_qual}_${hierarchical_clustering_cutoff}_output.vcf
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o min_var_length_${min_var_length}_truvari_default \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
 
-        # find ./ -type d -name "${min_qual}_${hierarchical_clustering_cutoff}_truvari_default" -exec rm -rf {} +        # delete if already exists
-        truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
-            -o ${min_qual}_${hierarchical_clustering_cutoff}_truvari_default \
-            --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o min_var_length_${min_var_length}_truvari_multimatch \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 --multimatch
+done
 
-        # find ./ -type d -name "${min_qual}_${hierarchical_clustering_cutoff}_truvari_multimatch" -exec rm -rf {} +     # delete if already exists
-        truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
-            -o ${min_qual}_${hierarchical_clustering_cutoff}_truvari_multimatch \
-            --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 --multimatch
-    done
+
+for max_var_length in 500000 1000000 2000000
+do
+    echo "Looping max_var_length number $max_var_length"
+    vcf_file_name=max_var_length_${max_var_length}_output.vcf
+
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o max_var_length_${max_var_length}_truvari_default \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o max_var_length_${max_var_length}_truvari_multimatch \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 --multimatch
+done
+
+for max_tol_inserted_length in 1 5 10
+do
+    echo "Looping max_tol_inserted_length number $max_tol_inserted_length"
+    vcf_file_name=max_tol_inserted_length_${max_tol_inserted_length}_output.vcf
+
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o max_tol_inserted_length_${max_tol_inserted_length}_truvari_default \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o max_tol_inserted_length_${max_tol_inserted_length}_truvari_multimatch \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 --multimatch
+done
+
+for max_overlap in 5 10 20
+do
+    echo "Looping max_overlap number $max_overlap"
+    vcf_file_name=max_overlap_${max_overlap}_output.vcf
+
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o max_overlap_${max_overlap}_truvari_default \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o max_overlap_${max_overlap}_truvari_multimatch \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 --multimatch
+done
+
+for hierarchical_clustering_cutoff in 10 50 100 150
+do
+    echo "Looping hierarchical_clustering_cutoff number $hierarchical_clustering_cutoff"
+    vcf_file_name=hc_cutoff_${hierarchical_clustering_cutoff}_output.vcf
+
+    # find ./ -type d -name "hc_cutoff_${hierarchical_clustering_cutoff}_truvari_default" -exec rm -rf {} +        # delete if already exists
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o hc_cutoff_${hierarchical_clustering_cutoff}_truvari_default \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+
+    # find ./ -type d -name "hc_cutoff_${hierarchical_clustering_cutoff}_truvari_multimatch" -exec rm -rf {} +     # delete if already exists
+    truvari bench -b ../../data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz -c ${vcf_file_name}.gz \
+        -o hc_cutoff_${hierarchical_clustering_cutoff}_truvari_multimatch \
+        --includebed ../../data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 --multimatch
 done
 
 cd ../..

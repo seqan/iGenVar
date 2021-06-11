@@ -1,0 +1,113 @@
+rule all:
+    input:
+        expand("results/plots/{parameter_name}.results.all.png",
+               parameter_name="min_var_length"),
+        expand("results/plots/{parameter_name}.results.all.png",
+               parameter_name="max_var_length"),
+        expand("results/plots/{parameter_name}.results.all.png",
+               parameter_name="max_tol_inserted_length"),
+        expand("results/plots/{parameter_name}.results.all.png",
+               parameter_name="max_overlap"),
+        expand("results/plots/{parameter_name}.results.all.png",
+               parameter_name="hierarchical_clustering_cutoff")
+
+rule run_igenvar:
+    input:
+        bam = "data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam"
+    output:
+        vcf = "results/{parameter_name}/{parameter_value}_output.vcf"
+    shell:
+        """
+        ./build/iGenVar/bin/iGenVar -t 1 -j {input.bam} -o {output.vcf} --vcf_sample_name HG002 \
+        --method cigar_string --method split_read -c 1 --min_qual 2 \
+        --{wildcards.parameter_name} {wildcards.parameter_value}
+        """
+
+rule filter_vcf:
+    input:
+        vcf = "results/{parameter_name}/{parameter_value}_output.vcf"
+    output:
+        "results/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf"
+    shell:
+        "bcftools view -i 'QUAL>={wildcards.min_qual}' {input.vcf} > {output}"
+
+rule bgzip:
+    input:
+        "{name}.vcf"
+    output:
+        "{name}.vcf.gz"
+    shell:
+        "bgzip -c {input} > {output}"
+
+rule tabix:
+    input:
+        "{name}.vcf.gz"
+    output:
+        "{name}.vcf.gz.tbi"
+    shell:
+        "tabix -p vcf {input}"
+
+rule truvari:
+    input:
+        vcf = "results/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz",
+        index = "results/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz.tbi"
+    params:
+        output_dir = "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}"
+    output:
+        summary = "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
+    # conda: "envs/truvari_environment.yaml"
+    shell:
+        """
+        rm -rf {params.output_dir} && truvari bench -b data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz \
+        -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+        """
+
+rule reformat_truvari_results:
+    input:
+        "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
+    output:
+        "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/pr_rec.txt"
+    threads: 1
+    shell:
+        """
+        cat {input} | grep '\<precision\>\|\<recall\>' | tr -d ',' |sed 's/^[ \t]*//' | tr -d '\"' | tr -d ' ' | tr ':' '\t' \
+        | awk 'OFS=\"\\t\" {{ print \"{wildcards.parameter_value}\", \"{wildcards.min_qual}\", $1, $2 }}' > {output}
+        """
+
+rule cat_truvari_results_full:
+    input:
+        input1 = expand("results/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value=[10, 30, 50, 100, 500, 1000, 2000],          # default: 30
+               min_qual=range(2, 20)),
+        input2 = expand("results/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value=[500000, 1000000, 2000000],                  # default: 1.000.000
+               min_qual=range(2, 20)),
+        input3 = expand("results/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value=[1, 5, 10],                                  # default: 5
+               min_qual=range(2, 20)),
+        input4 = expand("results/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value=[5, 10, 20],                                 # default: 10
+               min_qual=range(2, 20)),
+        input5 = expand("results/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value= [20, 50, 100, 200, 500, 5000],              # default: 10
+               min_qual=range(2, 20))
+    output:
+        summary1 = "results/truvari/min_var_length/all_results.txt",
+        summary2 = "results/truvari/max_var_length/all_results.txt",
+        summary3 = "results/truvari/max_tol_inserted_length/all_results.txt",
+        summary4 = "results/truvari/max_overlap/all_results.txt",
+        summary5 = "results/truvari/hierarchical_clustering_cutoff/all_results.txt"
+    shell:
+        """
+        cat {input.input1} > {output.summary1} && cat {input.input2} > {output.summary2} && \
+        cat {input.input3} > {output.summary3} && cat {input.input4} > {output.summary4} && \
+        cat {input.input5} > {output.summary5}
+        """
+
+rule plot_pr_all_results:
+    input:
+        "results/truvari/{parameter_name}/all_results.txt"
+    output:
+        "results/plots/{parameter_name}.results.all.png"
+    shell:
+        "Rscript --vanilla Repos/iGenVar/test/benchmark/scripts/plot_all.R {input} {wildcards.parameter_name} {output}"

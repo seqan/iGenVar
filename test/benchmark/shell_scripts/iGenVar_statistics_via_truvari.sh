@@ -59,9 +59,9 @@ done
 
 for max_var_length in 500000 1000000 2000000
 do
-    echo "Looping max_var_length number $min_var_length"
+    echo "Looping max_var_length number $max_var_length"
 
-    vcf_file_name=min_var_length_${max_var_length}_output.vcf
+    vcf_file_name=max_var_length${max_var_length}_output.vcf
     bgzip -c ${vcf_file_name} > ${vcf_file_name}.gz
     tabix -p vcf ${vcf_file_name}.gz
 done

@@ -246,9 +246,9 @@ TEST(hierarchical_clustering, strict_clustering)
 TEST(hierarchical_clustering, clustering_10)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 10);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0.01);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -257,7 +257,7 @@ TEST(hierarchical_clustering, clustering_10)
     //  6       14  14
     //  7           6
 
-    // Only junctions from reads 7 and 8 have a distance < 10 and cluster together
+    // Only junctions from reads 7 and 8 have a distance < 0.01 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
@@ -310,9 +310,9 @@ TEST(hierarchical_clustering, clustering_10)
 TEST(hierarchical_clustering, clustering_15)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 15);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0.015);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -321,7 +321,7 @@ TEST(hierarchical_clustering, clustering_15)
     //  6       14  14
     //  7           6
 
-    // Junctions from reads 6-8 and 2-3 have a distance < 15 and cluster together
+    // Junctions from reads 6-8 and 2-3 have a distance < 0.015 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
@@ -372,9 +372,9 @@ TEST(hierarchical_clustering, clustering_15)
 TEST(hierarchical_clustering, clustering_25)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 25);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0.025);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -383,7 +383,7 @@ TEST(hierarchical_clustering, clustering_25)
     //  6       14  14
     //  7           6
 
-    // Junctions from reads 6-8 and 1-3 have a distance < 25 and cluster together
+    // Junctions from reads 6-8 and 1-3 have a distance < 0.025 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},

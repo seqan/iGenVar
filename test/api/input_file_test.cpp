@@ -17,7 +17,8 @@ std::vector<detection_methods> const default_methods{cigar_string, split_read, r
 constexpr int32_t default_min_length = 30;
 constexpr int32_t default_max_var_length = 1000000;
 constexpr int32_t default_max_tol_inserted_length = 5;
-constexpr int32_t default_max_overlap = 10;
+constexpr int32_t default_max_overlap = 100;
+constexpr int32_t default_max_gap = 100;
 constexpr int32_t default_min_qual = 1;
 constexpr int32_t default_partition_max_distance = 1000;
 constexpr double default_hierarchical_clustering_cutoff = 0.5;
@@ -69,6 +70,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
                        default_max_var_length,
                        default_max_tol_inserted_length,
                        default_max_overlap,
+                       default_max_gap,
                        default_min_qual,
                        default_partition_max_distance,
                        default_hierarchical_clustering_cutoff};
@@ -110,6 +112,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
                        default_max_var_length,
                        default_max_tol_inserted_length,
                        default_max_overlap,
+                       default_max_gap,
                        default_min_qual,
                        default_partition_max_distance,
                        default_hierarchical_clustering_cutoff};
@@ -222,6 +225,7 @@ TEST(input_file, long_read_sam_file_unsorted)
                        default_max_var_length,
                        default_max_tol_inserted_length,
                        default_max_overlap,
+                       default_max_gap,
                        default_min_qual,
                        default_partition_max_distance,
                        default_hierarchical_clustering_cutoff};
@@ -300,6 +304,7 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
                        default_max_var_length,
                        default_max_tol_inserted_length,
                        default_max_overlap,
+                       default_max_gap,
                        default_min_qual,
                        default_partition_max_distance,
                        default_hierarchical_clustering_cutoff};

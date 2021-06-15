@@ -26,7 +26,8 @@ struct cmd_arguments
     /* -k */ int32_t min_var_length = 30;
     /* -l */ int32_t max_var_length = 1000000;
     /* -m */ int32_t max_tol_inserted_length = 5;
-    /* -n */ int32_t max_overlap = 10;
+    /* -n */ int32_t max_overlap = 100;
+    /* -g */ int32_t max_gap = 100;
     /* -q */ int32_t min_qual = 1;
 // Clustering specifications:
     /* -p */ int32_t partition_max_distance = 1000;

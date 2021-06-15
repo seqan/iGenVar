@@ -50,7 +50,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                               seqan3::dna5_vector const & query_sequence,
                               std::string const & read_name,
                               int32_t const min_length,
-                              int32_t const max_overlap);
+                              int32_t const max_overlap,
+                              int32_t const max_gap);
 
 /*! \brief Parse the SA tag from the SAM/BAM alignment of a chimeric/split-aligned read. Build
  *         [aligned_segments](\ref AlignedSegment), one for each alignment segment of the read.

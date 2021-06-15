@@ -254,6 +254,7 @@ TEST(junction_detection, analyze_aligned_segments)
                                  query_sequence,
                                  read_name,
                                  10,
+                                 0,
                                  0);
 
         Breakend new_breakend_1 {"chr1", 105, strand::forward};
@@ -301,6 +302,7 @@ TEST(junction_detection, analyze_aligned_segments)
                                  query_sequence,
                                  read_name,
                                  20,
+                                 0,
                                  0);
 
         Breakend new_breakend_1 {"chr1", 105, strand::forward};
@@ -346,7 +348,8 @@ TEST(junction_detection, overlapping_segments)
                                              query_sequence,
                                              read_name,
                                              10,
-                                             10));
+                                             10,
+                                             0));
 
     // Deletion from two overlapping alignment segments (overlap of 5bp)
     Breakend new_breakend_1 {"chr1", 119, strand::forward};
@@ -397,6 +400,7 @@ TEST(junction_detection, analyze_sa_tag)
                        1000000,                 // default max_var_length,
                        5,                       // default max_tol_inserted_length,
                        0,                       // max_overlap,
+                       0,                       // max_gap,
                        1,                       // default min_qual,
                        1000,                    // default partition_max_distance
                        0.5};                    // default hierarchical_clustering_cutoff

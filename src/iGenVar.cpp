@@ -95,6 +95,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Specify the maximum allowed overlap between two alignment segments. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
+    parser.add_option(args.max_gap, 'g', "max_gap",
+                      "Specify the maximum allowed gap between two alignment segments. "
+                      "This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
     parser.add_option(args.min_qual, 'q', "min_qual",
                       "Specify the minimum quality (amount of supporting reads) of a structural variant to be reported "
                       "in the vcf output file. This value needs to be non-negative.",

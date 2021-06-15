@@ -8,7 +8,6 @@
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
 #include "structures/cluster.hpp"                                   // for class Cluster
-#include "variant_detection/validator.hpp"                          // for class EnumValidator
 #include "variant_detection/variant_detection.hpp"                  // for detect_junctions_in_long_reads_sam_file()
 #include "variant_detection/variant_output.hpp"                     // for find_and_output_variants()
 
@@ -24,14 +23,6 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.long_copyright = "long_copyright";
     parser.info.short_copyright = "short_copyright";
     parser.info.url = "https://github.com/seqan/iGenVar/";
-
-    // Validatiors:
-    EnumValidator<detection_methods> detection_method_validator{seqan3::enumeration_names<detection_methods>
-                                                                | std::views::values};
-    EnumValidator<clustering_methods> clustering_method_validator{seqan3::enumeration_names<clustering_methods>
-                                                                  | std::views::values};
-    EnumValidator<refinement_methods> refinement_method_validator{seqan3::enumeration_names<refinement_methods>
-                                                                  | std::views::values};
 
     // Options - Input / Output:
     parser.add_option(args.alignment_short_reads_file_path,
@@ -70,12 +61,21 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create});
 
     // Options - Methods:
-    parser.add_option(args.methods, 'm', "method", "Choose the detection method(s) to be used.",
-                      seqan3::option_spec::advanced, detection_method_validator);
-    parser.add_option(args.clustering_method, 'c', "clustering_method", "Choose the clustering method to be used.",
-                      seqan3::option_spec::advanced, clustering_method_validator);
-    parser.add_option(args.refinement_method, 'r', "refinement_method", "Choose the refinement method to be used.",
-                      seqan3::option_spec::advanced, refinement_method_validator);
+    parser.add_option(args.methods, 'm', "method",
+                      "Choose the detection method(s) to be used. "
+                      "Value must be one of (method name or number) "
+                      "[0,cigar_string,1,split_read,2,read_pairs,3,read_depth].",
+                      seqan3::option_spec::advanced);
+    parser.add_option(args.clustering_method, 'c', "clustering_method",
+                      "Choose the clustering method to be used. "
+                      "Value must be one of (method name or number) [0,simple_clustering,"
+                      "1,hierarchical_clustering,2,self_balancing_binary_tree,3,candidate_selection_based_on_voting].",
+                      seqan3::option_spec::advanced);
+    parser.add_option(args.refinement_method, 'r', "refinement_method",
+                      "Choose the refinement method to be used. "
+                      "Value must be one of (method name or number) "
+                      "[0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].",
+                      seqan3::option_spec::advanced);
 
     // Options - SV specifications:
     parser.add_option(args.min_var_length, 'l', "min_var_length",

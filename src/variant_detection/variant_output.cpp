@@ -32,10 +32,11 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                     int32_t insert_size = clusters[i].get_average_inserted_sequence_size();
                     if (mate1.orientation == strand::forward)
                     {
-                        int32_t distance = mate2_pos - mate1_pos;
+                        int32_t distance = mate2_pos - mate1_pos - 1;
+                        int32_t sv_length = insert_size - distance;
                         //Deletion
-                        if (distance >= args.min_var_length &&
-                            distance <= args.max_var_length &&
+                        if (sv_length <= -args.min_var_length &&
+                            sv_length >= -args.max_var_length &&
                             insert_size <= args.max_tol_inserted_length)
                         {
                             variant_record tmp{};
@@ -45,15 +46,16 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                             tmp.add_info("SVTYPE", "DEL");
                             // Increment position by 1 because VCF is 1-based
                             tmp.set_pos(mate1_pos + 1);
-                            tmp.add_info("SVLEN", std::to_string(-distance + 1));
+                            tmp.add_info("SVLEN", std::to_string(sv_length));
                             // Increment end by 1 because VCF is 1-based
                             // Decrement end by 1 because deletion ends one base before mate2 begins
                             tmp.add_info("END", std::to_string(mate2_pos));
                             tmp.print(out_stream);
                         }
                         //Insertion
-                        else if (distance == 1 &&
-                                insert_size >= args.min_var_length)
+                        else if (sv_length >= args.min_var_length &&
+                                 sv_length <= args.max_var_length &&
+                                 distance <= args.max_tol_deleted_length)
                         {
                             variant_record tmp{};
                             tmp.set_chrom(mate1.seq_name);
@@ -62,7 +64,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                             tmp.add_info("SVTYPE", "INS");
                             // Increment position by 1 because VCF is 1-based
                             tmp.set_pos(mate1_pos + 1);
-                            tmp.add_info("SVLEN", std::to_string(insert_size));
+                            tmp.add_info("SVLEN", std::to_string(sv_length));
                             // Increment end by 1 because VCF is 1-based
                             tmp.add_info("END", std::to_string(mate1_pos + 1));
                             tmp.print(out_stream);

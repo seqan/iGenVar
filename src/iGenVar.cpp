@@ -91,6 +91,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
+    parser.add_option(args.max_tol_deleted_length, 'e', "max_tol_deleted_length",
+                      "Specify what should be the longest tolerated deleted sequence at sites of non-DEL SVs. "
+                      "This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
     parser.add_option(args.max_overlap, 'n', "max_overlap",
                       "Specify the maximum allowed overlap between two alignment segments. "
                       "This value needs to be non-negative.",

@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-echo "Logifle written to: initial_steps.log"
+echo "Logfile written to: initial_steps.log"
 
 # -------- -------- Prepare logfile and runtime computation -------- -------- #
 mkdir -p logs
@@ -20,7 +20,7 @@ git clone https://github.com/seqan/iGenVar.git
 cd iGenVar
 git submodule update --recursive --init
 
-echo "$(tput setaf 1)$(tput setab 7)------- iGenVar downloaded (1/4) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- iGenVar downloaded (1/5) --------$(tput sgr 0)" 1>&3
 
 cd ../..
 mkdir -p build && cd build && mkdir -p iGenVar && cd iGenVar
@@ -30,7 +30,7 @@ make -j 16
 
 make test && make doc
 
-echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (2/4) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (2/5) --------$(tput sgr 0)" 1>&3
 
 # -------- -------- get data and unzip -------- -------- #
 cd ../..
@@ -40,13 +40,27 @@ mkdir -p data && cd data
 # wget ...
 # cd ..
 
-echo "$(tput setaf 1)$(tput setab 7)------- short reads downloaded (3/4) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- short reads downloaded (3/5) --------$(tput sgr 0)" 1>&3
 
 mkdir -p long_reads && cd long_reads
 wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --no-verbose \
     https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/data/AshkenazimTrio/HG002_NA24385_son/PacBio_CCS_10kb/alignment/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam
 
-echo "$(tput setaf 1)$(tput setab 7)------- long reads downloaded (4/4) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- long reads downloaded (4/5) --------$(tput sgr 0)" 1>&3
+
+
+# -------- -------- get truth set ../../data -------- -------- #
+mkdir -p truth_set && cd truth_set
+
+wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --no-verbose \
+    https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/../../data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/HG002_SVs_Tier1_v0.6.vcf.gz
+wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --no-verbose \
+    https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/../../data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/HG002_SVs_Tier1_v0.6.vcf.gz.tbi
+wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --no-verbose \
+    https://ftp-trace.ncbi.nlm.nih.gov/ReferenceSamples/giab/../../data/AshkenazimTrio/analysis/NIST_SVs_Integration_v0.6/HG002_SVs_Tier1_v0.6.bed
+
+echo "$(tput setaf 1)$(tput setab 7)------- truth set downloaded (5/5) --------$(tput sgr 0)" 1>&3
+
 
 cd ../..
 mkdir -p results

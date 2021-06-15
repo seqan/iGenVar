@@ -7,7 +7,8 @@
 
 #include "fastcluster.h"                                          // for hclust_fast
 
-std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions)
+std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions,
+                                                       int32_t const partition_max_distance)
 {
     // Partition based on mate 1
     std::vector<Junction> current_partition{};
@@ -24,13 +25,14 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
         {
             if (junction.get_mate1().seq_name != current_partition.back().get_mate1().seq_name ||
                 junction.get_mate1().orientation != current_partition.back().get_mate1().orientation ||
-                abs(junction.get_mate1().position - current_partition.back().get_mate1().position) > 50)
+                abs(junction.get_mate1().position - current_partition.back().get_mate1().position) > partition_max_distance)
             {
                 // Partition based on mate 2
                 std::sort(current_partition.begin(), current_partition.end(), [](Junction const & a, Junction const & b) {
                     return a.get_mate2() < b.get_mate2();
                 });
-                current_partition_splitted = split_partition_based_on_mate2(current_partition);
+                current_partition_splitted = split_partition_based_on_mate2(current_partition,
+                                                                            partition_max_distance);
                 for (std::vector<Junction> partition : current_partition_splitted)
                 {
                     final_partitions.push_back(partition);
@@ -45,7 +47,8 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
         std::sort(current_partition.begin(), current_partition.end(), [](Junction a, Junction b) {
             return a.get_mate2() < b.get_mate2();
         });
-        current_partition_splitted = split_partition_based_on_mate2(current_partition);
+        current_partition_splitted = split_partition_based_on_mate2(current_partition,
+                                                                    partition_max_distance);
         for (std::vector<Junction> partition : current_partition_splitted)
         {
             final_partitions.push_back(partition);
@@ -54,7 +57,8 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
     return final_partitions;
 }
 
-std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition)
+std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition,
+                                                                  int32_t const partition_max_distance)
 {
     std::vector<Junction> current_partition{};
     std::vector<std::vector<Junction>> splitted_partition{};
@@ -69,7 +73,7 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
         {
             if (junction.get_mate2().seq_name != current_partition.back().get_mate2().seq_name ||
                 junction.get_mate2().orientation != current_partition.back().get_mate2().orientation ||
-                abs(junction.get_mate2().position - current_partition.back().get_mate2().position) > 50)
+                abs(junction.get_mate2().position - current_partition.back().get_mate2().position) > partition_max_distance)
             {
                 std::sort(current_partition.begin(), current_partition.end());
                 splitted_partition.push_back(current_partition);
@@ -145,9 +149,10 @@ inline std::vector<Junction> subsample_partition(std::vector<Junction> const & p
 }
 
 std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
+                                                    int32_t const partition_max_distance,
                                                     double clustering_cutoff)
 {
-    auto partitions = partition_junctions(junctions);
+    auto partitions = partition_junctions(junctions, partition_max_distance);
     std::vector<Cluster> clusters{};
     // Set the maximum partition size that is still feasible to cluster in reasonable time
     // A trade-off between reducing runtime and keeping as many junctions as possible has to be made

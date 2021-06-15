@@ -398,7 +398,8 @@ TEST(junction_detection, analyze_sa_tag)
                        5,                       // default max_tol_inserted_length,
                        0,                       // max_overlap,
                        1,                       // default min_qual,
-                       10};                     // default hierarchical_clustering_cutoff
+                       1000,                    // default partition_max_distance
+                       0.5};                    // default hierarchical_clustering_cutoff
 
     analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 

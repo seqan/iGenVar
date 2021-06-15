@@ -431,7 +431,8 @@ TEST(junction_detection, analyze_sa_tag)
                        sVirl_refinement_method,
                        10,                      // min_var_length,
                        1000000,                 // default max_var_length,
-                       5,                       // default max_tol_inserted_length,
+                       50,                      // default max_tol_inserted_length,
+                       50,                      // default max_tol_deleted_length,
                        0,                       // max_overlap,
                        1,                       // default min_qual,
                        1000,                    // default partition_max_distance

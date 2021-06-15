@@ -16,7 +16,8 @@ constexpr int16_t default_threads = 1;
 std::vector<detection_methods> const default_methods{cigar_string, split_read, read_pairs, read_depth};
 constexpr int32_t default_min_length = 30;
 constexpr int32_t default_max_var_length = 1000000;
-constexpr int32_t default_max_tol_inserted_length = 5;
+constexpr int32_t default_max_tol_inserted_length = 50;
+constexpr int32_t default_max_tol_deleted_length = 50;
 constexpr int32_t default_max_overlap = 10;
 constexpr int32_t default_min_qual = 1;
 constexpr int32_t default_partition_max_distance = 1000;
@@ -68,6 +69,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
                        default_min_length,
                        default_max_var_length,
                        default_max_tol_inserted_length,
+                       default_max_tol_deleted_length,
                        default_max_overlap,
                        default_min_qual,
                        default_partition_max_distance,
@@ -109,6 +111,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
                        default_min_length,
                        default_max_var_length,
                        default_max_tol_inserted_length,
+                       default_max_tol_deleted_length,
                        default_max_overlap,
                        default_min_qual,
                        default_partition_max_distance,
@@ -224,6 +227,7 @@ TEST(input_file, long_read_sam_file_unsorted)
                        default_min_length,
                        default_max_var_length,
                        default_max_tol_inserted_length,
+                       default_max_tol_deleted_length,
                        default_max_overlap,
                        default_min_qual,
                        default_partition_max_distance,
@@ -302,6 +306,7 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
                        default_min_length,
                        default_max_var_length,
                        default_max_tol_inserted_length,
+                       default_max_tol_deleted_length,
                        default_max_overlap,
                        default_min_qual,
                        default_partition_max_distance,

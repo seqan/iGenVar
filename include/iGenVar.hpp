@@ -27,7 +27,8 @@ struct cmd_arguments
 // SV specifications:
     /* -k */ int32_t min_var_length = 30;
     /* -l */ int32_t max_var_length = 100000;
-    /* -m */ int32_t max_tol_inserted_length = 5;
+    /* -m */ int32_t max_tol_inserted_length = 50;
+    /* -e */ int32_t max_tol_deleted_length = 50;
     /* -n */ int32_t max_overlap = 10;
     /* -q */ int32_t min_qual = 1;
 // Clustering specifications:

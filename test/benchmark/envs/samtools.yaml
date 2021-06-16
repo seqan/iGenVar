@@ -1,0 +1,5 @@
+channels:
+ - bioconda
+#Sorting BAM files from NGMLR fails in samtools version>=1.10, therefore fix to version 1.9
+dependencies:
+ - samtools=1.9

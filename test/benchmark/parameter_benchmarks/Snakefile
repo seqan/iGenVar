@@ -55,7 +55,8 @@ rule truvari:
         output_dir = "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}"
     output:
         summary = "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
-    # conda: "envs/truvari_environment.yaml"
+    conda:
+        "../envs/truvari.yaml"
     shell:
         """
         rm -rf {params.output_dir} && truvari bench -b data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz \
@@ -110,4 +111,4 @@ rule plot_pr_all_results:
     output:
         "results/plots/{parameter_name}.results.all.png"
     shell:
-        "Rscript --vanilla Repos/iGenVar/test/benchmark/scripts/plot_all.R {input} {wildcards.parameter_name} {output}"
+        "Rscript --vanilla Repos/iGenVar/test/benchmark/parameter_benchmarks/plot_all.R {input} {wildcards.parameter_name} {output}"

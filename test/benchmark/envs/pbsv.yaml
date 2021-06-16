@@ -1,0 +1,4 @@
+channels:
+ - bioconda
+dependencies:
+ - pbsv=2.3.0

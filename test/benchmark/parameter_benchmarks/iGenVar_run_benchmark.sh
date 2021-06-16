@@ -38,7 +38,7 @@ else
    echo "Use one core."
 fi
 
-/usr/bin/time -v snakemake --snakefile Repos/iGenVar/test/benchmark/Snakefile --cores $cores \ # --quiet --forcerun run_igenvar \
+/usr/bin/time -v snakemake --snakefile Repos/iGenVar/test/benchmark/parameter_benchmarks/Snakefile --cores $cores \ # --quiet --forcerun run_igenvar \
 --rerun-incomplete --stats logs/${current_date}_snakemake_stats.txt --timestamp --use-conda
 
 echo "$(tput setaf 1)$(tput setab 7)------- done: iGenVar with cigar string & split read method --------$(tput sgr 0)" 1>&3

@@ -99,8 +99,8 @@ private:
 };
 
 /*
- * A variant record consists of positional information, genotype information, and optional additional information in the
- * INFO field.
+ * A variant record consists of positional information, sample (e. g. genotype) information, and optional additional
+ * information in the INFO field.
  */
 
 class variant_record

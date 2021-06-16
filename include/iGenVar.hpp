@@ -6,22 +6,33 @@
 
 struct cmd_arguments
 {
-    std::filesystem::path alignment_short_reads_file_path{""};
-    std::filesystem::path alignment_long_reads_file_path{""};
-    std::filesystem::path output_file_path{};
-    std::string vcf_sample_name{"GENOTYPE"};
-    std::filesystem::path junctions_file_path{};
-    std::filesystem::path clusters_file_path{};
-    std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth};   // default: all methods
-    clustering_methods clustering_method{hierarchical_clustering};                              // default: hierarchical clustering method
-    refinement_methods refinement_method{no_refinement};                                        // default: no refinement
-    int32_t min_var_length = 30;
-    int32_t max_var_length = 1000000;
-    int32_t max_tol_inserted_length = 5;
-    int32_t max_overlap = 10;
-    int16_t threads = 1;
-    int32_t min_qual = 1;
-    double hierarchical_clustering_cutoff = 10;
+// Input:
+    /* -i */ std::filesystem::path alignment_short_reads_file_path{""};
+    /* -j */ std::filesystem::path alignment_long_reads_file_path{""};
+// Output:
+    /* -o */ std::filesystem::path output_file_path{};
+    /* -s */ std::string vcf_sample_name{"MYSAMPLE"};
+    /* -a */ std::filesystem::path junctions_file_path{};
+    /* -b */ std::filesystem::path clusters_file_path{};
+// Others:
+    /* -h - help - not part of the args struct */
+    /* -v - verbose - not implementet yet */
+    /* -t */ int16_t threads = 1;
+// Methods:
+    /* -d */ std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth}; // default: all
+    /* -c */ clustering_methods clustering_method{hierarchical_clustering};          // default: hierarchical clustering
+    /* -r */ refinement_methods refinement_method{no_refinement};                    // default: no refinement
+// SV specifications:
+    /* -k */ int32_t min_var_length = 30;
+    /* -l */ int32_t max_var_length = 1000000;
+    /* -m */ int32_t max_tol_inserted_length = 5;
+    /* -n */ int32_t max_overlap = 10;
+    /* -q */ int32_t min_qual = 1;
+// Clustering specifications:
+    /* -w */ double hierarchical_clustering_cutoff = 10;
+    /* x? */
+// Refinement specifications:
+    /* y, z? */
 };
 
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
@@ -34,6 +45,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
  *                   **args.alignment_long_reads_file_path** - long reads input file, path to the sam/bam file\n
  *                   **args.output_file_path** output file - path for the VCF file - *default: standard output*\n
  *                   **args.vcf_sample_name - Name of the sample for the vcf header line*\n
+ *                   **args.threads - The number of decompression threads used for reading BAM files.*\n
  *                   **args.methods** - list of methods for detecting junctions
  *                      (1: cigar_string, 2: split_read, 3: read_pairs, 4: read_depth) - *default: all methods*\n
  *                   **args.clustering_method** - method for clustering junctions

@@ -37,19 +37,19 @@ enum refinement_methods
 };
 
 /*! \brief Specialise a mapping from an identifying string to the respective value of your type detection_methods. With
- *         the help of this function, you're able to call ./detect_breackends with -m 1 and -m cigar_string and get the
- *         same result.
+ *         the help of this function, you're able to call ./detect_breackends with --method 0 and --method cigar_string
+ *         and get the same result.
  */
 std::unordered_map<std::string, detection_methods> enumeration_names(detection_methods);
 
 /*! \brief Specialise a mapping from an identifying string to the respective value of your type clustering_methods. With
- *         the help of this function, you're able to call ./detect_breackends with -c 0 and -c simple_clustering and get
- *         the same result.
+ *         the help of this function, you're able to call ./detect_breackends with --clustering_method 0 and
+ *         --clustering_method simple_clustering and get the same result.
  */
 std::unordered_map<std::string, clustering_methods> enumeration_names(clustering_methods);
 
-/*! \brief Specialise a mapping from an identifying string to the respective value of your type refinement_methods. With the
- *         help of this function, you're able to call ./detect_breackends with -r 0 and -r no_refinement and get the
- *         same result.
+/*! \brief Specialise a mapping from an identifying string to the respective value of your type refinement_methods. With
+ *         the help of this function, you're able to call ./detect_breackends with --refinement_method 0 and
+ *         --refinement_method no_refinement and get the same result.
  */
 std::unordered_map<std::string, refinement_methods> enumeration_names(refinement_methods);

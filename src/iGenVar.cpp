@@ -61,7 +61,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create});
 
     // Options - Methods:
-    parser.add_option(args.methods, 'm', "method",
+    parser.add_option(args.methods, 'd', "method",
                       "Choose the detection method(s) to be used. "
                       "Value must be one of (method name or number) "
                       "[0,cigar_string,1,split_read,2,read_pairs,3,read_depth].",
@@ -78,30 +78,30 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::option_spec::advanced);
 
     // Options - SV specifications:
-    parser.add_option(args.min_var_length, 'l', "min_var_length",
+    parser.add_option(args.min_var_length, 'k', "min_var_length",
                       "Specify what should be the minimum length of your SVs to be detected. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
-    parser.add_option(args.max_var_length, 'x', "max_var_length",
+    parser.add_option(args.max_var_length, 'l', "max_var_length",
                       "Specify what should be the maximum length of your SVs to be detected. "
                       "SVs larger than this threshold can still be output as translocations. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
-    parser.add_option(args.max_tol_inserted_length, 'q', "max_tol_inserted_length",
+    parser.add_option(args.max_tol_inserted_length, 'm', "max_tol_inserted_length",
                       "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
-    parser.add_option(args.max_overlap, 'p', "max_overlap",
+    parser.add_option(args.max_overlap, 'n', "max_overlap",
                       "Specify the maximum allowed overlap between two alignment segments. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
-    parser.add_option(args.min_qual, 'u', "min_qual",
+    parser.add_option(args.min_qual, 'q', "min_qual",
                       "Specify the minimum quality (amount of supporting reads) of a structural variant to be reported "
                       "in the vcf output file. This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
 
     // Options - Clustering specifications:
-    parser.add_option(args.hierarchical_clustering_cutoff, 'z', "hierarchical_clustering_cutoff",
+    parser.add_option(args.hierarchical_clustering_cutoff, 'w', "hierarchical_clustering_cutoff",
                       "Specify the distance cutoff for the hierarchical clustering. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);

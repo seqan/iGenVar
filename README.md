@@ -20,4 +20,4 @@ Instructions:
 
 We created small examples, which you can use to test our app:
 `./bin/iGenVar -i ./test/data/paired_end_short_read_mini_example.sam -j ./test/data/single_end_mini_example.sam `
-`-o ./test/data/output.vcf -m cigar_string -m split_read -l 5`
+`-o ./test/data/output.vcf --method cigar_string --method split_read --min_var_length 5`

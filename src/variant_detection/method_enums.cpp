@@ -3,13 +3,13 @@
 std::unordered_map<std::string, detection_methods> enumeration_names(detection_methods)
 {
 return std::unordered_map<std::string, detection_methods>{{"0", detection_methods::cigar_string},
-                                                            {"cigar_string", detection_methods::cigar_string},
-                                                            {"1", detection_methods::split_read},
-                                                            {"split_read", detection_methods::split_read},
-                                                            {"2", detection_methods::read_pairs},
-                                                            {"read_pairs", detection_methods::read_pairs},
-                                                            {"3", detection_methods::read_depth},
-                                                            {"read_depth", detection_methods::read_depth}};
+                                                          {"cigar_string", detection_methods::cigar_string},
+                                                          {"1", detection_methods::split_read},
+                                                          {"split_read", detection_methods::split_read},
+                                                          {"2", detection_methods::read_pairs},
+                                                          {"read_pairs", detection_methods::read_pairs},
+                                                          {"3", detection_methods::read_depth},
+                                                          {"read_depth", detection_methods::read_depth}};
 };
 
 std::unordered_map<std::string, clustering_methods> enumeration_names(clustering_methods)
@@ -32,12 +32,12 @@ return std::unordered_map<std::string,
 std::unordered_map<std::string, refinement_methods> enumeration_names(refinement_methods)
 {
 return std::unordered_map<std::string, refinement_methods>{{"0", refinement_methods::no_refinement},
-                                                            {"no_refinement",
-                                                            refinement_methods::no_refinement},
-                                                            {"1", refinement_methods::sViper_refinement_method},
-                                                            {"sViper_refinement_method",
-                                                            refinement_methods::sViper_refinement_method},
-                                                            {"2", refinement_methods::sVirl_refinement_method},
-                                                            {"sVirl_refinement_method",
-                                                            refinement_methods::sVirl_refinement_method}};
+                                                           {"no_refinement",
+                                                           refinement_methods::no_refinement},
+                                                           {"1", refinement_methods::sViper_refinement_method},
+                                                           {"sViper_refinement_method",
+                                                           refinement_methods::sViper_refinement_method},
+                                                           {"2", refinement_methods::sVirl_refinement_method},
+                                                           {"sVirl_refinement_method",
+                                                           refinement_methods::sVirl_refinement_method}};
 };

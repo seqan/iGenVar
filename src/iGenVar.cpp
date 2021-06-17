@@ -112,8 +112,6 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     // Store junctions
     std::vector<Junction> junctions{};
     std::map<std::string, int32_t> references_lengths{};
-    // Set number of decompression threads
-    seqan3::contrib::bgzf_thread_count = args.threads;
 
     // short reads
     if (args.alignment_short_reads_file_path != "")

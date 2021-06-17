@@ -428,3 +428,39 @@ TEST(hierarchical_clustering, clustering_25)
         }
     }
 }
+
+TEST(hierarchical_clustering, subsampling)
+{
+    std::vector<Junction> input_junctions;
+    for (int32_t i = 0; i < 300; ++i)
+    {
+        input_junctions.emplace_back(Breakend{chrom1,
+                                              chrom1_position1 + i,
+                                              strand::forward},
+                                     Breakend{chrom2,
+                                              chrom2_position1 + i,
+                                              strand::forward},
+                                     ""_dna5,
+                                     read_name_1);
+    }
+    std::sort(input_junctions.begin(), input_junctions.end());
+    
+    testing::internal::CaptureStderr();
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0);
+
+    size_t num_junctions = 0;
+    for (Cluster const & cluster : clusters)
+    {
+        num_junctions += cluster.get_cluster_size();
+    }
+    EXPECT_EQ(num_junctions, 200);
+    
+    std::string const expected_err
+    {
+        "A partition exceeds the maximum size (300>200) and has to be subsampled. "
+        "Representative partition member:\n"
+        "[chr1\t12323443\tForward] -> [chr2\t234432\tForward]\n"
+    };
+    std::string result_err = testing::internal::GetCapturedStderr();
+    EXPECT_EQ(expected_err, result_err);
+}

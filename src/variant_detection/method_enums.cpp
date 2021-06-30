@@ -15,18 +15,18 @@ return std::unordered_map<std::string, detection_methods>{{"0", detection_method
 std::unordered_map<std::string, clustering_methods> enumeration_names(clustering_methods)
 {
 return std::unordered_map<std::string,
-                            clustering_methods>{{"0", clustering_methods::simple_clustering},
-                                                {"simple_clustering",
-                                                clustering_methods::simple_clustering},
-                                                {"1", clustering_methods::hierarchical_clustering},
-                                                {"hierarchical_clustering",
-                                                clustering_methods::hierarchical_clustering},
-                                                {"2", clustering_methods::self_balancing_binary_tree},
-                                                {"self_balancing_binary_tree",
-                                                clustering_methods::self_balancing_binary_tree},
-                                                {"3", clustering_methods::candidate_selection_based_on_voting},
-                                                {"candidate_selection_based_on_voting",
-                                                clustering_methods::candidate_selection_based_on_voting}};
+                          clustering_methods>{{"0", clustering_methods::simple_clustering},
+                                              {"simple_clustering",
+                                              clustering_methods::simple_clustering},
+                                              {"1", clustering_methods::hierarchical_clustering},
+                                              {"hierarchical_clustering",
+                                              clustering_methods::hierarchical_clustering},
+                                              {"2", clustering_methods::self_balancing_binary_tree},
+                                              {"self_balancing_binary_tree",
+                                              clustering_methods::self_balancing_binary_tree},
+                                              {"3", clustering_methods::candidate_selection_based_on_voting},
+                                              {"candidate_selection_based_on_voting",
+                                              clustering_methods::candidate_selection_based_on_voting}};
 };
 
 std::unordered_map<std::string, refinement_methods> enumeration_names(refinement_methods)

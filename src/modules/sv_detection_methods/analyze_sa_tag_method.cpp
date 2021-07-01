@@ -57,7 +57,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                               seqan3::dna5_vector const & query_sequence,
                               std::string const & read_name,
                               int32_t const min_length,
-                              int32_t const max_overlap)
+                              int32_t const max_overlap,
+                              int32_t const max_gap)
 {
     for (size_t i = 1; i < aligned_segments.size(); i++)
     {
@@ -66,7 +67,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
         int32_t distance_on_read = next.get_query_start() - current.get_query_end();
         // Check that the overlap between two consecutive alignment segments
         // of the read is lower than the given threshold
-        if (distance_on_read >= -max_overlap)
+        if (distance_on_read >= -max_overlap &&
+            distance_on_read <= max_gap)
         {
             int32_t mate1_pos;
             if (current.orientation == strand::forward)
@@ -145,5 +147,6 @@ void analyze_sa_tag(std::string const & query_name,
                              seq,
                              query_name,
                              args.min_var_length,
-                             args.max_overlap);
+                             args.max_overlap,
+                             args.max_gap);
 }

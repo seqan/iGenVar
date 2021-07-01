@@ -91,8 +91,16 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Specify what should be the longest tolerated inserted sequence at sites of non-INS SVs. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
+    parser.add_option(args.max_tol_deleted_length, 'e', "max_tol_deleted_length",
+                      "Specify what should be the longest tolerated deleted sequence at sites of non-DEL SVs. "
+                      "This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
     parser.add_option(args.max_overlap, 'n', "max_overlap",
                       "Specify the maximum allowed overlap between two alignment segments. "
+                      "This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
+    parser.add_option(args.max_gap, 'g', "max_gap",
+                      "Specify the maximum allowed gap between two alignment segments. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.min_qual, 'q', "min_qual",
@@ -101,6 +109,10 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::option_spec::advanced);
 
     // Options - Clustering specifications:
+    parser.add_option(args.partition_max_distance, 'p', "partition_max_distance",
+                      "Specify the maximum distance in bp between members of the same partition."
+                      "This value needs to be non-negative.",
+                      seqan3::option_spec::advanced);
     parser.add_option(args.hierarchical_clustering_cutoff, 'w', "hierarchical_clustering_cutoff",
                       "Specify the distance cutoff for the hierarchical clustering. "
                       "This value needs to be non-negative.",
@@ -152,7 +164,9 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             clusters = simple_clustering_method(junctions);
             break;
         case 1: // hierarchical clustering
-            clusters = hierarchical_clustering_method(junctions, args.hierarchical_clustering_cutoff);
+            clusters = hierarchical_clustering_method(junctions,
+                                                      args.partition_max_distance,
+                                                      args.hierarchical_clustering_cutoff);
             break;
         case 2: // self-balancing_binary_tree,
             seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";

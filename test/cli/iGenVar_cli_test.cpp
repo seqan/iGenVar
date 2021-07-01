@@ -109,14 +109,20 @@ std::string const help_page_advanced
     "          5.\n"
     "    -n, --max_overlap (signed 32 bit integer)\n"
     "          Specify the maximum allowed overlap between two alignment segments.\n"
-    "          This value needs to be non-negative. Default: 10.\n"
+    "          This value needs to be non-negative. Default: 100.\n"
+    "    -g, --max_gap (signed 32 bit integer)\n"
+    "          Specify the maximum allowed gap between two alignment segments. This\n"
+    "          value needs to be non-negative. Default: 100.\n"
     "    -q, --min_qual (signed 32 bit integer)\n"
     "          Specify the minimum quality (amount of supporting reads) of a\n"
     "          structural variant to be reported in the vcf output file. This value\n"
     "          needs to be non-negative. Default: 1.\n"
+    "    -p, --partition_max_distance (signed 32 bit integer)\n"
+    "          Specify the maximum distance in bp between members of the same\n"
+    "          partition.This value needs to be non-negative. Default: 1000.\n"
     "    -w, --hierarchical_clustering_cutoff (double)\n"
     "          Specify the distance cutoff for the hierarchical clustering. This\n"
-    "          value needs to be non-negative. Default: 10.\n"
+    "          value needs to be non-negative. Default: 0.5.\n"
 };
 
 // std::string expected_res_default
@@ -526,7 +532,10 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("single_end_mini_example.sam"),
-                                         "--method cigar_string --method split_read --min_var_length 8");
+                                         "--method cigar_string",
+                                         "--method split_read",
+                                         "--min_var_length 8",
+                                         "--hierarchical_clustering_cutoff 0.1");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';

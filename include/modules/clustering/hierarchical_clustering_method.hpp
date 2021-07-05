@@ -43,5 +43,4 @@ int junction_distance(Junction const & lhs, Junction const & rhs);
  * \details For the algorithms we use the library hclust.
  * \see https://lionel.kr.hs-niederrhein.de/~dalitz/data/hclust/ (last access 01.06.2021).
  */
-std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
-                                                    double clustering_cutoff);
+std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions, double clustering_cutoff);

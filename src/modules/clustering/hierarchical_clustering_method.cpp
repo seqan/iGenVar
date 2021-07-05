@@ -116,8 +116,7 @@ inline std::vector<Junction> subsample_partition(std::vector<Junction> const & p
     return subsample;
 }
 
-std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
-                                                    double clustering_cutoff)
+std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions, double clustering_cutoff)
 {
     auto partitions = partition_junctions(junctions);
     std::vector<Cluster> clusters{};

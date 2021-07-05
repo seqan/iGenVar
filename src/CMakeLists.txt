@@ -5,7 +5,7 @@ add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_cluste
                                           modules/clustering/simple_clustering_method.cpp
                                           modules/sv_detection_methods/analyze_cigar_method.cpp
                                           modules/sv_detection_methods/analyze_read_pair_method.cpp
-                                          modules/sv_detection_methods/analyze_sa_tag_method.cpp
+                                          modules/sv_detection_methods/analyze_split_read_method.cpp
                                           structures/aligned_segment.cpp
                                           structures/breakend.cpp
                                           structures/cluster.cpp

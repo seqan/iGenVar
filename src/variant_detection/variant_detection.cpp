@@ -168,7 +168,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                     }
                     break;
                 // There are no read pairs in long reads.
-                // case detection_methods::read_pairs
                 case detection_methods::read_depth: // Detect junctions from read depth evidence
                     seqan3::debug_stream << "The read depth method for long reads is not yet implemented.\n";
                     break;

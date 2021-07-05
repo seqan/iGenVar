@@ -18,6 +18,7 @@ We want to combine these approaches and use the SeqAn3 library as a basis for th
 ## Current status:
 
 We can call insertions and deletions from long read data (SVIM methods implemented).
+For more information, see the release plan at the bottom of the page.
 
 ## Installation
 
@@ -40,3 +41,7 @@ We created small examples, which you can use to test our app:
 ./bin/iGenVar -i ./test/data/paired_end_short_read_mini_example.sam -j ./test/data/single_end_mini_example.sam \
 -o ./test/data/output.vcf --method cigar_string --method split_read --min_var_length 5
 ```
+
+## Release plan:
+
+<p align="center"><img height="500" src="https://github.com/seqan/iGenVar/tree/master/doc/ReleasePlan.png"></p>

@@ -1,4 +1,4 @@
-#include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"
+#include "modules/sv_detection_methods/analyze_split_read_method.hpp"
 
 #include <seqan3/core/debug_stream.hpp>
 
@@ -97,7 +97,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
             // map to different reference sequences (e.g. translocation, interspersed duplication),
             // have a large distance on the reference (e.g. deletion, inversion, tandem duplication), or
             // have a large distance on the read (e.g. insertion)
-            if (current.ref_name != next.ref_name ||
+            if (current.ref_name != next.ref_name || //TODO / QUESTION (irallia 23.06.2021): What about translocation on the same ref?
                 std::abs(distance_on_ref) >= min_length ||
                 distance_on_read >= min_length)
             {
@@ -114,7 +114,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 }
                 else
                 {
-                    auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(), next.get_query_start());
+                    auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(),
+                                                                                next.get_query_start());
                     junctions.emplace_back(mate1, mate2, inserted_bases, read_name);
                 }
                 seqan3::debug_stream << "BND: " << junctions.back() << "\n";
@@ -139,6 +140,7 @@ void analyze_sa_tag(std::string const & query_name,
     strand strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
     aligned_segments.push_back(AlignedSegment{strand, ref_name, pos, mapq, cigar});
     retrieve_aligned_segments(sa_tag, aligned_segments);
+    // sort by query start, query end, mapping quality (in this order):
     std::sort(aligned_segments.begin(), aligned_segments.end());
     analyze_aligned_segments(aligned_segments,
                              junctions,

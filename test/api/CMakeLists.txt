@@ -8,3 +8,5 @@ add_api_test (detection_test.cpp)
 add_api_test (clustering_test.cpp)
 
 # add_api_test (refinement_test.cpp)
+
+add_api_test (structures_test.cpp)

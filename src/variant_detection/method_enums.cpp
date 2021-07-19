@@ -2,6 +2,7 @@
 
 std::unordered_map<std::string, detection_methods> enumeration_names(detection_methods)
 {
+// LCOV_EXCL_START
 return std::unordered_map<std::string, detection_methods>{{"0", detection_methods::cigar_string},
                                                           {"cigar_string", detection_methods::cigar_string},
                                                           {"1", detection_methods::split_read},
@@ -10,27 +11,31 @@ return std::unordered_map<std::string, detection_methods>{{"0", detection_method
                                                           {"read_pairs", detection_methods::read_pairs},
                                                           {"3", detection_methods::read_depth},
                                                           {"read_depth", detection_methods::read_depth}};
+// LCOV_EXCL_STOP
 };
 
 std::unordered_map<std::string, clustering_methods> enumeration_names(clustering_methods)
 {
+// LCOV_EXCL_START
 return std::unordered_map<std::string,
-                            clustering_methods>{{"0", clustering_methods::simple_clustering},
-                                                {"simple_clustering",
-                                                clustering_methods::simple_clustering},
-                                                {"1", clustering_methods::hierarchical_clustering},
-                                                {"hierarchical_clustering",
-                                                clustering_methods::hierarchical_clustering},
-                                                {"2", clustering_methods::self_balancing_binary_tree},
-                                                {"self_balancing_binary_tree",
-                                                clustering_methods::self_balancing_binary_tree},
-                                                {"3", clustering_methods::candidate_selection_based_on_voting},
-                                                {"candidate_selection_based_on_voting",
-                                                clustering_methods::candidate_selection_based_on_voting}};
+                          clustering_methods>{{"0", clustering_methods::simple_clustering},
+                                              {"simple_clustering",
+                                              clustering_methods::simple_clustering},
+                                              {"1", clustering_methods::hierarchical_clustering},
+                                              {"hierarchical_clustering",
+                                              clustering_methods::hierarchical_clustering},
+                                              {"2", clustering_methods::self_balancing_binary_tree},
+                                              {"self_balancing_binary_tree",
+                                              clustering_methods::self_balancing_binary_tree},
+                                              {"3", clustering_methods::candidate_selection_based_on_voting},
+                                              {"candidate_selection_based_on_voting",
+                                              clustering_methods::candidate_selection_based_on_voting}};
+// LCOV_EXCL_STOP
 };
 
 std::unordered_map<std::string, refinement_methods> enumeration_names(refinement_methods)
 {
+// LCOV_EXCL_START
 return std::unordered_map<std::string, refinement_methods>{{"0", refinement_methods::no_refinement},
                                                            {"no_refinement",
                                                            refinement_methods::no_refinement},
@@ -40,4 +45,5 @@ return std::unordered_map<std::string, refinement_methods>{{"0", refinement_meth
                                                            {"2", refinement_methods::sVirl_refinement_method},
                                                            {"sVirl_refinement_method",
                                                            refinement_methods::sVirl_refinement_method}};
+// LCOV_EXCL_STOP
 };

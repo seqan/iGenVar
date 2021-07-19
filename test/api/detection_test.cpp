@@ -3,8 +3,8 @@
 #include <seqan3/alphabet/cigar/cigar.hpp>
 #include <seqan3/io/sam_file/sam_flag.hpp>
 
-#include "modules/sv_detection_methods/analyze_cigar_method.hpp"    // for the split read method
-#include "modules/sv_detection_methods/analyze_sa_tag_method.hpp"   // for the cigar string method
+#include "modules/sv_detection_methods/analyze_cigar_method.hpp"        // for the split read method
+#include "modules/sv_detection_methods/analyze_split_read_method.hpp"   // for the cigar string method
 
 using seqan3::operator""_cigar_operation;
 using seqan3::operator""_dna5;

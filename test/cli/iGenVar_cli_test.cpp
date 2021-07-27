@@ -162,10 +162,10 @@ std::string expected_res_empty
 std::string expected_err_default_no_err
 {
     "Detect junctions in long reads...\n"
-    "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
-    "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\tm41327/11677/CCS\n"
-    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm21263/13017/CCS\n"
-    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm38637/7161/CCS\n"
+    "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
+    "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
+    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
+    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
     "Start clustering...\n"
     "Done with clustering. Found 2 junction clusters.\n"
     "No refinement was selected.\n"
@@ -351,13 +351,13 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
     std::string expected_err
     {
         "Detect junctions in long reads...\n"
-        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
+        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\tm41327/11677/CCS\n"
+        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm21263/13017/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm38637/7161/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
         "Start clustering...\n"
         "Done with clustering. Found 2 junction clusters.\n"
@@ -442,10 +442,10 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
     std::string expected_err
     {
         "Detect junctions in long reads...\n"
-        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\tm2257/8161/CCS\n"
-        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\tm41327/11677/CCS\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm21263/13017/CCS\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\tm38637/7161/CCS\n"
+        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
+        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
         "Start clustering...\n"
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"

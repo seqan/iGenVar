@@ -59,6 +59,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                               int32_t const min_length,
                               int32_t const max_overlap)
 {
+    size_t tandem_dup_count = 0;
     for (size_t i = 1; i < aligned_segments.size(); i++)
     {
         AlignedSegment current = aligned_segments[i-1];
@@ -110,13 +111,13 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 if (distance_on_read < 0)
                 {
                     // No inserted sequence between overlapping alignment segments
-                    junctions.emplace_back(mate1, mate2, ""_dna5, read_name);
+                    junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
                 }
                 else
                 {
                     auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(),
                                                                                 next.get_query_start());
-                    junctions.emplace_back(mate1, mate2, inserted_bases, read_name);
+                    junctions.emplace_back(mate1, mate2, inserted_bases, tandem_dup_count, read_name);
                 }
                 seqan3::debug_stream << "BND: " << junctions.back() << "\n";
             }

@@ -164,16 +164,19 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
     Breakend new_breakend_7 {chromosome_2, pos_ref_5, strand::forward};
     Breakend new_breakend_8 {chromosome_1, pos_ref_6, strand::forward};
 
+    size_t tandem_dup_count = 0;
+
     std::string const read_name_1 = "m2257/8161/CCS";
     std::string const read_name_2 = "m41327/11677/CCS";
     std::string const read_name_3 = "m21263/13017/CCS";
     std::string const read_name_4 = "m38637/7161/CCS";
 
     std::vector<Junction> junctions_expected_res
-    {   Junction{new_breakend_1, new_breakend_2, insertion_sequence_1, read_name_1},
-        Junction{new_breakend_5, new_breakend_6, "TA"_dna5, read_name_2},
-        Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name_3},
-        Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name_4}
+    {
+        Junction{new_breakend_1, new_breakend_2, insertion_sequence_1, tandem_dup_count, read_name_1},
+        Junction{new_breakend_5, new_breakend_6, "TA"_dna5, tandem_dup_count, read_name_2},
+        Junction{new_breakend_7, new_breakend_8, ""_dna5, tandem_dup_count, read_name_3},
+        Junction{new_breakend_7, new_breakend_8, ""_dna5, tandem_dup_count, read_name_4}
     };
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());

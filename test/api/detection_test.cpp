@@ -11,7 +11,7 @@ using seqan3::operator""_dna5;
 
 /* -------- detection methods tests -------- */
 
-// TODO (irallia): implement test cases
+// TODO (irallia): implement test cases <- (23.7.21, irallia) which cases are done / still open?
 
 TEST(junction_detection, cigar_string_simple_del)
 {
@@ -41,7 +41,11 @@ TEST(junction_detection, cigar_string_simple_del)
 
         Breakend new_breakend_1 {chromosome, 15, strand::forward};
         Breakend new_breakend_2 {chromosome, 22, strand::forward};
-        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name}};
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1,
+                                                              new_breakend_2,
+                                                              ""_dna5,
+                                                              0,
+                                                              read_name}};
 
         ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
@@ -71,7 +75,11 @@ TEST(junction_detection, cigar_string_del_padding)
 
     Breakend new_breakend_1 {chromosome, 15, strand::forward};
     Breakend new_breakend_2 {chromosome, 22, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name}};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1,
+                                                          new_breakend_2,
+                                                          ""_dna5,
+                                                          0,
+                                                          read_name}};
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
@@ -99,7 +107,11 @@ TEST(junction_detection, cigar_string_simple_ins)
 
     Breakend new_breakend_1 {chromosome, 9, strand::forward};
     Breakend new_breakend_2 {chromosome, 10, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, "ATTTCG"_dna5, read_name}};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1,
+                                                          new_breakend_2,
+                                                          "ATTTCG"_dna5,
+                                                          0,
+                                                          read_name}};
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
@@ -127,7 +139,11 @@ TEST(junction_detection, cigar_string_ins_hardclip)
 
     Breakend new_breakend_1 {chromosome, 9, strand::forward};
     Breakend new_breakend_2 {chromosome, 10, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, "GATCGA"_dna5, read_name}};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1,
+                                                          new_breakend_2,
+                                                          "GATCGA"_dna5,
+                                                          0,
+                                                          read_name}};
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
@@ -268,20 +284,31 @@ TEST(junction_detection, analyze_aligned_segments)
         Breakend new_breakend_10 {"chr1", 150, strand::forward};
         Breakend new_breakend_11 {"chr1", 155, strand::forward};
         Breakend new_breakend_12 {"chr1", 156, strand::forward};
-        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},          //translocation
-                                                     Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},          //translocation
-                                                     Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},          //inversion
-                                                     Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name},          //inversion
-                                                     Junction{new_breakend_9, new_breakend_10, ""_dna5, read_name},         //deletion
-                                                     Junction{new_breakend_11,
-                                                              new_breakend_12,
-                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5, read_name}}; //insertion
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2,
+                                                              ""_dna5,
+                                                              0, read_name},         // translocation
+                                                     Junction{new_breakend_3, new_breakend_4,
+                                                              ""_dna5,
+                                                              0, read_name},         // translocation
+                                                     Junction{new_breakend_5, new_breakend_6,
+                                                              ""_dna5,
+                                                              0, read_name},         // inversion
+                                                     Junction{new_breakend_7, new_breakend_8,
+                                                              ""_dna5,
+                                                              0, read_name},         // inversion
+                                                     Junction{new_breakend_9, new_breakend_10,
+                                                              ""_dna5,
+                                                              0, read_name},         // deletion
+                                                     Junction{new_breakend_11, new_breakend_12,
+                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5,
+                                                              0, read_name}};        // insertion
 
         ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
         for (size_t i = 0; i < junctions_expected_res.size(); ++i)
         {
-            EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
             EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
                                                                        << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
                                                                        << "\nMate 2 equal: "
@@ -310,17 +337,23 @@ TEST(junction_detection, analyze_aligned_segments)
         Breakend new_breakend_11 {"chr1", 155, strand::forward};
         Breakend new_breakend_12 {"chr1", 156, strand::forward};
         // The inversion and deletion are smaller than 20 bp and therefore not returned
-        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},          //translocation
-                                                     Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},          //translocation
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2,
+                                                              ""_dna5,
+                                                              0, read_name},         // translocation
+                                                     Junction{new_breakend_3, new_breakend_4,
+                                                              ""_dna5,
+                                                              0, read_name},         // translocation
                                                      Junction{new_breakend_11,
                                                               new_breakend_12,
-                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5, read_name}}; //insertion
+                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5,
+                                                              0, read_name}};        // insertion
 
         ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
         for (size_t i = 0; i < junctions_expected_res.size(); ++i)
         {
-            EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
             EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
                                                                        << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
                                                                        << "\nMate 2 equal: "
@@ -351,13 +384,16 @@ TEST(junction_detection, overlapping_segments)
     // Deletion from two overlapping alignment segments (overlap of 5bp)
     Breakend new_breakend_1 {"chr1", 119, strand::forward};
     Breakend new_breakend_2 {"chr1", 205, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name}};
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2,
+                                                          ""_dna5,
+                                                          0, read_name}};
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
     for (size_t i = 0; i < junctions_expected_res.size(); ++i)
     {
-        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+        EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                  junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
                                                                    << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
                                                                    << "\nMate 2 equal: "
@@ -414,20 +450,33 @@ TEST(junction_detection, analyze_sa_tag)
     Breakend new_breakend_10 {"chr1", 150, strand::forward};
     Breakend new_breakend_11 {"chr1", 155, strand::forward};
     Breakend new_breakend_12 {"chr1", 156, strand::forward};
-    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2, ""_dna5, read_name},          //translocation
-                                                 Junction{new_breakend_3, new_breakend_4, ""_dna5, read_name},          //translocation
-                                                 Junction{new_breakend_5, new_breakend_6, ""_dna5, read_name},          //inversion
-                                                 Junction{new_breakend_7, new_breakend_8, ""_dna5, read_name},          //inversion
-                                                 Junction{new_breakend_9, new_breakend_10, ""_dna5, read_name},         //deletion
+    std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2,
+                                                          ""_dna5,
+                                                          0, read_name},         // translocation
+                                                 Junction{new_breakend_3, new_breakend_4,
+                                                          ""_dna5,
+                                                          0, read_name},         // translocation
+                                                 Junction{new_breakend_5, new_breakend_6,
+                                                          ""_dna5,
+                                                          0, read_name},         // inversion
+                                                 Junction{new_breakend_7, new_breakend_8,
+                                                          ""_dna5,
+                                                          0, read_name},         // inversion
+                                                 Junction{new_breakend_9, new_breakend_10,
+                                                          ""_dna5,
+                                                          0, read_name},         // deletion
                                                  Junction{new_breakend_11,
                                                           new_breakend_12,
-                                                          "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5, read_name}}; //insertion
+                                                          "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5,
+                                                          0, read_name           // insertion
+                                                 }};
 
     ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
     for (size_t i = 0; i < junctions_expected_res.size(); ++i)
     {
-        EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+        EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                  junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
                                                                    << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
                                                                    << "\nMate 2 equal: "

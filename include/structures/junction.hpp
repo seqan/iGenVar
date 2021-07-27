@@ -13,6 +13,7 @@ private:
     Breakend mate1{};
     Breakend mate2{};
     seqan3::dna5_vector inserted_sequence{};
+    size_t tandem_dup_count{};
     std::string read_name{};
 
 public:
@@ -29,8 +30,10 @@ public:
     Junction(Breakend the_mate1,
              Breakend the_mate2,
              auto const & the_inserted_sequence,
+             size_t the_tandem_dup_count,
              std::string the_read_name) : mate1{std::move(the_mate1)},
                                           mate2{std::move(the_mate2)},
+                                          tandem_dup_count{the_tandem_dup_count},
                                           read_name{std::move(the_read_name)}
     {
         if ((mate2.seq_name < mate1.seq_name) ||
@@ -60,6 +63,9 @@ public:
     */
     seqan3::dna5_vector get_inserted_sequence() const;
 
+    //! \brief Returns the number of tandem copies of this junction.
+    size_t get_tandem_dup_count() const;
+
     //! \brief Returns the name of the read giving rise to this junction.
     std::string get_read_name() const;
 };
@@ -70,6 +76,7 @@ inline constexpr stream_t operator<<(stream_t && stream, Junction const & junc)
     stream << junc.get_mate1() << '\t'
            << junc.get_mate2() << '\t'
            << junc.get_inserted_sequence().size() << '\t'
+           << junc.get_tandem_dup_count() << '\t'
            << junc.get_read_name();
     return stream;
 }

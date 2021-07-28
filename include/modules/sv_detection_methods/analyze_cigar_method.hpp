@@ -2,6 +2,42 @@
 
 #include "structures/junction.hpp"  // for class Junction
 
+/*! \brief This function checks if the inserted bases are tandem duplicated.
+ *
+ * \param[in] config                         - configuration for a semi-gobal alignment
+ * \param[in] min_length                     - minimum length of variants to detect (default 30 bp,
+ * \param[in] sequence                       - suffix or prefix sequence
+ * \param[in] inserted_bases                 - the inserted bases of the possible duplication
+ * \param[in] is_suffix                      - true: suffix case, false: prefix case
+ * param[out] match_score                    - if we found a matching duplication, this value represents the maximal
+ *                                             amount of matches with the reference and thus the length of the existing
+ *                                             duplicated part on the reference. If there is no duplication, this value
+ *                                             is 0.
+ * param[out] length_of_single_dupl_sequence - greatest common divisor of length of inserted sequence and length of
+ *                                             maching part -> length of a single duplicated sequence
+ * \returns std::tie(match_score, length_of_single_dupl_sequence) - a tuple of the resulting values
+ *
+ * \details In this function the inserted bases are recursively aligned segment by segment until it has been proven that
+ *          it is a real duplication.
+ *          For simplicity, we only consider the suffix case here, since the prefix case works the same way:
+ *
+ *          suffix_sequence AAAACCGCGTAGCGGGGCGGG
+ *                                     ||||||||||
+ *          inserted_bases             GCGGGGCGGGGCGGG  -> unmatched_inserted_bases: GCGGG
+ *                                                      -> match_score = 10
+ *                                                      -> length_of_single_dupl_sequence = gcd(15, 10) = 5
+ *
+ *          suffix_sequence AAAACCGCGTAGCGGGGCGGG
+ *                                          |||||
+ *          unmatched_inserted_bases        GCGGG
+ *
+ *          -> match_score = 5, length_of_single_dupl_sequence = gcd(15, 5) = 5
+ */
+std::tuple<size_t, size_t> align_suffix_or_prefix(auto const & config,
+                                                  int32_t const min_length,
+                                                  std::span<const seqan3::dna5> & sequence,
+                                                  std::span<const seqan3::dna5> & inserted_bases,
+                                                  bool is_suffix);
 
 /*! \brief This function checks if the inserted bases are tandem duplicated.
  *

@@ -32,6 +32,10 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                     {
                         int distance = mate2.position - mate1.position - 1;
                         int sv_length = insert_size - distance;
+                        // Distinguish SVLEN calculation for TANDEM:DUP
+                        if (clusters[i].get_common_tandem_dup_count() > 0)
+                            sv_length = distance + 1;
+
                         // The SVLEN is neither too short nor too long than specified by the user.
                         if (std::abs(sv_length) >= args.min_var_length &&
                             std::abs(sv_length) <= args.max_var_length)
@@ -46,7 +50,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                                 tmp.add_info("SVTYPE", "DUP");
                                 // Increment position by 1 because VCF is 1-based
                                 tmp.set_pos(mate1.position + 1);
-                                tmp.add_info("SVLEN", std::to_string(distance));
+                                tmp.add_info("SVLEN", std::to_string(sv_length));
                                 // Increment end by 1 because VCF is 1-based
                                 tmp.add_info("END", std::to_string(mate2.position + 1));
                                 tmp.print(out_stream);

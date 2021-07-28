@@ -26,6 +26,7 @@ struct cmd_arguments
     /* -c */ clustering_methods clustering_method{hierarchical_clustering};          // default: hierarchical clustering
     /* -r */ refinement_methods refinement_method{no_refinement};                    // default: no refinement
 // SV specifications:
+    /* -e TODO (irallia 19.08.21): duplication_errors */
     /* -k */ uint64_t min_var_length = 30;
     /* -l */ uint64_t max_var_length = 100000;
     /* -m */ uint64_t max_tol_inserted_length = 50;

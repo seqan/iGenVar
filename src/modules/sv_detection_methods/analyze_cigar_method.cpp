@@ -1,3 +1,11 @@
+#include <limits>   // for std::numeric_limits
+#include <numeric>  // for std::gcd (greatest common divisor)
+
+// #include <seqan3/alignment/aligned_sequence/debug_stream_alignment.hpp> // for a nicer alignment view
+#include <seqan3/alignment/configuration/align_config_method.hpp>
+#include <seqan3/alignment/configuration/align_config_scoring_scheme.hpp>
+#include <seqan3/alignment/pairwise/align_pairwise.hpp>
+#include <seqan3/alignment/scoring/nucleotide_scoring_scheme.hpp>
 #include <seqan3/alphabet/cigar/cigar.hpp>
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/core/debug_stream.hpp>
@@ -10,31 +18,116 @@
 using seqan3::operator""_cigar_operation;
 using seqan3::operator""_dna5;
 
-std::span<seqan3::dna5 const> detect_tandem_duplication([[maybe_unused]] seqan3::dna5_vector const & query_sequence,
-                                                        [[maybe_unused]] int32_t length,
-                                                        [[maybe_unused]] int32_t pos_ref,
-                                                        [[maybe_unused]] int32_t pos_read,
-                                                        std::span<seqan3::dna5 const> & inserted_bases,
-                                                        [[maybe_unused]] int32_t const min_length,
-                                                        [[maybe_unused]] int32_t & pos_start_dup_seq,
-                                                        [[maybe_unused]] int32_t & pos_end_dup_seq,
-                                                        [[maybe_unused]] size_t & tandem_dup_count)
+std::tuple<size_t, size_t> align_suffix_or_prefix(auto const & config,
+                                                  int32_t const min_length,
+                                                  std::span<seqan3::dna5 const> & sequence,
+                                                  std::span<seqan3::dna5 const> & inserted_bases,
+                                                  bool is_suffix)
 {
+    // length of matching part of suffix or prefix sequence
+    size_t match_score{};
+    // The number of tandem copies of this junction.
+    size_t length_of_single_dupl_sequence = std::numeric_limits<size_t>::max();
+
+    auto results = seqan3::align_pairwise(std::tie(sequence, inserted_bases), config);
+    auto & res = *results.begin();
+    // TODO (irallia 17.8.21): The mismatches should give us the opportunity to allow a given amount of errors in the
+    // duplication.
+    size_t matches = res.score() % 100;
+    size_t mismatches = (res.score() - matches) * (-1);
+    // For the beginning we do not allow mistakes, we should change this later, see todo above.
+    if (mismatches > 0)
+        return std::tie(match_score, length_of_single_dupl_sequence);
+    // found duplicated sequence in front of inserted sequence
+    if (matches >= min_length)
+    {
+        // seqan3::debug_stream << "Resulting alignment:\n" << res.alignment() << '\n';
+        match_score = matches;
+        // The possible length of the single duplicated: greatest common divisor of length of inserted part and length
+        // of maching part
+        length_of_single_dupl_sequence = std::gcd(inserted_bases.size(), matches);
+        if(matches != inserted_bases.size())
+        {
+            std::span<seqan3::dna5 const> unmatched_inserted_bases{};
+            if (is_suffix)
+                unmatched_inserted_bases = inserted_bases | seqan3::views::slice(match_score, inserted_bases.size());
+            else
+                unmatched_inserted_bases = inserted_bases | seqan3::views::slice(0, inserted_bases.size() - match_score);
+            // The first length_of_single_dupl_sequence is already the greatest common divisor and therefore the next
+            // recursively calculated one can be ignored.
+            auto [ next_match_score,
+                   next_length_of_single_dupl_sequence ] = align_suffix_or_prefix(config,
+                                                                                  min_length,
+                                                                                  sequence,
+                                                                                  unmatched_inserted_bases,
+                                                                                  is_suffix);
+            // If the substring does not match, there is no real duplication.
+            if (next_match_score == 0) {
+                length_of_single_dupl_sequence = std::numeric_limits<size_t>::max();
+                return std::tie(next_match_score, length_of_single_dupl_sequence);
+            }
+        }
+    }
+    // The first match_score calculated is automatically the maximum, so the recursively next one can be ignored.
+    return std::tie(match_score, length_of_single_dupl_sequence);
+}
+
+std::span<seqan3::dna5 const> detect_tandem_duplication(seqan3::dna5_vector const & query_sequence,
+                                                        int32_t length,
+                                                        int32_t pos_ref,
+                                                        int32_t pos_read,
+                                                        std::span<seqan3::dna5 const> & inserted_bases,
+                                                        int32_t const min_length,
+                                                        int32_t & pos_start_dup_seq,
+                                                        int32_t & pos_end_dup_seq,
+                                                        size_t & tandem_dup_count)
+{
+    auto scoring_scheme = seqan3::align_cfg::scoring_scheme{
+                              seqan3::nucleotide_scoring_scheme{seqan3::match_score{1},
+                                                                seqan3::mismatch_score{-100}}};
+
+    auto gap_scheme = seqan3::align_cfg::gap_cost_affine{seqan3::align_cfg::open_score{0},
+                                                         seqan3::align_cfg::extension_score{-100}};
     // Suffix Case:
-    // auto [ suffix_sequence_match_score, length_of_single_dupl_sequence_1 ] = align_suffix_or_prefix(...);
+    auto suffix_config = seqan3::align_cfg::method_global{seqan3::align_cfg::free_end_gaps_sequence1_leading{true},
+                                                          seqan3::align_cfg::free_end_gaps_sequence2_leading{false},
+                                                          seqan3::align_cfg::free_end_gaps_sequence1_trailing{false},
+                                                          seqan3::align_cfg::free_end_gaps_sequence2_trailing{true}} |
+                         scoring_scheme | gap_scheme;
 
+    std::span<seqan3::dna5 const> suffix_sequence = query_sequence | seqan3::views::slice(0, pos_read);
+    auto [ suffix_sequence_match_score, length_of_single_dupl_sequence_1 ] = align_suffix_or_prefix(suffix_config,
+                                                                                                    min_length,
+                                                                                                    suffix_sequence,
+                                                                                                    inserted_bases,
+                                                                                                    true);
     // Prefix Case:
-    // auto [ prefix_sequence_match_score, length_of_single_dupl_sequence_2 ] = align_suffix_or_prefix(...);
+    auto prefix_config = seqan3::align_cfg::method_global{seqan3::align_cfg::free_end_gaps_sequence1_leading{false},
+                                                          seqan3::align_cfg::free_end_gaps_sequence2_leading{true},
+                                                          seqan3::align_cfg::free_end_gaps_sequence1_trailing{true},
+                                                          seqan3::align_cfg::free_end_gaps_sequence2_trailing{false}} |
+                         scoring_scheme | gap_scheme;
 
-    // int16_t length_of_single_dupl_sequence = std::min(length_of_single_dupl_sequence_1,
-    //                                                   length_of_single_dupl_sequence_2);
-    // tandem_dup_count = suffix_sequence_match_score / length_of_single_dupl_sequence     // duplicated part on ref
-    //                  + inserted_bases.size() / length_of_single_dupl_sequence           // inserted duplications
-    //                  + prefix_sequence_match_score / length_of_single_dupl_sequence;    // duplicated part on ref
+    std::span<seqan3::dna5 const> prefix_sequence = query_sequence | seqan3::views::slice(pos_read + length,
+                                                                                          query_sequence.size());
+    auto [ prefix_sequence_match_score, length_of_single_dupl_sequence_2 ] = align_suffix_or_prefix(prefix_config,
+                                                                                                    min_length,
+                                                                                                    prefix_sequence,
+                                                                                                    inserted_bases,
+                                                                                                    false);
+
+    pos_start_dup_seq = pos_ref - 1 - suffix_sequence_match_score;
+    pos_end_dup_seq = pos_ref - 1 + prefix_sequence_match_score;
+
+    int16_t length_of_single_dupl_sequence = std::min(length_of_single_dupl_sequence_1,
+                                                      length_of_single_dupl_sequence_2);
+    tandem_dup_count = suffix_sequence_match_score / length_of_single_dupl_sequence     // duplicated part on ref
+                     + inserted_bases.size() / length_of_single_dupl_sequence           // inserted duplications
+                     + prefix_sequence_match_score / length_of_single_dupl_sequence;    // duplicated part on ref
     // If its a duplication instead of an insertion, we save the (possible multiple times) duplicated part as duplicated_bases
     std::span<seqan3::dna5 const> duplicated_bases{};
     if (tandem_dup_count > 0)
-        duplicated_bases = (inserted_bases /*| seqan3::views::slice(0, length_of_single_dupl_sequence)*/);
+        duplicated_bases = (inserted_bases | seqan3::views::slice(0, length_of_single_dupl_sequence));
     return duplicated_bases;
 }
 
@@ -69,6 +162,7 @@ void analyze_cigar(std::string const & read_name,
                 std::span<seqan3::dna5 const> inserted_bases = query_sequence | seqan3::views::slice(pos_read,
                                                                                                      pos_read + length);
         // ---------------- DUP ----------------
+
                 // Case - Duplication: The inserted bases include one or more copies of a duplicated sequence, with an
                 //                     origin somewhere else. -> global alignment
                 // ##ALT=<ID=DUP,Description="Duplication">
@@ -94,7 +188,11 @@ void analyze_cigar(std::string const & read_name,
                                           tandem_dup_count,
                                           read_name};
                     if (gVerbose)
+                    {
                         seqan3::debug_stream << "DUP:TANDEM: " << new_junction << "\n";
+                        seqan3::debug_stream << "\t\t\tduplicated sequence: " << duplicated_bases
+                                             << " with " << tandem_dup_count << " duplications\n";
+                    }
                     junctions.push_back(std::move(new_junction));
                 } else {
         // ---------------- INS ----------------
@@ -104,7 +202,10 @@ void analyze_cigar(std::string const & read_name,
                                           0,
                                           read_name};
                     if (gVerbose)
+                    {
                         seqan3::debug_stream << "INS: " << new_junction << "\n";
+                        seqan3::debug_stream << "\t\t\tinserted sequence: " << inserted_bases << "\n";
+                    }
                     junctions.push_back(std::move(new_junction));
                 }
             }

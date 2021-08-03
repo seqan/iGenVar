@@ -526,7 +526,8 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("single_end_mini_example.sam"),
-                                         "--method cigar_string --method split_read --min_var_length 8");
+                                         "--method cigar_string --method split_read "
+                                         "--min_var_length 8 --max_var_length 400");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';

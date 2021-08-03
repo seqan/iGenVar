@@ -1,6 +1,6 @@
 ##fileformat=VCFv4.3
 ##source=iGenVarCaller
-##contig=<ID=chr1,length=368>
+##contig=<ID=chr1,length=482>
 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.",Source="iGenVarCaller",Version="1.0">
 ##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of SV called.",Source="iGenVarCaller",Version="1.0">
 ##INFO=<ID=END,Number=1,Type=Integer,Description="End position of SV called.",Source="iGenVarCaller",Version="1.0">
@@ -13,3 +13,5 @@ chr1	180	.	N	<INS>	1	PASS	END=180;SVLEN=8;SVTYPE=INS	GT	./.
 chr1	266	.	N	<DEL>	4	PASS	END=286;SVLEN=-20;SVTYPE=DEL	GT	./.
 chr1	282	.	N	<DEL>	1	PASS	END=299;SVLEN=-17;SVTYPE=DEL	GT	./.
 chr1	336	.	N	<DEL>	4	PASS	END=350;SVLEN=-14;SVTYPE=DEL	GT	./.
+chr1	368	.	N	<INS>	5	PASS	END=368;SVLEN=11;SVTYPE=INS	GT	./.
+chr1	384	.	N	<DEL>	1	PASS	END=395;SVLEN=-11;SVTYPE=DEL	GT	./.

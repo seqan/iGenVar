@@ -33,6 +33,15 @@ DEL: chr1	335	Forward	chr1	350	Forward	0	read042
 DEL: chr1	335	Forward	chr1	350	Forward	0	read043
 DEL: chr1	335	Forward	chr1	350	Forward	0	read044
 DEL: chr1	335	Forward	chr1	350	Forward	0	read045
+INS: chr1	367	Forward	chr1	368	Forward	11	read046
+INS: chr1	367	Forward	chr1	368	Forward	11	read047
+INS: chr1	367	Forward	chr1	368	Forward	11	read048
+INS: chr1	367	Forward	chr1	368	Forward	11	read049
+INS: chr1	367	Forward	chr1	368	Forward	11	read050
+DEL: chr1	383	Forward	chr1	395	Forward	0	read050
+BND: chr1	10	Reverse	chr1	470	Reverse	0	read051
+BND: chr1	10	Reverse	chr1	470	Reverse	0	read052
+BND: chr1	33	Forward	chr1	471	Forward	0	read052
 Start clustering...
-Done with clustering. Found 11 junction clusters.
+Done with clustering. Found 15 junction clusters.
 No refinement was selected.

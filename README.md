@@ -38,10 +38,10 @@ Instructions:
 
 We created small examples, which you can use to test our app:
 ```bash
-./bin/iGenVar -i ./test/data/paired_end_short_read_mini_example.sam -j ./test/data/single_end_mini_example.sam \
+./bin/iGenVar -i ./test/data/paired_end_mini_example.sam -j ./test/data/single_end_mini_example.sam \
 -o ./test/data/output.vcf --method cigar_string --method split_read --min_var_length 5
 ```
 
 ## Release plan:
 
-<p align="center"><img height="500" src="https://github.com/seqan/iGenVar/tree/master/doc/ReleasePlan.png"></p>
+<p align="center"><img height="500" src="https://github.com/seqan/iGenVar/blob/863297c128d9fa67a4ab51206d7338dcbdd8ca1b/doc/ReleasePlan.png"></p>

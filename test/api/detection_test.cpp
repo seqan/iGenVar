@@ -90,6 +90,155 @@ TEST(junction_detection, cigar_string_del_padding)
     }
 }
 
+TEST(junction_detection, cigar_string_dup_detect_tandem_duplication)
+{
+    seqan3::dna5_vector const & query_sequence = {"AACCGCGTAGCGGGGCGGGGCGGGGCGGGGCGGGTACGTAAC"_dna5};
+    int32_t length = 15;
+    int32_t pos_start_dup_seq = 0;
+    int32_t pos_end_dup_seq = 0;
+    size_t tandem_dup_count = 0;
+
+    // Prefix Case: The duplication (insertion) comes after the matched sequence.
+    //                            (10,                   20]          -> pos_start_dup_seq, pos_end_dup_seq
+    //              ref AAAACCGCGTAGCGGGGCGGG---------------TACGTAACGGTACG
+    //                    |||||||||||||||||||               ||||||||
+    //              read  AACCGCGTAGCGGGGCGGGGCGGGGCGGGGCGGGTACGTAAC  -> inserted sequence: GCGGGGCGGGGCGGG
+    //
+    //              suffix_sequence AAAACCGCGTAGCGGGGCGGG
+    //                                         ||||||||||
+    //              inserted sequence:         GCGGGGCGGGGCGGG
+    //              -> tandem_dup_count = 5, inserted_bases = GCGGG
+    int32_t pos_ref = 21;
+    int32_t pos_read = 19;
+    std::span<const seqan3::dna5> inserted_bases = query_sequence | seqan3::views::slice(pos_read, pos_read + length); // "GCGGGGCGGG"_dna5
+
+    auto duplicated_bases = detect_tandem_duplication(query_sequence,
+                                                      length,
+                                                      pos_ref,
+                                                      pos_read,
+                                                      inserted_bases,
+                                                      4,    // minimal length of duplication
+                                                      pos_start_dup_seq,
+                                                      pos_end_dup_seq,
+                                                      tandem_dup_count);
+    EXPECT_EQ(tandem_dup_count, 5);
+    EXPECT_EQ(pos_start_dup_seq, 10);
+    EXPECT_EQ(pos_end_dup_seq, 20);
+
+    // Suffix Case: The duplication (insertion) comes before the matched sequence.
+    //                            (10,                   20]          -> pos_start_dup_seq, pos_end_dup_seq
+    //              ref AAAACCGCGTA---------------GCGGGGCGGGTACGTAACGGTACG
+    //                    |||||||||               ||||||||||||||||||
+    //              read  AACCGCGTAGCGGGGCGGGGCGGGGCGGGGCGGGTACGTAAC  -> inserted sequence: GCGGGGCGGGGCGGG
+    //
+    //              prefix_sequence         GCGGGGCGGGTACGTAACGGTACG
+    //                                      ||||||||||
+    //              inserted sequence: GCGGGGCGGGGCGGG
+    //              -> tandem_dup_count = 5, inserted_bases = GCGGG
+    pos_ref = 11;   // position of first inserted base.
+    pos_read = 9;
+    inserted_bases = query_sequence | seqan3::views::slice(pos_read, pos_read + length);
+    duplicated_bases = detect_tandem_duplication(query_sequence,
+                                                 length,
+                                                 pos_ref,
+                                                 pos_read,
+                                                 inserted_bases,
+                                                 4,     // minimal length of duplication
+                                                 pos_start_dup_seq,
+                                                 pos_end_dup_seq,
+                                                 tandem_dup_count);
+    EXPECT_EQ(tandem_dup_count, 5);
+    EXPECT_EQ(pos_start_dup_seq, 10);
+    EXPECT_EQ(pos_end_dup_seq, 20);
+
+    // Special Case: The duplication (insertion) is in between of matching sequences.
+    //                            (10,                   25]          -> pos_start_dup_seq, pos_end_dup_seq
+    //              ref AAAACCGCGTAGCGGG----------GCGGGGCGGGTACGTAACGGTACG
+    //                    ||||||||||||||          |||||||||||||
+    //              read  AACCGCGTAGCGGGGCGGGGCGGGGCGGGGCGGGTACGTAAC  -> inserted sequence: GCGGGGCGGG
+    //
+    //              suffix_sequence AAAACCGCGTAGCGGG  prefix_sequence GCGGGGCGGGTACGTAACGGTACG
+    //                                         |||||                  ||||||||||
+    //              inserted sequence:         GCGGGGCGGG             GCGGGGCGGG
+    //              -> tandem_dup_count = 5, inserted_bases = GCGGG
+    length = 10;
+    pos_ref = 16;
+    pos_read = 14;
+    inserted_bases = query_sequence | seqan3::views::slice(pos_read, pos_read + length); // "GCGGG"_dna5
+
+    duplicated_bases = detect_tandem_duplication(query_sequence,
+                                                 length,
+                                                 pos_ref,
+                                                 pos_read,
+                                                 inserted_bases,
+                                                 4,     // minimal length of duplication
+                                                 pos_start_dup_seq,
+                                                 pos_end_dup_seq,
+                                                 tandem_dup_count);
+    EXPECT_EQ(tandem_dup_count, 5);
+    EXPECT_EQ(pos_start_dup_seq, 10);
+    EXPECT_EQ(pos_end_dup_seq, 25);
+
+    // Case with errors at the end: The duplication (insertion) includes some errors at the end.
+    //                            (10,                   20]          -> pos_start_dup_seq, pos_end_dup_seq
+    //              ref AAAACCGCGTAGCGGGGCGGG---------------TACGTAACGGTACG
+    //                    |||||||||||||||||||               ||||||||
+    //              read  AACCGCGTAGCGGGGCGGGGCGGGGCGGGGCAAATACGTAAC  -> inserted sequence: GCGGGGCGGGGCAAA
+    //
+    //              suffix_sequence AAAACCGCGTAGCGGGGCGGG
+    //                                         ||||||||||
+    //              inserted sequence:         GCGGGGCGGGGCAAA
+    //
+    //              suffix_sequence AAAACCGCGTAGCGGGGCGGG
+    //                                              ||---             -> subsequence does not match without mismatches
+    //              inserted sequence:              GCAAA
+    //
+    seqan3::dna5_vector const & query_sequence_2 = {"AACCGCGTAGCGGGGCGGGGCGGGGCGGGGCAAATACGTAAC"_dna5};
+    length = 15;
+    pos_ref = 21;
+    pos_read = 19;
+    inserted_bases = query_sequence_2 | seqan3::views::slice(pos_read, pos_read + length); // "GCGGGGCGGGGCAAA"_dna5
+
+    duplicated_bases = detect_tandem_duplication(query_sequence_2,
+                                                 length,
+                                                 pos_ref,
+                                                 pos_read,
+                                                 inserted_bases,
+                                                 4,    // minimal length of duplication
+                                                 pos_start_dup_seq,
+                                                 pos_end_dup_seq,
+                                                 tandem_dup_count);
+    EXPECT_EQ(tandem_dup_count, 0);
+    EXPECT_EQ(pos_start_dup_seq, 20);
+    EXPECT_EQ(pos_end_dup_seq, 20);
+
+    // Case with a single error: The duplication (insertion) includes a single errors.
+    //                            (10,                   20]          -> pos_start_dup_seq, pos_end_dup_seq
+    //              ref AAAACCGCGTAGCGGGGCGGG---------------TACGTAACGGTACG
+    //                    |||||||||||||||||||               ||||||||
+    //              read  AACCGCGTAGCGGGGCGGGGCGAGGCGGGGCGGGTACGTAAC  -> inserted sequence: GCGAGGCGGGGCGGG
+    //
+    //              suffix_sequence AAAACCGCGTAGCGGGGCGGG
+    //                                         |||-||||||             -> single mismatch in the alignment
+    //              inserted sequence:         GCGAGGCGGGGCGGG
+    //
+    seqan3::dna5_vector const & query_sequence_3 = {"AACCGCGTAGCGGGGCGGGGCGAGGCGGGGCGGGTACGTAAC"_dna5};
+    inserted_bases = query_sequence_3 | seqan3::views::slice(pos_read, pos_read + length); // "GCGAGGCGGGGCGGG"_dna5
+
+    duplicated_bases = detect_tandem_duplication(query_sequence_3,
+                                                 length,
+                                                 pos_ref,
+                                                 pos_read,
+                                                 inserted_bases,
+                                                 4,    // minimal length of duplication
+                                                 pos_start_dup_seq,
+                                                 pos_end_dup_seq,
+                                                 tandem_dup_count);
+    EXPECT_EQ(tandem_dup_count, 0);
+    EXPECT_EQ(pos_start_dup_seq, 20);
+    EXPECT_EQ(pos_end_dup_seq, 20);
+}
+
 TEST(junction_detection, cigar_string_simple_ins)
 {
     std::string const read_name = "read021";

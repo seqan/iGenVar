@@ -126,29 +126,37 @@ std::string const help_page_advanced
 //     "chr22\t17458418\tForward\tchr21\t41972616\tForward\t2\t0\n"
 // }
 
-std::string expected_res_default
+std::string expected_res_default_1
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
     "##contig=<ID=chr21,length=46709983>\n"
+};
+
+std::string general_header_lines
+{
     "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "##ALT=<ID=DEL,Number=1,Description=\"Deletion\">\n"
+    "##ALT=<ID=DUP:TANDEM,Number=1,Description=\"Tandem Duplication\">\n"
+    "##ALT=<ID=INS,Number=1,Description=\"Insertion of novel sequence\">\n"
     "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
+};
+
+std::string expected_res_default_2
+{
     "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
 };
+
+std::string expected_res_default = expected_res_default_1 + general_header_lines + expected_res_default_2;
 
 std::string expected_res_empty
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
     "##contig=<ID=chr1,length=368>\n"
-    "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
-    "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
 };
 
 std::string expected_err_default_no_err
@@ -470,7 +478,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';
-    EXPECT_EQ(result.out, expected_res_empty);
+    EXPECT_EQ(result.out, expected_res_empty + general_header_lines);
     seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:

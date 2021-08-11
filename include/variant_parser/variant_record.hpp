@@ -88,6 +88,9 @@ public:
                        << ",Description=\"" << i.description << "\",Source=\"" << i.source << "\",Version=\""
                        << i.version << "\">" << '\n';
         }
+        out_stream << "##ALT=<ID=DEL,Number=1,Description=\"Deletion\">" << '\n';
+        out_stream << "##ALT=<ID=DUP:TANDEM,Number=1,Description=\"Tandem Duplication\">" << '\n';
+        out_stream << "##ALT=<ID=INS,Number=1,Description=\"Insertion of novel sequence\">" << '\n';
         out_stream << "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">" << '\n';
         out_stream << "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\t" << vcf_sample_name << '\n';
     }

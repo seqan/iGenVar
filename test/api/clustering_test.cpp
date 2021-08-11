@@ -317,7 +317,6 @@ TEST(hierarchical_clustering, clustering_10)
     }
 }
 
-
 TEST(hierarchical_clustering, clustering_15)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
@@ -478,4 +477,67 @@ TEST(hierarchical_clustering, subsampling)
     };
     std::string result_err = testing::internal::GetCapturedStderr();
     EXPECT_EQ(expected_err, result_err);
+}
+
+TEST(hierarchical_clustering, cluster_tandem_dup_count)
+{
+    std::vector<Junction> input_junctions
+    {
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 0, read_name_1},
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 0, read_name_2},
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 1, read_name_3},
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 2, read_name_4},
+        Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                 Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 2, read_name_5}
+
+    };
+    std::vector<Cluster> resulting_clusters{};
+
+    std::vector<Cluster> expected_clusters
+    {
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                          Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 0, read_name_1},
+                 Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                          Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 0, read_name_2}
+        }},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                          Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 1, read_name_3}
+        }},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                          Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 2, read_name_4},
+                 Junction{Breakend{chrom1, chrom1_position1, strand::forward},
+                          Breakend{chrom1, chrom1_position2, strand::forward}, ""_dna5, 2, read_name_5}
+        }}
+    };
+    std::sort(expected_clusters.begin(), expected_clusters.end());
+
+    resulting_clusters = simple_clustering_method(input_junctions);
+    ASSERT_EQ(expected_clusters.size(), resulting_clusters.size());
+
+    for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
+    {
+        EXPECT_TRUE(expected_clusters[cluster_index] == resulting_clusters[cluster_index]) << "Cluster "
+                                                                                           << cluster_index
+                                                                                           << " unequal";
+    }
+
+    resulting_clusters = hierarchical_clustering_method(input_junctions, 0);   // clustering_cutoff = 0
+    ASSERT_EQ(5, resulting_clusters.size());
+
+    resulting_clusters = hierarchical_clustering_method(input_junctions, 1);   // clustering_cutoff = 1
+    ASSERT_EQ(expected_clusters.size(), resulting_clusters.size());
+
+    for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
+    {
+        EXPECT_TRUE(expected_clusters[cluster_index] == resulting_clusters[cluster_index]) << "Cluster "
+                                                                                           << cluster_index
+                                                                                           << " unequal";
+    }
+
+    resulting_clusters = hierarchical_clustering_method(input_junctions, 10);  // clustering_cutoff = 10 (default value)
+    ASSERT_EQ(1, resulting_clusters.size());
 }

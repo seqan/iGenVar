@@ -41,8 +41,12 @@ public:
     */
     Breakend get_average_mate2() const;
 
+    //! \brief Returns either the average tandem_dup_count of the inserted tandem duplications of all cluster members
+    //         with tandem_dup_count != 0, or 0 if most (2/3) of the members have a tandem_dup_count = 0.
+    size_t get_common_tandem_dup_count() const;
+
     //! \brief Returns the average length of the inserted sequences of all cluster members.
-    int32_t get_average_inserted_sequence_size() const;
+    size_t get_average_inserted_sequence_size() const;
 
     //! \brief Returns the members of the cluster.
     std::vector<Junction> get_members() const;
@@ -54,6 +58,7 @@ inline stream_t operator<<(stream_t && stream, Cluster const & clust)
     stream << clust.get_average_mate1() << '\t'
            << clust.get_average_mate2() << '\t'
            << clust.get_cluster_size() << '\t'
+           << clust.get_common_tandem_dup_count() << '\t'
            << clust.get_average_inserted_sequence_size();
     return stream;
 }

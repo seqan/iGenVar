@@ -81,15 +81,16 @@ inline constexpr stream_t operator<<(stream_t && stream, Junction const & junc)
     return stream;
 }
 
-/*! \brief A junction is smaller than another, if their first mate, second mate, or inserted sequence (in this order)
- *         is smaller than the corresponding element of the other junction.
+/*! \brief A junction is smaller than another, if their first mate, second mate, count of tandem duplications, or
+ *         inserted sequence (in this order) is smaller than the corresponding element of the other junction.
  *
  * \param lhs   left side junction
  * \param rhs   right side junction
  */
 bool operator<(Junction const & lhs, Junction const & rhs);
 
-/*! \brief A junction is equal to another, if their mates and the inserted sequences are equal to each other.
+/*! \brief A junction is equal to another, if their mates, their count of tandem duplications and the inserted sequences
+ *         are equal to each other.
  *         The read_name is allowed to be unequal, because more than one read could support the same junction.
  *
  * \param lhs - left side junction
@@ -97,7 +98,8 @@ bool operator<(Junction const & lhs, Junction const & rhs);
  */
 bool operator==(Junction const & lhs, Junction const & rhs);
 
-/*! \brief A junction is unequal to another, if their mates or the inserted sequences are unequal to each other.
+/*! \brief A junction is unequal to another, if their mates, their count of tandem duplications or the inserted
+ *         sequences are unequal to each other.
  *
  * \param lhs - left side junction
  * \param rhs - right side junction

@@ -29,7 +29,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                 {
                     int32_t mate1_pos = mate1.position;
                     int32_t mate2_pos = mate2.position;
-                    int32_t insert_size = clusters[i].get_average_inserted_sequence_size();
+                    size_t insert_size = clusters[i].get_average_inserted_sequence_size();
                     if (mate1.orientation == strand::forward)
                     {
                         int32_t distance = mate2_pos - mate1_pos;

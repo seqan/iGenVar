@@ -70,15 +70,36 @@ Breakend Cluster::get_average_mate2() const
     return average_breakend;
 }
 
-int32_t Cluster::get_average_inserted_sequence_size() const
+size_t Cluster::get_common_tandem_dup_count() const
 {
-    uint64_t sum_sizes = 0;
+    size_t sum_counts = 0;
+    size_t amount_zero_counts = 0;
+    // Iterate through members of the cluster
+    for (size_t i = 0; i < members.size(); ++i)
+    {
+        size_t current_count = members[i].get_tandem_dup_count();
+        if (current_count == 0)
+            ++amount_zero_counts;
+        else
+            sum_counts += members[i].get_tandem_dup_count();
+    }
+    // TODO (irallia 12.08.21): This 3 is free choosen and other values could be tested.
+    // If two thirds of the junctions have a 0 tandem_dup_count, than its probably no tandem duplication.
+    if (amount_zero_counts > std::round(members.size() / 3.0))
+        return 0;
+    else
+        return std::round(static_cast<double>(sum_counts) / members.size());
+}
+
+size_t Cluster::get_average_inserted_sequence_size() const
+{
+    size_t sum_sizes = 0;
     // Iterate through members of the cluster
     for (size_t i = 0; i < members.size(); ++i)
     {
         sum_sizes += members[i].get_inserted_sequence().size();
     }
-    int32_t average_size = std::round(static_cast<double>(sum_sizes) / members.size());
+    size_t average_size = std::round(static_cast<double>(sum_sizes) / members.size());
     return average_size;
 }
 
@@ -93,7 +114,9 @@ bool operator<(Cluster const & lhs, Cluster const & rhs)
            ? lhs.get_average_mate1() < rhs.get_average_mate1()
            : lhs.get_average_mate2() != rhs.get_average_mate2()
               ? lhs.get_average_mate2() < rhs.get_average_mate2()
-              : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
+              : lhs.get_common_tandem_dup_count() != rhs.get_common_tandem_dup_count()
+                ? lhs.get_common_tandem_dup_count() < rhs.get_common_tandem_dup_count()
+                : lhs.get_average_inserted_sequence_size() < rhs.get_average_inserted_sequence_size();
 }
 
 bool operator==(Cluster const & lhs, Cluster const & rhs)

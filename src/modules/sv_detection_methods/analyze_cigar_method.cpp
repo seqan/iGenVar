@@ -26,6 +26,7 @@ void analyze_cigar(std::string const & read_name,
         using seqan3::get;
         int32_t length = get<0>(pair);
         seqan3::cigar::operation operation = get<1>(pair);
+        size_t tandem_dup_count = 0;
         if (operation == 'M'_cigar_operation || operation == '='_cigar_operation || operation == 'X'_cigar_operation)
         {
             pos_ref += length;
@@ -40,6 +41,7 @@ void analyze_cigar(std::string const & read_name,
                 Junction new_junction{Breakend{chromosome, pos_ref - 1, strand::forward},
                                       Breakend{chromosome, pos_ref, strand::forward},
                                       inserted_bases,
+                                      tandem_dup_count,
                                       read_name};
                 seqan3::debug_stream << "INS: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
@@ -54,6 +56,7 @@ void analyze_cigar(std::string const & read_name,
                 Junction new_junction{Breakend{chromosome, pos_ref - 1, strand::forward},
                                       Breakend{chromosome, pos_ref + length, strand::forward},
                                       ""_dna5,
+                                      tandem_dup_count,
                                       read_name};
                 seqan3::debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));

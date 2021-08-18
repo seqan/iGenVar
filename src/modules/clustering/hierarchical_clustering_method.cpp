@@ -96,9 +96,10 @@ int junction_distance(Junction const & lhs, Junction const & rhs)
         // Reference:                      ................
         // Junction 1 with mates A and B:     A------->B    (2bp inserted)
         // Junction 2 with mates C and D:    C------>D      (5bp inserted)
-        // Distance = 1 (distance A-C) + 2 (distance B-D) + 3 (absolute insertion size difference)
+        // Distance = 1 (distance A-C) + 2 (distance B-D) + 0 (no tandem duplication) + 3 (absolute insertion size difference)
         return (std::abs(lhs.get_mate1().position - rhs.get_mate1().position) +
                 std::abs(lhs.get_mate2().position - rhs.get_mate2().position) +
+                std::abs((int)(lhs.get_tandem_dup_count() - rhs.get_tandem_dup_count())) +
                 std::abs((int)(lhs.get_inserted_sequence().size() - rhs.get_inserted_sequence().size())));
     }
     else

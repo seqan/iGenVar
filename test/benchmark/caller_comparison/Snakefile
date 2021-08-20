@@ -1,12 +1,4 @@
-import os
-import gzip
-import sys
-import shutil
-
-configfile: "config/config.yaml"
-
-VCFS=["giab", "giab.gt", "giab.seq", "giab.gt.seq"]
-SVIM_THRESHOLDS = [1, 3, 4, 5, 6, 7, 8, 9, 10, 14, 18, 22, 26, 30, 40, 50, 60]
+configfile: "Repos/iGenVar/test/benchmark/caller_comparison/config/config.yaml"
 
 include: "workflow/rules/callers.smk"
 include: "workflow/rules/eval.smk"
@@ -16,13 +8,11 @@ include: "workflow/rules/plots.smk"
 
 rule all:
     input:
-        #SV lengths
-        expand("pipeline/SV-plots/SV-length_pbsv_{minscore}.png", minscore=[3, 5, 7]),
-        expand("pipeline/SV-plots/SV-length_Sniffles_{minscore}.png", minscore=[3, 5, 7]),
-        expand("pipeline/SV-plots/SV-length_SVIM_1000_900_1.0_0.5_{minscore}.png", minscore=[3, 5, 7]),
-        expand("pipeline/SV-plots/SV-counts.merged.png"),
-        #Evaluation
-        expand("pipeline/eval/results.all.png"),
-        expand("pipeline/eval/results.tools.{vcf}.png", vcf=VCFS),
-        expand("pipeline/eval/results.coverages.{vcf}.png", vcf=VCFS),
-        expand("pipeline/eval/results.svim.parameters.png"),
+        # SV calling
+        expand("results/caller_comparison/SVIM/variants.vcf"),
+        # SV lengths
+        # expand("results/caller_comparison/SV-plots/SV-length_SVIM_{minscore}.png", minscore=[3, 5, 7]),
+        # Evaluation
+        expand("results/caller_comparison/eval/results.all.png"),
+        # expand("pipeline/eval/results.tools.{vcf}.png", vcf=VCFS),
+        # expand("pipeline/eval/results.coverages.{vcf}.png", vcf=VCFS),

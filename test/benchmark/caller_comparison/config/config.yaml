@@ -1,24 +1,23 @@
-long_bam: /data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam
-long_bai: /data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam.bai
+long_bam: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam
+long_bai: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam.bai
 
-reference: /path/to/database/genome.fa.gz
-
-truth:
-    giab: data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz
-    bed: data/truth_set/HG002_SVs_Tier1_v0.6.bed
+reference: data/reference/hs37d5.fa.gz
 
 parameters:
-    pbmm_preset: CCS #SUBREAD (CLR), CCS (CCS)
-    survivor_distance: 500
-    min_sv_size: 40
+    sample: HG002
+    min_var_length: 40
+    max_var_length: 1000000
 
 minimums:
-    sniffles_from: 1
-    sniffles_to: 60
-    sniffles_step: 2
+    igenvar_from: 1
+    igenvar_to: 100
+    igenvar_step: 2
     svim_from: 1
     svim_to: 100
     svim_step: 2
-    pbsv_from: 10
-    pbsv_to: 91
-    pbsv_step: 10
+    # sniffles_from: 1
+    # sniffles_to: 60
+    # sniffles_step: 2
+    # pbsv_from: 10
+    # pbsv_to: 91
+    # pbsv_step: 10

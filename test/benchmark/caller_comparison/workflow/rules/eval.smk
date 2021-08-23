@@ -1,10 +1,10 @@
 rule filter_vcf:
     input:
-        vcf = "results/caller_comparison/{caller}/variants.vcf"
+        "results/caller_comparison/{caller,iGenVar|SVIM}/variants.vcf"
     output:
-        "results/caller_comparison/{caller}/variants.min_qual_{min_qual}.vcf"
+        "results/caller_comparison/{caller,iGenVar|SVIM}/variants.min_qual_{min_qual}.vcf"
     shell:
-        "bcftools view -i 'QUAL>={wildcards.min_qual}' {input.vcf} > {output}"
+        "bcftools view -i 'QUAL>={wildcards.min_qual}' {input} > {output}"
 
 rule bgzip:
     input:
@@ -52,30 +52,31 @@ rule reformat_truvari_results:
 
 rule cat_truvari_results_all:
     input:
-        igenvar = expand("results/caller_comparison/eval/iGenVar/min_qual_{min_qual}/pr_rec.txt",
-                         min_qual=list(range(config["minimums"]["igenvar_from"],
-                                             config["minimums"]["igenvar_to"]+1,
-                                             config["minimums"]["igenvar_step"]))),
-        svim    = expand("results/caller_comparison/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
-                         min_qual=list(range(config["minimums"]["svim_from"],
-                                             config["minimums"]["svim_to"]+1,
-                                             config["minimums"]["svim_step"]))),
-        # sniffles = expand("results/caller_comparison/eval/Sniffles/min_qual_{min_qual}/pr_rec.txt",
-        #                   min_qual=list(range(config["minimums"]["sniffles_from"], config["minimums"]["sniffles_to"]+1, config["minimums"]["sniffles_step"]))),
+        igenvar  = expand("results/caller_comparison/eval/iGenVar/min_qual_{min_qual}/pr_rec.txt",
+                          min_qual=list(range(config["minimums"]["igenvar_from"],
+                                              config["minimums"]["igenvar_to"]+1,
+                                              config["minimums"]["igenvar_step"]))),
+        svim     = expand("results/caller_comparison/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
+                          min_qual=list(range(config["minimums"]["svim_from"],
+                                              config["minimums"]["svim_to"]+1,
+                                              config["minimums"]["svim_step"]))),
+        sniffles = expand("results/caller_comparison/eval/Sniffles/min_qual_{min_qual}/pr_rec.txt",
+                          min_qual=list(range(config["minimums"]["sniffles_from"],
+                                              config["minimums"]["sniffles_to"]+1,
+                                              config["minimums"]["sniffles_step"]))),
         # pbsv = expand("results/caller_comparison/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
         #                   min_qual=list(range(config["minimums"]["pbsv_from"], config["minimums"]["pbsv_to"]+1, config["minimums"]["pbsv_step"])))
     output:
-        igenvar = temp("results/caller_comparison/eval/igenvar.all_results.txt"),
-        # svim    = temp("results/caller_comparison/eval/svim.all_results.txt"),
-        svim    = temp("results/caller_comparison/eval/svim.all_results.txt"),
-        # sniffles = temp("results/caller_comparison/eval/sniffles.all_results.txt"),
+        igenvar  = temp("results/caller_comparison/eval/igenvar.all_results.txt"),
+        svim     = temp("results/caller_comparison/eval/svim.all_results.txt"),
+        sniffles = temp("results/caller_comparison/eval/sniffles.all_results.txt"),
         # pbsv = temp("results/caller_comparison/eval/pbsv.all_results.txt"),
         all     = "results/caller_comparison/eval/all_results.txt"
     threads: 1
     run:
         shell("cat {input.igenvar} > {output.igenvar}")
         shell("cat {input.svim} > {output.svim}")
-        # shell("cat {input.sniffles} > {output.sniffles}")
+        shell("cat {input.sniffles} > {output.sniffles}")
         # shell("cat {input.pbsv} > {output.pbsv}")
-        shell("cat {output.igenvar} {output.svim} > {output.all}")
+        shell("cat {output.igenvar} {output.svim} {output.sniffles} > {output.all}")
         # shell("cat {output.igenvar} {output.svim} {output.sniffles} {output.pbsv} > {output.all}")

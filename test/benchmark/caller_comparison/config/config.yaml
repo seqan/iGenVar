@@ -1,4 +1,5 @@
 long_bam: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam
+long_bam_md: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.md.bam
 long_bai: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam.bai
 
 reference: data/reference/hs37d5.fa.gz
@@ -7,6 +8,7 @@ parameters:
     sample: HG002
     min_var_length: 40
     max_var_length: 1000000
+    min_qual: 2
 
 minimums:
     igenvar_from: 1
@@ -15,9 +17,9 @@ minimums:
     svim_from: 1
     svim_to: 100
     svim_step: 2
-    # sniffles_from: 1
-    # sniffles_to: 60
-    # sniffles_step: 2
+    sniffles_from: 1
+    sniffles_to: 60
+    sniffles_step: 2
     # pbsv_from: 10
     # pbsv_to: 91
     # pbsv_step: 10

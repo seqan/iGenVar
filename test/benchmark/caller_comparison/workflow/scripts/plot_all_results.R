@@ -4,7 +4,7 @@ library(scales)
 args = commandArgs(trailingOnly=TRUE)
 
 res <- read_tsv(args[1], col_names = c("caller", "min_qual", "metric", "value"))
-res$caller = factor(res$caller, levels=c('iGenVar', 'SVIM'), labels=c('iGenVar', 'SVIM'))
+res$caller = factor(res$caller, levels=c('iGenVar', 'SVIM', 'Sniffles'), labels=c('iGenVar', 'SVIM', 'Sniffles'))
 # res$caller = factor(res$caller, levels=c('pbsv', 'Sniffles', 'SVIM'), labels=c('pbsv', 'Sniffles', 'SVIM'))
 
 res %>%
@@ -17,7 +17,6 @@ res %>%
       # scale_shape_manual(values=c(15,16,17)) +
       # scale_color_manual(values=c("deepskyblue3", "goldenrod2", "firebrick2")) +
       geom_path() +
-      # facet_wrap(~subsample+vcf) +
       labs(y = "Precision", x = "Recall", color = "Tool", pch = "Tool") +
       lims(x=c(0,100), y=c(0,100)) +
       theme_bw() +

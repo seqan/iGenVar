@@ -5,6 +5,7 @@ rule run_igenvar:
         vcf = "results/caller_comparison/iGenVar/variants.vcf"
     params:
         sample = config["parameters"]["sample"],
+        min_qual = config["parameters"]["min_qual"],
         min_var_length = config["parameters"]["min_var_length"],
         max_var_length = config["parameters"]["max_var_length"]
     shell:
@@ -15,7 +16,7 @@ rule run_igenvar:
         --method split_read \
         --min_var_length {params.min_var_length} \
         --max_var_length {params.max_var_length} \
-        --min_qual 2
+        --min_qual {params.min_qual}
         """
         # Defaults:
         # --clustering_methods hierarchical_clustering --refinement_methods no_refinement
@@ -58,3 +59,53 @@ rule run_svim:
         """
         # Defaults:
         # --position_distance_normalizer 900 --edit_distance_normalizer 1.0
+
+# SNIFFLES (we have to loop over min_support, because sniffles does not write a quality score into the vcf)
+rule run_sniffles:
+    input:
+        bam = config["long_bam_md"],
+    output:
+        expand("results/caller_comparison/Sniffles/raw_variants.{minsupport}.vcf",
+               minsupport=list(range(config["minimums"]["sniffles_from"],
+                                     config["minimums"]["sniffles_to"]+1,
+                                     config["minimums"]["sniffles_step"])))
+    resources:
+        mem_mb = 400000,
+        time_min = 1200,
+        io_gb = 100
+    params:
+        min_support = config["parameters"]["min_qual"],
+        min_length = config["parameters"]["min_var_length"],
+        qual_from = config["minimums"]["sniffles_from"],
+        qual_to = config["minimums"]["sniffles_to"]+1,
+        qual_step = config["minimums"]["sniffles_step"]
+    threads: 10
+    conda:
+        "../../../envs/sniffles.yaml"
+    shell:
+        """
+        for i in $(seq {params.qual_from} {params.qual_step} {params.qual_to})
+        do
+            sniffles --mapped_reads {input.bam} --vcf results/caller_comparison/Sniffles/raw_variants.$i.vcf \
+            --min_support $i --min_length {params.min_length} --threads {threads} --genotype
+        done
+        """
+
+#see https://github.com/spiralgenetics/truvari/issues/43
+rule fix_sniffles:
+    input:
+        "results/caller_comparison/Sniffles/raw_variants.{support}.vcf"
+    output:
+        "results/caller_comparison/Sniffles/variants.unsorted.min_qual_{support,[0-9]+}.vcf"
+    shell:
+        "sed 's/##INFO=<ID=SUPTYPE,Number=A/##INFO=<ID=SUPTYPE,Number=./' {input} > {output}"
+
+# Split to SV classes
+# Since iGenVar can only find INS and DEL so far, we filter these out for better comparability.
+rule fix_sniffles_2_and_filter_insertions_and_deletions:
+    input:
+        "results/caller_comparison/Sniffles/variants.unsorted.min_qual_{support,[0-9]+}.vcf"
+    output:
+        "results/caller_comparison/Sniffles/variants.min_qual_{support,[0-9]+}.vcf"
+    shell:
+        "bcftools view -i 'SVTYPE=\"DEL\" | SVTYPE=\"INS\"' {input} | bcftools sort > {output}"

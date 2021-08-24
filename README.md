@@ -20,4 +20,4 @@ Instructions:
 5. build the application: `make`
 6. optional: build and run the tests: `make test`
 7. optional: build the api documentation: `make doc`
-8. execute the app: `./fastq_to_fasta`
+8. execute the app: `./bin/fastq_to_fasta`

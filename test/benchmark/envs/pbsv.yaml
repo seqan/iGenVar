@@ -1,4 +1,4 @@
 channels:
  - bioconda
 dependencies:
- - pbsv=2.3.0
+ - pbsv=2.6.2

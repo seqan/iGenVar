@@ -27,7 +27,7 @@ rule run_svim:
     input:
         bam = config["long_bam"],
         bai = config["long_bai"],
-        genome = config["reference"]
+        genome = config["reference_fa_gz"]
     output:
         "results/caller_comparison/SVIM/variants.vcf"
     resources:
@@ -109,3 +109,57 @@ rule fix_sniffles_2_and_filter_insertions_and_deletions:
         "results/caller_comparison/Sniffles/variants.min_qual_{support,[0-9]+}.vcf"
     shell:
         "bcftools view -i 'SVTYPE=\"DEL\" | SVTYPE=\"INS\"' {input} | bcftools sort > {output}"
+
+#PBSV
+rule run_pbsv_dicsover:
+    input:
+        bam = config["long_bam"]
+    output:
+        svsig_gz = dynamic("results/caller_comparison/pbsv/signatures.{region}.svsig.gz")
+    resources:
+        mem_mb = 400000,
+        time_min = 2000,
+        io_gb = 100
+    threads: 1
+    conda:
+        "../../../envs/pbsv.yaml"
+    shell:
+        # "pbsv discover {input.bam} {output.svsig_gz}"
+        """
+        for i in $(samtools view -H {input.bam} | grep '^@SQ' | cut -f2 | cut -d':' -f2); do
+            pbsv discover --region $i {input.bam} results/caller_comparison/pbsv/signatures.$i.svsig.gz
+        done
+        """
+
+rule run_pbsv_call:
+    input:
+        genome = config["reference_fa"],
+        svsig_gz = dynamic("results/caller_comparison/pbsv/signatures.{region}.svsig.gz")
+    output:
+        vcf = expand("results/caller_comparison/pbsv/variants.min_qual_{minsupport}.vcf",
+                     minsupport=list(range(config["minimums"]["pbsv_from"],
+                                           config["minimums"]["pbsv_to"]+1,
+                                           config["minimums"]["pbsv_step"])))
+    resources:
+        mem_mb = 400000,
+        time_min = 2000,
+        io_gb = 100
+    params:
+        min_sv_length = config["parameters"]["min_var_length"],
+        qual_from = config["minimums"]["pbsv_from"],
+        qual_to = config["minimums"]["pbsv_to"]+1,
+        qual_step = config["minimums"]["pbsv_step"]
+    threads: 1
+    conda:
+        "../../../envs/pbsv.yaml"
+    shell:
+        # pbsv call --types DEL,INS,DUP --min-sv-length {params.min_sv_length} --max-ins-length 100K \
+        """
+        for i in $(seq {params.qual_from} {params.qual_step} {params.qual_to})
+        do
+            pbsv call --types DEL,INS --min-sv-length {params.min_sv_length} --max-ins-length 100K \
+            --call-min-reads-all-samples $i --call-min-reads-one-sample $i \
+            --call-min-reads-per-strand-all-samples 0 --call-min-bnd-reads-all-samples 0 --call-min-read-perc-one-sample 0 \
+            --num-threads {threads} {input.genome} {input.svsig_gz} results/caller_comparison/pbsv/variants.min_qual_$i.vcf
+        done
+        """

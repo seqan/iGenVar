@@ -64,19 +64,20 @@ rule cat_truvari_results_all:
                           min_qual=list(range(config["minimums"]["sniffles_from"],
                                               config["minimums"]["sniffles_to"]+1,
                                               config["minimums"]["sniffles_step"]))),
-        # pbsv = expand("results/caller_comparison/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
-        #                   min_qual=list(range(config["minimums"]["pbsv_from"], config["minimums"]["pbsv_to"]+1, config["minimums"]["pbsv_step"])))
+        pbsv = expand("results/caller_comparison/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
+                          min_qual=list(range(config["minimums"]["pbsv_from"],
+                                              config["minimums"]["pbsv_to"]+1,
+                                              config["minimums"]["pbsv_step"])))
     output:
         igenvar  = temp("results/caller_comparison/eval/igenvar.all_results.txt"),
         svim     = temp("results/caller_comparison/eval/svim.all_results.txt"),
         sniffles = temp("results/caller_comparison/eval/sniffles.all_results.txt"),
-        # pbsv = temp("results/caller_comparison/eval/pbsv.all_results.txt"),
-        all     = "results/caller_comparison/eval/all_results.txt"
+        pbsv     = temp("results/caller_comparison/eval/pbsv.all_results.txt"),
+        all = "results/caller_comparison/eval/all_results.txt"
     threads: 1
     run:
         shell("cat {input.igenvar} > {output.igenvar}")
         shell("cat {input.svim} > {output.svim}")
         shell("cat {input.sniffles} > {output.sniffles}")
-        # shell("cat {input.pbsv} > {output.pbsv}")
-        shell("cat {output.igenvar} {output.svim} {output.sniffles} > {output.all}")
-        # shell("cat {output.igenvar} {output.svim} {output.sniffles} {output.pbsv} > {output.all}")
+        shell("cat {input.pbsv} > {output.pbsv}")
+        shell("cat {output.igenvar} {output.svim} {output.sniffles} {output.pbsv} > {output.all}")

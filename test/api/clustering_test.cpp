@@ -258,9 +258,9 @@ TEST(hierarchical_clustering, strict_clustering)
 TEST(hierarchical_clustering, clustering_10)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 10);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0.01);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -269,7 +269,7 @@ TEST(hierarchical_clustering, clustering_10)
     //  6       14  14
     //  7           6
 
-    // Only junctions from reads 7 and 8 have a distance < 10 and cluster together
+    // Only junctions from reads 7 and 8 have a distance < 0.01 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
@@ -321,9 +321,9 @@ TEST(hierarchical_clustering, clustering_10)
 TEST(hierarchical_clustering, clustering_15)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 15);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0.015);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -332,7 +332,7 @@ TEST(hierarchical_clustering, clustering_15)
     //  6       14  14
     //  7           6
 
-    // Junctions from reads 6-8 and 2-3 have a distance < 15 and cluster together
+    // Junctions from reads 6-8 and 2-3 have a distance < 0.015 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
@@ -382,9 +382,9 @@ TEST(hierarchical_clustering, clustering_15)
 TEST(hierarchical_clustering, clustering_25)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 25);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0.025);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -393,7 +393,7 @@ TEST(hierarchical_clustering, clustering_25)
     //  6       14  14
     //  7           6
 
-    // Junctions from reads 6-8 and 1-3 have a distance < 25 and cluster together
+    // Junctions from reads 6-8 and 1-3 have a distance < 0.025 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
@@ -528,17 +528,19 @@ TEST(hierarchical_clustering, cluster_tandem_dup_count)
                                                                                            << " unequal";
     }
 
+    std::vector<Cluster> expected_clusters_2 { input_junctions };
+
     resulting_clusters = hierarchical_clustering_method(input_junctions, 0);   // clustering_cutoff = 0
     ASSERT_EQ(5, resulting_clusters.size());
 
     resulting_clusters = hierarchical_clustering_method(input_junctions, 1);   // clustering_cutoff = 1
-    ASSERT_EQ(expected_clusters.size(), resulting_clusters.size());
+    ASSERT_EQ(expected_clusters_2.size(), resulting_clusters.size());
 
-    for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
+    for (size_t cluster_index = 0; cluster_index < expected_clusters_2.size(); ++cluster_index)
     {
-        EXPECT_TRUE(expected_clusters[cluster_index] == resulting_clusters[cluster_index]) << "Cluster "
-                                                                                           << cluster_index
-                                                                                           << " unequal";
+        EXPECT_TRUE(expected_clusters_2[cluster_index] == resulting_clusters[cluster_index]) << "Cluster "
+                                                                                             << cluster_index
+                                                                                             << " unequal";
     }
 
     resulting_clusters = hierarchical_clustering_method(input_junctions, 10);  // clustering_cutoff = 10 (default value)

@@ -32,7 +32,7 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
  * \param[in] lhs - left side junction
  * \param[in] rhs - right side junction
  */
-int junction_distance(Junction const & lhs, Junction const & rhs);
+double junction_distance(Junction const & lhs, Junction const & rhs);
 
 /*! \brief Cluster junctions by an hierarchical clustering method.
  *         The returned clusters and the junctions in each returned cluster are sorted.

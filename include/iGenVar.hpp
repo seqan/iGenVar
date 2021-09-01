@@ -31,7 +31,7 @@ struct cmd_arguments
     /* -n */ int32_t max_overlap = 10;
     /* -q */ int32_t min_qual = 1;
 // Clustering specifications:
-    /* -w */ double hierarchical_clustering_cutoff = 100;
+    /* -w */ double hierarchical_clustering_cutoff = 0.5;
     /* x? */
 // Refinement specifications:
     /* y, z? */

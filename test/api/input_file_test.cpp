@@ -19,7 +19,7 @@ constexpr int32_t default_max_var_length = 1000000;
 constexpr int32_t default_max_tol_inserted_length = 5;
 constexpr int32_t default_max_overlap = 10;
 constexpr int32_t default_min_qual = 1;
-constexpr double default_hierarchical_clustering_cutoff = 10;
+constexpr double default_hierarchical_clustering_cutoff = 0.5;
 
 // Explanation for the strings:
 // chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681

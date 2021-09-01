@@ -119,7 +119,7 @@ std::string const help_page_advanced
     "          needs to be non-negative. Default: 1.\n"
     "    -w, --hierarchical_clustering_cutoff (double)\n"
     "          Specify the distance cutoff for the hierarchical clustering. This\n"
-    "          value needs to be non-negative. Default: 100.\n"
+    "          value needs to be non-negative. Default: 0.5.\n"
 };
 
 // std::string expected_res_default
@@ -535,9 +535,9 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("single_end_mini_example.sam"),
                                          "--verbose",
-                                         "--method cigar_string --method split_read "
-                                         "--min_var_length 8 --max_var_length 400 "
-                                         "--hierarchical_clustering_cutoff 20");
+                                         "--method cigar_string --method split_read",
+                                         "--min_var_length 8 --max_var_length 400",
+                                         "--hierarchical_clustering_cutoff 0.1");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';

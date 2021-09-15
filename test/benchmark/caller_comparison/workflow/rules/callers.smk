@@ -22,7 +22,7 @@ rule run_igenvar:
         """
         # Defaults:
         # --clustering_methods hierarchical_clustering --refinement_methods no_refinement
-        # --max_tol_inserted_length 5 --max_overlap 10 --hierarchical_clustering_cutoff 10
+        # --max_tol_inserted_length 5 --max_overlap 10 --hierarchical_clustering_cutoff 100
 
 # SVIM
 rule run_svim:

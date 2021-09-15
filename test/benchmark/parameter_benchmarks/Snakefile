@@ -78,19 +78,19 @@ rule reformat_truvari_results:
 rule cat_truvari_results_full:
     input:
         input1 = expand("results/parameter_benchmarks/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[10, 30, 50, 100, 500],                      # default: 30
+               parameter_value=[10, 30, 50, 100],                           # default: 30
                min_qual=range(1, 51)),
         input2 = expand("results/parameter_benchmarks/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1000, 10000, 100000, 1000000, 10000000],    # default: 1.000.000
+               parameter_value=[1000, 10000, 100000, 1000000],              # default: 100.000
                min_qual=range(1, 51)),
         input3 = expand("results/parameter_benchmarks/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value=[1, 10, 100, 1000],                          # default: 5
                min_qual=range(1, 51)),
         input4 = expand("results/parameter_benchmarks/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1, 10, 100, 200],                           # default: 10
+               parameter_value=[1, 10, 100, 1000],                          # default: 10
                min_qual=range(1, 51)),
         input5 = expand("results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value= [20, 50, 100, 200, 500, 5000],              # default: 10
+               parameter_value= [20, 50, 100, 1000, 10000],                 # default: 50
                min_qual=range(1, 51))
     output:
         summary1 = "results/parameter_benchmarks/truvari/min_var_length/all_results.txt",

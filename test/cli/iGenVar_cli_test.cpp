@@ -105,7 +105,7 @@ std::string const help_page_advanced
     "          Specify what should be the maximum length of your SVs to be\n"
     "          detected. SVs larger than this threshold can still be output as\n"
     "          translocations. This value needs to be non-negative. Default:\n"
-    "          1000000.\n"
+    "          100000.\n"
     "    -m, --max_tol_inserted_length (signed 32 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
     "          sites of non-INS SVs. This value needs to be non-negative. Default:\n"
@@ -119,7 +119,7 @@ std::string const help_page_advanced
     "          needs to be non-negative. Default: 1.\n"
     "    -w, --hierarchical_clustering_cutoff (double)\n"
     "          Specify the distance cutoff for the hierarchical clustering. This\n"
-    "          value needs to be non-negative. Default: 10.\n"
+    "          value needs to be non-negative. Default: 100.\n"
 };
 
 // std::string expected_res_default
@@ -536,7 +536,8 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
                                          "-j", data("single_end_mini_example.sam"),
                                          "--verbose",
                                          "--method cigar_string --method split_read "
-                                         "--min_var_length 8 --max_var_length 400");
+                                         "--min_var_length 8 --max_var_length 400 "
+                                         "--hierarchical_clustering_cutoff 20");
 
     // Check the output of junctions:
     seqan3::debug_stream << "Check the output of junctions... " << '\n';

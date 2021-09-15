@@ -1,21 +1,21 @@
 rule all:
     input:
-        expand("results/plots/{parameter_name}.results.all.png",
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="min_var_length"),
-        expand("results/plots/{parameter_name}.results.all.png",
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="max_var_length"),
-        expand("results/plots/{parameter_name}.results.all.png",
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="max_tol_inserted_length"),
-        expand("results/plots/{parameter_name}.results.all.png",
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="max_overlap"),
-        expand("results/plots/{parameter_name}.results.all.png",
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="hierarchical_clustering_cutoff")
 
 rule run_igenvar:
     input:
         bam = "data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam"
     output:
-        vcf = "results/{parameter_name}/{parameter_value}_output.vcf"
+        vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.vcf"
     shell:
         """
         ./build/iGenVar/bin/iGenVar -t 1 -j {input.bam} -o {output.vcf} --vcf_sample_name HG002 \
@@ -25,9 +25,9 @@ rule run_igenvar:
 
 rule filter_vcf:
     input:
-        vcf = "results/{parameter_name}/{parameter_value}_output.vcf"
+        vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.vcf"
     output:
-        "results/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf"
+        "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf"
     shell:
         "bcftools view -i 'QUAL>={wildcards.min_qual}' {input.vcf} > {output}"
 
@@ -49,12 +49,12 @@ rule tabix:
 
 rule truvari:
     input:
-        vcf = "results/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz",
-        index = "results/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz.tbi"
+        vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz",
+        index = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz.tbi"
     params:
-        output_dir = "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}"
+        output_dir = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}"
     output:
-        summary = "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
+        summary = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
     conda:
         "../envs/truvari.yaml"
     shell:
@@ -65,9 +65,9 @@ rule truvari:
 
 rule reformat_truvari_results:
     input:
-        "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
+        "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
     output:
-        "results/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/pr_rec.txt"
+        "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/pr_rec.txt"
     threads: 1
     shell:
         """
@@ -77,27 +77,27 @@ rule reformat_truvari_results:
 
 rule cat_truvari_results_full:
     input:
-        input1 = expand("results/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+        input1 = expand("results/parameter_benchmarks/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value=[10, 30, 50, 100, 500],                      # default: 30
                min_qual=range(1, 51)),
-        input2 = expand("results/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+        input2 = expand("results/parameter_benchmarks/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value=[1000, 10000, 100000, 1000000, 10000000],    # default: 1.000.000
                min_qual=range(1, 51)),
-        input3 = expand("results/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+        input3 = expand("results/parameter_benchmarks/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value=[1, 10, 100, 1000],                          # default: 5
                min_qual=range(1, 51)),
-        input4 = expand("results/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+        input4 = expand("results/parameter_benchmarks/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value=[1, 10, 100, 200],                           # default: 10
                min_qual=range(1, 51)),
-        input5 = expand("results/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+        input5 = expand("results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value= [20, 50, 100, 200, 500, 5000],              # default: 10
                min_qual=range(1, 51))
     output:
-        summary1 = "results/truvari/min_var_length/all_results.txt",
-        summary2 = "results/truvari/max_var_length/all_results.txt",
-        summary3 = "results/truvari/max_tol_inserted_length/all_results.txt",
-        summary4 = "results/truvari/max_overlap/all_results.txt",
-        summary5 = "results/truvari/hierarchical_clustering_cutoff/all_results.txt"
+        summary1 = "results/parameter_benchmarks/truvari/min_var_length/all_results.txt",
+        summary2 = "results/parameter_benchmarks/truvari/max_var_length/all_results.txt",
+        summary3 = "results/parameter_benchmarks/truvari/max_tol_inserted_length/all_results.txt",
+        summary4 = "results/parameter_benchmarks/truvari/max_overlap/all_results.txt",
+        summary5 = "results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/all_results.txt"
     shell:
         """
         cat {input.input1} > {output.summary1} && cat {input.input2} > {output.summary2} && \
@@ -107,8 +107,8 @@ rule cat_truvari_results_full:
 
 rule plot_pr_all_results:
     input:
-        "results/truvari/{parameter_name}/all_results.txt"
+        "results/parameter_benchmarks/truvari/{parameter_name}/all_results.txt"
     output:
-        "results/plots/{parameter_name}.results.all.png"
+        "results/parameter_benchmarks/plots/{parameter_name}.results.all.png"
     shell:
         "Rscript --vanilla Repos/iGenVar/test/benchmark/parameter_benchmarks/plot_all.R {input} {wildcards.parameter_name} {output}"

@@ -7,7 +7,11 @@ rule all:
         expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="max_tol_inserted_length"),
         expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
+               parameter_name="max_tol_deleted_length"),
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="max_overlap"),
+        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
+               parameter_name="partition_max_distance"),
         expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
                parameter_name="hierarchical_clustering_cutoff")
 
@@ -84,25 +88,34 @@ rule cat_truvari_results_full:
                parameter_value=[1000, 10000, 100000, 1000000],              # default: 100.000
                min_qual=range(1, 51)),
         input3 = expand("results/parameter_benchmarks/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1, 10, 100, 1000],                          # default: 5
+               parameter_value=[1, 10, 100, 1000],                          # default: 50
                min_qual=range(1, 51)),
-        input4 = expand("results/parameter_benchmarks/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+        input4 = expand("results/parameter_benchmarks/truvari/max_tol_deleted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value=[1, 10, 100, 1000],                          # default: 50
+               min_qual=range(1, 51)),
+        input5 = expand("results/parameter_benchmarks/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                parameter_value=[1, 10, 100, 1000],                          # default: 10
                min_qual=range(1, 51)),
-        input5 = expand("results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value= [20, 50, 100, 1000, 10000],                 # default: 50
+        input6 = expand("results/parameter_benchmarks/truvari/partition_max_distance/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value=[10, 100, 1000, 10000],                      # default: 1000
+               min_qual=range(1, 51)),
+        input7 = expand("results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+               parameter_value= [0.2, 0.5, 1, 10],                          # default: 0.5
                min_qual=range(1, 51))
     output:
         summary1 = "results/parameter_benchmarks/truvari/min_var_length/all_results.txt",
         summary2 = "results/parameter_benchmarks/truvari/max_var_length/all_results.txt",
         summary3 = "results/parameter_benchmarks/truvari/max_tol_inserted_length/all_results.txt",
-        summary4 = "results/parameter_benchmarks/truvari/max_overlap/all_results.txt",
-        summary5 = "results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/all_results.txt"
+        summary4 = "results/parameter_benchmarks/truvari/max_tol_deleted_length/all_results.txt",
+        summary5 = "results/parameter_benchmarks/truvari/max_overlap/all_results.txt",
+        summary6 = "results/parameter_benchmarks/truvari/partition_max_distance/all_results.txt",
+        summary7 = "results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/all_results.txt"
     shell:
         """
         cat {input.input1} > {output.summary1} && cat {input.input2} > {output.summary2} && \
         cat {input.input3} > {output.summary3} && cat {input.input4} > {output.summary4} && \
-        cat {input.input5} > {output.summary5}
+        cat {input.input5} > {output.summary5} && cat {input.input6} > {output.summary6} && \
+        cat {input.input7} > {output.summary7}
         """
 
 rule plot_pr_all_results:

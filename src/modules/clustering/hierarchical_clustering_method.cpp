@@ -26,7 +26,7 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
         {
             if (junction.get_mate1().seq_name != current_partition.back().get_mate1().seq_name ||
                 junction.get_mate1().orientation != current_partition.back().get_mate1().orientation ||
-                abs(junction.get_mate1().position - current_partition.back().get_mate1().position)
+                std::abs(junction.get_mate1().position - current_partition.back().get_mate1().position)
                     > partition_max_distance)
             {
                 // Partition based on mate 2
@@ -73,7 +73,7 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
         {
             if (junction.get_mate2().seq_name != current_partition.back().get_mate2().seq_name ||
                 junction.get_mate2().orientation != current_partition.back().get_mate2().orientation ||
-                abs(junction.get_mate2().position - current_partition.back().get_mate2().position)
+                std::abs(junction.get_mate2().position - current_partition.back().get_mate2().position)
                     > partition_max_distance)
             {
                 std::sort(current_partition.begin(), current_partition.end());

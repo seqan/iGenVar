@@ -13,6 +13,8 @@
  *
  * \param[in] junctions - a vector of junctions (needs to be sorted)
  * \param[in] partition_max_distance - maximum distance between junctions in the same partition
+ *
+ * \returns Returns unordered partitions of sorted junctions.
  */
 std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions,
                                                        int32_t const partition_max_distance);
@@ -24,6 +26,8 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
  * \param[in] partition - a partition (i.e. a vector) of junctions (needs to be sorted
  *                        by their second mates)
  * \param[in] partition_max_distance - maximum distance between junctions in the same partition
+ *
+ * \returns Returns unordered sub-partitions of sorted junctions based on the second mate of each junction.
  */
 std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition,
                                                                   int32_t const partition_max_distance);
@@ -36,6 +40,8 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
  *
  * \param[in] lhs - left side junction
  * \param[in] rhs - right side junction
+ *
+ * \returns Returns distance between two junctions.
  */
 double junction_distance(Junction const & lhs, Junction const & rhs);
 
@@ -45,6 +51,8 @@ double junction_distance(Junction const & lhs, Junction const & rhs);
  * \param[in] junctions - a vector of junctions (needs to be sorted)
  * \param[in] partition_max_distance - maximum distance between junctions in the same partition
  * \param[in] clustering_cutoff - distance cutoff for clustering
+ *
+ * \returns Returns sorted clusters of sorted junctions.
  *
  * \details For the algorithms we use the library hclust.
  * \see https://lionel.kr.hs-niederrhein.de/~dalitz/data/hclust/ (last access 01.06.2021).

@@ -90,11 +90,13 @@ void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
                     break;
             }
         }
-
-        num_good++;
-        if (num_good % 1000 == 0)
+        if (gVerbose)
         {
-            seqan3::debug_stream << num_good << " good alignments from short read file." << std::endl;
+            ++num_good;
+            if (num_good % 100000 == 0)
+            {
+                seqan3::debug_stream << num_good << " good alignments from short read file." << std::endl;
+            }
         }
     }
 }
@@ -174,10 +176,13 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
             }
         }
 
-        num_good++;
-        if (num_good % 1000 == 0)
+        if (gVerbose)
         {
-            seqan3::debug_stream << num_good << " good alignments from long read file." << std::endl;
+            ++num_good;
+            if (num_good % 100000 == 0)
+            {
+                seqan3::debug_stream << num_good << " good alignments from long read file." << std::endl;
+            }
         }
     }
 }

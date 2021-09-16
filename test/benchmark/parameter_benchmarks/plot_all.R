@@ -12,10 +12,14 @@ if (parameter_name == "min_var_length") {
   parameter_values = c(1000,10000,100000,1000000)
 } else if (parameter_name == "max_tol_inserted_length") {
   parameter_values = c(1,10,100,1000)
+} else if (parameter_name == "max_tol_deleted_length") {
+  parameter_values = c(1,10,100,1000)
 } else if (parameter_name == "max_overlap") {
   parameter_values = c(1,10,100,1000)
+} else if (parameter_name == "partition_max_distance") {
+  parameter_values = c(10,100,1000,10000)
 } else {                    # hierarchical_clustering_cutoff
-  parameter_values = c(20,50,100,1000,10000)
+  parameter_values = c(0.2,0.5,1,10)
 }
 
 res <- read_tsv(args[1], col_names = c(parameter_name, "min_qual", "metric", "value"))

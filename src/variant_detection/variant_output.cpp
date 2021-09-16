@@ -34,9 +34,9 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                     {
                         int32_t distance = mate2_pos - mate1_pos - 1;
                         int32_t sv_length = insert_size - distance;
-                        //Deletion
-                        if (sv_length <= -args.min_var_length &&
-                            sv_length >= -args.max_var_length &&
+                        // Deletion (sv_length is negative)
+                        if (-sv_length >= args.min_var_length &&
+                            -sv_length <= args.max_var_length &&
                             insert_size <= args.max_tol_inserted_length)
                         {
                             variant_record tmp{};
@@ -52,7 +52,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                             tmp.add_info("END", std::to_string(mate2_pos));
                             tmp.print(out_stream);
                         }
-                        //Insertion
+                        // Insertion (sv_length is positive)
                         else if (sv_length >= args.min_var_length &&
                                  sv_length <= args.max_var_length &&
                                  distance <= args.max_tol_deleted_length)

@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "iGenVar.hpp"                                              // for global variable gVerbose
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
 #include "structures/cluster.hpp"                                   // for class Cluster
@@ -448,6 +449,8 @@ TEST(hierarchical_clustering, clustering_25)
 
 TEST(hierarchical_clustering, subsampling)
 {
+    gVerbose = true;
+
     std::vector<Junction> input_junctions;
     for (int32_t i = 0; i < 300; ++i)
     {

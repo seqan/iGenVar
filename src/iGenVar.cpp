@@ -49,6 +49,9 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_option(args.threads, 't', "threads",
                       "Specify the number of decompression threads used for reading BAM files.",
                       seqan3::option_spec::standard);
+    parser.add_flag(gVerbose, 'v', "verbose",
+                    "If you set this flag, we provide additional details about what iGenVar does. The detailed output "
+                    "is printed in the standard error.");
 
     // Options - Optional output:
     parser.add_option(args.junctions_file_path, 'a', "junctions",

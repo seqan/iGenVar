@@ -4,6 +4,8 @@
 
 #include "variant_detection/method_enums.hpp"           // for enum detection_methods, clustering_methods and refinement_methods
 
+inline bool gVerbose{false};
+
 struct cmd_arguments
 {
 // Input:
@@ -16,7 +18,7 @@ struct cmd_arguments
     /* -b */ std::filesystem::path clusters_file_path{};
 // Others:
     /* -h - help - not part of the args struct */
-    /* -v - verbose - not implementet yet */
+    /* -v - verbose - global variable gVerbose */
     /* -t */ int16_t threads = 1;
 // Methods:
     /* -d */ std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth}; // default: all

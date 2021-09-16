@@ -1,3 +1,4 @@
+#include "iGenVar.hpp"                                            // for global variable gVerbose
 #include "modules/clustering/hierarchical_clustering_method.hpp"
 
 #include <limits>                                                 // for infinity
@@ -134,15 +135,18 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
         }
         if (partition_size > max_partition_size)
         {
-            seqan3::debug_stream << "A partition exceeds the maximum size ("
-                                 << partition_size
-                                 << ">"
-                                 << max_partition_size
-                                 << ") and has to be subsampled. Representative partition member:\n["
-                                 << partition[0].get_mate1()
-                                 << "] -> ["
-                                 << partition[0].get_mate2()
-                                 << "]\n";
+            if (gVerbose)
+            {
+                seqan3::debug_stream << "A partition exceeds the maximum size ("
+                                    << partition_size
+                                    << ">"
+                                    << max_partition_size
+                                    << ") and has to be subsampled. Representative partition member:\n["
+                                    << partition[0].get_mate1()
+                                    << "] -> ["
+                                    << partition[0].get_mate2()
+                                    << "]\n";
+            }
             partition = subsample_partition(partition, max_partition_size);
             partition_size = max_partition_size;
         }

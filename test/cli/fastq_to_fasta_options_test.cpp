@@ -10,6 +10,9 @@
 
 #include "cli_test.hpp"
 
+// To prevent issues when running multiple CLI tests in parallel, give each CLI test unique names:
+struct fastq_to_fasta : public cli_test {};
+
 TEST_F(fastq_to_fasta, no_options)
 {
     cli_test_result result = execute_app("fastq_to_fasta");

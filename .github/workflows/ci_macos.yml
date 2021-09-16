@@ -1,4 +1,5 @@
 name: CI on macOS
+
 on:
   push:
     branches:
@@ -24,36 +25,40 @@ jobs:
       fail-fast: true
       matrix:
         include:
+          - name: "gcc11"
+            cxx: "g++-11"
+            cc: "gcc-11"
+            build_type: Release
+
           - name: "gcc10"
-            os: macos-10.15
             cxx: "g++-10"
             cc: "gcc-10"
             build_type: Release
 
           - name: "gcc9 (c++2a)"
-            os: macos-10.15
             cxx: "g++-9"
             cc: "gcc-9"
             build_type: Release
             cxx_flags: "-std=c++2a"
 
           - name: "gcc8"
-            os: macos-10.15
             cxx: "g++-8"
             cc: "gcc-8"
             build_type: Release
 
           - name: "gcc7"
-            os: macos-10.15
             cxx: "g++-7"
             cc: "gcc-7"
             build_type: Release
 
     steps:
+      - name: Set repository name
+        run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV
+
       - name: Checkout
         uses: actions/checkout@v2
         with:
-          path: src
+          path: ${{ env.REPOSITORY_NAME }}
           fetch-depth: 2
           submodules: recursive
 
@@ -61,13 +66,15 @@ jobs:
         uses: Homebrew/actions/setup-homebrew@master
 
       - name: Install CMake
-        run: bash ./src/lib/seqan3/.github/workflows/scripts/install_cmake.sh
+        run: bash ./${{ env.REPOSITORY_NAME }}/lib/seqan3/.github/workflows/scripts/install_cmake.sh
 
       - name: Install ccache
-        run: bash ./src/lib/seqan3/.github/workflows/scripts/install_via_brew.sh ccache
+        run: bash ./${{ env.REPOSITORY_NAME }}/lib/seqan3/.github/workflows/scripts/install_via_brew.sh ccache
 
       - name: Install compiler ${{ matrix.cxx }}
-        run: bash ./src/lib/seqan3/.github/workflows/scripts/install_via_brew.sh gcc $(echo "${{ matrix.cxx }}" | sed "s/g++-//g")
+        env:
+          CXX: ${{ matrix.cxx }}
+        run: bash ./${{ env.REPOSITORY_NAME }}/lib/seqan3/.github/workflows/scripts/install_via_brew.sh gcc ${CXX/g++-/}
 
       - name: Load ccache
         uses: actions/cache@v2
@@ -92,7 +99,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          cmake ../src -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
+          cmake ../${{ env.REPOSITORY_NAME }} -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} -DCMAKE_CXX_FLAGS="${{ matrix.cxx_flags }}"
 
       - name: Build application
         env:

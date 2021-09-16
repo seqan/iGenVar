@@ -1,22 +1,24 @@
+wildcard_constraints:
+    sample = config["parameters"]["sample"],
+    min_var_length = config["parameters"]["min_var_length"],
+    max_var_length = config["parameters"]["max_var_length"]
+
 rule run_igenvar:
     input:
         bam = config["long_bam"]
     output:
         vcf = "results/caller_comparison/iGenVar/variants.vcf"
     params:
-        sample = config["parameters"]["sample"],
-        min_qual = config["parameters"]["min_qual"],
-        min_var_length = config["parameters"]["min_var_length"],
-        max_var_length = config["parameters"]["max_var_length"]
+        min_qual = config["parameters"]["min_qual"]
     shell:
         """
         ./build/iGenVar/bin/iGenVar -t 1 -j {input.bam} -o {output.vcf} \
-        --vcf_sample_name {params.sample} \
+        --vcf_sample_name {sample} \
         --method cigar_string \
         --method split_read \
-        --min_var_length {params.min_var_length} \
-        --max_var_length {params.max_var_length} \
-        --min_qual {params.min_qual}
+        --min_var_length {min_var_length} \
+        --max_var_length {max_var_length} \
+        --min_qual 2
         """
         # Defaults:
         # --clustering_methods hierarchical_clustering --refinement_methods no_refinement
@@ -36,24 +38,21 @@ rule run_svim:
         io_gb = 100
     params:
         working_dir = "results/caller_comparison/SVIM/",
-        sample = config["parameters"]["sample"],
-        min_var_length = config["parameters"]["min_var_length"],
-        max_var_length = config["parameters"]["max_var_length"]
     threads: 1
     conda:
         "../../../envs/svim.yaml"
     shell:
         """
-        svim alignment --sample {params.sample} \
+        svim alignment --sample {sample} \
         --partition_max_distance 1000 \
         --cluster_max_distance 0.5 \
-        --min_sv_size {params.min_var_length} \
+        --min_sv_size {min_var_length} \
         --segment_gap_tolerance 20 \
         --segment_overlap_tolerance 20 \
         --interspersed_duplications_as_insertions \
         --tandem_duplications_as_insertions \
         --read_names \
-        --max_sv_size {params.max_var_length} \
+        --max_sv_size {max_var_length} \
         --verbose \
         {params.working_dir} {input.bam} {input.genome}
         """
@@ -63,22 +62,20 @@ rule run_svim:
 # SNIFFLES (we have to loop over min_support, because sniffles does not write a quality score into the vcf)
 rule run_sniffles:
     input:
-        bam = config["long_bam_md"],
+        bam = config["long_md_bam"],
     output:
         expand("results/caller_comparison/Sniffles/raw_variants.{minsupport}.vcf",
-               minsupport=list(range(config["minimums"]["sniffles_from"],
-                                     config["minimums"]["sniffles_to"]+1,
-                                     config["minimums"]["sniffles_step"])))
+               minsupport=list(range(config["quality_ranges"]["sniffles"]["from"],
+                                     config["quality_ranges"]["sniffles"]["to"]+1,
+                                     config["quality_ranges"]["sniffles"]["step"])))
     resources:
         mem_mb = 400000,
         time_min = 1200,
         io_gb = 100
     params:
-        min_support = config["parameters"]["min_qual"],
-        min_length = config["parameters"]["min_var_length"],
-        qual_from = config["minimums"]["sniffles_from"],
-        qual_to = config["minimums"]["sniffles_to"]+1,
-        qual_step = config["minimums"]["sniffles_step"]
+        qual_from = config["quality_ranges"]["sniffles"]["from"],
+        qual_to = config["quality_ranges"]["sniffles"]["to"]+1,
+        qual_step = config["quality_ranges"]["sniffles"]["step"]
     threads: 10
     conda:
         "../../../envs/sniffles.yaml"
@@ -87,7 +84,7 @@ rule run_sniffles:
         for i in $(seq {params.qual_from} {params.qual_step} {params.qual_to})
         do
             sniffles --mapped_reads {input.bam} --vcf results/caller_comparison/Sniffles/raw_variants.$i.vcf \
-            --min_support $i --min_length {params.min_length} --threads {threads} --genotype
+            --min_support $i --min_length {min_var_length} --threads {threads} --genotype
         done
         """
 
@@ -137,18 +134,17 @@ rule run_pbsv_call:
         svsig_gz = dynamic("results/caller_comparison/pbsv/signatures.{region}.svsig.gz")
     output:
         vcf = expand("results/caller_comparison/pbsv/variants.min_qual_{minsupport}.vcf",
-                     minsupport=list(range(config["minimums"]["pbsv_from"],
-                                           config["minimums"]["pbsv_to"]+1,
-                                           config["minimums"]["pbsv_step"])))
+                     minsupport=list(range(config["quality_ranges"]["pbsv"]["from"],
+                                           config["quality_ranges"]["pbsv"]["to"]+1,
+                                           config["quality_ranges"]["pbsv"]["step"])))
     resources:
         mem_mb = 400000,
         time_min = 2000,
         io_gb = 100
     params:
-        min_sv_length = config["parameters"]["min_var_length"],
-        qual_from = config["minimums"]["pbsv_from"],
-        qual_to = config["minimums"]["pbsv_to"]+1,
-        qual_step = config["minimums"]["pbsv_step"]
+        qual_from = config["quality_ranges"]["pbsv"]["from"],
+        qual_to = config["quality_ranges"]["pbsv"]["to"]+1,
+        qual_step = config["quality_ranges"]["pbsv"]["step"]
     threads: 1
     conda:
         "../../../envs/pbsv.yaml"
@@ -157,7 +153,7 @@ rule run_pbsv_call:
         """
         for i in $(seq {params.qual_from} {params.qual_step} {params.qual_to})
         do
-            pbsv call --types DEL,INS --min-sv-length {params.min_sv_length} --max-ins-length 100K \
+            pbsv call --types DEL,INS --min-sv-length {min_var_length} --max-ins-length 100K \
             --call-min-reads-all-samples $i --call-min-reads-one-sample $i \
             --call-min-reads-per-strand-all-samples 0 --call-min-bnd-reads-all-samples 0 --call-min-read-perc-one-sample 0 \
             --num-threads {threads} {input.genome} {input.svsig_gz} results/caller_comparison/pbsv/variants.min_qual_$i.vcf

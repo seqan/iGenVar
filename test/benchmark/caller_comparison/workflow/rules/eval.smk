@@ -53,21 +53,21 @@ rule reformat_truvari_results:
 rule cat_truvari_results_all:
     input:
         igenvar  = expand("results/caller_comparison/eval/iGenVar/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["minimums"]["igenvar_from"],
-                                              config["minimums"]["igenvar_to"]+1,
-                                              config["minimums"]["igenvar_step"]))),
+                          min_qual=list(range(config["quality_ranges"]["igenvar"]["from"],
+                                              config["quality_ranges"]["igenvar"]["to"]+1,
+                                              config["quality_ranges"]["igenvar"]["step"]))),
         svim     = expand("results/caller_comparison/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["minimums"]["svim_from"],
-                                              config["minimums"]["svim_to"]+1,
-                                              config["minimums"]["svim_step"]))),
+                          min_qual=list(range(config["quality_ranges"]["svim"]["from"],
+                                              config["quality_ranges"]["svim"]["to"]+1,
+                                              config["quality_ranges"]["svim"]["step"]))),
         sniffles = expand("results/caller_comparison/eval/Sniffles/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["minimums"]["sniffles_from"],
-                                              config["minimums"]["sniffles_to"]+1,
-                                              config["minimums"]["sniffles_step"]))),
+                          min_qual=list(range(config["quality_ranges"]["sniffles"]["from"],
+                                              config["quality_ranges"]["sniffles"]["to"]+1,
+                                              config["quality_ranges"]["sniffles"]["step"]))),
         pbsv = expand("results/caller_comparison/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["minimums"]["pbsv_from"],
-                                              config["minimums"]["pbsv_to"]+1,
-                                              config["minimums"]["pbsv_step"])))
+                          min_qual=list(range(config["quality_ranges"]["pbsv"]["from"],
+                                              config["quality_ranges"]["pbsv"]["to"]+1,
+                                              config["quality_ranges"]["pbsv"]["step"])))
     output:
         igenvar  = temp("results/caller_comparison/eval/igenvar.all_results.txt"),
         svim     = temp("results/caller_comparison/eval/svim.all_results.txt"),

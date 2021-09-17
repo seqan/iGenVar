@@ -48,6 +48,9 @@ std::string const help_page_part_1
     "    -t, --threads (signed 16 bit integer)\n"
     "          Specify the number of decompression threads used for reading BAM\n"
     "          files. Default: 1.\n"
+    "    -v, --verbose\n"
+    "          If you set this flag, we provide additional details about what\n"
+    "          iGenVar does. The detailed output is printed in the standard error.\n"
 };
 
 std::string const help_page_part_2
@@ -162,10 +165,6 @@ std::string expected_res_empty
 std::string expected_err_default_no_err
 {
     "Detect junctions in long reads...\n"
-    "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
-    "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
-    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
-    "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
     "Start clustering...\n"
     "Done with clustering. Found 2 junction clusters.\n"
     "No refinement was selected.\n"
@@ -188,14 +187,23 @@ TEST_F(iGenVar_cli_test, no_options)
 // TODO (irallia): There is an open Issue, if we want to add the verbose option https://github.com/seqan/iGenVar/issues/20
 TEST_F(iGenVar_cli_test, test_verbose_option)
 {
-    cli_test_result result = execute_app("iGenVar", "-v");
+    cli_test_result result = execute_app("iGenVar", "-j", data(default_alignment_long_reads_file_path), "--verbose");
     std::string expected_err
     {
-        "[Error] Unknown option -v. In case this is meant to be a non-option/argument/parameter, please specify "
-        "the start of non-options with '--'. See -h/--help for program information.\n"
+        "Detect junctions in long reads...\n"
+        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
+        "The read depth method for long reads is not yet implemented.\n"
+        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
+        "The read depth method for long reads is not yet implemented.\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
+        "The read depth method for long reads is not yet implemented.\n"
+        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
+        "The read depth method for long reads is not yet implemented.\n"
+        "Start clustering...\n"
+        "Done with clustering. Found 2 junction clusters.\nNo refinement was selected.\n"
     };
-    EXPECT_EQ(result.exit_code, 65280);
-    EXPECT_EQ(result.out, std::string{});
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, expected_res_default);
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -351,13 +359,9 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
     std::string expected_err
     {
         "Detect junctions in long reads...\n"
-        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
         "Start clustering...\n"
         "Done with clustering. Found 2 junction clusters.\n"
@@ -442,10 +446,6 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
     std::string expected_err
     {
         "Detect junctions in long reads...\n"
-        "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
-        "BND: chr21\t41972615\tReverse\tchr22\t17458415\tReverse\t2\t0\tm41327/11677/CCS\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm21263/13017/CCS\n"
-        "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
         "Start clustering...\n"
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
@@ -534,6 +534,7 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data("single_end_mini_example.sam"),
+                                         "--verbose",
                                          "--method cigar_string --method split_read "
                                          "--min_var_length 8 --max_var_length 400");
 

@@ -3,6 +3,7 @@
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sequence_file/output.hpp>
 
+#include "iGenVar.hpp"              // for global variable gVerbose
 #include "structures/breakend.hpp"  // for class Breakend
 #include "structures/junction.hpp"  // for class Junction
 
@@ -43,7 +44,8 @@ void analyze_cigar(std::string const & read_name,
                                       inserted_bases,
                                       tandem_dup_count,
                                       read_name};
-                seqan3::debug_stream << "INS: " << new_junction << "\n";
+                if (gVerbose)
+                    seqan3::debug_stream << "INS: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
             }
             pos_read += length;
@@ -58,7 +60,8 @@ void analyze_cigar(std::string const & read_name,
                                       ""_dna5,
                                       tandem_dup_count,
                                       read_name};
-                seqan3::debug_stream << "DEL: " << new_junction << "\n";
+                if (gVerbose)
+                    seqan3::debug_stream << "DEL: " << new_junction << "\n";
                 junctions.push_back(std::move(new_junction));
             }
             pos_ref += length;

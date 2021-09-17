@@ -1,3 +1,4 @@
+#include "iGenVar.hpp"              // for global variable gVerbose
 #include "modules/sv_detection_methods/analyze_split_read_method.hpp"
 
 #include <seqan3/core/debug_stream.hpp>
@@ -119,7 +120,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                                                                                 next.get_query_start());
                     junctions.emplace_back(mate1, mate2, inserted_bases, tandem_dup_count, read_name);
                 }
-                seqan3::debug_stream << "BND: " << junctions.back() << "\n";
+                if (gVerbose)
+                    seqan3::debug_stream << "BND: " << junctions.back() << "\n";
             }
         }
     }

@@ -1,0 +1,8 @@
+channels:
+ - bioconda
+dependencies:
+ - python>=3.6
+ - pip
+ - pip:
+   - cyvcf2
+   - matplotlib

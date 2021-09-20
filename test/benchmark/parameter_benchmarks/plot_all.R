@@ -7,15 +7,15 @@ args = commandArgs(trailingOnly=TRUE)
 parameter_name = args[2]
 
 if (parameter_name == "min_var_length") {
-  parameter_values = c(10,30,50,100,500)
+  parameter_values = c(10,30,50,100)
 } else if (parameter_name == "max_var_length") {
-  parameter_values = c(1000,10000,100000,1000000,10000000)
+  parameter_values = c(1000,10000,100000,1000000)
 } else if (parameter_name == "max_tol_inserted_length") {
   parameter_values = c(1,10,100,1000)
 } else if (parameter_name == "max_overlap") {
-  parameter_values = c(1,10,100,200)
+  parameter_values = c(1,10,100,1000)
 } else {                    # hierarchical_clustering_cutoff
-  parameter_values = c(20,50,100,200,500,5000)
+  parameter_values = c(20,50,100,1000,10000)
 }
 
 res <- read_tsv(args[1], col_names = c(parameter_name, "min_qual", "metric", "value"))

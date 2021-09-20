@@ -26,12 +26,12 @@ struct cmd_arguments
     /* -r */ refinement_methods refinement_method{no_refinement};                    // default: no refinement
 // SV specifications:
     /* -k */ int32_t min_var_length = 30;
-    /* -l */ int32_t max_var_length = 1000000;
+    /* -l */ int32_t max_var_length = 100000;
     /* -m */ int32_t max_tol_inserted_length = 5;
     /* -n */ int32_t max_overlap = 10;
     /* -q */ int32_t min_qual = 1;
 // Clustering specifications:
-    /* -w */ double hierarchical_clustering_cutoff = 10;
+    /* -w */ double hierarchical_clustering_cutoff = 100;
     /* x? */
 // Refinement specifications:
     /* y, z? */

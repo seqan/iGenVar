@@ -53,6 +53,35 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
     }
 }
 
+std::pair<int32_t, int32_t> get_mate_positions(AlignedSegment current, AlignedSegment next, int32_t distance_on_read)
+{
+    int32_t mate1_pos;
+    if (current.orientation == strand::forward)
+        mate1_pos = current.get_reference_end();
+    else
+        mate1_pos = current.get_reference_start();
+    int32_t mate2_pos;
+    if (next.orientation == strand::forward)
+    {
+        // Correct position of mate 2 for overlapping alignment segments:
+        // Trim alignment of `next` segment at the start to remove overlap
+        if (distance_on_read < 0)
+            mate2_pos = next.get_reference_start() - distance_on_read;
+        else
+            mate2_pos = next.get_reference_start();
+    }
+    else
+    {
+        // Correct position of mate 2 for overlapping alignment segments:
+        // Trim alignment of `next` segment at the end to remove overlap
+        if (distance_on_read < 0)
+            mate2_pos = next.get_reference_end() + distance_on_read;
+        else
+            mate2_pos = next.get_reference_end();
+    }
+    return std::pair(mate1_pos, mate2_pos);
+}
+
 void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segments,
                               std::vector<Junction> & junctions,
                               seqan3::dna5_vector const & query_sequence,
@@ -70,30 +99,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
         // of the read is lower than the given threshold
         if (distance_on_read >= -max_overlap)
         {
-            int32_t mate1_pos;
-            if (current.orientation == strand::forward)
-                mate1_pos = current.get_reference_end();
-            else
-                mate1_pos = current.get_reference_start();
-            int32_t mate2_pos;
-            if (next.orientation == strand::forward)
-            {
-                // Correct position of mate 2 for overlapping alignment segments:
-                // Trim alignment of `next` segment at the start to remove overlap
-                if (distance_on_read < 0)
-                    mate2_pos = next.get_reference_start() - distance_on_read;
-                else
-                    mate2_pos = next.get_reference_start();
-            }
-            else
-            {
-                // Correct position of mate 2 for overlapping alignment segments:
-                // Trim alignment of `next` segment at the end to remove overlap
-                if (distance_on_read < 0)
-                    mate2_pos = next.get_reference_end() + distance_on_read;
-                else
-                    mate2_pos = next.get_reference_end();
-            }
+            auto [ mate1_pos, mate2_pos ] = get_mate_positions(current, next, distance_on_read);
             int32_t distance_on_ref = mate2_pos - mate1_pos - 1;
             // Check that the two consecutive alignment segments either
             // map to different reference sequences (e.g. translocation, interspersed duplication),

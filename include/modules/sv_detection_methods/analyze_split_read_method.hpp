@@ -36,6 +36,32 @@ void split_string(std::string const & str, Container & cont, char const delim = 
  */
 void retrieve_aligned_segments(std::string const & sa_string, std::vector<AlignedSegment> & aligned_segments);
 
+/*! \brief Calculates the end respectively start position of two consecutive mates (current and next
+ *         [AlignedSegment](\ref AlignedSegment)) depending on their orientation and corrects the position of the second
+ *         mate, if they are overlapping.
+ *
+ * \param[in] current          - current [AlignedSegment](\ref AlignedSegment)
+ * \param[in] next             - consecutive next [AlignedSegment](\ref AlignedSegment)
+ * \param[in] distance_on_read - distance between the consecutive aligned segments on the read
+ *
+ * \returns std::pair(mate1_pos, mate2_pos) - a pair of the resulting mate positions
+ *
+ * \details \verbatim
+    Case 1: --current--> --next-->
+    Case 2: --current--> <--next--
+    Case 3: <--current-- --next-->
+    Case 4: <--current-- <--next--
+                       | |
+               mate1_pos mate2_pos
+
+    overlapping Case: --current-->         distance_on_read < 0
+                                --next-->
+                                 ||
+                         mate1_pos mate2_pos
+    \endverbatim
+ */
+std::pair<int32_t, int32_t> get_mate_positions(AlignedSegment current, AlignedSegment next, int32_t distance_on_read);
+
 /*! \brief Build junctions out of aligned_segments.
  *
  * \param[in]       aligned_segments    - vector of [aligned_segments](\ref AlignedSegment)

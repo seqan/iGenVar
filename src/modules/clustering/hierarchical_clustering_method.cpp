@@ -8,7 +8,8 @@
 
 #include "fastcluster.h"                                          // for hclust_fast
 
-std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions)
+std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions,
+                                                       int32_t const partition_max_distance)
 {
     // Partition based on mate 1
     std::vector<Junction> current_partition{};
@@ -25,13 +26,14 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
         {
             if (junction.get_mate1().seq_name != current_partition.back().get_mate1().seq_name ||
                 junction.get_mate1().orientation != current_partition.back().get_mate1().orientation ||
-                abs(junction.get_mate1().position - current_partition.back().get_mate1().position) > 50)
+                std::abs(junction.get_mate1().position - current_partition.back().get_mate1().position)
+                    > partition_max_distance)
             {
                 // Partition based on mate 2
                 std::sort(current_partition.begin(), current_partition.end(), [](Junction const & a, Junction const & b) {
                     return a.get_mate2() < b.get_mate2();
                 });
-                current_partition_splitted = split_partition_based_on_mate2(current_partition);
+                current_partition_splitted = split_partition_based_on_mate2(current_partition, partition_max_distance);
                 for (std::vector<Junction> partition : current_partition_splitted)
                 {
                     final_partitions.push_back(partition);
@@ -46,7 +48,7 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
         std::sort(current_partition.begin(), current_partition.end(), [](Junction a, Junction b) {
             return a.get_mate2() < b.get_mate2();
         });
-        current_partition_splitted = split_partition_based_on_mate2(current_partition);
+        current_partition_splitted = split_partition_based_on_mate2(current_partition, partition_max_distance);
         for (std::vector<Junction> partition : current_partition_splitted)
         {
             final_partitions.push_back(partition);
@@ -55,7 +57,8 @@ std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> con
     return final_partitions;
 }
 
-std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition)
+std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Junction> const & partition,
+                                                                  int32_t const partition_max_distance)
 {
     std::vector<Junction> current_partition{};
     std::vector<std::vector<Junction>> splitted_partition{};
@@ -70,7 +73,8 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
         {
             if (junction.get_mate2().seq_name != current_partition.back().get_mate2().seq_name ||
                 junction.get_mate2().orientation != current_partition.back().get_mate2().orientation ||
-                abs(junction.get_mate2().position - current_partition.back().get_mate2().position) > 50)
+                std::abs(junction.get_mate2().position - current_partition.back().get_mate2().position)
+                    > partition_max_distance)
             {
                 std::sort(current_partition.begin(), current_partition.end());
                 splitted_partition.push_back(current_partition);
@@ -87,25 +91,54 @@ std::vector<std::vector<Junction>> split_partition_based_on_mate2(std::vector<Ju
     return splitted_partition;
 }
 
-int junction_distance(Junction const & lhs, Junction const & rhs)
+double junction_distance(Junction const & lhs, Junction const & rhs)
 {
+    // lhs and rhs connect the same chromosomes with the same orientations
     if ((lhs.get_mate1().seq_name == rhs.get_mate1().seq_name) &&
         (lhs.get_mate1().orientation == rhs.get_mate1().orientation) &&
         (lhs.get_mate2().seq_name == rhs.get_mate2().seq_name) &&
         (lhs.get_mate2().orientation == rhs.get_mate2().orientation))
     {
-        // Reference:                      ................
-        // Junction 1 with mates A and B:     A------->B    (2bp inserted)
-        // Junction 2 with mates C and D:    C------>D      (5bp inserted)
-        // Distance = 1 (distance A-C) + 2 (distance B-D) + 0 (no tandem duplication) + 3 (absolute insertion size difference)
-        return (std::abs(lhs.get_mate1().position - rhs.get_mate1().position) +
-                std::abs(lhs.get_mate2().position - rhs.get_mate2().position) +
-                std::abs((int)(lhs.get_tandem_dup_count() - rhs.get_tandem_dup_count())) +
-                std::abs((int)(lhs.get_inserted_sequence().size() - rhs.get_inserted_sequence().size())));
+        // lhs and rhs are intra-chromosomal adjacencies
+        if (lhs.get_mate1().seq_name == lhs.get_mate2().seq_name)
+        {
+            // the directed size is the directed distance between both mates
+            // the directed size is positive for insertions and negative for deletions
+            int32_t lhs_directed_size = lhs.get_inserted_sequence().size() +
+                                        lhs.get_mate1().position -
+                                        lhs.get_mate2().position;
+            int32_t rhs_directed_size = rhs.get_inserted_sequence().size() +
+                                        rhs.get_mate1().position -
+                                        rhs.get_mate2().position;
+            // lhs and rhs have the same type (either deletion/inversion or insertion)
+            if ((lhs_directed_size < 0 && rhs_directed_size < 0) ||
+                (lhs_directed_size > 0 && rhs_directed_size > 0))
+            {
+                double position_distance = std::abs(lhs.get_mate1().position - rhs.get_mate1().position) / 1000.0;
+                // TODO (irallia 01.09.2021): std::abs((int)(lhs.get_tandem_dup_count() - rhs.get_tandem_dup_count()))
+                double size_distance = ((double)(std::max(std::abs(lhs_directed_size), std::abs(rhs_directed_size))) /
+                                        (double)(std::min(std::abs(lhs_directed_size), std::abs(rhs_directed_size)))) - 1.0;
+                return position_distance + size_distance;
+            }
+            // lhs and rhs have different types
+            else
+            {
+                return std::numeric_limits<double>::max();
+            }
+        }
+        // lhs and rhs are inter-chromosomal adjacencies
+        else
+        {
+            double position_distance1 = std::abs(lhs.get_mate1().position - rhs.get_mate1().position) / 1000.0;
+            double position_distance2 = std::abs(lhs.get_mate2().position - rhs.get_mate2().position) / 1000.0;
+            // TODO (irallia 01.09.2021): std::abs((int)(lhs.get_tandem_dup_count() - rhs.get_tandem_dup_count()))
+            double size_distance = std::abs((double)(lhs.get_inserted_sequence().size() - rhs.get_inserted_sequence().size())) / 1000.0;
+            return position_distance1 + position_distance2 + size_distance;
+        }
     }
     else
     {
-        return std::numeric_limits<int>::max();
+        return std::numeric_limits<double>::max();
     }
 }
 
@@ -118,9 +151,11 @@ inline std::vector<Junction> subsample_partition(std::vector<Junction> const & p
     return subsample;
 }
 
-std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions, double clustering_cutoff)
+std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const & junctions,
+                                                    int32_t const partition_max_distance,
+                                                    double clustering_cutoff)
 {
-    auto partitions = partition_junctions(junctions);
+    auto partitions = partition_junctions(junctions, partition_max_distance);
     std::vector<Cluster> clusters{};
     // Set the maximum partition size that is still feasible to cluster in reasonable time
     // A trade-off between reducing runtime and keeping as many junctions as possible has to be made

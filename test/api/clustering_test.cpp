@@ -12,9 +12,9 @@ using seqan3::operator""_dna5;
 std::string const chrom1 = "chr1";
 int32_t const chrom1_position1 = 12323443;
 int32_t const chrom1_position2 = 94734377;
-int32_t const chrom1_position3 = 112323345;
 std::string const chrom2 = "chr2";
 int32_t const chrom2_position1 = 234432;
+int32_t const chrom2_position2 = 112323345;
 size_t tandem_dup_count = 0;
 std::string const read_name_1 = "m2257/8161/CCS";
 std::string const read_name_2 = "m41327/11677/CCS";
@@ -24,6 +24,8 @@ std::string const read_name_5 = "m23412/9534/CCS";
 std::string const read_name_6 = "m1245/5634/CCS";
 std::string const read_name_7 = "m8765/9765/CCS";
 std::string const read_name_8 = "m13456/11102/CCS";
+
+constexpr int32_t default_partition_max_distance = 1000;
 
 std::vector<Junction> prepare_input_junctions()
 {
@@ -37,14 +39,14 @@ std::vector<Junction> prepare_input_junctions()
                  Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, tandem_dup_count, read_name_3},
         Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
                  Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_4},
-        Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
+        Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
                  Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_5},
         Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                 Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6},
+                 Breakend{chrom2, chrom2_position2 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6},
         Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                 Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7},
+                 Breakend{chrom2, chrom2_position2 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7},
         Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                 Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}
+                 Breakend{chrom2, chrom2_position2 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}
     };
 
     std::sort(input_junctions.begin(), input_junctions.end());
@@ -60,37 +62,37 @@ TEST(simple_clustering, all_separate)
     // Each junction in separate cluster
     std::vector<Cluster> expected_clusters
     {
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
-                             Breakend{chrom2, chrom2_position1 + 8, strand::forward},
-                             ""_dna5, tandem_dup_count, read_name_1}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 8, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_1}
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
-                             Breakend{chrom2, chrom2_position1 - 3, strand::forward},
-                             ""_dna5, tandem_dup_count, read_name_2}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
+                          Breakend{chrom2, chrom2_position1 - 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_2}
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
-                             Breakend{chrom2, chrom2_position1 + 1, strand::forward},
-                             ""_dna5, tandem_dup_count, read_name_3},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 1, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_3},
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
-                             Breakend{chrom2, chrom2_position1 - 1, strand::reverse},
-                             ""_dna5, tandem_dup_count, read_name_4},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
+                          Breakend{chrom2, chrom2_position1 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_4},
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
-                             Breakend{chrom2, chrom2_position1 + 3, strand::forward},
-                             ""_dna5, tandem_dup_count, read_name_5},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_5},
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                             Breakend{chrom2, chrom1_position3 + 8, strand::reverse},
-                             ""_dna5, tandem_dup_count, read_name_6}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
+                          Breakend{chrom2, chrom2_position2 + 8, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_6}
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                             Breakend{chrom2, chrom1_position3 - 1, strand::reverse},
-                             ""_dna5, tandem_dup_count, read_name_7}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
+                          Breakend{chrom2, chrom2_position2 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_7}
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                             Breakend{chrom2, chrom1_position3 + 2, strand::reverse},
-                             ""_dna5, tandem_dup_count, read_name_8}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
+                          Breakend{chrom2, chrom2_position2 + 2, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_8}
         }}
     };
     std::sort(expected_clusters.begin(), expected_clusters.end());
@@ -158,7 +160,7 @@ TEST(simple_clustering, empty_junction_vector)
 TEST(hierarchical_clustering, partitioning)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<std::vector<Junction>> partitions = partition_junctions(input_junctions);
+    std::vector<std::vector<Junction>> partitions = partition_junctions(input_junctions, default_partition_max_distance);
 
     std::vector<std::vector<Junction>> expected_partitions
     {
@@ -175,16 +177,16 @@ TEST(hierarchical_clustering, partitioning)
                      Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_4}, //cluster 2
         },
         {
-            Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
+            Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
                      Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_5}, //cluster 3
         },
         {
             Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                     Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6}, //cluster 4
+                     Breakend{chrom2, chrom2_position2 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6}, //cluster 4
             Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                     Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7}, //cluster 4
+                     Breakend{chrom2, chrom2_position2 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7}, //cluster 4
             Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                     Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}  //cluster 4
+                     Breakend{chrom2, chrom2_position2 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}  //cluster 4
         }
     };
 
@@ -203,34 +205,42 @@ TEST(hierarchical_clustering, partitioning)
 TEST(hierarchical_clustering, strict_clustering)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0);
 
     // Each junction in separate cluster
     std::vector<Cluster> expected_clusters
     {
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
-                          Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, tandem_dup_count, read_name_1}
+                          Breakend{chrom2, chrom2_position1 + 8, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_1}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
-                          Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_2}
+                          Breakend{chrom2, chrom2_position1 - 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_2}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
-                          Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, tandem_dup_count, read_name_3},
+                          Breakend{chrom2, chrom2_position1 + 1, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_3},
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
-                          Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_4},
+                          Breakend{chrom2, chrom2_position1 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_4},
         }},
-        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
-                          Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_5},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_5},
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                          Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6}
+                          Breakend{chrom2, chrom2_position2 + 8, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_6}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                          Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7}
+                          Breakend{chrom2, chrom2_position2 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_7}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                          Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}
+                          Breakend{chrom2, chrom2_position2 + 2, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_8}
         }}
     };
     std::sort(expected_clusters.begin(), expected_clusters.end());
@@ -258,9 +268,9 @@ TEST(hierarchical_clustering, strict_clustering)
 TEST(hierarchical_clustering, clustering_10)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 10);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0.01);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -269,31 +279,39 @@ TEST(hierarchical_clustering, clustering_10)
     //  6       14  14
     //  7           6
 
-    // Only junctions from reads 7 and 8 have a distance < 10 and cluster together
+    // Only junctions from reads 7 and 8 have a distance < 0.01 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
-                          Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, tandem_dup_count, read_name_1}
+                          Breakend{chrom2, chrom2_position1 + 8, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_1}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
-                          Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_2}
+                          Breakend{chrom2, chrom2_position1 - 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_2}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
-                          Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, tandem_dup_count, read_name_3},
+                          Breakend{chrom2, chrom2_position1 + 1, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_3},
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
-                          Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_4},
+                          Breakend{chrom2, chrom2_position1 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_4},
         }},
-        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
-                          Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_5},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_5},
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                          Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6}
+                          Breakend{chrom2, chrom2_position2 + 8, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_6}
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                          Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7},
+                          Breakend{chrom2, chrom2_position2 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_7},
                  Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                          Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}
+                          Breakend{chrom2, chrom2_position2 + 2, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_8}
         }}
     };
     std::sort(expected_clusters.begin(), expected_clusters.end());
@@ -321,9 +339,9 @@ TEST(hierarchical_clustering, clustering_10)
 TEST(hierarchical_clustering, clustering_15)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 15);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0.015);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -332,29 +350,37 @@ TEST(hierarchical_clustering, clustering_15)
     //  6       14  14
     //  7           6
 
-    // Junctions from reads 6-8 and 2-3 have a distance < 15 and cluster together
+    // Junctions from reads 6-8 and 2-3 have a distance < 0.015 and cluster together
     std::vector<Cluster> expected_clusters
     {
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
-                             Breakend{chrom2, chrom2_position1 + 8, strand::forward}, ""_dna5, tandem_dup_count, read_name_1}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 8, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_1}
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
-                             Breakend{chrom2, chrom2_position1 - 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_2},
-                    Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
-                             Breakend{chrom2, chrom2_position1 + 1, strand::forward}, ""_dna5, tandem_dup_count, read_name_3},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 2, strand::forward},
+                          Breakend{chrom2, chrom2_position1 - 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_2},
+                 Junction{Breakend{chrom1, chrom1_position1 + 9, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 1, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_3},
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
-                             Breakend{chrom2, chrom2_position1 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_4},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 5, strand::forward},
+                          Breakend{chrom2, chrom2_position1 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_4},
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
-                             Breakend{chrom2, chrom2_position1 + 3, strand::forward}, ""_dna5, tandem_dup_count, read_name_5},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
+                          Breakend{chrom2, chrom2_position1 + 3, strand::forward},
+                          ""_dna5, tandem_dup_count, read_name_5},
         }},
-        Cluster{{   Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                             Breakend{chrom2, chrom1_position3 + 8, strand::reverse}, ""_dna5, tandem_dup_count, read_name_6},
-                    Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                             Breakend{chrom2, chrom1_position3 - 1, strand::reverse}, ""_dna5, tandem_dup_count, read_name_7},
-                    Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                             Breakend{chrom2, chrom1_position3 + 2, strand::reverse}, ""_dna5, tandem_dup_count, read_name_8}
+        Cluster{{Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
+                          Breakend{chrom2, chrom2_position2 + 8, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_6},
+                 Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
+                          Breakend{chrom2, chrom2_position2 - 1, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_7},
+                 Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
+                          Breakend{chrom2, chrom2_position2 + 2, strand::reverse},
+                          ""_dna5, tandem_dup_count, read_name_8}
         }}
     };
     std::sort(expected_clusters.begin(), expected_clusters.end());
@@ -382,9 +408,9 @@ TEST(hierarchical_clustering, clustering_15)
 TEST(hierarchical_clustering, clustering_25)
 {
     std::vector<Junction> input_junctions = prepare_input_junctions();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 25);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0.025);
 
-    // Distance matrix for junctions from reads 1-3 and 6-8
+    // Position distance matrix for junctions from reads 1-3 and 6-8 (size distance is 0 for all pairs)
     //      1   2   3
     //  1       18  21
     //  2           11
@@ -393,7 +419,7 @@ TEST(hierarchical_clustering, clustering_25)
     //  6       14  14
     //  7           6
 
-    // Junctions from reads 6-8 and 1-3 have a distance < 25 and cluster together
+    // Junctions from reads 6-8 and 1-3 have a distance < 0.025 and cluster together
     std::vector<Cluster> expected_clusters
     {
         Cluster{{Junction{Breakend{chrom1, chrom1_position1 - 5, strand::forward},
@@ -410,18 +436,18 @@ TEST(hierarchical_clustering, clustering_25)
                           Breakend{chrom2, chrom2_position1 - 1, strand::reverse},
                           ""_dna5, tandem_dup_count, read_name_4},
         }},
-        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 92, strand::forward},
+        Cluster{{Junction{Breakend{chrom1, chrom1_position1 + 1245, strand::forward},
                           Breakend{chrom2, chrom2_position1 + 3, strand::forward},
                           ""_dna5, tandem_dup_count, read_name_5},
         }},
         Cluster{{Junction{Breakend{chrom1, chrom1_position2 - 2, strand::forward},
-                          Breakend{chrom2, chrom1_position3 + 8, strand::reverse},
+                          Breakend{chrom2, chrom2_position2 + 8, strand::reverse},
                           ""_dna5, tandem_dup_count, read_name_6},
                  Junction{Breakend{chrom1, chrom1_position2 + 3, strand::forward},
-                          Breakend{chrom2, chrom1_position3 - 1, strand::reverse},
+                          Breakend{chrom2, chrom2_position2 - 1, strand::reverse},
                           ""_dna5, tandem_dup_count, read_name_7},
                  Junction{Breakend{chrom1, chrom1_position2 + 6, strand::forward},
-                          Breakend{chrom2, chrom1_position3 + 2, strand::reverse},
+                          Breakend{chrom2, chrom2_position2 + 2, strand::reverse},
                           ""_dna5, tandem_dup_count, read_name_8}
         }}
     };
@@ -463,7 +489,7 @@ TEST(hierarchical_clustering, subsampling)
     std::sort(input_junctions.begin(), input_junctions.end());
 
     testing::internal::CaptureStderr();
-    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, 0);
+    std::vector<Cluster> clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0);
 
     size_t num_junctions = 0;
     for (Cluster const & cluster : clusters)
@@ -528,19 +554,21 @@ TEST(hierarchical_clustering, cluster_tandem_dup_count)
                                                                                            << " unequal";
     }
 
-    resulting_clusters = hierarchical_clustering_method(input_junctions, 0);   // clustering_cutoff = 0
+    std::vector<Cluster> expected_clusters_2 { input_junctions };
+
+    resulting_clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0);   // clustering_cutoff = 0
     ASSERT_EQ(5, resulting_clusters.size());
 
-    resulting_clusters = hierarchical_clustering_method(input_junctions, 1);   // clustering_cutoff = 1
-    ASSERT_EQ(expected_clusters.size(), resulting_clusters.size());
+    resulting_clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 1);   // clustering_cutoff = 1
+    ASSERT_EQ(expected_clusters_2.size(), resulting_clusters.size());
 
-    for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
+    for (size_t cluster_index = 0; cluster_index < expected_clusters_2.size(); ++cluster_index)
     {
-        EXPECT_TRUE(expected_clusters[cluster_index] == resulting_clusters[cluster_index]) << "Cluster "
-                                                                                           << cluster_index
-                                                                                           << " unequal";
+        EXPECT_TRUE(expected_clusters_2[cluster_index] == resulting_clusters[cluster_index]) << "Cluster "
+                                                                                             << cluster_index
+                                                                                             << " unequal";
     }
 
-    resulting_clusters = hierarchical_clustering_method(input_junctions, 10);  // clustering_cutoff = 10 (default value)
+    resulting_clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 10);  // clustering_cutoff = 10 (default value)
     ASSERT_EQ(1, resulting_clusters.size());
 }

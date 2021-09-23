@@ -89,7 +89,6 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                               int32_t const min_length,
                               int32_t const max_overlap)
 {
-    size_t tandem_dup_count = 0;
     for (size_t i = 1; i < aligned_segments.size(); i++)
     {
         AlignedSegment current = aligned_segments[i-1];
@@ -103,31 +102,33 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
             int32_t distance_on_ref = mate2_pos - mate1_pos - 1;
             // Check that the two consecutive alignment segments either
             // map to different reference sequences (e.g. translocation, interspersed duplication),
+            // have a different orientation (e.g. inversion)
             // have a large distance on the reference (e.g. deletion, inversion, tandem duplication), or
             // have a large distance on the read (e.g. insertion)
-            if (current.ref_name != next.ref_name || //TODO / QUESTION (irallia 23.06.2021): What about translocation on the same ref?
-                std::abs(distance_on_ref) >= min_length ||
+            if (current.ref_name != next.ref_name ||        // 1: Segments not on same chromosome -> translocation
+                std::abs(distance_on_ref) >= min_length ||  // 3: Distance on reference >= minimum SV size -> 4
                 distance_on_read >= min_length)
             {
-                Breakend mate1{current.ref_name,
-                               mate1_pos,
-                               current.orientation};
-                Breakend mate2{next.ref_name,
-                               mate2_pos,
-                               next.orientation};
-                if (distance_on_read < 0)
-                {
-                    // No inserted sequence between overlapping alignment segments
-                    junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
-                }
-                else
+                Breakend mate1{current.ref_name, mate1_pos, current.orientation};
+                Breakend mate2{next.ref_name, mate2_pos, next.orientation};
+                size_t tandem_dup_count = 0;
+                // if novel inserted sequence
+                if (distance_on_read > 0)
                 {
                     auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(),
                                                                                 next.get_query_start());
                     junctions.emplace_back(mate1, mate2, inserted_bases, tandem_dup_count, read_name);
+                    if (gVerbose)
+                        seqan3::debug_stream << "INS: " << junctions.back() << "\n";
                 }
-                if (gVerbose)
-                    seqan3::debug_stream << "BND: " << junctions.back() << "\n";
+                else
+                {
+                    // No inserted sequence between overlapping alignment segments
+                    junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
+                    if (gVerbose)
+                        seqan3::debug_stream << "BND: " << junctions.back() << "\n";
+
+                }
             }
         }
     }
@@ -144,17 +145,11 @@ void analyze_sa_tag(std::string const & query_name,
                     cmd_arguments const & args,
                     std::vector<Junction> & junctions)
 {
-
     std::vector<AlignedSegment> aligned_segments{};
     strand strand = (hasFlagReverseComplement(flag) ? strand::reverse : strand::forward);
     aligned_segments.push_back(AlignedSegment{strand, ref_name, pos, mapq, cigar});
     retrieve_aligned_segments(sa_tag, aligned_segments);
     // sort by query start, query end, mapping quality (in this order):
     std::sort(aligned_segments.begin(), aligned_segments.end());
-    analyze_aligned_segments(aligned_segments,
-                             junctions,
-                             seq,
-                             query_name,
-                             args.min_var_length,
-                             args.max_overlap);
+    analyze_aligned_segments(aligned_segments, junctions, seq, query_name, args.min_var_length, args.max_overlap);
 }

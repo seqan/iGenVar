@@ -8,6 +8,7 @@
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
 #include "structures/cluster.hpp"                                   // for class Cluster
+#include "variant_detection/snp_indel_detection.hpp"                // for detect_snp_and_indel
 #include "variant_detection/variant_detection.hpp"                  // for detect_junctions_in_long_reads_sam_file()
 #include "variant_detection/variant_output.hpp"                     // for find_and_output_variants()
 
@@ -148,6 +149,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     else
     {
         seqan3::debug_stream << "Detect SNPs, insertions and deletions in short reads...\n";
+        detect_snp_and_indel(args.alignment_long_reads_file_path);
     }
 
     std::sort(junctions.begin(), junctions.end());
@@ -244,6 +246,9 @@ int main(int argc, char ** argv)
                                 "or -j or -input_long_reads for a long read file.\n";
         return -1;
     }
+
+    // Set the number of decompression threads
+    seqan3::contrib::bgzf_thread_count = args.threads;
 
     // Check that method selection contains no duplicates.
     std::vector<detection_methods> unique_methods{args.methods};

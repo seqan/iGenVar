@@ -11,6 +11,7 @@ add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_cluste
                                           structures/cluster.cpp
                                           structures/junction.cpp
                                           variant_detection/method_enums.cpp
+                                          variant_detection/snp_indel_detection.cpp
                                           variant_detection/variant_detection.cpp
                                           variant_detection/variant_output.cpp)
 

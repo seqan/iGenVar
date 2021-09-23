@@ -460,11 +460,11 @@ TEST(junction_detection, analyze_sa_tag)
         //          |     |          | |   |            |            |   |     |   |       |   |       |          |   |       |
         // read_pos 11    21        31 41  51           61           71  81    91 101     111 121     131        141 151     161
 
-        // Primary alignment: chr1,70,+,90S30M49S,60,0;
+        // Primary alignment: chr1,71,+,90S30M49S,60,0;
         std::string read_name = "read";
         seqan3::sam_flag flag{0};
         std::string chromosome = "chr1";
-        int32_t pos = 70;
+        int32_t pos = 70; // Decrement by 1 because scanned position is already 0-based
         uint8_t mapq = 60;
         std::vector<seqan3::cigar> test_cigar = {{90, 'S'_cigar_operation},
                                                  {30, 'M'_cigar_operation},
@@ -478,8 +478,8 @@ TEST(junction_detection, analyze_sa_tag)
                              "chr2,102,+,10S10M149S,60,0;"  // TRA 1 (interspersed): chr1 20 -> chr2 102 & chr2 111 -> chr1 21
                              "chr1,21,+,20S10M139S,60,0;"
                              "chr1,31,-,129S10M30S,60,0;"   // INV: (30,40] deleted, [31,41) inserted
-                             "chr1,41,+,40S20M109S,60,0;"   // DUP:TANDEM: [51,60)
-                             "chr1,51,+,60S20M89S,60,0;"    // DUP:TANDEM: [51,60)
+                             "chr1,41,+,40S20M109S,60,0;"   // DUP:TANDEM: [51,60]
+                             "chr1,51,+,60S20M89S,60,0;"    // DUP:TANDEM: [51,60]
                              "chr1,141,+,80S10M79S,60,0;"   // TRA 2 (intrachromosomal): 70 -> 141 & 150 -> 71
         // AS=30 -> primary  "chr1,71,+,90S30M49S,60,0;"    // DUP_1: matches to [81,90]
                                                             // INS: inserted after 100
@@ -501,12 +501,12 @@ TEST(junction_detection, analyze_sa_tag)
                      ""_dna5, 0, read_name},                                                        // (30,40] deleted
             Junction{Breakend{"chr1", 30, strand::reverse}, Breakend{"chr1", 40, strand::forward},  // INV
                      ""_dna5, 0, read_name},                                                        // [31,41) inserted
-            Junction{Breakend{"chr1", 50, strand::reverse}, Breakend{"chr1", 59, strand::reverse},  // DUP:TANDEM
-                     ""_dna5, 0, read_name},                                                        // [51,60) inserted
+            Junction{Breakend{"chr1", 50, strand::forward}, Breakend{"chr1", 59, strand::forward},  // DUP:TANDEM
+                     ""_dna5, 1, read_name},                                                        // [51,60] duplicated
             Junction{Breakend{"chr1", 69, strand::forward}, Breakend{"chr1", 140, strand::forward}, // TRA 2 (intrachr.)
-                     ""_dna5, 0, read_name},                                                        // 70 -> 141
+                     ""_dna5, 0, read_name},                                                        // behind 70 -> 141
             Junction{Breakend{"chr1", 70, strand::reverse}, Breakend{"chr1", 149, strand::reverse}, // TRA 2 (intrachr.)
-                     ""_dna5, 0, read_name},                                                        // 150 -> 71
+                     ""_dna5, 0, read_name},                                                        // behind 150 -> 71
             Junction{Breakend{"chr1", 99, strand::forward}, Breakend{"chr1", 100, strand::forward}, // INS
                      "TACGTACAGA"_dna5, 0, read_name},                                              // inserted after 100
             Junction{Breakend{"chr1", 109, strand::forward}, Breakend{"chr1", 120, strand::forward},// DEL

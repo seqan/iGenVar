@@ -113,7 +113,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 Breakend mate2{next.ref_name, mate2_pos, next.orientation};
                 size_t tandem_dup_count = 0;
                 // if novel inserted sequence
-                if (distance_on_read > 0)
+                if (current.ref_name == next.ref_name && distance_on_read > 0)
                 {
                     auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(),
                                                                                 next.get_query_start());
@@ -123,10 +123,28 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 }
                 else
                 {
-                    // No inserted sequence between overlapping alignment segments
-                    junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
-                    if (gVerbose)
-                        seqan3::debug_stream << "BND: " << junctions.back() << "\n";
+                    // If overlapping aligned segments
+                    //                         |-DUP:TANDEM-|
+                    // ref ----------------------------------------------
+                    //                 ||||||||||||||||||||||
+                    // current_segment ----------------------
+                    //                         ||||||||||||||||||||||
+                    // next_segment            ----------------------
+                    if (current.ref_name == next.ref_name &&
+                        current.get_reference_start() <= next.get_reference_start() &&
+                        next.get_reference_start() < current.get_reference_end())
+                    {
+                        ++tandem_dup_count;
+                        junctions.emplace_back(mate2, mate1, ""_dna5, tandem_dup_count, read_name);
+                        if (gVerbose)
+                            seqan3::debug_stream << "DUP:TANDEM: " << junctions.back() << "\n";
+                    }
+                    else
+                    { // Else TRA or DUP or INV
+                        junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
+                        if (gVerbose)
+                            seqan3::debug_stream << "BND: " << junctions.back() << "\n";
+                    }
 
                 }
             }

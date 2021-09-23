@@ -29,7 +29,7 @@ declare_datasource (FILE single_end_mini_example.sam
 # copies file to <build>/data/output_err.txt
 declare_datasource (FILE output_err.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_err.txt
-                    URL_HASH SHA256=228158fd5712ed3abb48579aa4afd3e1ac074298715ef2fccdf939d011e555af)
+                    URL_HASH SHA256=261e1935e76fc0ac40acb6bf82baa21d285b02447eed67cf014665c57adeaaa2)
 
 # copies file to <build>/data/output_res.txt
 declare_datasource (FILE output_res.txt

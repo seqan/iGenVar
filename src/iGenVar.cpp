@@ -245,31 +245,6 @@ int main(int argc, char ** argv)
     }
 
     // Check that the given parameters are non-negative.
-    if (args.min_var_length < 0)
-    {
-        seqan3::debug_stream << "[Error] You gave a negative min_var_length parameter.\n";
-        return -1;
-    }
-    if (args.max_var_length < 0)
-    {
-        seqan3::debug_stream << "[Error] You gave a negative max_var_length parameter.\n";
-        return -1;
-    }
-    if (args.max_tol_inserted_length < 0)
-    {
-        seqan3::debug_stream << "[Error] You gave a negative max_tol_inserted_length parameter.\n";
-        return -1;
-    }
-    if (args.max_overlap < 0)
-    {
-        seqan3::debug_stream << "[Error] You gave a negative max_overlap parameter.\n";
-        return -1;
-    }
-    if (args.min_qual < 0)
-    {
-        seqan3::debug_stream << "[Error] You gave a negative min_qual parameter.\n";
-        return -1;
-    }
     if (args.hierarchical_clustering_cutoff < 0)
     {
         seqan3::debug_stream << "[Error] You gave a negative hierarchical_clustering_cutoff parameter.\n";

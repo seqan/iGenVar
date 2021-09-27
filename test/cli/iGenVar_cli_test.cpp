@@ -45,7 +45,7 @@ std::string const help_page_part_1
     "          Valid file extensions are: [vcf].\n"
     "    -s, --vcf_sample_name (std::string)\n"
     "          Specify your sample name for the vcf header line. Default: MYSAMPLE.\n"
-    "    -t, --threads (signed 16 bit integer)\n"
+    "    -t, --threads (unsigned 64 bit integer)\n"
     "          Specify the number of decompression threads used for reading BAM\n"
     "          files. Default: 1.\n"
     "    -v, --verbose\n"
@@ -98,30 +98,30 @@ std::string const help_page_advanced
     "          (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
     "          Default: no_refinement.\n"
-    "    -k, --min_var_length (signed 32 bit integer)\n"
+    "    -k, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be\n"
     "          detected. This value needs to be non-negative. Default: 30.\n"
-    "    -l, --max_var_length (signed 32 bit integer)\n"
+    "    -l, --max_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the maximum length of your SVs to be\n"
     "          detected. SVs larger than this threshold can still be output as\n"
     "          translocations. This value needs to be non-negative. Default:\n"
     "          100000.\n"
-    "    -m, --max_tol_inserted_length (signed 32 bit integer)\n"
+    "    -m, --max_tol_inserted_length (unsigned 64 bit integer)\n"
     "          Specify what should be the longest tolerated inserted sequence at\n"
     "          sites of non-INS SVs. This value needs to be non-negative. Default:\n"
     "          50.\n"
-    "    -e, --max_tol_deleted_length (signed 32 bit integer)\n"
+    "    -e, --max_tol_deleted_length (unsigned 64 bit integer)\n"
     "          Specify what should be the longest tolerated deleted sequence at\n"
     "          sites of non-DEL SVs. This value needs to be non-negative. Default:\n"
     "          50.\n"
-    "    -n, --max_overlap (signed 32 bit integer)\n"
+    "    -n, --max_overlap (unsigned 64 bit integer)\n"
     "          Specify the maximum allowed overlap between two alignment segments.\n"
     "          This value needs to be non-negative. Default: 10.\n"
-    "    -q, --min_qual (signed 32 bit integer)\n"
+    "    -q, --min_qual (unsigned 64 bit integer)\n"
     "          Specify the minimum quality (amount of supporting reads) of a\n"
     "          structural variant to be reported in the vcf output file. This value\n"
     "          needs to be non-negative. Default: 1.\n"
-    "    -p, --partition_max_distance (signed 32 bit integer)\n"
+    "    -p, --partition_max_distance (unsigned 64 bit integer)\n"
     "          Specify the maximum distance in bp between members of the same\n"
     "          partition.This value needs to be non-negative. Default: 1000.\n"
     "    -w, --hierarchical_clustering_cutoff (double)\n"
@@ -282,7 +282,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
                                          "--min_var_length -30");
     std::string expected_err
     {
-        "[Error] You gave a negative min_var_length parameter.\n"
+        "[Error] Value parse failed for --min_var_length: Argument -30 could not be parsed as type std::string.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -296,7 +296,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
                                          "--max_var_length -30");
     std::string expected_err
     {
-        "[Error] You gave a negative max_var_length parameter.\n"
+        "[Error] Value parse failed for --max_var_length: Argument -30 could not be parsed as type std::string.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -310,7 +310,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
                                          "--max_tol_inserted_length -30");
     std::string expected_err
     {
-        "[Error] You gave a negative max_tol_inserted_length parameter.\n"
+        "[Error] Value parse failed for --max_tol_inserted_length: Argument -30 could not be parsed as type std::string.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -324,7 +324,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
                                          "--max_overlap -30");
     std::string expected_err
     {
-        "[Error] You gave a negative max_overlap parameter.\n"
+        "[Error] Value parse failed for --max_overlap: Argument -30 could not be parsed as type std::string.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -338,7 +338,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_qual)
                                          "--min_qual -30");
     std::string expected_err
     {
-        "[Error] You gave a negative min_qual parameter.\n"
+        "[Error] Value parse failed for --min_qual: Argument -30 could not be parsed as type std::string.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

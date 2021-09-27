@@ -187,7 +187,7 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
         }
         // Compute condensed distance matrix (upper triangle of the full distance matrix)
         std::vector<double> distmat ((partition_size * (partition_size - 1)) / 2);
-        int k, i, j;
+        size_t k, i, j;
         for (i = k = 0; i < partition_size; ++i) {
             for (j = i + 1; j< partition_size; ++j) {
                 // Compute distance between junctions i and j
@@ -209,7 +209,7 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
         cutree_cdist(partition_size, merge.data(), height.data(), clustering_cutoff, labels.data());
 
         std::unordered_map<int, std::vector<Junction>> label_to_junctions{};
-        for (int i = 0; i < partition_size; ++i)
+        for (size_t i = 0; i < partition_size; ++i)
         {
             if (label_to_junctions.find(labels[i]) != label_to_junctions.end())
             {

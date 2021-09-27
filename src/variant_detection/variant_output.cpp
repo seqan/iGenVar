@@ -27,47 +27,50 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
             {
                 if (mate1.seq_name == mate2.seq_name)
                 {
-                    int32_t mate1_pos = mate1.position;
-                    int32_t mate2_pos = mate2.position;
                     size_t insert_size = clusters[i].get_average_inserted_sequence_size();
                     if (mate1.orientation == strand::forward)
                     {
-                        int32_t distance = mate2_pos - mate1_pos - 1;
-                        int32_t sv_length = insert_size - distance;
-                        // Deletion (sv_length is negative)
-                        if (-sv_length >= args.min_var_length &&
-                            -sv_length <= args.max_var_length &&
-                            insert_size <= args.max_tol_inserted_length)
+                        int distance = mate2.position - mate1.position - 1;
+                        int sv_length = insert_size - distance;
+                        // The SVLEN is neither too short nor too long than specified by the user.
+                        if (std::abs(sv_length) >= args.min_var_length &&
+                            std::abs(sv_length) <= args.max_var_length)
                         {
-                            variant_record tmp{};
-                            tmp.set_chrom(mate1.seq_name);
-                            tmp.set_qual(cluster_size);
-                            tmp.set_alt("<DEL>");
-                            tmp.add_info("SVTYPE", "DEL");
-                            // Increment position by 1 because VCF is 1-based
-                            tmp.set_pos(mate1_pos + 1);
-                            tmp.add_info("SVLEN", std::to_string(sv_length));
-                            // Increment end by 1 because VCF is 1-based
-                            // Decrement end by 1 because deletion ends one base before mate2 begins
-                            tmp.add_info("END", std::to_string(mate2_pos));
-                            tmp.print(out_stream);
-                        }
-                        // Insertion (sv_length is positive)
-                        else if (sv_length >= args.min_var_length &&
-                                 sv_length <= args.max_var_length &&
-                                 distance <= args.max_tol_deleted_length)
-                        {
-                            variant_record tmp{};
-                            tmp.set_chrom(mate1.seq_name);
-                            tmp.set_qual(cluster_size);
-                            tmp.set_alt("<INS>");
-                            tmp.add_info("SVTYPE", "INS");
-                            // Increment position by 1 because VCF is 1-based
-                            tmp.set_pos(mate1_pos + 1);
-                            tmp.add_info("SVLEN", std::to_string(sv_length));
-                            // Increment end by 1 because VCF is 1-based
-                            tmp.add_info("END", std::to_string(mate1_pos + 1));
-                            tmp.print(out_stream);
+                            // Deletion (sv_length is negative)
+                            if (sv_length < 0 &&
+                                insert_size <= args.max_tol_inserted_length)
+                            {
+                                variant_record tmp{};
+                                tmp.set_chrom(mate1.seq_name);
+                                tmp.set_qual(cluster_size);
+                                tmp.set_alt("<DEL>");
+                                tmp.add_info("SVTYPE", "DEL");
+                                // Increment position by 1 because VCF is 1-based
+                                tmp.set_pos(mate1.position + 1);
+                                tmp.add_info("SVLEN", std::to_string(sv_length));
+                                // Increment end by 1 because VCF is 1-based
+                                // Decrement end by 1 because deletion ends one base before mate2 begins
+                                tmp.add_info("END", std::to_string(mate2.position));
+                                tmp.print(out_stream);
+                            }
+                            // Insertion (sv_length is positive)
+                            // for a small deletion inside of an insertion, the distance is a small negative value
+                            else if (sv_length > 0 &&
+                                     distance <= 0 &&
+                                     std::abs(distance) <= args.max_tol_deleted_length)
+                            {
+                                variant_record tmp{};
+                                tmp.set_chrom(mate1.seq_name);
+                                tmp.set_qual(cluster_size);
+                                tmp.set_alt("<INS>");
+                                tmp.add_info("SVTYPE", "INS");
+                                // Increment position by 1 because VCF is 1-based
+                                tmp.set_pos(mate1.position + 1);
+                                tmp.add_info("SVLEN", std::to_string(sv_length));
+                                // Increment end by 1 because VCF is 1-based
+                                tmp.add_info("END", std::to_string(mate1.position + 1));
+                                tmp.print(out_stream);
+                            }
                         }
                     }
                 }

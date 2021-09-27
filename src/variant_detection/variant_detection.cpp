@@ -43,7 +43,7 @@ std::deque<std::string> read_header_information(auto & alignment_file,
     return ref_ids;
 }
 
-void detect_junctions_in_short_reads_sam_file(std::vector<Junction> & junctions,
+void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junction> & junctions,
                                               std::map<std::string, int32_t> & references_lengths,
                                               cmd_arguments const & args)
 {
@@ -169,7 +169,9 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                         }
                     }
                     break;
-                // There are no read pairs in long reads.
+                case detection_methods::read_pairs:
+                    // There are no read pairs in long reads.
+                    break;
                 case detection_methods::read_depth: // Detect junctions from read depth evidence
                     seqan3::debug_stream << "The read depth method for long reads is not yet implemented.\n";
                     break;

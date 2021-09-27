@@ -42,6 +42,8 @@ DEL: chr1	383	Forward	chr1	395	Forward	0	0	read050
 BND: chr1	10	Reverse	chr1	470	Reverse	0	0	read051
 BND: chr1	10	Reverse	chr1	470	Reverse	0	0	read052
 BND: chr1	33	Forward	chr1	471	Forward	0	0	read052
+BND: chr1	511	Reverse	chr1	528	Reverse	0	0	read053
+INS: chr1	508	Reverse	chr1	528	Reverse	6	0	read054
 Start clustering...
-Done with clustering. Found 15 junction clusters.
+Done with clustering. Found 17 junction clusters.
 No refinement was selected.

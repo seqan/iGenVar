@@ -19,12 +19,12 @@ declare_datasource (FILE paired_end_mini_example.sam
 # copies file to <build>/data/single_end_mini_example.sam
 declare_datasource (FILE single_end_mini_example.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/single_end_mini_example.sam
-                    URL_HASH SHA256=41f4591dd511406e5c3a79bf8e07af58110d03ad327592e4d8d6bdd8cbea7e10)
+                    URL_HASH SHA256=2c478cade5851a2b8a3aa7db0064be29bfbe137c8844c25848a6b7698ce69f0a)
 
 # copies file to <build>/data/output_err.txt
 declare_datasource (FILE output_err.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_err.txt
-                    URL_HASH SHA256=5e9c724487b23794ad9b3b4758d5a157f7a1791014e78be0b437932c68fbcd41)
+                    URL_HASH SHA256=386fc7508d96e8bb55333b5d5e36e749e072bad5dc94b3bb1c90b241910d1b60)
 
 # copies file to <build>/data/output_res.txt
 declare_datasource (FILE output_res.txt

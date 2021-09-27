@@ -59,7 +59,7 @@ std::string const help_page_part_2
     "VERSION\n"
     "    Last update: 30-03-2021\n"
     "    iGenVar version: 0.0.3\n"
-    "    SeqAn version: 3.1.0-rc.1\n"
+    "    SeqAn version: 3.1.0-rc.2\n"
     "\n"
     "URL\n"
     "    https://github.com/seqan/iGenVar/\n"
@@ -302,7 +302,8 @@ TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
                                          "--min_var_length -30");
     std::string expected_err
     {
-        "[Error] Value parse failed for --min_var_length: Argument -30 could not be parsed as type std::string.\n"
+        "[Error] Value parse failed for --min_var_length: Argument -30 could not be parsed as type unsigned 64 bit "
+        "integer.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -316,7 +317,8 @@ TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
                                          "--max_var_length -30");
     std::string expected_err
     {
-        "[Error] Value parse failed for --max_var_length: Argument -30 could not be parsed as type std::string.\n"
+        "[Error] Value parse failed for --max_var_length: Argument -30 could not be parsed as type unsigned 64 bit "
+        "integer.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -330,7 +332,8 @@ TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
                                          "--max_tol_inserted_length -30");
     std::string expected_err
     {
-        "[Error] Value parse failed for --max_tol_inserted_length: Argument -30 could not be parsed as type std::string.\n"
+        "[Error] Value parse failed for --max_tol_inserted_length: Argument -30 could not be parsed as type unsigned 64"
+        " bit integer.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -344,7 +347,8 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
                                          "--max_overlap -30");
     std::string expected_err
     {
-        "[Error] Value parse failed for --max_overlap: Argument -30 could not be parsed as type std::string.\n"
+        "[Error] Value parse failed for --max_overlap: Argument -30 could not be parsed as type unsigned 64 bit integer"
+        ".\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -358,7 +362,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_qual)
                                          "--min_qual -30");
     std::string expected_err
     {
-        "[Error] Value parse failed for --min_qual: Argument -30 could not be parsed as type std::string.\n"
+        "[Error] Value parse failed for --min_qual: Argument -30 could not be parsed as type unsigned 64 bit integer.\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

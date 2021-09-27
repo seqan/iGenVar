@@ -35,6 +35,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "Input long read alignments in SAM or BAM format (PacBio, Oxford Nanopore, ...).",
                       seqan3::option_spec::standard,
                       seqan3::input_file_validator{{"sam", "bam"}} );
+    parser.add_option(args.genome_file_path,
+                      'g', "input_genome",
+                      "Input the reference genome in FASTA or FASTQ format.",
+                      seqan3::option_spec::standard,
+                      seqan3::input_file_validator{{"fasta", "fa", "fastq"}} );
     parser.add_option(args.output_file_path, 'o', "output",
                       "The path of the vcf output file. If no path is given, will output to standard output.",
                       seqan3::option_spec::standard,
@@ -124,18 +129,25 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     std::vector<Junction> junctions{};
     std::map<std::string, int32_t> references_lengths{};
 
-    // short reads
-    if (args.alignment_short_reads_file_path != "")
+    if (args.genome_file_path.empty())
     {
-        seqan3::debug_stream << "Detect junctions in short reads...\n";
-        detect_junctions_in_short_reads_sam_file(junctions, references_lengths, args);
-    }
+        // short reads
+        if (!args.alignment_short_reads_file_path.empty())
+        {
+            seqan3::debug_stream << "Detect junctions in short reads...\n";
+            detect_junctions_in_short_reads_sam_file(junctions, references_lengths, args);
+        }
 
-    // long reads
-    if (args.alignment_long_reads_file_path != "")
+        // long reads
+        if (!args.alignment_long_reads_file_path.empty())
+        {
+            seqan3::debug_stream << "Detect junctions in long reads...\n";
+            detect_junctions_in_long_reads_sam_file(junctions, references_lengths, args);
+        }
+    }
+    else
     {
-        seqan3::debug_stream << "Detect junctions in long reads...\n";
-        detect_junctions_in_long_reads_sam_file(junctions, references_lengths, args);
+        seqan3::debug_stream << "Detect SNPs, insertions and deletions in short reads...\n";
     }
 
     std::sort(junctions.begin(), junctions.end());

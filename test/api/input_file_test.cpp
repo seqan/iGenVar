@@ -58,6 +58,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 
     cmd_arguments args{default_alignment_short_reads_file_path,
                        "",
+                       empty_path, // empty genome path,
                        empty_path, // empty output path,
                        default_vcf_sample_name,
                        empty_path, // empty junctions path,
@@ -100,6 +101,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
 
     cmd_arguments args{"",
                        default_alignment_long_reads_file_path,
+                       empty_path, // empty genome path,
                        empty_path, // empty output path,
                        default_vcf_sample_name,
                        empty_path, // empty junctions path,
@@ -216,6 +218,7 @@ TEST(input_file, long_read_sam_file_unsorted)
 
     cmd_arguments args{"",
                        unsorted_sam_path,
+                       empty_path, // empty genome path,
                        empty_path, // empty output path,
                        default_vcf_sample_name,
                        empty_path, // empty junctions path,
@@ -295,6 +298,7 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
 
     cmd_arguments args{short_sam_path,
                        long_sam_path,
+                       empty_path, // empty genome path
                        empty_path, // empty output path
                        default_vcf_sample_name,
                        empty_path, // empty junctions path

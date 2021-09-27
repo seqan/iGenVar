@@ -408,6 +408,7 @@ TEST(junction_detection, analyze_sa_tag)
     // Args
     cmd_arguments args{std::filesystem::path{}, // alignment_short_reads_file_path
                        std::filesystem::path{}, // alignment_long_reads_file_path
+                       std::filesystem::path{}, // genome_file_path
                        std::filesystem::path{}, // output_file_path
                        "MYSAMPLE",              // vcf_sample_name
                        std::filesystem::path{}, // junctions_file_path

@@ -12,7 +12,7 @@ return std::unordered_map<std::string, detection_methods>{{"0", detection_method
                                                           {"3", detection_methods::read_depth},
                                                           {"read_depth", detection_methods::read_depth}};
 // LCOV_EXCL_STOP
-};
+}
 
 std::unordered_map<std::string, clustering_methods> enumeration_names(clustering_methods)
 {
@@ -31,7 +31,7 @@ return std::unordered_map<std::string,
                                               {"candidate_selection_based_on_voting",
                                               clustering_methods::candidate_selection_based_on_voting}};
 // LCOV_EXCL_STOP
-};
+}
 
 std::unordered_map<std::string, refinement_methods> enumeration_names(refinement_methods)
 {
@@ -46,4 +46,4 @@ return std::unordered_map<std::string, refinement_methods>{{"0", refinement_meth
                                                            {"sVirl_refinement_method",
                                                            refinement_methods::sVirl_refinement_method}};
 // LCOV_EXCL_STOP
-};
+}

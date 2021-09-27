@@ -130,7 +130,7 @@ TEST(simple_clustering, clustered)
     };
     std::sort(expected_clusters.begin(), expected_clusters.end());
 
-    ASSERT_EQ(1, resulting_clusters.size());
+    ASSERT_EQ(1u, resulting_clusters.size());
 
     for (size_t cluster_index = 0; cluster_index < expected_clusters.size(); ++cluster_index)
     {
@@ -149,7 +149,7 @@ TEST(simple_clustering, empty_junction_vector)
     std::vector<Cluster> resulting_clusters{};
     resulting_clusters = simple_clustering_method(input_junctions);
 
-    ASSERT_EQ(0, resulting_clusters.size());
+    ASSERT_EQ(0u, resulting_clusters.size());
 
     std::string result_out = testing::internal::GetCapturedStdout();
     EXPECT_EQ("", result_out);
@@ -496,7 +496,7 @@ TEST(hierarchical_clustering, subsampling)
     {
         num_junctions += cluster.get_cluster_size();
     }
-    EXPECT_EQ(num_junctions, 200);
+    EXPECT_EQ(num_junctions, 200u);
 
     std::string const expected_err
     {
@@ -557,7 +557,7 @@ TEST(hierarchical_clustering, cluster_tandem_dup_count)
     std::vector<Cluster> expected_clusters_2 { input_junctions };
 
     resulting_clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 0);   // clustering_cutoff = 0
-    ASSERT_EQ(5, resulting_clusters.size());
+    ASSERT_EQ(5u, resulting_clusters.size());
 
     resulting_clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 1);   // clustering_cutoff = 1
     ASSERT_EQ(expected_clusters_2.size(), resulting_clusters.size());
@@ -570,5 +570,5 @@ TEST(hierarchical_clustering, cluster_tandem_dup_count)
     }
 
     resulting_clusters = hierarchical_clustering_method(input_junctions, default_partition_max_distance, 10);  // clustering_cutoff = 10 (default value)
-    ASSERT_EQ(1, resulting_clusters.size());
+    ASSERT_EQ(1u, resulting_clusters.size());
 }

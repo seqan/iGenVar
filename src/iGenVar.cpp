@@ -168,10 +168,10 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
                                                       args.hierarchical_clustering_cutoff);
             break;
         case 2: // self-balancing_binary_tree,
-            seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented\n";
+            seqan3::debug_stream << "The self-balancing binary tree clustering method is not yet implemented.\n";
             break;
         case 3: // candidate_selection_based_on_voting
-            seqan3::debug_stream << "The candidate selection based on voting clustering method is not yet implemented\n";
+            seqan3::debug_stream << "The candidate selection based on voting clustering method is not yet implemented.\n";
             break;
     }
 
@@ -197,10 +197,10 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             seqan3::debug_stream << "No refinement was selected.\n";
             break;
         case 1: // sViper_refinement_method
-            seqan3::debug_stream << "The sViper refinement method is not yet implemented\n";
+            seqan3::debug_stream << "The sViper refinement method is not yet implemented.\n";
             break;
         case 2: // sVirl_refinement_method
-            seqan3::debug_stream << "The sVirl refinement method is not yet implemented\n";
+            seqan3::debug_stream << "The sVirl refinement method is not yet implemented.\n";
             break;
     }
 

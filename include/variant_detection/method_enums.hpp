@@ -15,7 +15,7 @@ enum detection_methods
 
     //!\cond
     // ATTENTION: Must always be the last item; will be used to determine the number of ids.
-    SIZE //!< Determines the size of the enum.
+    // SIZE //!< Determines the size of the enum.
     //!\endcond
 };
 

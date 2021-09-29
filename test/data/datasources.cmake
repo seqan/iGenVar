@@ -11,6 +11,11 @@ declare_datasource (FILE simulated.minimap2.hg19.coordsorted_cutoff.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/simulated.minimap2.hg19.coordsorted_cutoff.sam
                     URL_HASH SHA256=e59b42c85ed309faf8b3d2f1a8e64a9ccd0a47becd1cb291144efd56be0aa4f9)
 
+# creates the link <build>/data/mini_example_reference.fasta
+declare_datasource (FILE mini_example_reference.fasta
+                    URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/mini_example_reference.fasta
+                    URL_HASH SHA256=a45fed19a4ef58bcd1ac2d48e4a30d82dd74d7cadc64e468da2487946ce41afc)
+
 # copies file to <build>/data/paired_end_mini_example.sam
 declare_datasource (FILE paired_end_mini_example.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/paired_end_mini_example.sam

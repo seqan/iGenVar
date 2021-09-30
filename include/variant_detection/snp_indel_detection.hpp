@@ -4,6 +4,6 @@
 
 /*!
  * \brief Detect Single Nucleotide Polymorphisms (SNPs) and short deletions and insertions.
- * \param reads_filename The file path where to find the sequenced reads.
+ * \param[in] reads_filename - The file path where to find the sequenced reads.
  */
 void detect_snp_and_indel(std::filesystem::path const & reads_filename);

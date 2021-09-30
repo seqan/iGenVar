@@ -40,7 +40,8 @@ std::string const help_page_part_1
     "    -g, --input_genome (std::filesystem::path)\n"
     "          Input the reference genome in FASTA or FASTQ format. Default: \"\".\n"
     "          The input file must exist and read permissions must be granted.\n"
-    "          Valid file extensions are: [fasta, fa, fastq].\n"
+    "          Valid file extensions are: [fasta, fa, fna, ffn, faa, frn, fas,\n"
+    "          fastq, fq, embl, genbank, gb, gbk].\n"
     "    -o, --output (std::filesystem::path)\n"
     "          The path of the vcf output file. If no path is given, will output to\n"
     "          standard output. Default: \"\". Write permissions must be granted.\n"
@@ -299,8 +300,8 @@ TEST_F(iGenVar_cli_test, test_genome_input)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-g", data(default_genome_file_path),
-                                         "-j", data("single_end_mini_example.sam"));
-    std::string const expected_err = "Detect SNPs, insertions and deletions in short reads...\n"
+                                         "-i", data("single_end_mini_example.sam"));
+    std::string const expected_err = "Detect SNPs and indels in short reads...\n"
                                      "[0,0,0,0,0,0,0,0,0,0,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,"
                                      "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,9,9,9,9,9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,"
                                      "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"

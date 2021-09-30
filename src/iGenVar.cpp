@@ -4,6 +4,10 @@
 
 #include <seqan3/contrib/stream/bgzf_stream_util.hpp>       // for bgzf_thread_count
 #include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
+#include <seqan3/io/sequence_file/format_embl.hpp>          // for embl sequence file extensions
+#include <seqan3/io/sequence_file/format_fasta.hpp>         // for fasta sequence file extensions
+#include <seqan3/io/sequence_file/format_fastq.hpp>         // for fastq sequence file extensions
+#include <seqan3/io/sequence_file/format_genbank.hpp>       // for genbank sequence file extensions
 
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
@@ -25,6 +29,18 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.short_copyright = "short_copyright";
     parser.info.url = "https://github.com/seqan/iGenVar/";
 
+    // merge the vectors of all sequence file extensions
+    std::vector<std::string> seq_file_extensions = seqan3::format_fasta::file_extensions;
+    seq_file_extensions.insert(seq_file_extensions.end(),
+                               seqan3::format_fastq::file_extensions.begin(),
+                               seqan3::format_fastq::file_extensions.end());
+    seq_file_extensions.insert(seq_file_extensions.end(),
+                               seqan3::format_embl::file_extensions.begin(),
+                               seqan3::format_embl::file_extensions.end());
+    seq_file_extensions.insert(seq_file_extensions.end(),
+                               seqan3::format_genbank::file_extensions.begin(),
+                               seqan3::format_genbank::file_extensions.end());
+
     // Options - Input / Output:
     parser.add_option(args.alignment_short_reads_file_path,
                       'i', "input_short_reads",
@@ -40,7 +56,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       'g', "input_genome",
                       "Input the reference genome in FASTA or FASTQ format.",
                       seqan3::option_spec::standard,
-                      seqan3::input_file_validator{{"fasta", "fa", "fastq"}} );
+                      seqan3::input_file_validator{seq_file_extensions} );
     parser.add_option(args.output_file_path, 'o', "output",
                       "The path of the vcf output file. If no path is given, will output to standard output.",
                       seqan3::option_spec::standard,
@@ -130,26 +146,26 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     std::vector<Junction> junctions{};
     std::map<std::string, int32_t> references_lengths{};
 
-    if (args.genome_file_path.empty())
+    // short reads
+    // TODO (joergi-w 30.09.2021) Control the selection with the 'method' parameter, not the availability of a genome.
+    if (!args.alignment_short_reads_file_path.empty() && args.genome_file_path.empty())
     {
-        // short reads
-        if (!args.alignment_short_reads_file_path.empty())
-        {
-            seqan3::debug_stream << "Detect junctions in short reads...\n";
-            detect_junctions_in_short_reads_sam_file(junctions, references_lengths, args);
-        }
-
-        // long reads
-        if (!args.alignment_long_reads_file_path.empty())
-        {
-            seqan3::debug_stream << "Detect junctions in long reads...\n";
-            detect_junctions_in_long_reads_sam_file(junctions, references_lengths, args);
-        }
+        seqan3::debug_stream << "Detect junctions in short reads...\n";
+        detect_junctions_in_short_reads_sam_file(junctions, references_lengths, args);
     }
-    else
+
+    // long reads
+    if (!args.alignment_long_reads_file_path.empty())
     {
-        seqan3::debug_stream << "Detect SNPs, insertions and deletions in short reads...\n";
-        detect_snp_and_indel(args.alignment_long_reads_file_path);
+        seqan3::debug_stream << "Detect junctions in long reads...\n";
+        detect_junctions_in_long_reads_sam_file(junctions, references_lengths, args);
+    }
+
+    // SNPs and indels for short reads; genome must be given
+    if (!args.alignment_short_reads_file_path.empty() && !args.genome_file_path.empty())
+    {
+        seqan3::debug_stream << "Detect SNPs and indels in short reads...\n";
+        detect_snp_and_indel(args.alignment_short_reads_file_path);
     }
 
     std::sort(junctions.begin(), junctions.end());

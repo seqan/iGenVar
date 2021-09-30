@@ -54,7 +54,7 @@ void detect_snp_and_indel(std::filesystem::path const & reads_filename)
         for (auto && [length, operation] : record.cigar_sequence())
         {
             // Skip long variants.
-            if (length >= 30) // TODO: use min_length parameter
+            if (length >= 30) // TODO (joergi-w 30.09.2021) Use the min_length parameter here.
             {
                 read_pos += length;
                 ref_pos += length;
@@ -79,8 +79,8 @@ void detect_snp_and_indel(std::filesystem::path const & reads_filename)
                     ref_pos += length;
                     break;
                 }
-                default: // match or mismatch
-                { // TODO: ATTENTION, mismatches are currently ignored and should still be verified with the reference
+                default: // ignore match, mismatch, hard clipping, padding, and skipped region
+                { // TODO (joergi-w 30.09.2021) mismatches are ignored but should be verified with the reference
                     ref_pos += length;
                     read_pos += length;
                 }

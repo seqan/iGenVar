@@ -11,6 +11,7 @@ struct cmd_arguments
 // Input:
     /* -i */ std::filesystem::path alignment_short_reads_file_path{""};
     /* -j */ std::filesystem::path alignment_long_reads_file_path{""};
+    /* -g */ std::filesystem::path genome_file_path{""};
 // Output:
     /* -o */ std::filesystem::path output_file_path{};
     /* -s */ std::string vcf_sample_name{"MYSAMPLE"};

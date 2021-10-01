@@ -1,12 +1,10 @@
-#include <seqan3/alphabet/nucleotide/dna5.hpp>
-#include <seqan3/io/sequence_file/input.hpp>
-#include <seqan3/core/debug_stream.hpp>
-
-#include "cli_test.hpp"
 #include <fstream>
 #include <sstream>
 
+#include "cli_test.hpp"
+
 std::string const default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
+std::string const default_genome_file_path = "mini_example_reference.fasta";
 std::string const vcf_out_file_path = "variants_file_out.vcf";
 std::string const junctions_out_file_path = "junctions_file_out.txt";
 std::string const clusters_out_file_path = "clusters_file_out.txt";
@@ -39,6 +37,11 @@ std::string const help_page_part_1
     "          Input long read alignments in SAM or BAM format (PacBio, Oxford\n"
     "          Nanopore, ...). Default: \"\". The input file must exist and read\n"
     "          permissions must be granted. Valid file extensions are: [sam, bam].\n"
+    "    -g, --input_genome (std::filesystem::path)\n"
+    "          Input the reference genome in FASTA or FASTQ format. Default: \"\".\n"
+    "          The input file must exist and read permissions must be granted.\n"
+    "          Valid file extensions are: [fasta, fa, fna, ffn, faa, frn, fas,\n"
+    "          fastq, fq, embl, genbank, gb, gbk].\n"
     "    -o, --output (std::filesystem::path)\n"
     "          The path of the vcf output file. If no path is given, will output to\n"
     "          standard output. Default: \"\". Write permissions must be granted.\n"
@@ -291,6 +294,33 @@ TEST_F(iGenVar_cli_test, test_intermediate_result_output)
     // This does not specifically check if file exists, rather if its readable.
     EXPECT_TRUE(f2.is_open());
     EXPECT_NE(buffer2.str(), "");
+}
+
+TEST_F(iGenVar_cli_test, test_genome_input)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-g", data(default_genome_file_path),
+                                         "-i", data("single_end_mini_example.sam"));
+    std::string const expected_err = "Detect SNPs and indels in short reads...\n"
+                                     "[0,0,0,0,0,0,0,0,0,0,48,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,9,9,9,9,9,9,9,9,9,9,9,9,1,0,0,0,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,83,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,33,0,0,0,0,0,0,0,15,0,0,0,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,13,2,2,2,2,2,2,2,2,"
+                                     "2,2,2,2,2,2,2,67,3,3,3,67,1,1,1,1,1,1,1,1,1,1,1,1,43,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+                                     "0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,4,4,4,4,4,4,4,4,4,4,4,4,4,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,55,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,"
+                                     "1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,"
+                                     "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,52,"
+                                     "0,0,0,0,0,0,0,0,0,0]\n"
+                                     "Start clustering...\n"
+                                     "Done with clustering. Found 0 junction clusters.\n"
+                                     "No refinement was selected.\n";
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out, std::string{"##fileformat=VCFv4.3\n##source=iGenVarCaller\n"} + general_header_lines);
+    EXPECT_EQ(result.err, expected_err);
 }
 
 // SV specifications:
@@ -612,12 +642,9 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
                                          "--method read_pairs");
 
     // Check the output of junctions:
-    seqan3::debug_stream << "Check the output of junctions... " << '\n';
     EXPECT_EQ(result.out, expected_res_empty + general_header_lines);
-    seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:
-    seqan3::debug_stream << "Check the debug output of junctions... " << '\n';
     std::string expected_err
     {
         "Detect junctions in short reads...\n"
@@ -662,7 +689,6 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.err, expected_err);
-    seqan3::debug_stream << "done. " << '\n';
 }
 
 TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
@@ -675,18 +701,14 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
                                          "--hierarchical_clustering_cutoff 0.1");
 
     // Check the output of junctions:
-    seqan3::debug_stream << "Check the output of junctions... " << '\n';
     std::ifstream output_res_file("../../data/output_res.txt");
     std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.out, output_res_str);
-    seqan3::debug_stream << "done. " << '\n';
 
     // Check the debug output of junctions:
-    seqan3::debug_stream << "Check the debug output of junctions... " << '\n';
     std::ifstream output_err_file("../../data/output_err.txt");
     std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
-    seqan3::debug_stream << "done. " << '\n';
 }

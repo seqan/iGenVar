@@ -4,6 +4,7 @@
 
 #include <seqan3/io/exception.hpp>
 
+#include "iGenVar.hpp"                              // for global variable gVerbose
 #include "variant_detection/variant_detection.hpp"  // for detect_junctions_in_long_reads_sam_file()
 
 using seqan3::operator""_dna5;
@@ -96,6 +97,8 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 
 TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
+    gVerbose = true;
+
     std::vector<Junction> junctions_res{};
     std::map<std::string, int32_t> references_lengths{};
 
@@ -195,10 +198,12 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
         // For debugging #include <seqan3/core/debug_stream.hpp> and use:
         // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
-        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate1() << " == " << junctions_res[i].get_mate1() << "\n"
-        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate2() << " == " << junctions_res[i].get_mate2() << "\n";
+        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ":  "
+        //                      << junctions_expected_res[i].get_mate1() << "\n == " << junctions_res[i].get_mate1() << "\n"
+        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ":  "
+        //                      << junctions_expected_res[i].get_mate2() << "\n == " << junctions_res[i].get_mate2() << "\n"
+        //                      << junctions_expected_res[i].get_inserted_sequence() << " == " << junctions_res[i].get_inserted_sequence() << "\n"
+        //                      << junctions_expected_res[i].get_tandem_dup_count() << " == " << junctions_res[i].get_tandem_dup_count() << "\n";
     }
 }
 

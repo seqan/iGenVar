@@ -223,6 +223,7 @@ std::vector<Cluster> hierarchical_clustering_method(std::vector<Junction> const 
         // Add new clusters: junctions with the same label belong to one cluster
         for (auto & [lab, jun] : label_to_junctions )
         {
+            (void) lab;
             std::sort(jun.begin(), jun.end());
             clusters.emplace_back(jun);
         }

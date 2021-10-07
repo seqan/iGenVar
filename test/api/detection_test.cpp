@@ -31,7 +31,7 @@ TEST(junction_detection, cigar_string_simple_del)
         int32_t const min_var_length = 10;
         analyze_cigar(read_name, chromosome, query_start_pos, cigar_string, seq, junctions_res, min_var_length);
 
-        EXPECT_EQ(junctions_res.size(), 0);
+        EXPECT_EQ(junctions_res.size(), 0u);
     }
 
     // Deletion larger than minimum variant size

@@ -36,7 +36,7 @@ include (FetchContent)
 FetchContent_Declare(
         hclust
         GIT_REPOSITORY https://github.com/cdalitz/hclust-cpp.git
-        GIT_TAG f902638a3ba1be40ffb6ff6a8ddafba91a150c76
+        GIT_TAG 8d2fe71fdc2dc5e95e76485f54b9f075a63a54e6        # commit from 17 Aug 2021
 )
 FetchContent_Populate(hclust)
 add_library ("fastcluster" STATIC ${hclust_SOURCE_DIR}/fastcluster.cpp)

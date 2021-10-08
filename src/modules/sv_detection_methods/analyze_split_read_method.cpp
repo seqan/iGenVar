@@ -1,7 +1,10 @@
-#include "iGenVar.hpp"              // for global variable gVerbose
 #include "modules/sv_detection_methods/analyze_split_read_method.hpp"
 
+#include <numeric>
+
 #include <seqan3/core/debug_stream.hpp>
+
+#include "iGenVar.hpp"              // for global variable gVerbose
 
 using seqan3::operator""_dna5;
 
@@ -89,7 +92,10 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                               int32_t const min_length,
                               int32_t const max_overlap)
 {
-    bool last_element_was_tandem_duplication = false;
+    size_t amount_tandem_dup_segments{0};
+    size_t tandem_dup_length_on_read{0};
+    size_t last_tandem_dup_len{0};
+
     for (size_t i = 1; i < aligned_segments.size(); i++)
     {
         AlignedSegment current = aligned_segments[i-1];
@@ -116,7 +122,10 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 // if novel inserted sequence
                 if (current.ref_name == next.ref_name && distance_on_read > 0)
                 {
-                    last_element_was_tandem_duplication = false;
+                    // Reset tandem dup values to zero
+                    amount_tandem_dup_segments = 0;
+                    tandem_dup_length_on_read = 0;
+                    last_tandem_dup_len = 0;
                     auto inserted_bases = query_sequence | seqan3::views::slice(current.get_query_end(),
                                                                                 next.get_query_start());
                     junctions.emplace_back(mate1, mate2, inserted_bases, tandem_dup_count, read_name);
@@ -136,7 +145,10 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                         current.get_reference_start() <= next.get_reference_start() &&
                         next.get_reference_start() < current.get_reference_end())
                     {
-                        // If multiple overlapping aligned segments (next pair is also duplicated)
+                        tandem_dup_length_on_read += (current.get_reference_end() - next.get_reference_start() + 1);
+                        size_t single_dup_len{0};
+                        // If first pair of a tandem duplication
+                        // Else multiple overlapping aligned segments (next pair is also duplicated)
                         //                         |-DUP:TANDEM-|
                         // ref ----------------------------------------------
                         //                 ||||||||||||||||||||||
@@ -145,29 +157,44 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                         // next_segment            --------------
                         //                         ||||||||||||||||||||||
                         // next_but_one_segment    ----------------------
-                        if(last_element_was_tandem_duplication)
+                        if (amount_tandem_dup_segments == 0)
                         {
-                            tandem_dup_count = junctions.back().get_tandem_dup_count() + 1;
+                            tandem_dup_length_on_read += std::abs(distance_on_ref);
+                            single_dup_len = std::gcd(last_tandem_dup_len, std::abs(distance_on_ref));
+                            tandem_dup_count = tandem_dup_length_on_read / single_dup_len;
+                            junctions.emplace_back(mate2, mate1, ""_dna5, tandem_dup_count, read_name);
+                        }
+                        else
+                        {
+                            single_dup_len = std::gcd(last_tandem_dup_len, std::abs(distance_on_ref));
+                            // In the case of more than two segments describing the tandem duplication, we have to take
+                            // the start of the current segment instead of the start of the next one.
+                            mate2 = Breakend{next.ref_name, current.get_reference_start(), next.orientation};
+                            tandem_dup_count = tandem_dup_length_on_read / single_dup_len;
                             // Replace last element
                             junctions.back() = Junction{mate2, mate1, ""_dna5, tandem_dup_count, read_name};
                         }
-                        else // first pair of a tandem duplication
-                        {
-                            tandem_dup_count+=2;
-                            junctions.emplace_back(mate2, mate1, ""_dna5, tandem_dup_count, read_name);
-                        }
-                        last_element_was_tandem_duplication = true;
+                        ++amount_tandem_dup_segments;
+                        last_tandem_dup_len = std::abs(distance_on_ref);
                         if (gVerbose)
-                            seqan3::debug_stream << "DUP:TANDEM: " << junctions.back() << "\n";
+                        {
+                            seqan3::debug_stream << "DUP:TANDEM: " << junctions.back() << "\n"
+                                                 << (amount_tandem_dup_segments + 1) << " segments describe this tandem"
+                                                 << " duplication. Its length on the read is " << tandem_dup_length_on_read
+                                                 << " and a single duplicated part has a length of " << single_dup_len
+                                                 << " => tandem_dup_count = " << tandem_dup_count << "\n";
+                        }
                     }
                     else
                     { // Else TRA or DUP or INV
-                        last_element_was_tandem_duplication = false;
+                        // Reset tandem dup values to zero
+                        amount_tandem_dup_segments = 0;
+                        tandem_dup_length_on_read = 0;
+                        last_tandem_dup_len = 0;
                         junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
                         if (gVerbose)
                             seqan3::debug_stream << "BND: " << junctions.back() << "\n";
                     }
-
                 }
             }
         }

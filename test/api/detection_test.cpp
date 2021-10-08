@@ -522,7 +522,7 @@ TEST(junction_detection, analyze_sa_tag)
         for (size_t i = 0; i < junctions_expected_res.size(); ++i)
         {
             EXPECT_EQ(junctions_expected_res[i].get_read_name(),
-                    junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
             EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
                         << "Junction " << i << " unequal\n"
                         << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
@@ -534,8 +534,60 @@ TEST(junction_detection, analyze_sa_tag)
         // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 
-    { // Example 2 - multiple tandem duplication
+    { // Example 2 - multiple tandem duplication on read
         seqan3::debug_stream << "----------------------------------Second Example:----------------------------------\n";
+        std::vector<Junction> junctions_res{};
+
+        // pos  11  21                                                  31
+        //      |   |                                                   |
+        // chr1 -1->-----2------>                                       -3->
+        //      |||||||||||||||||\\\\\\\\\\\\ \\\\\\\\\\\\ \\\\\\\\\\\\ ||||
+        // read --->-DUP:TANDEM->-DUP:TANDEM->-DUP:TANDEM->-DUP:TANDEM->--->
+        //          |            |            |            |            |
+        // read_pos 11           21           31           41           51
+
+        // Primary alignment: chr1,11,+,20M39S,60,0;
+        std::string read_name = "read";
+        seqan3::sam_flag flag{0};
+        std::string chromosome = "chr1";
+        int32_t pos = 10; // Decrement by 1 because scanned position is already 0-based
+        uint8_t mapq = 60;
+        std::vector<seqan3::cigar> test_cigar = {{20, 'M'_cigar_operation}, {39, 'S'_cigar_operation}};
+        seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5}; // 1 - 50
+
+        // Supplementary alignments
+        std::string sa_tag = /*"chr1,11,+,20M39S,60,0;"*/   // AS=30 -> primary;
+                             "chr1,21,+,20S10M29S,60,0;"    // DUP:TANDEM: [21,30]
+                             "chr1,21,+,30S10M19S,60,0;"    // DUP:TANDEM: [21,30]
+                             "chr1,21,+,40S19M,60,0;";      // DUP:TANDEM: [21,30]
+
+        analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
+
+        std::vector<Junction> junctions_expected_res =
+        {                                                                     // +1 as we are 0 based but SAM is 1 based
+            Junction{Breakend{"chr1", 20, strand::forward}, Breakend{"chr1", 29, strand::forward}, // DUP:TANDEM
+                     ""_dna5, 4, read_name}                                                        // [21,30] duplicated
+        };
+
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
+                        << "Junction " << i << " unequal\n"
+                        << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                        << "\nMate 2 equal: " << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                        << "\n";
+        }
+
+        // For debugging use:
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
+    }
+
+    { // Example 3 - multiple tandem duplication on read and ref
+        seqan3::debug_stream << "----------------------------------Third Example:----------------------------------\n";
         std::vector<Junction> junctions_res{};
 
         // pos  11  21           31                                                  41
@@ -564,8 +616,8 @@ TEST(junction_detection, analyze_sa_tag)
 
         std::vector<Junction> junctions_expected_res =
         {                                                                     // +1 as we are 0 based but SAM is 1 based
-            Junction{Breakend{"chr1", 30, strand::forward}, Breakend{"chr1", 39, strand::forward}, // DUP:TANDEM
-                     ""_dna5, 3, read_name}                                                        // [21,40] duplicated
+            Junction{Breakend{"chr1", 20, strand::forward}, Breakend{"chr1", 39, strand::forward}, // DUP:TANDEM
+                     ""_dna5, 5, read_name}                                                        // [21,40] duplicated
         };
 
         ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
@@ -573,7 +625,7 @@ TEST(junction_detection, analyze_sa_tag)
         for (size_t i = 0; i < junctions_expected_res.size(); ++i)
         {
             EXPECT_EQ(junctions_expected_res[i].get_read_name(),
-                    junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
             EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
                         << "Junction " << i << " unequal\n"
                         << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
@@ -585,8 +637,61 @@ TEST(junction_detection, analyze_sa_tag)
         // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 
-    { // Example 3
-        seqan3::debug_stream << "----------------------------------Third Example:----------------------------------\n";
+    { // Example 4 - multiple tandem duplication on read and ref
+        seqan3::debug_stream << "----------------------------------Fourth Example:----------------------------------\n";
+        std::vector<Junction> junctions_res{};
+
+        // pos  11  21           31           41                                     51
+        //      |   |            |            |                                      |
+        // chr1 -1->-----2------>-----2------>-----2------>                          -3->
+        //      ||||||||||||||||||||||||||||||\\\\\\\\\\\\ \\\\\\\\\\\\ \\\\\\\\\\\\ ||||
+        // read --->-DUP:TANDEM->-DUP:TANDEM->-DUP:TANDEM->-DUP:TANDEM->-DUP:TANDEM->--->
+        //          |            |            |            |            |            |
+        // read_pos 11           21           31           41           51           61
+
+        // Primary alignment: chr1,11,+,40M29S,60,0;
+        std::string read_name = "read";
+        seqan3::sam_flag flag{0};
+        std::string chromosome = "chr1";
+        int32_t pos = 10; // Decrement by 1 because scanned position is already 0-based
+        uint8_t mapq = 60;
+        std::vector<seqan3::cigar> test_cigar = {{40, 'M'_cigar_operation}, {29, 'S'_cigar_operation}};
+        seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"_dna5}; // 1 - 50
+
+        // Supplementary alignments
+        std::string sa_tag = /*"chr1,11,+,40M29S,60,0;"*/   // AS=30 -> primary;
+                             "chr1,31,+,40S29M,60,0;";      // DUP:TANDEM: [21,50]
+
+        analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
+
+        // TODO (irallia 01.10.2021): How likely is this special case, do we need to solve this for CNV?
+        // The algorithm currently finds only 2 duplications, since it does not perceive the first one in the reference
+        // and thus interprets the other 2 as one longer one and returns a start position of 30 instead of 20.
+        std::vector<Junction> junctions_expected_res =
+        {                                                                     // +1 as we are 0 based but SAM is 1 based
+            Junction{Breakend{"chr1", 30, strand::forward}, Breakend{"chr1", 49, strand::forward}, // DUP:TANDEM
+                     ""_dna5, 2, read_name}                                                        // [21,50] duplicated
+        };
+
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
+
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
+                        << "Junction " << i << " unequal\n"
+                        << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                        << "\nMate 2 equal: " << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                        << "\n";
+        }
+
+        // For debugging use:
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
+    }
+
+    { // Example 5
+        seqan3::debug_stream << "----------------------------------Fifth Example:----------------------------------\n";
         std::vector<Junction> junctions_res{};
 
         // chr1:                                        ??? GGGCTC TTCGGATCG GGCAGCATCAACGCT AAAC ???????????????? GGCCCC TGACAGGATA
@@ -663,7 +768,7 @@ TEST(junction_detection, analyze_sa_tag)
         for (size_t i = 0; i < junctions_expected_res.size(); ++i)
         {
             EXPECT_EQ(junctions_expected_res[i].get_read_name(),
-                    junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+                      junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
             EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
                         << "Junction " << i << " unequal\n"
                         << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())

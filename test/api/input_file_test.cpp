@@ -1,10 +1,9 @@
-#include <gtest/gtest.h>
+#include "api_test.hpp"
 
 #include <fstream>
 
 #include <seqan3/io/exception.hpp>
 
-#include "iGenVar.hpp"                              // for global variable gVerbose
 #include "variant_detection/variant_detection.hpp"  // for detect_junctions_in_long_reads_sam_file()
 
 using seqan3::operator""_dna5;
@@ -86,7 +85,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
     {
         EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
-        // For debugging #include <seqan3/core/debug_stream.hpp> and use:
+        // For debugging use:
         // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
         //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ": \n"
         //                      << junctions_expected_res[i].get_mate1() << " == " << junctions_res[i].get_mate1() << "\n"
@@ -97,7 +96,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
 
 TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
-    gVerbose = true;
+    auto verboseGuard = verbose_guard(true); // will reset back to the original state, after leaving this scope
 
     std::vector<Junction> junctions_res{};
     std::map<std::string, int32_t> references_lengths{};
@@ -196,7 +195,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
     {
         EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
-        // For debugging #include <seqan3/core/debug_stream.hpp> and use:
+        // For debugging use:
         // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
         //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ":  "
         //                      << junctions_expected_res[i].get_mate1() << "\n == " << junctions_res[i].get_mate1() << "\n"

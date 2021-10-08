@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "api_test.hpp"
 
 #include "structures/breakend.hpp"
 #include "variant_detection/method_enums.hpp"

@@ -1,7 +1,6 @@
-#include <gtest/gtest.h>
+#include "api_test.hpp"
 
 #include <seqan3/alphabet/cigar/cigar.hpp>
-#include <seqan3/core/debug_stream.hpp>     // include for debugging
 #include <seqan3/io/sam_file/sam_flag.hpp>
 
 #include "modules/sv_detection_methods/analyze_cigar_method.hpp"        // for the split read method
@@ -233,7 +232,8 @@ TEST(junction_detection, retrieve_aligned_segments)
 
 TEST(junction_detection, analyze_aligned_segments)
 {
-    gVerbose = true;
+    auto verboseGuard = verbose_guard(true); // will reset back to the original state, after leaving this scope
+
     // read: |as_1||..as_2..||..as_3..||....as_4....||_5||as_6||..as_7..|
     //
     //                  100   106       116           130                 150   156
@@ -423,7 +423,8 @@ TEST(junction_detection, overlapping_segments)
 
 TEST(junction_detection, analyze_sa_tag)
 {
-    gVerbose = true;
+    auto verboseGuard = verbose_guard(true); // will reset back to the original state, after leaving this scope
+
     // Args
     cmd_arguments args{std::filesystem::path{}, // alignment_short_reads_file_path
                        std::filesystem::path{}, // alignment_long_reads_file_path

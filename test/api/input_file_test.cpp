@@ -86,11 +86,7 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
         EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
         // For debugging use:
-        // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
-        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate1() << " == " << junctions_res[i].get_mate1() << "\n"
-        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate2() << " == " << junctions_res[i].get_mate2() << "\n";
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 }
 
@@ -196,13 +192,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
         EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
         // For debugging use:
-        // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
-        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ":  "
-        //                      << junctions_expected_res[i].get_mate1() << "\n == " << junctions_res[i].get_mate1() << "\n"
-        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ":  "
-        //                      << junctions_expected_res[i].get_mate2() << "\n == " << junctions_res[i].get_mate2() << "\n"
-        //                      << junctions_expected_res[i].get_inserted_sequence() << " == " << junctions_res[i].get_inserted_sequence() << "\n"
-        //                      << junctions_expected_res[i].get_tandem_dup_count() << " == " << junctions_res[i].get_tandem_dup_count() << "\n";
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 }
 

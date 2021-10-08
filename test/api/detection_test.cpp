@@ -491,16 +491,6 @@ TEST(junction_detection, analyze_sa_tag)
 
         analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 
-        // seqan3::debug_stream << "First Example:\n";
-        // for (size_t i = 0; i < junctions_res.size(); ++i)
-        // {
-        //     seqan3::debug_stream << "---- Junction: ----\n";
-        //     seqan3::debug_stream << "Read name: " << junctions_res[i].get_read_name() << "\n";
-        //     seqan3::debug_stream << "Mate 1: " << junctions_res[i].get_mate1() << "\n";
-        //     seqan3::debug_stream << "Mate 2: " << junctions_res[i].get_mate2() << "\n";
-        //     seqan3::debug_stream << "Sequence: " << junctions_res[i].get_inserted_sequence() << "\n";
-        // }
-
         std::vector<Junction> junctions_expected_res =
         {                                                                         // +1 as we are 0 based but SAM is 1 based
             Junction{Breakend{"chr1", 19, strand::forward}, Breakend{"chr2", 101, strand::forward}, // TRA 1 (interspersed)
@@ -541,14 +531,7 @@ TEST(junction_detection, analyze_sa_tag)
         }
 
         // For debugging use:
-        // for (size_t i = 0; i < junctions_res.size(); ++i)
-        // {
-        //     seqan3::debug_stream << "------------------------------------------------------------------------------\n    "
-        //                          << junctions_expected_res[i].get_mate1() << "\n == " << junctions_res[i].get_mate1() << "\n    "
-        //                          << junctions_expected_res[i].get_mate2() << "\n == " << junctions_res[i].get_mate2() << "\n"
-        //                          << junctions_expected_res[i].get_inserted_sequence() << " == " << junctions_res[i].get_inserted_sequence() << "\n"
-        //                          << junctions_expected_res[i].get_tandem_dup_count() << " == " << junctions_res[i].get_tandem_dup_count() << "\n";
-        // }
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
 
     }
     { // Example 2
@@ -638,14 +621,7 @@ TEST(junction_detection, analyze_sa_tag)
         }
 
         // For debugging use:
-        // for (size_t i = 0; i < junctions_res.size(); ++i)
-        // {
-        //     seqan3::debug_stream << "------------------------------------------------------------------------------\n    "
-        //                          << junctions_expected_res[i].get_mate1() << "\n == " << junctions_res[i].get_mate1() << "\n    "
-        //                          << junctions_expected_res[i].get_mate2() << "\n == " << junctions_res[i].get_mate2() << "\n"
-        //                          << junctions_expected_res[i].get_inserted_sequence() << " == " << junctions_res[i].get_inserted_sequence() << "\n"
-        //                          << junctions_expected_res[i].get_tandem_dup_count() << " == " << junctions_res[i].get_tandem_dup_count() << "\n";
-        // }
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 }
 

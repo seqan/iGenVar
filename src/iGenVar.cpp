@@ -4,10 +4,7 @@
 
 #include <seqan3/contrib/stream/bgzf_stream_util.hpp>       // for bgzf_thread_count
 #include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
-#include <seqan3/io/sequence_file/format_embl.hpp>          // for embl sequence file extensions
-#include <seqan3/io/sequence_file/format_fasta.hpp>         // for fasta sequence file extensions
-#include <seqan3/io/sequence_file/format_fastq.hpp>         // for fastq sequence file extensions
-#include <seqan3/io/sequence_file/format_genbank.hpp>       // for genbank sequence file extensions
+#include <seqan3/io/sequence_file/input.hpp>                // for sequence input file extensions
 
 #include "modules/clustering/hierarchical_clustering_method.hpp"    // for the hierarchical clustering method
 #include "modules/clustering/simple_clustering_method.hpp"          // for the simple clustering method
@@ -29,18 +26,6 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.info.short_copyright = "short_copyright";
     parser.info.url = "https://github.com/seqan/iGenVar/";
 
-    // merge the vectors of all sequence file extensions
-    std::vector<std::string> seq_file_extensions = seqan3::format_fasta::file_extensions;
-    seq_file_extensions.insert(seq_file_extensions.end(),
-                               seqan3::format_fastq::file_extensions.begin(),
-                               seqan3::format_fastq::file_extensions.end());
-    seq_file_extensions.insert(seq_file_extensions.end(),
-                               seqan3::format_embl::file_extensions.begin(),
-                               seqan3::format_embl::file_extensions.end());
-    seq_file_extensions.insert(seq_file_extensions.end(),
-                               seqan3::format_genbank::file_extensions.begin(),
-                               seqan3::format_genbank::file_extensions.end());
-
     // Options - Input / Output:
     parser.add_option(args.alignment_short_reads_file_path,
                       'i', "input_short_reads",
@@ -54,9 +39,9 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       seqan3::input_file_validator{{"sam", "bam"}} );
     parser.add_option(args.genome_file_path,
                       'g', "input_genome",
-                      "Input the reference genome in FASTA or FASTQ format.",
+                      "Input the sequence of the reference genome.",
                       seqan3::option_spec::standard,
-                      seqan3::input_file_validator{seq_file_extensions} );
+                      seqan3::input_file_validator<seqan3::sequence_file_input<>>{} );
     parser.add_option(args.output_file_path, 'o', "output",
                       "The path of the vcf output file. If no path is given, will output to standard output.",
                       seqan3::option_spec::standard,

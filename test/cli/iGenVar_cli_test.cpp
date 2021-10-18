@@ -302,8 +302,8 @@ TEST_F(iGenVar_cli_test, test_genome_input)
                                          "-g", data(default_genome_file_path),
                                          "-i", data("single_end_mini_example.sam"));
     std::string const expected_err = "Detect SNPs and indels in short reads...\n"
-                                     "Active regions of chr1: [6,15] [53,74] [121,130] [176,185] [184,193] [262,304] "
-                                     "[311,319] [332,354] [364,373] [381,398] [467,476]\n"
+                                     "Active regions of chr1: [(6,15),(53,74),(121,130),(176,185),(184,193),(262,304),"
+                                     "(311,319),(332,354),(364,373),(381,398),(467,476)]\n"
                                      "Start clustering...\n"
                                      "Done with clustering. Found 0 junction clusters.\n"
                                      "No refinement was selected.\n";

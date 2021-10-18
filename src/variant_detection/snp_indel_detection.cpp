@@ -33,8 +33,6 @@ void update_activity_for_record(std::vector<unsigned> & activity,
             case 'S': // insertion or soft clip
             {
                 activity[ref_pos] += 1u;
-                if (gVerbose)
-                    seqan3::debug_stream << "SI activity[" << ref_pos << "]\t" << activity[ref_pos] << std::endl;
                 read_pos += length;
                 break;
             }
@@ -42,8 +40,6 @@ void update_activity_for_record(std::vector<unsigned> & activity,
             {
                 for (unsigned idx = 0; idx < length; ++idx)
                     ++activity[ref_pos + idx];
-                if (gVerbose)
-                    seqan3::debug_stream << "D  activity[" << ref_pos << "]\t" << activity[ref_pos] << std::endl;
                 ref_pos += length;
                 break;
             }

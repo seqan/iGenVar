@@ -165,7 +165,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     if (!args.alignment_short_reads_file_path.empty() && !args.genome_file_path.empty())
     {
         seqan3::debug_stream << "Detect SNPs and indels in short reads...\n";
-        detect_snp_and_indel(args.alignment_short_reads_file_path);
+        detect_snp_and_indel(args.alignment_short_reads_file_path, args.min_var_length);
     }
 
     std::sort(junctions.begin(), junctions.end());

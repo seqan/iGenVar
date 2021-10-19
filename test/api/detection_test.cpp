@@ -1,7 +1,6 @@
-#include <gtest/gtest.h>
+#include "api_test.hpp"
 
 #include <seqan3/alphabet/cigar/cigar.hpp>
-// #include <seqan3/core/debug_stream.hpp>  // include for debugging
 #include <seqan3/io/sam_file/sam_flag.hpp>
 
 #include "modules/sv_detection_methods/analyze_cigar_method.hpp"        // for the split read method
@@ -233,6 +232,25 @@ TEST(junction_detection, retrieve_aligned_segments)
 
 TEST(junction_detection, analyze_aligned_segments)
 {
+    auto verboseGuard = verbose_guard(true); // will reset back to the original state, after leaving this scope
+
+    // read: |as_1||..as_2..||..as_3..||....as_4....||_5||as_6||..as_7..|
+    //
+    //                  100   106       116           130                 150   156
+    //                   |     |         |             |                   |     |
+    // chr1:             .....................................................................
+    // aligned_segment1: |as_1|
+    // aligned_segment3:       |..as_3..|
+    // aligned_segment4:                 |....as_4....|
+    // aligned_segment5:                               |_5|
+    // aligned_segment6:                                                   |as_6|
+    // aligned_segment7:                                                         |..as_7..|
+
+    //                  100
+    //                   |
+    // chr2:             .....................................................................
+    // aligned_segment2: |..as_2..|
+
     AlignedSegment aligned_segment1 {strand::forward, "chr1", 100, 60, std::vector<seqan3::cigar>{{6, 'M'_cigar_operation},
                                                                                                   {94, 'S'_cigar_operation}}};
     AlignedSegment aligned_segment2 {strand::forward, "chr2", 100, 60, std::vector<seqan3::cigar>{{6, 'S'_cigar_operation},
@@ -405,6 +423,8 @@ TEST(junction_detection, overlapping_segments)
 
 TEST(junction_detection, analyze_sa_tag)
 {
+    auto verboseGuard = verbose_guard(true); // will reset back to the original state, after leaving this scope
+
     // Args
     cmd_arguments args{std::filesystem::path{}, // alignment_short_reads_file_path
                        std::filesystem::path{}, // alignment_long_reads_file_path
@@ -426,178 +446,182 @@ TEST(junction_detection, analyze_sa_tag)
                        1000,                    // default partition_max_distance
                        0.5};                    // default hierarchical_clustering_cutoff
 
-    std::vector<Junction> junctions_res{};
+    { // Example 1
+        seqan3::debug_stream << "----------------------------------First Example:----------------------------------\n";
+        std::vector<Junction> junctions_res{};
 
-// Example 1
+        // pos  11        21  31       41  51                        61        71  81      91         101 111    121         131 141     151
+        //      |         |   |        |   |                         |         |   |       |           |   |      |           |   |       |
+        // chr1 -1->      -2->-------> -3->------------>             -4->      -5->------->-6->        -7->------>-8->        -9->------->-10->
+        //      ||||      |||||||||||| |||||||||||||||||\\\\\\\\\\\\ ||||      ||||||||||||||||        ||||       ||||        ||||
+        // read --->-TRA->---><--INV-- --->-DUP:TANDEM->-DUP:TANDEM->--->-TRA->--->-DUP_1->--->--INS-->--->..DEL..--->-DUP_2->--->
+        //          ||||||                                               ||||||                                       ||||||||
+        // chr2 --->----->--->                                  chr1 -9->----->-10->                         chr1 -5->------->-6->
+        //          |     |          | |   |            |            |   |     |   |       |   |       |          |   |       |
+        // read_pos 11    21        31 41  51           61           71  81    91 101     111 121     131        141 151     161
 
-    // pos  11        21  31       41  51                        61        71  81      91         101 111    121         131 141     151
-    //      |         |   |        |   |                         |         |   |       |           |   |      |           |   |       |
-    // chr1 -1->      -2->-------> -3->------------>             -4->      -5->------->-6->        -7->------>-8->        -9->------->-10->
-    //      ||||      |||||||||||| |||||||||||||||||\\\\\\\\\\\\ ||||      ||||||||||||||||        ||||       ||||        ||||
-    // read --->-TRA->---><--INV-- --->-DUP:TANDEM->-DUP:TANDEM->--->-TRA->--->-DUP_1->--->--INS-->--->..DEL..--->-DUP_2->--->
-    //          ||||||                                               ||||||                                       ||||||||
-    // chr2 --->----->--->                                  chr1 -9->----->-10->                         chr1 -5->------->-6->
-    //          |     |          | |   |            |            |   |     |   |       |   |       |          |   |       |
-    // read_pos 11    21        31 41  51           61           71  81    91 101     111 121     131        141 151     161
+        // Primary alignment: chr1,70,+,90S30M49S,60,0;
+        std::string read_name = "read";
+        seqan3::sam_flag flag{0};
+        std::string chromosome = "chr1";
+        int32_t pos = 70;
+        uint8_t mapq = 60;
+        std::vector<seqan3::cigar> test_cigar = {{90, 'S'_cigar_operation},
+                                                 {30, 'M'_cigar_operation},
+                                                 {49, 'S'_cigar_operation}};
+        seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC" //   1 -  50
+                                   "GCGATACGCGTCGCAACTACGACGCCATCAGCAGGCGACTGACAGGATAT" //  51 - 100
+                                   "GGGTTAGTCCCTATCGATCGTACGTACAGATTCGATGGGGGAATTTGGAT" // 101 - 150
+                                   "ACGGTTACGGGAGACCCTGA"_dna5};                        // 151 - 170
+        // Supplementary alignments
+        std::string sa_tag = "chr1,11,+,10M159S,60,0;"
+                             "chr2,102,+,10S10M149S,60,0;"  // TRA 1 (interspersed): chr1 20 -> chr2 102 & chr2 111 -> chr1 21
+                             "chr1,21,+,20S10M139S,60,0;"
+                             "chr1,31,-,129S10M30S,60,0;"   // INV: (30,40] deleted, [31,41) inserted
+                             "chr1,41,+,40S20M109S,60,0;"   // DUP:TANDEM: [51,60)
+                             "chr1,51,+,60S20M89S,60,0;"    // DUP:TANDEM: [51,60)
+                             "chr1,141,+,80S10M79S,60,0;"   // TRA 2 (intrachromosomal): 70 -> 141 & 150 -> 71
+        // AS=30 -> primary  "chr1,71,+,90S30M49S,60,0;"    // DUP_1: matches to [81,90]
+                                                            // INS: inserted after 100
+                             "chr1,101,+,130S10M29S,60,0;"
+                                                            // DEL: (110,120] deleted
+                             "chr1,121,+,140S10M19S,60,0;"
+                             "chr1,81,+,150S10M9S,60,0;"    // DUP_2: matches to [81,90]
+                             "chr1,131,+,160S9M,60,0;";
 
-    // Primary alignment: chr1,70,+,90S30M49S,60,0;
-    std::string read_name = "read";
-    seqan3::sam_flag flag{0};
-    std::string chromosome = "chr1";
-    int32_t pos = 70;
-    uint8_t mapq = 60;
-    std::vector<seqan3::cigar> test_cigar = {{90, 'S'_cigar_operation}, {30, 'M'_cigar_operation}, {49, 'S'_cigar_operation}};
-    seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC" //   1 -  50
-                               "GCGATACGCGTCGCAACTACGACGCCATCAGCAGGCGACTGACAGGATAT" //  51 - 100
-                               "GGGTTAGTCCCTATCGATCGTACGTACAGATTCGATGGGGGAATTTGGAT" // 101 - 150
-                               "ACGGTTACGGGAGACCCTGA"_dna5};                        // 151 - 170
-    // Supplementary alignments
-    std::string sa_tag = "chr1,11,+,10M159S,60,0;"
-                         "chr2,102,+,10S10M149S,60,0;"    // TRA 1 (interspersed): chr1 20 -> chr2 102 & chr2 111 -> chr1 21
-                         "chr1,21,+,20S10M139S,60,0;"
-                         "chr1,31,-,129S10M30S,60,0;"     // INV: (30,40] deleted, [31,41) inserted
-                         "chr1,41,+,40S20M109S,60,0;"     // DUP:TANDEM: [51,60)
-                         "chr1,51,+,60S20M89S,60,0;"      // DUP:TANDEM: [51,60)
-                         "chr1,141,+,80S10M79S,60,0;"     // TRA 2 (intrachromosomal): 70 -> 141 & 150 -> 71
-    // AS=30 -> primary  "chr1,71,+,90S30M49S,60,0;"      // DUP_1: matches to [81,90]
-                                                          // INS: inserted after 100
-                         "chr1,101,+,130S10M29S,60,0;"
-                                                          // DEL: (110,120] deleted
-                         "chr1,121,+,140S10M19S,60,0;"
-                         "chr1,81,+,150S10M9S,60,0;"      // DUP_2: matches to [81,90]
-                         "chr1,131,+,160S9M,60,0;";
+        analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 
-    analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
+        std::vector<Junction> junctions_expected_res =
+        {                                                                         // +1 as we are 0 based but SAM is 1 based
+            Junction{Breakend{"chr1", 19, strand::forward}, Breakend{"chr2", 101, strand::forward}, // TRA 1 (interspersed)
+                     ""_dna5, 0, read_name},                                                        // chr1 20 -> chr2 102
+            Junction{Breakend{"chr1", 20, strand::reverse}, Breakend{"chr2", 110, strand::reverse}, // TRA 1 (interspersed)
+                     ""_dna5, 0, read_name},                                                        // chr2 111 -> chr1 21
+            Junction{Breakend{"chr1", 29, strand::forward}, Breakend{"chr1", 39, strand::reverse},  // INV
+                     ""_dna5, 0, read_name},                                                        // (30,40] deleted
+            Junction{Breakend{"chr1", 30, strand::reverse}, Breakend{"chr1", 40, strand::forward},  // INV
+                     ""_dna5, 0, read_name},                                                        // [31,41) inserted
+            Junction{Breakend{"chr1", 50, strand::reverse}, Breakend{"chr1", 59, strand::reverse},  // DUP:TANDEM
+                     ""_dna5, 0, read_name},                                                        // [51,60) inserted
+            Junction{Breakend{"chr1", 69, strand::forward}, Breakend{"chr1", 140, strand::forward}, // TRA 2 (intrachr.)
+                     ""_dna5, 0, read_name},                                                        // 70 -> 141
+            Junction{Breakend{"chr1", 70, strand::reverse}, Breakend{"chr1", 149, strand::reverse}, // TRA 2 (intrachr.)
+                     ""_dna5, 0, read_name},                                                        // 150 -> 71
+            Junction{Breakend{"chr1", 99, strand::forward}, Breakend{"chr1", 100, strand::forward}, // INS
+                     "TACGTACAGA"_dna5, 0, read_name},                                              // inserted after 100
+            Junction{Breakend{"chr1", 109, strand::forward}, Breakend{"chr1", 120, strand::forward},// DEL
+                     ""_dna5, 0, read_name},                                                        // (110,120] deleted
+            Junction{Breakend{"chr1", 80, strand::reverse}, Breakend{"chr1", 129, strand::reverse}, // DUP_2
+                     ""_dna5, 0, read_name},                                                        // matches to [81,90]?!
+            Junction{Breakend{"chr1", 89, strand::forward}, Breakend{"chr1", 130, strand::forward}, // DUP_2
+                     ""_dna5, 0, read_name}                                                         // matches to [81,90]?!
+        };
 
-    // seqan3::debug_stream << "First Example:\n";
-    // for (size_t i = 0; i < junctions_res.size(); ++i)
-    // {
-    //     seqan3::debug_stream << "---- Junction: ----\n";
-    //     seqan3::debug_stream << "Read name: " << junctions_res[i].get_read_name() << "\n";
-    //     seqan3::debug_stream << "Mate 1: " << junctions_res[i].get_mate1() << "\n";
-    //     seqan3::debug_stream << "Mate 2: " << junctions_res[i].get_mate2() << "\n";
-    //     seqan3::debug_stream << "Sequence: " << junctions_res[i].get_inserted_sequence() << "\n";
-    // }
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
-    std::vector<Junction> junctions_expected_res_1 =
-    {                                                                         // +1 as we are 0 based but SAM is 1 based
-        Junction{Breakend{"chr1", 19, strand::forward}, Breakend{"chr2", 101, strand::forward}, // TRA 1 (interspersed)
-                 ""_dna5, 0, read_name},                                                        // chr1 20 -> chr2 102
-        Junction{Breakend{"chr1", 20, strand::reverse}, Breakend{"chr2", 110, strand::reverse}, // TRA 1 (interspersed)
-                 ""_dna5, 0, read_name},                                                        // chr2 111 -> chr1 21
-        Junction{Breakend{"chr1", 29, strand::forward}, Breakend{"chr1", 39, strand::reverse},  // INV
-                 ""_dna5, 0, read_name},                                                        // (30,40] deleted
-        Junction{Breakend{"chr1", 30, strand::reverse}, Breakend{"chr1", 40, strand::forward},  // INV
-                 ""_dna5, 0, read_name},                                                        // [31,41) inserted
-        Junction{Breakend{"chr1", 50, strand::reverse}, Breakend{"chr1", 59, strand::reverse},  // DUP:TANDEM
-                 ""_dna5, 0, read_name},                                                        // [51,60) inserted
-        Junction{Breakend{"chr1", 69, strand::forward}, Breakend{"chr1", 140, strand::forward}, // TRA 2 (intrachr.)
-                 ""_dna5, 0, read_name},                                                        // 70 -> 141
-        Junction{Breakend{"chr1", 70, strand::reverse}, Breakend{"chr1", 149, strand::reverse}, // TRA 2 (intrachr.)
-                 ""_dna5, 0, read_name},                                                        // 150 -> 71
-        Junction{Breakend{"chr1", 99, strand::forward}, Breakend{"chr1", 100, strand::forward}, // INS
-                 "TACGTACAGA"_dna5, 0, read_name},                                              // inserted after 100
-        Junction{Breakend{"chr1", 109, strand::forward}, Breakend{"chr1", 120, strand::forward},// DEL
-                 ""_dna5, 0, read_name},                                                        // (110,120] deleted
-        Junction{Breakend{"chr1", 80, strand::reverse}, Breakend{"chr1", 129, strand::reverse}, // DUP_2
-                 ""_dna5, 0, read_name},                                                        // matches to [81,90]?!
-        Junction{Breakend{"chr1", 89, strand::forward}, Breakend{"chr1", 130, strand::forward}, // DUP_2
-                 ""_dna5, 0, read_name}                                                         // matches to [81,90]?!
-    };
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                    junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
+                        << "Junction " << i << " unequal\n"
+                        << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                        << "\nMate 2 equal: " << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                        << "\n";
+        }
 
-    ASSERT_EQ(junctions_expected_res_1.size(), junctions_res.size());
+        // For debugging use:
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
 
-    for (size_t i = 0; i < junctions_expected_res_1.size(); ++i)
-    {
-        EXPECT_EQ(junctions_expected_res_1[i].get_read_name(),
-                  junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
-        EXPECT_TRUE(junctions_expected_res_1[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
-                                                                   << (junctions_expected_res_1[i].get_mate1() == junctions_res[i].get_mate1())
-                                                                   << "\nMate 2 equal: "
-                                                                   << (junctions_expected_res_1[i].get_mate2() == junctions_res[i].get_mate2())
-                                                                   << "\n";
     }
+    { // Example 2
+        seqan3::debug_stream << "----------------------------------Second Example:----------------------------------\n";
+        std::vector<Junction> junctions_res{};
 
+        // chr1:                                        ??? GGGCTC TTCGGATCG GGCAGCATCAACGCT AAAC ???????????????? GGCCCC TGACAGGATA
+        //                                                                  ||||||??||||||      (test_cigar: 60S14M26S)
+        // read: GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCCGCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA
 
-        // seqan3::debug_stream << "-----------------------------------\nSecond Example:\n";
-// Example 2
+        //                  | pos 107                                              | pos 157
+        //           | pos 101         | pos 117      | pos 131             | pos 151
+        // chr1: ??? GGGCTC TTCGGATCGG GCAGCATCAACGCT AAAC ???????????????? GGCCCC TGACAGGATA ???
+        //           |||||| |||||||||| |||inversion|| |    ?|?|?|?|?|?|?|?|        ||||||||||   (SA-Tags: 6M94S & 16S10M74S & 60S14M26S & 90S10M)
+        // read:     GGGCTC.TTCGGATCGG.TCGCAACTACGACG /    CGCATCAGCAGGCGAC        TGACAGGATA
+        //                / \        / \             v AAAC GGCCCC moved to left                (SA-Tags: 40S4M56S & 44S6M50S)
+        //            ATCGATCGAT     GGGGCCCCCATTTT  AAAC GGCCCC GCGATACGCG                     (insertion of GCGATACGCG?)
+        //            ||||||||||                                                                (SA-Tag: 6S10M84S)
+        // chr2:  ??? ATCGATCGAT ???                                                            (translocation of ATCGATCGAT chr2 -> chr1)
+        //            | pos 101
 
-    // chr1:                                        ??? GGGCTC TTCGGATCG GGCAGCATCAACGCT AAAC ???????????????? GGCCCC TGACAGGATA
-    //                                                                  ||||||??||||||      (test_cigar: 60S14M26S)
-    // read: GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCCGCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA
+        // Primary alignment: chr1,116,-,10S14M26S,60,0;
+        std::string read_name = "read021";
+        seqan3::sam_flag flag{16u}; // read reverse strand (0x10)
+        std::string chromosome = "chr1";
+        int32_t pos = 116;
+        uint8_t mapq = 60;
+        std::vector<seqan3::cigar> test_cigar = {{60, 'S'_cigar_operation},
+                                                 {14, 'M'_cigar_operation},
+                                                 {26, 'S'_cigar_operation}};
+        seqan3::dna5_vector seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"
+                                   "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA"_dna5};
+        // Supplementary alignments
+        std::string sa_tag = "chr1,101,+,6M94S,60,0;"
+                             "chr2,101,+,6S10M84S,60,0;"
+                             "chr1,107,+,16S10M74S,60,0;"
+                             "chr1,117,-,60S14M26S,60,0;"
+                             "chr1,131,+,40S4M56S,60,0;"
+                             "chr1,151,+,44S6M50S,60,0;"
+                             "chr1,157,+,90S10M,60,0;";
 
-    //                  | pos 107                                              | pos 157
-    //           | pos 101         | pos 117      | pos 131             | pos 151
-    // chr1: ??? GGGCTC TTCGGATCGG GCAGCATCAACGCT AAAC ???????????????? GGCCCC TGACAGGATA ???
-    //           |||||| |||||||||| |||inversion|| |    ?|?|?|?|?|?|?|?|        ||||||||||   (SA-Tags: 6M94S & 16S10M74S & 60S14M26S & 90S10M)
-    // read:     GGGCTC.TTCGGATCGG.TCGCAACTACGACG /    CGCATCAGCAGGCGAC        TGACAGGATA
-    //                / \        / \             v AAAC GGCCCC moved to left                (SA-Tags: 40S4M56S & 44S6M50S)
-    //            ATCGATCGAT     GGGGCCCCCATTTT  AAAC GGCCCC GCGATACGCG                     (insertion of GCGATACGCG?)
-    //            ||||||||||                                                                (SA-Tag: 6S10M84S)
-    // chr2:  ??? ATCGATCGAT ???                                                            (translocation of ATCGATCGAT chr2 -> chr1)
-    //            | pos 101
+        analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
 
-    junctions_res = std::vector<Junction>{};
+        Breakend new_breakend_1 {"chr1", 105, strand::forward};
+        Breakend new_breakend_2 {"chr2", 100, strand::forward};
+        Breakend new_breakend_3 {"chr1", 106, strand::reverse};
+        Breakend new_breakend_4 {"chr2", 109, strand::reverse};
+        Breakend new_breakend_5 {"chr1", 115, strand::forward};
+        Breakend new_breakend_6 {"chr1", 129, strand::reverse};
+        Breakend new_breakend_7 {"chr1", 116, strand::reverse};
+        Breakend new_breakend_8 {"chr1", 130, strand::forward};
+        Breakend new_breakend_9 {"chr1", 133, strand::forward};
+        Breakend new_breakend_10 {"chr1", 150, strand::forward};
+        Breakend new_breakend_11 {"chr1", 155, strand::forward};
+        Breakend new_breakend_12 {"chr1", 156, strand::forward};
+        std::vector<Junction> junctions_expected_res{Junction{new_breakend_1, new_breakend_2,
+                                                              ""_dna5,
+                                                              0, read_name},         // translocation
+                                                     Junction{new_breakend_3, new_breakend_4,
+                                                              ""_dna5,
+                                                              0, read_name},         // translocation
+                                                     Junction{new_breakend_5, new_breakend_6,
+                                                              ""_dna5,
+                                                              0, read_name},         // inversion
+                                                     Junction{new_breakend_7, new_breakend_8,
+                                                              ""_dna5,
+                                                              0, read_name},         // inversion
+                                                     Junction{new_breakend_9, new_breakend_10,
+                                                              ""_dna5,
+                                                              0, read_name},         // deletion
+                                                     Junction{new_breakend_11, new_breakend_12,
+                                                              "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5,
+                                                              0, read_name}          // insertion
+                                                    };
 
-    // Primary alignment: chr1,116,-,10S14M26S,60,0;
-    read_name = "read021";
-    flag = seqan3::sam_flag{16u}; // read reverse strand (0x10)
-    chromosome = "chr1";
-    pos = 116;
-    mapq = 60;
-    test_cigar = {{60, 'S'_cigar_operation}, {14, 'M'_cigar_operation}, {26, 'S'_cigar_operation}};
-    seq = {"GGGCTCATCGATCGATTTCGGATCGGGGGGCCCCCATTTTAAACGGCCCC"
-           "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGACTGACAGGATA"_dna5};
-    // Supplementary alignments
-    sa_tag = "chr1,101,+,6M94S,60,0;chr2,101,+,6S10M84S,60,0;chr1,107,+,16S10M74S,60,0;chr1,117,-,60S14M26S,60,0;"
-             "chr1,131,+,40S4M56S,60,0;chr1,151,+,44S6M50S,60,0;chr1,157,+,90S10M,60,0;";
+        ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
 
-    analyze_sa_tag(read_name, flag, chromosome, pos, mapq, test_cigar, seq, sa_tag, args, junctions_res);
+        for (size_t i = 0; i < junctions_expected_res.size(); ++i)
+        {
+            EXPECT_EQ(junctions_expected_res[i].get_read_name(),
+                    junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
+            EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i])
+                        << "Junction " << i << " unequal\n"
+                        << "Mate 1 equal: " << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1())
+                        << "\nMate 2 equal: " << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2())
+                        << "\n";
+        }
 
-    Breakend new_breakend_1 {"chr1", 105, strand::forward};
-    Breakend new_breakend_2 {"chr2", 100, strand::forward};
-    Breakend new_breakend_3 {"chr1", 106, strand::reverse};
-    Breakend new_breakend_4 {"chr2", 109, strand::reverse};
-    Breakend new_breakend_5 {"chr1", 115, strand::forward};
-    Breakend new_breakend_6 {"chr1", 129, strand::reverse};
-    Breakend new_breakend_7 {"chr1", 116, strand::reverse};
-    Breakend new_breakend_8 {"chr1", 130, strand::forward};
-    Breakend new_breakend_9 {"chr1", 133, strand::forward};
-    Breakend new_breakend_10 {"chr1", 150, strand::forward};
-    Breakend new_breakend_11 {"chr1", 155, strand::forward};
-    Breakend new_breakend_12 {"chr1", 156, strand::forward};
-    std::vector<Junction> junctions_expected_res_2{Junction{new_breakend_1, new_breakend_2,
-                                                            ""_dna5,
-                                                            0, read_name},         // translocation
-                                                   Junction{new_breakend_3, new_breakend_4,
-                                                            ""_dna5,
-                                                            0, read_name},         // translocation
-                                                   Junction{new_breakend_5, new_breakend_6,
-                                                            ""_dna5,
-                                                            0, read_name},         // inversion
-                                                   Junction{new_breakend_7, new_breakend_8,
-                                                            ""_dna5,
-                                                            0, read_name},         // inversion
-                                                   Junction{new_breakend_9, new_breakend_10,
-                                                            ""_dna5,
-                                                            0, read_name},         // deletion
-                                                   Junction{new_breakend_11,
-                                                            new_breakend_12,
-                                                            "GCGATACGCGTCGCAACTACGACGCGCATCAGCAGGCGAC"_dna5,
-                                                            0, read_name}          // insertion
-                                                  };
-
-    ASSERT_EQ(junctions_expected_res_2.size(), junctions_res.size());
-
-    for (size_t i = 0; i < junctions_expected_res_2.size(); ++i)
-    {
-        EXPECT_EQ(junctions_expected_res_2[i].get_read_name(),
-                  junctions_res[i].get_read_name()) << "Read names of junction " << i << " unequal";
-        EXPECT_TRUE(junctions_expected_res_2[i] == junctions_res[i]) << "Junction " << i << " unequal\nMate 1 equal: "
-                                                                   << (junctions_expected_res_2[i].get_mate1() == junctions_res[i].get_mate1())
-                                                                   << "\nMate 2 equal: "
-                                                                   << (junctions_expected_res_2[i].get_mate2() == junctions_res[i].get_mate2())
-                                                                   << "\n";
+        // For debugging use:
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 }
 

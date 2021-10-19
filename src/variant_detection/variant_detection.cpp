@@ -34,7 +34,9 @@ std::deque<std::string> read_header_information(auto & alignment_file,
                 std::cerr << "Warning: The reference id " << ref_id << " was found twice in the input files with "
                           << "different length: " << references_lengths[ref_id] << " and " << ref_length << '\n';
             }
-        } else {
+        }
+        else
+        {
             references_lengths.emplace(ref_id, ref_length);
         }
         ++i;

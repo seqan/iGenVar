@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+#include "api_test.hpp"
 
 #include <fstream>
 
@@ -85,17 +85,15 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
     {
         EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
-        // For debugging #include <seqan3/core/debug_stream.hpp> and use:
-        // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
-        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate1() << " == " << junctions_res[i].get_mate1() << "\n"
-        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate2() << " == " << junctions_res[i].get_mate2() << "\n";
+        // For debugging use:
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 }
 
 TEST(input_file, detect_junctions_in_long_reads_sam_file)
 {
+    auto verboseGuard = verbose_guard(true); // will reset back to the original state, after leaving this scope
+
     std::vector<Junction> junctions_res{};
     std::map<std::string, int32_t> references_lengths{};
 
@@ -193,12 +191,8 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
     {
         EXPECT_EQ(junctions_expected_res[i].get_read_name(), junctions_res[i].get_read_name());
         EXPECT_TRUE(junctions_expected_res[i] == junctions_res[i]);
-        // For debugging #include <seqan3/core/debug_stream.hpp> and use:
-        // seqan3::debug_stream << "-----------------------------------------------------------------------------------\n"
-        //                      << (junctions_expected_res[i].get_mate1() == junctions_res[i].get_mate1()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate1() << " == " << junctions_res[i].get_mate1() << "\n"
-        //                      << (junctions_expected_res[i].get_mate2() == junctions_res[i].get_mate2()) << ": \n"
-        //                      << junctions_expected_res[i].get_mate2() << " == " << junctions_res[i].get_mate2() << "\n";
+        // For debugging use:
+        // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
 }
 

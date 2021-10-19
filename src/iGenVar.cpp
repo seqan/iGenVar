@@ -155,13 +155,15 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 
     std::sort(junctions.begin(), junctions.end());
 
-    if (args.junctions_file_path != "")
+    if (!args.junctions_file_path.empty())
     {
         std::ofstream junctions_file{args.junctions_file_path};
+
+        // LCOV_EXCL_START
         if (!junctions_file.good() || !junctions_file.is_open())
-        {
             throw std::runtime_error{"Could not open file '" + args.junctions_file_path.string() + "' for writing."};
-        }
+        // LCOV_EXCL_STOP
+
         for (Junction const & junction : junctions)
         {
             junctions_file << junction << "\n";
@@ -192,13 +194,15 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 
     seqan3::debug_stream << "Done with clustering. Found " << clusters.size() << " junction clusters.\n";
 
-    if (args.clusters_file_path != "")
+    if (!args.clusters_file_path.empty())
     {
         std::ofstream clusters_file{args.clusters_file_path};
+
+        // LCOV_EXCL_START
         if (!clusters_file.good() || !clusters_file.is_open())
-        {
             throw std::runtime_error{"Could not open file '" + args.clusters_file_path.string() + "' for writing."};
-        }
+        // LCOV_EXCL_STOP
+
         for (Cluster const & cluster : clusters)
         {
             clusters_file << cluster << "\n";
@@ -240,7 +244,7 @@ int main(int argc, char ** argv)
     }
 
     // Check if we have at least one input file.
-    if (args.alignment_short_reads_file_path == "" && args.alignment_long_reads_file_path == "")
+    if (args.alignment_short_reads_file_path.empty() && args.alignment_long_reads_file_path.empty())
     {
         seqan3::debug_stream << "[Error] You need to input at least one sam/bam file.\n"
                              << "Please use -i or -input_short_reads to pass a short read file "

@@ -1,9 +1,50 @@
-long_bam: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam
-long_md_bam: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.md.bam
-long_bai: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam.bai
+# short read data
+## Illumina
+## Illumina Mate Pair
+short_read_bam:
+    s1: data/short_reads/HG002.GRCh38.2x250.sorted.bam
+    s2: data/short_reads/HG002.mate_pair.sorted.bam
+# short_read_bai:
+#     s1: data/short_reads/HG002.GRCh38.2x250.bam.bai
+#     s2: data/short_reads/HG002.mate_pair.sorted.bam.bai
 
-reference_fa_gz: data/reference/hs37d5.fa.gz
-reference_fa: data/reference/hs37d5.fa
+# long read data
+## MtSinai PacBio (minimap2)
+## PacBio CCS 10kb
+## 10X Genomics
+long_read_bam:
+    l1: data/long_reads/HG002_PacBio_GRCh38.bam
+    l2: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam
+    l3: data/long_reads/NA24385_phased_possorted_bam.bam
+long_read_md_bam:
+    l1: data/long_reads/HG002_PacBio_GRCh38.md.bam
+    l2: data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.md.bam
+    l3: data/long_reads/NA24385_phased_possorted_bam.md.bam
+long_bam_name:
+    l1: "AshkenazimTrio - HG002 NA24385 Son - PacBio MtSinai NIST - minimap2"
+    l2: "AshkenazimTrio - HG002 NA24385 Son - PacBio CCS 10kb"
+    l3: "AshkenazimTrio - HG002 NA24385 Son - 10X Genomics"
+
+reference_fa:
+    MtSinai_PacBio: data/reference/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
+    PacBio_CCS_10kb: data/reference/hs37d5.fa
+    10X_Genomics: data/reference/hg19.reordered.fa
+    Illumina: data/reference/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fa
+    Illumina_Mate_Pair: data/reference/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fa
+# reference_fa_gz:
+#     MtSinai_PacBio: data/reference/hg38.fa.gz # GRCh38_no_alt_analysis_set.fa.gz
+#     PacBio_CCS_10kb: data/reference/hs37d5.fa.gz
+#     10X_Genomics: data/reference/hg19.fa.gz
+
+truth_set:
+    gz: data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz
+    bed: data/truth_set/HG002_SVs_Tier1_v0.6.bed
+truth_set_renamed_chr:
+    gz: data/truth_set/HG002_SVs_Tier1_v0.6.renamed_chr.vcf.gz
+    bed: data/truth_set/HG002_SVs_Tier1_v0.6.renamed_chr.bed
+
+# for hg38 (UCSC chr notation)
+blacklist: data/blacklist/ENCFF356LFX.bed
 
 parameters:
     sample: HG002
@@ -12,5 +53,5 @@ parameters:
 
 quality_ranges:
     from: 1
-    to: 80
+    to: 70
     step: 1

@@ -3,6 +3,9 @@ echo "Logfile written to: initial_steps.log"
 
 # -------- -------- Prepare logfile and runtime computation -------- -------- #
 mkdir -p logs
+mkdir -p logs/sniffles
+mkdir -p logs/truvari
+mkdir -p logs/caller_comparison_iGenVar_only
 
 exec 3>&1 4>&2 # store original streams
 trap 'exec 2>&4 1>&3' 0 1 2 3 # restore original streams when scripts ends
@@ -38,11 +41,17 @@ make test && make doc
 
 echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (2/3) --------$(tput sgr 0)" 1>&3
 
+cd ../..
+mkdir -p data && cd data
+
 # short & long reads, reference and truth sets
 ./../Repos/iGenVar/test/benchmark/dataset_downloads.sh
 
+cd ..
+
 echo "$(tput setaf 1)$(tput setab 7)------- data downloaded (3/3) --------$(tput sgr 0)" 1>&3
 
+mkdir -p tmp/picard
 mkdir -p results
 
 # -------- -------- pre installation steps -------- -------- #
@@ -55,7 +64,7 @@ mkdir -p results
 conda env create -f Repos/iGenVar/test/benchmark/envs/environment.yml
 
 # run Snakefile with:
-# snakemake --snakefile Repos/iGenVar/test/benchmark/caller_comparison/Snakefile --cores 16 --rerun-incomplete \
+# snakemake --snakefile Repos/iGenVar/test/benchmark/caller_comparison_long_read/Snakefile --cores 16 --rerun-incomplete \
 # --stats logs/{DATE}_snakemake_caller_comparison_benchmarks_stats.log \
 # --runtime-profile logs/{DATE}_snake_caller_comparison_benchmarks_time.log --use-conda --conda-frontend mamba
 

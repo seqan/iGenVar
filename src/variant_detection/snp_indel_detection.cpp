@@ -9,7 +9,7 @@
 
 void update_activity_for_record(std::vector<unsigned> & activity,
                                 std::vector<seqan3::cigar> const & cigar_sequence,
-                                uint64_t min_var_length,
+                                uint64_t const min_var_length,
                                 int32_t ref_pos)
 {
     // Track the current position within the read.
@@ -60,7 +60,7 @@ std::vector<std::pair<size_t, size_t>> active_regions(std::vector<unsigned> cons
 
     // Some constants for the sliding window approach.
     size_t const window_width = 5u; // another idea: (min_var_length + 1) / 2;
-    size_t const activity_threshold = 2;
+    size_t const activity_threshold = 2; // TODO (joergi-w 25.10.2021) depend on read coverage
 
     // Set up the result vector.
     std::vector<std::pair<size_t, size_t>> regions{};

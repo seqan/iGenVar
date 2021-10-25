@@ -13,10 +13,10 @@ void detect_snp_and_indel(std::filesystem::path const & reads_filename, uint64_t
 
 /*!
  * \brief Extract activity from SAM records by counting indels and soft clips.
- * \param[out] activity - The activity values for one reference genome.
- * \param[in] cigar_sequence - The cigar string of the SAM record.
- * \param min_var_length - The length above which an indel/SNP is considered a variant.
- * \param ref_pos - The start position of the alignment in the genome.
+ * \param[in,out] activity       - The activity values for one reference genome.
+ * \param[in]     cigar_sequence - The cigar string of the SAM record.
+ * \param[in]     min_var_length - The length above which an indel/SNP is considered a variant.
+ * \param[in]     ref_pos        - The start position of the alignment in the genome.
  */
 void update_activity_for_record(std::vector<unsigned> & activity,
                                 std::vector<seqan3::cigar> const & cigar_sequence,
@@ -25,7 +25,7 @@ void update_activity_for_record(std::vector<unsigned> & activity,
 
 /*!
  * \brief Extract active regions from activity profile.
- * \param[in] activity The activity values for one reference genome.
+ * \param[in] activity - The activity values for one reference genome.
  * \return a list of position intervals, where the activity is high.
  */
 std::vector<std::pair<size_t, size_t>> active_regions(std::vector<unsigned> const & activity);

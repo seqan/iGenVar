@@ -1,6 +1,6 @@
 ##fileformat=VCFv4.3
 ##source=iGenVarCaller
-##contig=<ID=chr1,length=368>
+##contig=<ID=chr1,length=482>
 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.",Source="iGenVarCaller",Version="1.0">
 ##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of SV called.",Source="iGenVarCaller",Version="1.0">
 ##INFO=<ID=END,Number=1,Type=Integer,Description="End position of SV called.",Source="iGenVarCaller",Version="1.0">

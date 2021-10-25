@@ -98,7 +98,6 @@ INS: chr1	179	Forward	chr1	180	Forward	8	0	read018
 The read pair method is not yet implemented.
 The read depth method for short reads is not yet implemented.
 Detect junctions in long reads...
-Warning: The reference id chr1 was found twice in the input files with different length: 368 and 482
 The read depth method for long reads is not yet implemented.
 The read depth method for long reads is not yet implemented.
 The read depth method for long reads is not yet implemented.

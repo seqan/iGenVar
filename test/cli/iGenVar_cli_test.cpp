@@ -169,7 +169,7 @@ std::string expected_res_empty
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
-    "##contig=<ID=chr1,length=368>\n"
+    "##contig=<ID=chr1,length=482>\n"
 };
 
 std::string expected_err_default_no_err

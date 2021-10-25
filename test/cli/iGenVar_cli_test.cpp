@@ -710,6 +710,8 @@ TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
                                          "-i", data("paired_end_mini_example.sam"),
                                          "-j", data("single_end_mini_example.sam"),
                                          "--verbose",
+                                         "--method cigar_string --method split_read",
+                                         // TODO (irallia 25.10.2021): Add other methods when implemented.
                                          "--min_var_length 8 --max_var_length 400",
                                          "--hierarchical_clustering_cutoff 0.1");
 
@@ -718,12 +720,10 @@ TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
     std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.out, output_res_str);
-    // EXPECT_EQ(result.out, "");
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_short_and_long_err.txt");
     std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
-    // EXPECT_EQ(result.err, "");
 }

@@ -36,9 +36,24 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                         if (std::abs(sv_length) >= args.min_var_length &&
                             std::abs(sv_length) <= args.max_var_length)
                         {
+                            // Tandem Duplication
+                            if (clusters[i].get_common_tandem_dup_count() > 0)
+                            {
+                                variant_record tmp{};
+                                tmp.set_chrom(mate1.seq_name);
+                                tmp.set_qual(cluster_size);
+                                tmp.set_alt("<DUP:TANDEM>");
+                                tmp.add_info("SVTYPE", "DUP");
+                                // Increment position by 1 because VCF is 1-based
+                                tmp.set_pos(mate1.position + 1);
+                                tmp.add_info("SVLEN", std::to_string(distance));
+                                // Increment end by 1 because VCF is 1-based
+                                tmp.add_info("END", std::to_string(mate2.position + 1));
+                                tmp.print(out_stream);
+                            }
                             // Deletion (sv_length is negative)
-                            if (sv_length < 0 &&
-                                insert_size <= args.max_tol_inserted_length)
+                            else if (sv_length < 0 &&
+                                     insert_size <= args.max_tol_inserted_length)
                             {
                                 variant_record tmp{};
                                 tmp.set_chrom(mate1.seq_name);

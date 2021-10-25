@@ -42,11 +42,11 @@ int32_t AlignedSegment::get_left_soft_clip() const
     int32_t left_soft_clip = 0;
     for (auto [element_length, element_operation] : cig)
     {
-        if(element_operation.to_char() == 'S')
+        if (element_operation.to_char() == 'S')
         {
             left_soft_clip += element_length;
         }
-        else if(element_operation.to_char() == 'M' ||
+        else if (element_operation.to_char() == 'M' ||
                 element_operation.to_char() == '=' ||
                 element_operation.to_char() == 'X' ||
                 element_operation.to_char() == 'I')
@@ -62,11 +62,11 @@ int32_t AlignedSegment::get_right_soft_clip() const
     int32_t right_soft_clip = 0;
     for (auto [element_length, element_operation] : std::views::reverse(cig))
     {
-        if(element_operation.to_char() == 'S')
+        if (element_operation.to_char() == 'S')
         {
             right_soft_clip += element_length;
         }
-        else if(element_operation.to_char() == 'M' ||
+        else if (element_operation.to_char() == 'M' ||
                 element_operation.to_char() == '=' ||
                 element_operation.to_char() == 'X' ||
                 element_operation.to_char() == 'I')

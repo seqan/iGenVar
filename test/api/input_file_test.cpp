@@ -180,7 +180,7 @@ TEST(input_file, detect_junctions_in_long_reads_sam_file)
     std::vector<Junction> junctions_expected_res
     {
         Junction{new_breakend_1, new_breakend_2, insertion_sequence_1, tandem_dup_count, read_name_1},
-        Junction{new_breakend_5, new_breakend_6, "TA"_dna5, tandem_dup_count, read_name_2},
+        Junction{new_breakend_5, new_breakend_6, ""_dna5, tandem_dup_count, read_name_2},
         Junction{new_breakend_7, new_breakend_8, ""_dna5, tandem_dup_count, read_name_3},
         Junction{new_breakend_7, new_breakend_8, ""_dna5, tandem_dup_count, read_name_4}
     };

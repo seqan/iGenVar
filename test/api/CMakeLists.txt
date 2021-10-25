@@ -9,4 +9,5 @@ add_api_test (clustering_test.cpp)
 
 # add_api_test (refinement_test.cpp)
 
+add_api_test (snp_indel_test.cpp)
 add_api_test (structures_test.cpp)

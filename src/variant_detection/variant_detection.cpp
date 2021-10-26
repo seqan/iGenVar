@@ -10,6 +10,16 @@
 
 using seqan3::operator""_tag;
 
+// SAM fields for input file
+using my_fields = seqan3::fields<seqan3::field::id,         // 1: QNAME
+                                 seqan3::field::flag,       // 2: FLAG
+                                 seqan3::field::ref_id,     // 3: RNAME
+                                 seqan3::field::ref_offset, // 4: POS
+                                 seqan3::field::mapq,       // 5: MAPQ
+                                 seqan3::field::cigar,      // 6: CIGAR
+                                 seqan3::field::seq,        // 10:SEQ
+                                 seqan3::field::tags>;
+
 std::deque<std::string> read_header_information(auto & alignment_file,
                                                 std::map<std::string, int32_t> & references_lengths)
 {
@@ -50,11 +60,6 @@ void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junct
                                               cmd_arguments const & args)
 {
     // Open input alignment file
-    using my_fields = seqan3::fields<seqan3::field::flag,       // 2: FLAG
-                                     seqan3::field::ref_id,     // 3: RNAME
-                                     seqan3::field::ref_offset, // 4: POS
-                                     seqan3::field::mapq>;      // 5: MAPQ
-
     seqan3::sam_file_input alignment_short_reads_file{args.alignment_short_reads_file_path, my_fields{}};
 
     std::deque<std::string> const ref_ids = read_header_information(alignment_short_reads_file, references_lengths);
@@ -62,22 +67,51 @@ void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junct
 
     for (auto & record : alignment_short_reads_file)
     {
+        std::string const query_name        = record.id();                              // 1: QNAME
         seqan3::sam_flag const flag         = record.flag();                            // 2: FLAG
         int32_t const ref_id                = record.reference_id().value_or(-1);       // 3: RNAME
         int32_t const ref_pos               = record.reference_position().value_or(-1); // 4: POS
         uint8_t const mapq                  = record.mapping_quality();                 // 5: MAPQ
+        std::vector<seqan3::cigar> cigar    = record.cigar_sequence();                  // 6: CIGAR
+        seqan3::dna5_vector const seq       = record.sequence();                        // 10:SEQ
+        auto tags                           = record.tags();
+
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||
             ref_id < 0 || ref_pos < 0)
             continue;
+
+        std::string const ref_name = ref_ids[ref_id];
 
         for (detection_methods method : args.methods) {
             switch (method)
             {
                 case detection_methods::cigar_string: // Detect junctions from CIGAR string
-                    seqan3::debug_stream << "The cigar string method for short reads is not yet implemented.\n";
+                    analyze_cigar(query_name,
+                                  ref_name,
+                                  ref_pos,
+                                  cigar,
+                                  seq,
+                                  junctions,
+                                  args.min_var_length);
                     break;
                 case detection_methods::split_read:     // Detect junctions from split read evidence (SA tag,
-                    seqan3::debug_stream << "The split read method for short reads is not yet implemented.\n";
+                    if (!hasFlagSupplementary(flag))    //                                  primary alignments only)
+                    {
+                        std::string const sa_tag = tags.get<"SA"_tag>();
+                        if (!sa_tag.empty())
+                        {
+                            analyze_sa_tag(query_name,
+                                           flag,
+                                           ref_name,
+                                           ref_pos,
+                                           mapq,
+                                           cigar,
+                                           seq,
+                                           sa_tag,
+                                           args,
+                                           junctions);
+                        }
+                    }
                     break;
                 case detection_methods::read_pairs: // Detect junctions from read pair evidence
                     if (hasFlagMultiple(flag))
@@ -106,15 +140,6 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                                              cmd_arguments const & args)
 {
     // Open input alignment file
-    using my_fields = seqan3::fields<seqan3::field::id,         // 1: QNAME
-                                     seqan3::field::flag,       // 2: FLAG
-                                     seqan3::field::ref_id,     // 3: RNAME
-                                     seqan3::field::ref_offset, // 4: POS
-                                     seqan3::field::mapq,       // 5: MAPQ
-                                     seqan3::field::cigar,      // 6: CIGAR
-                                     seqan3::field::seq,        // 10:SEQ
-                                     seqan3::field::tags>;
-
     seqan3::sam_file_input alignment_long_reads_file{args.alignment_long_reads_file_path, my_fields{}};
 
     std::deque<std::string> const ref_ids = read_header_information(alignment_long_reads_file, references_lengths);

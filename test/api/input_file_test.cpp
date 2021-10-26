@@ -243,14 +243,8 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
 
     std::string const expected_err
     {
-        "The cigar string method for short reads is not yet implemented.\n"
-        "The split read method for short reads is not yet implemented.\n"
         "The read depth method for short reads is not yet implemented.\n"
-        "The cigar string method for short reads is not yet implemented.\n"
-        "The split read method for short reads is not yet implemented.\n"
         "The read depth method for short reads is not yet implemented.\n"
-        "The cigar string method for short reads is not yet implemented.\n"
-        "The split read method for short reads is not yet implemented.\n"
         "The read depth method for short reads is not yet implemented.\n"
         "Warning: The reference id chr2 was found twice in the input files with different length: 1001 and 1005\n"
         "Warning: The reference id chr4 was found twice in the input files with different length: 1004 and 1005\n"

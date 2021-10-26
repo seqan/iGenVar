@@ -169,7 +169,7 @@ std::string expected_res_empty
 {
     "##fileformat=VCFv4.3\n"
     "##source=iGenVarCaller\n"
-    "##contig=<ID=chr1,length=368>\n"
+    "##contig=<ID=chr1,length=482>\n"
 };
 
 std::string expected_err_default_no_err
@@ -388,7 +388,6 @@ TEST_F(iGenVar_cli_test, fail_negative_min_qual)
     EXPECT_EQ(result.err, expected_err);
 }
 
-
 // Detection methods:
 
 TEST_F(iGenVar_cli_test, with_detection_method_arguments)
@@ -422,7 +421,6 @@ TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
     EXPECT_EQ(result.out, std::string{});
     EXPECT_EQ(result.err, expected_err);
 }
-
 
 // Clustering methods:
 
@@ -701,6 +699,30 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_err.txt");
+    std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
+                                std::istreambuf_iterator<char>());
+    EXPECT_EQ(result.err, output_err_str);
+}
+
+TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-i", data("paired_end_mini_example.sam"),
+                                         "-j", data("single_end_mini_example.sam"),
+                                         "--verbose",
+                                         "--method cigar_string --method split_read",
+                                         // TODO (irallia 25.10.2021): Add other methods when implemented.
+                                         "--min_var_length 8 --max_var_length 400",
+                                         "--hierarchical_clustering_cutoff 0.1");
+
+    // Check the output of junctions:
+    std::ifstream output_res_file("../../data/output_short_and_long_res.txt");
+    std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
+                                std::istreambuf_iterator<char>());
+    EXPECT_EQ(result.out, output_res_str);
+
+    // Check the debug output of junctions:
+    std::ifstream output_err_file("../../data/output_short_and_long_err.txt");
     std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);

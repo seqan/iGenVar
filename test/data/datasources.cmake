@@ -19,7 +19,7 @@ declare_datasource (FILE mini_example_reference.fasta
 # copies file to <build>/data/paired_end_mini_example.sam
 declare_datasource (FILE paired_end_mini_example.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/paired_end_mini_example.sam
-                    URL_HASH SHA256=a4134ef84c4a2d6aa57f00966a69ca3c54036dc3d17f418427ce4fc6bb7e87ff)
+                    URL_HASH SHA256=5e9211c3cb68105bd3359a1f001c900489bd2a5d117fa0d0da82e83766a8325d)
 
 # copies file to <build>/data/single_end_mini_example.sam
 declare_datasource (FILE single_end_mini_example.sam
@@ -35,3 +35,13 @@ declare_datasource (FILE output_err.txt
 declare_datasource (FILE output_res.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_res.txt
                     URL_HASH SHA256=f12ee6622785660a637c8c8ae894c673cc29e4b09d729f6fd8e8911c33fe6ae6)
+
+# copies file to <build>/data/output_short_and_long_err.txt
+declare_datasource (FILE output_short_and_long_err.txt
+                    URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_err.txt
+                    URL_HASH SHA256=4edfef05a26c876d51fa9ecabab0ef03ce52c6e71206eb96dd5e1751a852439c)
+
+# copies file to <build>/data/output_short_and_long_res.txt
+declare_datasource (FILE output_short_and_long_res.txt
+                    URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_res.txt
+                    URL_HASH SHA256=fab2162efb18a848d8c9ce546329cfdeaa8d947dd3a484056c2b73fa8db8a382)

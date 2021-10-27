@@ -1,3 +1,19 @@
+# 2021-11-25
+
+"total_runtime": 19462.010782957077,
+"rules": {
+    "run_sniffles": {
+        "mean-runtime": 3238.5769967635474,
+        "min-runtime": 3182.3990926742554,
+        "max-runtime": 3355.7058024406433
+    },
+    "run_pbsv_call": {
+        "mean-runtime": 102.745321393013,
+        "min-runtime": 99.21857762336731,
+        "max-runtime": 106.27206516265869
+    }
+}
+
 # 2021-11-16
 
 "total_runtime": 71146.0442199707,

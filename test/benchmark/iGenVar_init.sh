@@ -16,9 +16,15 @@ start=$(date +%s) # get starting date
 # -------- -------- get & build iGenVar -------- -------- #
 mkdir -p Repos && cd Repos/
 git clone https://github.com/seqan/iGenVar.git
+git clone https://github.com/eldariont/svim.git
 
 cd iGenVar
 git submodule update --recursive --init
+
+# ToDo: Remove and use conda again when this is merged: https://github.com/bioconda/bioconda-recipes/pull/29099
+# Install SVIM from github (requires Python 3.6.* or newer): installs all dependencies except those necessary for read alignment (ngmlr, minimap2, samtools)
+cd ../svim
+pip install .
 
 echo "$(tput setaf 1)$(tput setab 7)------- iGenVar downloaded (1/7) --------$(tput sgr 0)" 1>&3
 
@@ -60,9 +66,8 @@ gzip --decompress --keep hs37d5.fa.gz
 cd ..
 echo "$(tput setaf 1)$(tput setab 7)------- reference downloaded (5/7) --------$(tput sgr 0)" 1>&3
 
-samtools calmd -b data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam \
-> data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.md.bam \
-data/reference/GCA_000001405.28_GRCh38.p13_genomic.fna.gz
+samtools calmd -b data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.md.bam data/reference/hs37d5.fa
 
 echo "$(tput setaf 1)$(tput setab 7)------- missing MD tags added (6/7) --------$(tput sgr 0)" 1>&3
 
@@ -83,10 +88,16 @@ mkdir -p results
 # -------- -------- pre installation steps -------- -------- #
 # We do our benchmarks with snakemake, and need several tools like
 # python3, samtools, snakemake, tabix, pip and truvari
-# we recommend to use miniconda: https://docs.conda.io/en/latest/miniconda.html
+# we recommend to use anaconda: https://www.anaconda.com/products/individual
 # and run
-
+# wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
+# ./Anaconda3-2021.05-Linux-x86_64.sh
 conda env create -f Repos/iGenVar/test/benchmark/envs/environment.yml
+
+# run Snakefile with:
+# snakemake --snakefile Repos/iGenVar/test/benchmark/caller_comparison/Snakefile --cores 16 --rerun-incomplete \
+# --stats logs/{DATE}_snakemake_caller_comparison_benchmarks_stats.log \
+# --runtime-profile logs/{DATE}_snake_caller_comparison_benchmarks_time.log --use-conda --conda-frontend mamba
 
 # ----------------------------------------
 echo "$(tput setaf 1)$(tput setab 7)------- Initial steps - done --------$(tput sgr 0)" 1>&3

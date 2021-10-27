@@ -4,10 +4,15 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - python=3
+  - mamba
+  - pbgzip
+  - pip
+  - python=3.6
+  - r
+  - r-tidyverse
   - samtools
   - snakemake
   - tabix
-  - pip
+  - yappi
   - pip:
     - truvari

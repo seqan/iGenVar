@@ -47,8 +47,6 @@ rule run_svim:
         --min_sv_size {min_var_length} \
         --segment_gap_tolerance 20 \
         --segment_overlap_tolerance 20 \
-        --interspersed_duplications_as_insertions \
-        --tandem_duplications_as_insertions \
         --read_names \
         --max_sv_size {max_var_length} \
         {params.working_dir} {input.bam} {input.genome} \
@@ -90,14 +88,13 @@ rule fix_sniffles:
         shell("sed -i '4i##FILTER=<ID=STRANDBIAS,Description=\"Strand is biased.\">' {output}")
 
 # Split to SV classes
-# Since iGenVar can only find INS and DEL so far, we filter these out for better comparability.
-rule fix_sniffles_2_and_filter_insertions_and_deletions:
+rule fix_sniffles_2:
     input:
         "results/caller_comparison/Sniffles/variants.unsorted.min_qual_{min_qual}.vcf"
     output:
         "results/caller_comparison/Sniffles/variants.min_qual_{min_qual}.vcf"
     shell:
-        "bcftools view -i 'SVTYPE=\"DEL\" | SVTYPE=\"INS\"' {input} | bcftools sort > {output}"
+        "bcftools sort {input} > {output}"
 
 #PBSV
 rule run_pbsv_dicsover:
@@ -136,11 +133,33 @@ rule run_pbsv_call:
     conda:
         "../../../envs/pbsv.yaml"
     shell:
-        # pbsv call --types DEL,INS,DUP --min-sv-length {params.min_sv_length} --max-ins-length 100K \
+        """
+        pbsv call --types DEL,INS,DUP --min-sv-length {min_var_length} --max-ins-length 100K \
+        --call-min-reads-all-samples {wildcards.min_qual} --call-min-reads-one-sample {wildcards.min_qual} \
+        --call-min-reads-per-strand-all-samples 0 --call-min-bnd-reads-all-samples 0 --call-min-read-perc-one-sample 0 \
+        --num-threads {threads} {input.genome} {input.svsig_gz} \
+        results/caller_comparison/pbsv/variants.min_qual_{wildcards.min_qual}.vcf
+        """
+
+rule run_pbsv_call_without_DUP:
+    input:
+        genome = config["reference_fa"],
+        svsig_gz = "results/caller_comparison/pbsv/signatures.svsig.gz"
+        # svsig_gz = dynamic("results/caller_comparison/pbsv/signatures.{region}.svsig.gz")
+    output:
+        "results/caller_comparison/pbsv_without_DUP/variants.min_qual_{min_qual}.vcf"
+    resources:
+        mem_mb = 400000,
+        time_min = 2000,
+        io_gb = 100
+    threads: 1
+    conda:
+        "../../../envs/pbsv.yaml"
+    shell:
         """
         pbsv call --types DEL,INS --min-sv-length {min_var_length} --max-ins-length 100K \
         --call-min-reads-all-samples {wildcards.min_qual} --call-min-reads-one-sample {wildcards.min_qual} \
         --call-min-reads-per-strand-all-samples 0 --call-min-bnd-reads-all-samples 0 --call-min-read-perc-one-sample 0 \
         --num-threads {threads} {input.genome} {input.svsig_gz} \
-        results/caller_comparison/pbsv/variants.min_qual_{wildcards.min_qual}.vcf
+        results/caller_comparison/pbsv_without_DUP/variants.min_qual_{wildcards.min_qual}.vcf
         """

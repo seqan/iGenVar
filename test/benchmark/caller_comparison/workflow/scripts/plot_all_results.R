@@ -4,8 +4,8 @@ args = commandArgs(trailingOnly=TRUE)
 
 res <- read_tsv(args[1], col_names = c("caller", "min_qual", "metric", "value"))
 res$caller = factor(res$caller,
-                    levels=c('iGenVar', 'SVIM', 'Sniffles', 'pbsv'),
-                    labels=c('iGenVar 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2'))
+                    levels=c('iGenVar', 'SVIM', 'Sniffles', 'pbsv', 'pbsv_without_DUP'),
+                    labels=c('iGenVar 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP'))
 res %>%
     filter(metric %in% c("recall", "precision")) %>%
     pivot_wider(names_from=metric, values_from=value) %>%

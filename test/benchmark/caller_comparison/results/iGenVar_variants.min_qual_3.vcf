@@ -95,7 +95,7 @@
 ##ALT=<ID=INS,Number=1,Description="Insertion of novel sequence">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##bcftools_viewVersion=1.11+htslib-1.11
-##bcftools_viewCommand=view -i QUAL>=3 results/caller_comparison/iGenVar/variants.vcf; Date=Thu Nov 25 11:12:47 2021
+##bcftools_viewCommand=view -i QUAL>=3 results/caller_comparison/iGenVar/variants.vcf; Date=Fri Nov 26 18:43:56 2021
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	HG002
 1	10225	.	N	<DEL>	3	PASS	END=10269;SVLEN=-44;SVTYPE=DEL	GT	./.
 1	10337	.	N	<DEL>	10	PASS	END=10399;SVLEN=-62;SVTYPE=DEL	GT	./.

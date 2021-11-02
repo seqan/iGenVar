@@ -2,6 +2,60 @@
 
 #include "structures/junction.hpp"  // for class Junction
 
+
+/*! \brief This function checks if the inserted bases are tandem duplicated.
+ *
+ * \param[in]       query_sequence      - SEQ field of the SAM/BAM file
+ * \param[in]       length              - length of inserted part, given by the CIGAR
+ * \param[in]       pos_ref             - position of the inserted part in the ref (current position)
+ * \param[in]       pos_read            - position of the inserted part in the read (current position)
+ * \param[in]       inserted_bases      - the inserted bases of the possible duplication
+ * \param[in]       min_length          - minimum length of variants to detect (default 30 bp,
+ *                                                                              expected to be non-negative)
+ * \param[in, out]  pos_start_dup_seq   - start position of the duplicated seq (excluding itself)
+ * \param[in, out]  pos_end_dup_seq     - end position of the duplicated seq (including itself)
+ * \param[in, out]  tandem_dup_count    - the number of tandem copies of the inserted sequence
+ * \returns         duplicated_bases    - the duplicated bases of the duplication
+ *
+ * \details If the inserted bases include one or more copies of a duplicated sequence, which is suffix or prefix of
+ *          another copy, we have a Tandem Duplication. To check this, we have to do a semi-global alignment.
+ *
+ *          Case 1: The duplication (insertion) comes after the matched sequence. Thus we need to check if the inserted
+ *                  sequence matches (partly) the suffix sequence. The length of the matching part yields to the amount
+ *                  of copies, thus we can calculate the tandem_dup_count and the inserted_bases.
+ *
+ *                  ref AAAACCGCGTAGCGGG----------TACGTAACGGTACG
+ *                        ||||||||||||||          |||||||| -> inserted sequence: GCGGGGCGGG
+ *                  read  AACCGCGTAGCGGGGCGGGGCGGGTACGTAAC
+ *
+ *                  suffix_sequence AAAACCGCGTAGCGGG       -> free_end_gaps_sequence1_leading{true},
+ *                                             |||||          free_end_gaps_sequence1_trailing{false}
+ *                  inserted_bases             GCGGGGCGGG  -> free_end_gaps_sequence2_leading{false},
+ *                                                            free_end_gaps_sequence2_trailing{true}
+ *                  -> tandem_dup_count = 3, duplicated_bases = GCGGG
+ *
+ *          Case 2: The duplication (insertion) comes before the matched sequence.
+ *                  ref AAAACCGCGTA----------GCGGGTACGTAACGGTACG
+ *                        |||||||||          |||||||||||||  -> inserted sequence: GCGGGGCGGG
+ *                  read  AACCGCGTAGCGGGGCGGGGCGGGTACGTAAC
+ *
+ *                  prefix_sequence     GCGGGTACGTAACGGTACG -> free_end_gaps_sequence1_leading{false},
+ *                                      |||||                  free_end_gaps_sequence1_trailing{true}
+ *                  inserted_bases GCGGGGCGGG               -> free_end_gaps_sequence2_leading{true},
+ *                                                             free_end_gaps_sequence2_trailing{false}
+ *                  -> tandem_dup_count = 3, duplicated_bases = GCGGG
+ * \see For some complex examples see detection_test.cpp.
+ */
+std::span<seqan3::dna5 const> detect_tandem_duplication(seqan3::dna5_vector const & query_sequence,
+                                                        int32_t length,
+                                                        int32_t pos_ref,
+                                                        int32_t pos_read,
+                                                        std::span<seqan3::dna5 const> & inserted_bases,
+                                                        int32_t const min_length,
+                                                        int32_t & pos_start_dup_seq,
+                                                        int32_t & pos_end_dup_seq,
+                                                        size_t & tandem_dup_count);
+
 /*! \brief This function steps through the CIGAR string and stores junctions with their position in reference and read.
  *
  * \param[in]       read_name       - QNAME field of the SAM/BAM file

@@ -10,6 +10,34 @@
 using seqan3::operator""_cigar_operation;
 using seqan3::operator""_dna5;
 
+std::span<seqan3::dna5 const> detect_tandem_duplication([[maybe_unused]] seqan3::dna5_vector const & query_sequence,
+                                                        [[maybe_unused]] int32_t length,
+                                                        [[maybe_unused]] int32_t pos_ref,
+                                                        [[maybe_unused]] int32_t pos_read,
+                                                        std::span<seqan3::dna5 const> & inserted_bases,
+                                                        [[maybe_unused]] int32_t const min_length,
+                                                        [[maybe_unused]] int32_t & pos_start_dup_seq,
+                                                        [[maybe_unused]] int32_t & pos_end_dup_seq,
+                                                        [[maybe_unused]] size_t & tandem_dup_count)
+{
+    // Suffix Case:
+    // auto [ suffix_sequence_match_score, length_of_single_dupl_sequence_1 ] = align_suffix_or_prefix(...);
+
+    // Prefix Case:
+    // auto [ prefix_sequence_match_score, length_of_single_dupl_sequence_2 ] = align_suffix_or_prefix(...);
+
+    // int16_t length_of_single_dupl_sequence = std::min(length_of_single_dupl_sequence_1,
+    //                                                   length_of_single_dupl_sequence_2);
+    // tandem_dup_count = suffix_sequence_match_score / length_of_single_dupl_sequence     // duplicated part on ref
+    //                  + inserted_bases.size() / length_of_single_dupl_sequence           // inserted duplications
+    //                  + prefix_sequence_match_score / length_of_single_dupl_sequence;    // duplicated part on ref
+    // If its a duplication instead of an insertion, we save the (possible multiple times) duplicated part as duplicated_bases
+    std::span<seqan3::dna5 const> duplicated_bases{};
+    if (tandem_dup_count > 0)
+        duplicated_bases = (inserted_bases /*| seqan3::views::slice(0, length_of_single_dupl_sequence)*/);
+    return duplicated_bases;
+}
+
 void analyze_cigar(std::string const & read_name,
                    std::string const & chromosome,
                    int32_t const query_start_pos,
@@ -38,7 +66,8 @@ void analyze_cigar(std::string const & read_name,
             if (length >= min_length)
             {
                 // Insertions cause one junction from the insertion location to the next base
-                auto inserted_bases = query_sequence | seqan3::views::slice(pos_read, pos_read + length);
+                std::span<seqan3::dna5 const> inserted_bases = query_sequence | seqan3::views::slice(pos_read,
+                                                                                                     pos_read + length);
         // ---------------- DUP ----------------
                 // Case - Duplication: The inserted bases include one or more copies of a duplicated sequence, with an
                 //                     origin somewhere else. -> global alignment
@@ -48,12 +77,20 @@ void analyze_cigar(std::string const & read_name,
                 size_t tandem_dup_count = 0;
                 int32_t pos_start_dup_seq{};
                 int32_t pos_end_dup_seq{};
-                // duplicated_bases = detect_tandem_duplication()
+                std::span<seqan3::dna5 const> duplicated_bases = detect_tandem_duplication(query_sequence,
+                                                                                           length,
+                                                                                           pos_ref,
+                                                                                           pos_read,
+                                                                                           inserted_bases,
+                                                                                           min_length,
+                                                                                           pos_start_dup_seq,
+                                                                                           pos_end_dup_seq,
+                                                                                           tandem_dup_count);
                 if (tandem_dup_count != 0)
                 {
                     Junction new_junction{Breakend{chromosome, pos_start_dup_seq, strand::forward},
                                           Breakend{chromosome, pos_end_dup_seq, strand::forward},
-                                          inserted_bases, // duplicated_bases,
+                                          duplicated_bases,
                                           tandem_dup_count,
                                           read_name};
                     if (gVerbose)

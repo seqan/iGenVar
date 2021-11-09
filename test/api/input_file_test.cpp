@@ -9,7 +9,9 @@
 using seqan3::operator""_dna5;
 
 std::string const default_alignment_short_reads_file_path = DATADIR"paired_end_mini_example.sam";
+std::filesystem::path const short_reads_bamit_path = DATADIR"paired_end_mini_example.sam.bit";
 std::string const default_alignment_long_reads_file_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam";
+std::filesystem::path const long_reads_bamit_path = DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam.bit";
 std::filesystem::path const empty_path{};
 std::string default_vcf_sample_name{"MYSAMPLE"};
 constexpr int16_t default_threads = 1;
@@ -88,6 +90,8 @@ TEST(input_file, detect_junctions_in_short_read_sam_file)
         // For debugging use:
         // print_compare_junction_vectors(junctions_expected_res, junctions_res);
     }
+
+    std::filesystem::remove(short_reads_bamit_path);
 }
 
 TEST(input_file, detect_junctions_in_long_reads_sam_file)
@@ -260,6 +264,8 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
 
     // Create a blank short read SAM file with SQ header tag with different length of one reference.
     std::filesystem::path short_sam_path{tmp_dir/"short.sam"};
+    std::filesystem::path short_sam_bamit_path = short_sam_path;
+    short_sam_bamit_path += ".bit";
     std::ofstream short_sam{short_sam_path.c_str()};
     short_sam << "@HD\tVN:1.6\tSO:coordinate\n"
               << "@SQ\tSN:chr1\tLN:1000\n"          // chr1 present in both files with same length
@@ -273,6 +279,8 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
 
     // Create a blank long read SAM file with SQ header tag with different length of one reference.
     std::filesystem::path long_sam_path{tmp_dir/"long.sam"};
+    std::filesystem::path long_sam_bamit_path = long_sam_path;
+    long_sam_bamit_path += ".bit";
     std::ofstream long_sam{long_sam_path.c_str()};
     long_sam << "@HD\tVN:1.6\tSO:coordinate\n"
              << "@SQ\tSN:chr1\tLN:1000\n"
@@ -304,7 +312,11 @@ TEST(input_file, short_and_long_read_sam_file_with_different_references_lengths)
                        default_partition_max_distance,
                        default_hierarchical_clustering_cutoff};
     EXPECT_NO_THROW(detect_junctions_in_short_reads_sam_file(junctions_res, references_lengths, args));
+    std::filesystem::remove(short_sam_bamit_path);
+    std::filesystem::remove(long_sam_bamit_path);
     EXPECT_NO_THROW(detect_junctions_in_long_reads_sam_file(junctions_res, references_lengths, args));
+    std::filesystem::remove(short_sam_bamit_path);
+    std::filesystem::remove(long_sam_bamit_path);
 
     std::string result_out = testing::internal::GetCapturedStdout();
     EXPECT_EQ("", result_out);

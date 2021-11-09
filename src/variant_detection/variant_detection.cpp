@@ -8,8 +8,6 @@
 #include "modules/sv_detection_methods/analyze_split_read_method.hpp"   // for the cigar string method
 #include "variant_detection/bam_functions.hpp"                          // for hasFlag* functions
 
-#include "bamit/all.hpp"
-
 using seqan3::operator""_tag;
 
 // SAM fields for input file
@@ -57,6 +55,31 @@ std::deque<std::string> read_header_information(auto & alignment_file,
     return ref_ids;
 }
 
+std::vector<std::unique_ptr<bamit::IntervalNode>> load_or_create_index(std::filesystem::path const & input_path)
+{
+    std::filesystem::path bamit_index_file_path{input_path};
+    bamit_index_file_path += ".bit";
+    std::vector<std::unique_ptr<bamit::IntervalNode>> node_list{};
+    if (std::filesystem::exists(bamit_index_file_path))
+    {
+        std::ifstream in{bamit_index_file_path, std::ios_base::binary | std::ios_base::in};
+        cereal::BinaryInputArchive ar(in);
+        bamit::read(node_list, ar);
+        in.close();
+    }
+    else
+    {
+        std::ofstream out{bamit_index_file_path, std::ios_base::binary | std::ios_base::out};
+        cereal::BinaryOutputArchive ar(out);
+        seqan3::sam_file_input input_sam{input_path, my_fields{}};
+        node_list = bamit::index(input_sam);
+        bamit::write(node_list, ar);
+        out.close();
+    }
+
+    return node_list;
+}
+
 void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junction> & junctions,
                                               std::map<std::string, int32_t> & references_lengths,
                                               cmd_arguments const & args)
@@ -66,6 +89,9 @@ void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junct
 
     std::deque<std::string> const ref_ids = read_header_information(alignment_short_reads_file, references_lengths);
     uint32_t num_good = 0;
+
+    // Load bamit index, or create index if it doesn't exist.
+    std::vector<std::unique_ptr<bamit::IntervalNode>> bamit_index = load_or_create_index(args.alignment_short_reads_file_path);
 
     for (auto & record : alignment_short_reads_file)
     {

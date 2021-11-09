@@ -10,6 +10,8 @@
 #include "iGenVar.hpp"              // for global variable gVerbose
 #include "structures/junction.hpp"  // for class Junction
 
+#include "bamit/all.hpp" // for bamit index
+
 /* From a discussion we decided to add a scope guard:
  * https://github.com/seqan/iGenVar/pull/169#pullrequestreview-774811822
  * There might be subtle problem with gVerbose = true. By default it is initialized to false. Depending on the unit test
@@ -42,4 +44,16 @@ void print_compare_junction_vectors(std::vector<Junction> const & junctions_expe
                              << junctions_expected_res[i].get_inserted_sequence() << " == " << junctions_res[i].get_inserted_sequence() << "\n"
                              << junctions_expected_res[i].get_tandem_dup_count() << " == " << junctions_res[i].get_tandem_dup_count() << "\n";
     }
+}
+
+// Helper function for comparing two bamit trees.
+void compare_bamit_trees(std::unique_ptr<bamit::IntervalNode> const & t1, std::unique_ptr<bamit::IntervalNode> const & t2)
+{
+    if (!t1 && !t2) return;
+    if (!t1 || !t2) EXPECT_EQ(1, 0);
+
+    EXPECT_EQ(std::make_tuple(t1->get_start(), t1->get_end(), t1->get_file_position()),
+              std::make_tuple(t2->get_start(), t2->get_end(), t2->get_file_position()));
+    compare_bamit_trees(t1->get_left_node(), t2->get_left_node());
+    compare_bamit_trees(t1->get_right_node(), t2->get_right_node());
 }

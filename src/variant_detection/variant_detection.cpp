@@ -8,6 +8,9 @@
 #include "modules/sv_detection_methods/analyze_split_read_method.hpp"   // for the cigar string method
 #include "variant_detection/bam_functions.hpp"                          // for hasFlag* functions
 
+#include "cereal/types/memory.hpp"
+#include "cereal/types/vector.hpp"
+
 using seqan3::operator""_tag;
 
 // SAM fields for input file

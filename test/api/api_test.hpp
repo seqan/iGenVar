@@ -47,13 +47,20 @@ void print_compare_junction_vectors(std::vector<Junction> const & junctions_expe
 }
 
 // Helper function for comparing two bamit trees.
-void compare_bamit_trees(std::unique_ptr<bamit::IntervalNode> const & t1, std::unique_ptr<bamit::IntervalNode> const & t2)
+bool compare_bamit_trees(std::unique_ptr<bamit::IntervalNode> const & t1, std::unique_ptr<bamit::IntervalNode> const & t2)
 {
-    if (!t1 && !t2) return;
-    if (!t1 || !t2) EXPECT_EQ(1, 0);
+    // If both nodes are empty, return true. Else if only one node is empty, return false.
+    if (!t1 && !t2) return true;
+    if (!t1 || !t2) return false;
 
-    EXPECT_EQ(std::make_tuple(t1->get_start(), t1->get_end(), t1->get_file_position()),
-              std::make_tuple(t2->get_start(), t2->get_end(), t2->get_file_position()));
-    compare_bamit_trees(t1->get_left_node(), t2->get_left_node());
-    compare_bamit_trees(t1->get_right_node(), t2->get_right_node());
+    // If both nodes have the same contents (same start/end position and same file position), go into children.
+    // Else, return false.
+    if (std::make_tuple(t1->get_start(), t1->get_end(), t1->get_file_position()) ==
+        std::make_tuple(t2->get_start(), t2->get_end(), t2->get_file_position()))
+    {
+        return (compare_bamit_trees(t1->get_left_node(), t2->get_left_node()) &&
+                compare_bamit_trees(t1->get_right_node(), t2->get_right_node()));
+    }
+
+    return false;
 }

@@ -334,7 +334,7 @@ TEST(input_file, bamit_create_and_load)
     ASSERT_EQ(short_read_create_index.size(), short_read_load_index.size());
     for (size_t i = 0; i < short_read_create_index.size(); ++i)
     {
-        compare_bamit_trees(short_read_create_index[i], short_read_load_index[i]);
+        EXPECT_TRUE(compare_bamit_trees(short_read_create_index[i], short_read_load_index[i]));
     }
 
     std::filesystem::remove(short_reads_bamit_path);

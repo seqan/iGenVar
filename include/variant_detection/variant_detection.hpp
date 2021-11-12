@@ -3,6 +3,7 @@
 #include <seqan3/std/filesystem>    // for filesystem
 #include <map>
 #include <vector>
+#include <fstream>
 
 #include "iGenVar.hpp"              // for struct cmd_arguments
 #include "structures/junction.hpp"  // for class Junction

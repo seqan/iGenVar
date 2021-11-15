@@ -2,3 +2,7 @@
 	path = lib/seqan3
 	url = https://github.com/seqan/seqan3.git
 	branch = master
+[submodule "BAMIntervalTree"]
+	path = lib/BAMIntervalTree
+	url = https://github.com/joshuak94/BAMIntervalTree.git
+	branch = master

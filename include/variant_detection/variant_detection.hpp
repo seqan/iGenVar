@@ -3,9 +3,12 @@
 #include <seqan3/std/filesystem>    // for filesystem
 #include <map>
 #include <vector>
+#include <fstream>
 
 #include "iGenVar.hpp"              // for struct cmd_arguments
 #include "structures/junction.hpp"  // for class Junction
+
+#include "bamit/all.hpp"
 
 /*! \brief Reads the header of the input file. Checks if input file is sorted and reads the reference sequence
  *         dictionary. Stores the reference sequence lengths in parameter `reference_lengths` and returns the list of
@@ -16,6 +19,14 @@
  */
 std::deque<std::string> read_header_information(auto & alignment_file,
                                                 std::map<std::string, int32_t> & references_lengths);
+
+/*! \brief Attempts to load a bamit index having the same name as a given input file, with ".bit" appended at the end.
+ *         If this file does not exist, it will create the index itself and save it to that file.
+ *
+ * \param[in] input_path - the path to the short/long read alignment file.
+ * \return A bamit::index tree.
+ */
+std::vector<std::unique_ptr<bamit::IntervalNode>> load_or_create_index(std::filesystem::path const & input_path);
 
 /*! \brief Detects junctions between distant genomic positions by analyzing a short read alignment file (sam/bam). The
  *         detected junctions are stored in a vector.

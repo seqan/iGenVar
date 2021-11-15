@@ -4,6 +4,8 @@
 #include "cli_test.hpp"
 
 std::string const default_alignment_long_reads_file_path = "simulated.minimap2.hg19.coordsorted_cutoff.sam";
+std::filesystem::path const long_reads_bamit_path{DATADIR"simulated.minimap2.hg19.coordsorted_cutoff.sam.bit"};
+std::filesystem::path const short_reads_bamit_path{DATADIR"paired_end_mini_example.sam.bit"};
 std::string const default_genome_file_path = "mini_example_reference.fasta";
 std::string const vcf_out_file_path = "variants_file_out.vcf";
 std::string const junctions_out_file_path = "junctions_file_out.txt";
@@ -680,6 +682,8 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.err, expected_err);
+
+    std::filesystem::remove(short_reads_bamit_path);
 }
 
 TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
@@ -702,6 +706,7 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
     std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
+
 }
 
 TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
@@ -726,4 +731,6 @@ TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
     std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
                                 std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
+
+    std::filesystem::remove(short_reads_bamit_path);
 }

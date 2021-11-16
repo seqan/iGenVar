@@ -43,7 +43,7 @@ struct cmd_arguments
 void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
 
 /*! \brief Detects genomic variants by analyzing an alignment file (sam/bam). The detected
- *         variants are printed to a given file or stdout and insertion alleles are stored in a fasta file.
+ *         variants are printed to a given file or stdout and insertion alleles are stored in a FASTA file.
  *
  * \param[in] args - command line arguments:\n
  *                   **args.alignment_short_reads_file_path** - short reads input file, path to the sam/bam file\n

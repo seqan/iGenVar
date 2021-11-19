@@ -34,7 +34,7 @@ declare_datasource (FILE output_err.txt
 # copies file to <build>/data/output_res.txt
 declare_datasource (FILE output_res.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_res.txt
-                    URL_HASH SHA256=f12ee6622785660a637c8c8ae894c673cc29e4b09d729f6fd8e8911c33fe6ae6)
+                    URL_HASH SHA256=71238d79330c9efcf61467c20cd998517bf755d64742f60cbbfe0a5399a6c063)
 
 # copies file to <build>/data/output_short_and_long_err.txt
 declare_datasource (FILE output_short_and_long_err.txt
@@ -44,4 +44,4 @@ declare_datasource (FILE output_short_and_long_err.txt
 # copies file to <build>/data/output_short_and_long_res.txt
 declare_datasource (FILE output_short_and_long_res.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_res.txt
-                    URL_HASH SHA256=fab2162efb18a848d8c9ce546329cfdeaa8d947dd3a484056c2b73fa8db8a382)
+                    URL_HASH SHA256=55262c77c479cd4d767a43a03d4afd1528d722097de8a81d9e52805b37671e01)

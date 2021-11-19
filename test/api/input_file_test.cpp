@@ -5,7 +5,7 @@
 #include <seqan3/io/exception.hpp>
 
 #include "variant_detection/variant_detection.hpp"  // for detect_junctions_in_long_reads_sam_file()
-#include "variant_detection/variant_output.hpp"  // for output_file_fail()
+#include "variant_detection/variant_output.hpp"       // for find_and_output_variants()
 
 using seqan3::operator""_dna5;
 

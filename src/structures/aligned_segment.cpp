@@ -26,11 +26,7 @@ int32_t AlignedSegment::get_reference_end() const
             case 'H':
             case 'P': // do nothing
                 break;
-            default:
-                std::cerr << "The default case was accidentally triggered by the following element, which is no part of"
-                             " a CIGAR string: "
-                          << element_operation.to_char() << '\n';
-                break;
+            // default: all other characters will be mapped to M
         }
     }
     // Decrement by 1 to jump back to the last aligned base
@@ -47,9 +43,9 @@ int32_t AlignedSegment::get_left_soft_clip() const
             left_soft_clip += element_length;
         }
         else if (element_operation.to_char() == 'M' ||
-                element_operation.to_char() == '=' ||
-                element_operation.to_char() == 'X' ||
-                element_operation.to_char() == 'I')
+                 element_operation.to_char() == '=' ||
+                 element_operation.to_char() == 'X' ||
+                 element_operation.to_char() == 'I')
         {
             break;
         }
@@ -67,9 +63,9 @@ int32_t AlignedSegment::get_right_soft_clip() const
             right_soft_clip += element_length;
         }
         else if (element_operation.to_char() == 'M' ||
-                element_operation.to_char() == '=' ||
-                element_operation.to_char() == 'X' ||
-                element_operation.to_char() == 'I')
+                 element_operation.to_char() == '=' ||
+                 element_operation.to_char() == 'X' ||
+                 element_operation.to_char() == 'I')
         {
             break;
         }
@@ -108,11 +104,7 @@ int32_t AlignedSegment::get_query_length() const
             case 'H':
             case 'P': // do nothing
                 break;
-            default:
-                std::cerr << "The default case was accidentally triggered by the following element, which is no part of"
-                             " a CIGAR string: "
-                          << element_operation.to_char() << '\n';
-                break;
+            // default: all other characters will be mapped to M
         }
     }
     return current_length;

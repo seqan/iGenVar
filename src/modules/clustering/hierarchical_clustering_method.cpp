@@ -1,12 +1,13 @@
-#include "iGenVar.hpp"                                            // for global variable gVerbose
 #include "modules/clustering/hierarchical_clustering_method.hpp"
 
-#include <limits>                                                 // for infinity
-#include <random>                                                 // for random_device
+#include <limits>                           // for std::numeric_limits
+#include <random>                           // for std::mt19937, std::random_device
 
 #include <seqan3/core/debug_stream.hpp>
 
-#include "fastcluster.h"                                          // for hclust_fast
+#include "iGenVar.hpp"                      // for global variable gVerbose
+
+#include "fastcluster.h"                    // for hclust_fast
 
 std::vector<std::vector<Junction>> partition_junctions(std::vector<Junction> const & junctions,
                                                        int32_t const partition_max_distance)

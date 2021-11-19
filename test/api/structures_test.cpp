@@ -1,7 +1,36 @@
 #include "api_test.hpp"
 
+#include "structures/aligned_segment.hpp"
 #include "structures/breakend.hpp"
 #include "variant_detection/method_enums.hpp"
+
+/* tests for aligned_segment */
+
+using seqan3::operator""_cigar_operation;
+
+TEST(structures, aligned_segment)
+{
+    // get_left_soft_clip()
+    {
+        // no soft clip with operation '='
+        std::vector<seqan3::cigar> cig = {{1, '='_cigar_operation}};
+        AlignedSegment aligned_segment = {strand::forward, "chr1", 100, 60, cig};
+        EXPECT_EQ(aligned_segment.get_left_soft_clip(), 0);
+
+        // no soft clip with operation 'I'
+        cig = {{1, 'I'_cigar_operation}};
+        aligned_segment = {strand::forward, "chr1", 100, 60, cig};
+        EXPECT_EQ(aligned_segment.get_left_soft_clip(), 0);
+    }
+
+    // get_query_length()
+    {
+        // zero query length
+        std::vector<seqan3::cigar> cig = {{1, 'D'_cigar_operation}};
+        AlignedSegment aligned_segment = {strand::forward, "chr1", 100, 60, cig};
+        EXPECT_EQ(aligned_segment.get_query_length(), 0);
+    }
+}
 
 /* tests for method_enums */
 

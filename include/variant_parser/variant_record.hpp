@@ -79,7 +79,7 @@ public:
         out_stream << "##fileformat=" << fileformat << '\n';
         out_stream << "##source=" << source << '\n';
 
-        for(auto const& [id, length] : references_lengths)
+        for (auto const & [id, length] : references_lengths)
             out_stream << "##contig=<ID=" << id << ",length=" << length << ">\n";
 
         for (auto const & i : info)

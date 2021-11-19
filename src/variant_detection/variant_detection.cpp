@@ -37,7 +37,7 @@ std::deque<std::string> read_header_information(auto & alignment_file,
     std::vector<std::tuple<int32_t, std::string>> ref_id_info = alignment_file.header().ref_id_info;
 
     size_t i = 0;
-    for(std::string const & ref_id : ref_ids)
+    for (std::string const & ref_id : ref_ids)
     {
         int32_t ref_length = std::get<0>(ref_id_info[i]);
         if (references_lengths.find(ref_id) != references_lengths.end())

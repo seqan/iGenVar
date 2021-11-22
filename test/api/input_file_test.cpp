@@ -5,6 +5,7 @@
 #include <seqan3/io/exception.hpp>
 
 #include "variant_detection/variant_detection.hpp"  // for detect_junctions_in_long_reads_sam_file()
+#include "variant_detection/variant_output.hpp"       // for find_and_output_variants()
 
 using seqan3::operator""_dna5;
 
@@ -338,4 +339,19 @@ TEST(input_file, bamit_create_and_load)
     }
 
     std::filesystem::remove(short_reads_bamit_path);
+}
+
+TEST(output_file, output_file_fail)
+{
+    std::filesystem::path const tmp_dir = std::filesystem::temp_directory_path();     // get the temp directory
+    std::filesystem::path fail_path{tmp_dir/"fail_file.vcf"};
+    std::filesystem::create_directory(fail_path); // Make a directory with same name as output file name.
+    std::map<std::string, int32_t> empty_map{};
+    std::vector<Cluster> empty_vec{};
+    cmd_arguments empty_args{};
+
+    EXPECT_THROW(find_and_output_variants(empty_map, empty_vec, empty_args, fail_path), std::runtime_error);
+    std::filesystem::remove_all(fail_path);
+    EXPECT_NO_THROW(find_and_output_variants(empty_map, empty_vec, empty_args, fail_path));
+    std::filesystem::remove_all(fail_path);
 }

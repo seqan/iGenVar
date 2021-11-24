@@ -1,7 +1,7 @@
 #include "modules/clustering/hierarchical_clustering_method.hpp"
 
 #include <limits>                           // for std::numeric_limits
-#include <random>                           // for std::mt19937, std::random_device
+#include <random>                           // for std::mt19937
 
 #include <seqan3/core/debug_stream.hpp>
 
@@ -148,7 +148,7 @@ inline std::vector<Junction> subsample_partition(std::vector<Junction> const & p
     assert(partition.size() >= sample_size);
     std::vector<Junction> subsample{};
     std::sample(partition.begin(), partition.end(), std::back_inserter(subsample),
-                sample_size, std::mt19937{std::random_device{}()});
+                sample_size, std::mt19937{}); // use default seed for deterministic results
     return subsample;
 }
 

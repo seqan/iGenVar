@@ -44,16 +44,6 @@ constexpr double default_hierarchical_clustering_cutoff = 0.5;
 //     "chr22\t17458418\tForward\tchr21\t41972616\tForward\t2\t0\n"
 // };
 
-std::string empty_res
-{
-    "##fileformat=VCFv4.3\n"
-    "##source=iGenVarCaller\n"
-    "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\n"
-};
-
 TEST(input_file, detect_junctions_in_short_read_sam_file)
 {
     std::vector<Junction> junctions_res{};

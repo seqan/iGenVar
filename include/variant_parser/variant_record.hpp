@@ -1,7 +1,10 @@
 #pragma once
 
+#include <chrono>   // for std::chrono::system_clock
+#include <ctime>    // for std::localtime, std::time, std::time_t
 #include <fstream>
-#include <map>
+#include <iomanip>  // for std::put_time
+#include <map>      // for std::map
 #include <vector>
 
 #include <seqan3/io/stream/concept.hpp>
@@ -47,6 +50,15 @@ public:
         fileformat = std::move(fileformat_i);
     }
 
+    /*! \brief Set the file date for this VCF file header.
+     *
+     * \param[in] filedate_i The input filedate.
+     */
+    void set_filedate(std::string filedate_i)
+    {
+        filedate = std::move(filedate_i);
+    }
+
     /*! \brief Add header information for a given INFO field.
      *
      * \param[in] info_key_i    - the INFO key name
@@ -77,6 +89,7 @@ public:
     void print(std::map<std::string, int32_t> & references_lengths, std::string const & vcf_sample_name, stream_type & out_stream)
     {
         out_stream << "##fileformat=" << fileformat << '\n';
+        out_stream << "##filedate=" << filedate << '\n';
         out_stream << "##source=" << source << '\n';
 
         for (auto const & [id, length] : references_lengths)
@@ -96,7 +109,19 @@ public:
     }
 
 private:
+
+    std::string transTime()
+    {
+        std::stringstream text_stream;
+        const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+        const std::time_t rawtime = std::chrono::system_clock::to_time_t(now);
+        text_stream << std::put_time(std::localtime(&rawtime), "%F %T");
+        std::string time_string = text_stream.str();
+        return time_string;
+    }
+
     std::string fileformat{"VCFv4.3"};
+    std::string filedate{transTime()};
     std::string source{"iGenVarCaller"};
     std::vector<info_entry> info{};
 };

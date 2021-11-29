@@ -134,21 +134,29 @@ std::string const help_page_advanced
     "          value needs to be non-negative. Default: 0.5.\n"
 };
 
-// std::string expected_res_default
-// {
-//     "chr21\t41972615\tForward\tchr21\t41972616\tForward\t1\t1681\n"
-//     "chr22\t17458417\tForward\tchr21\t41972615\tForward\t1\t2\n"
-//     "chr22\t17458418\tForward\tchr21\t41972616\tForward\t2\t0\n"
-// }
-
-std::string expected_res_default_1
+std::string expected_err_default_no_err
 {
-    "##fileformat=VCFv4.3\n"
-    "##source=iGenVarCaller\n"
-    "##contig=<ID=chr21,length=46709983>\n"
+    "Detect junctions in long reads...\n"
+    "The read depth method for long reads is not yet implemented.\n"
+    "The read depth method for long reads is not yet implemented.\n"
+    "The read depth method for long reads is not yet implemented.\n"
+    "The read depth method for long reads is not yet implemented.\n"
+    "Start clustering...\n"
 };
 
-std::string general_header_lines
+// VCF output
+
+std::string general_header_lines_1
+{
+    "##fileformat=VCFv4.3\n"
+    "##filedate=\n"             // remove date as it can differ and erease it from the result.out
+    "##source=iGenVarCaller\n"
+};
+
+std::string contig_cutoff_sam = "##contig=<ID=chr21,length=46709983>\n";
+std::string contig_mini_example = "##contig=<ID=chr1,length=482>\n";
+
+std::string general_header_lines_2
 {
     "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
@@ -160,29 +168,12 @@ std::string general_header_lines
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
 };
 
-std::string expected_res_default_2
+std::string expected_res_default_1
 {
     "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
 };
 
-std::string expected_res_default = expected_res_default_1 + general_header_lines + expected_res_default_2;
-
-std::string expected_res_empty
-{
-    "##fileformat=VCFv4.3\n"
-    "##source=iGenVarCaller\n"
-    "##contig=<ID=chr1,length=482>\n"
-};
-
-std::string expected_err_default_no_err
-{
-    "Detect junctions in long reads...\n"
-    "The read depth method for long reads is not yet implemented.\n"
-    "The read depth method for long reads is not yet implemented.\n"
-    "The read depth method for long reads is not yet implemented.\n"
-    "The read depth method for long reads is not yet implemented.\n"
-    "Start clustering...\n"
-};
+std::string expected_res_default = general_header_lines_1 + contig_cutoff_sam + general_header_lines_2 + expected_res_default_1;
 
 TEST_F(iGenVar_cli_test, no_options)
 {
@@ -217,7 +208,7 @@ TEST_F(iGenVar_cli_test, test_verbose_option)
         "Done with clustering. Found 2 junction clusters.\nNo refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -270,7 +261,7 @@ TEST_F(iGenVar_cli_test, test_outfile)
 
     //this does not specifically check if file exists, rather if its readable.
     EXPECT_TRUE(f.is_open());
-    EXPECT_EQ(buffer.str(), expected_res_default);
+    EXPECT_EQ(buffer.str().erase(32,19), expected_res_default);
 }
 
 TEST_F(iGenVar_cli_test, test_intermediate_result_output)
@@ -310,7 +301,7 @@ TEST_F(iGenVar_cli_test, test_genome_input)
                                      "Done with clustering. Found 0 junction clusters.\n"
                                      "No refinement was selected.\n";
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, std::string{"##fileformat=VCFv4.3\n##source=iGenVarCaller\n"} + general_header_lines);
+    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + general_header_lines_2);
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -405,7 +396,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_arguments)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -437,7 +428,7 @@ TEST_F(iGenVar_cli_test, simple_clustering)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -452,7 +443,7 @@ TEST_F(iGenVar_cli_test, hierarchical_clustering)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -482,7 +473,7 @@ TEST_F(iGenVar_cli_test, self_balancing_binary_tree)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default_1 + general_header_lines);
+    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_cutoff_sam + general_header_lines_2);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -498,7 +489,7 @@ TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default_1 + general_header_lines);
+    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_cutoff_sam + general_header_lines_2);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -515,7 +506,7 @@ TEST_F(iGenVar_cli_test, no_refinement)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -530,7 +521,7 @@ TEST_F(iGenVar_cli_test, sViper_refinement_method)
         "The sViper refinement method is not yet implemented.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -545,7 +536,7 @@ TEST_F(iGenVar_cli_test, sVirl_refinement_method)
         "The sVirl refinement method is not yet implemented.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -589,7 +580,7 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
 }
 
@@ -607,7 +598,7 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
         "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out, expected_res_default);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -635,7 +626,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
                                          "--method read_pairs");
 
     // Check the output of junctions:
-    EXPECT_EQ(result.out, expected_res_empty + general_header_lines);
+    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_mini_example + general_header_lines_2);
 
     // Check the debug output of junctions:
     std::string expected_err
@@ -699,7 +690,7 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
     std::ifstream output_res_file("../../data/output_res.txt");
     std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                 std::istreambuf_iterator<char>());
-    EXPECT_EQ(result.out, output_res_str);
+    EXPECT_EQ(result.out.erase(32,19), output_res_str);
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_err.txt");
@@ -724,7 +715,7 @@ TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
     std::ifstream output_res_file("../../data/output_short_and_long_res.txt");
     std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                 std::istreambuf_iterator<char>());
-    EXPECT_EQ(result.out, output_res_str);
+    EXPECT_EQ(result.out.erase(32,19), output_res_str);
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_short_and_long_err.txt");

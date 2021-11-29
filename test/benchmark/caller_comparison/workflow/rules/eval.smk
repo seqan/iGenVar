@@ -12,7 +12,7 @@ rule bgzip:
     output:
         "{name}.vcf.gz"
     shell:
-        "bgzip -c {input} > {output}"
+        "pbgzip -c {input} > {output}"
 
 rule tabix:
     input:
@@ -30,12 +30,11 @@ rule truvari:
         output_dir = "results/caller_comparison/eval/{caller}/min_qual_{min_qual}"
     output:
         summary = "results/caller_comparison/eval/{caller}/min_qual_{min_qual}/summary.txt"
-    conda:
-        "../../../envs/truvari.yaml"
     shell:
         """
         rm -rf {params.output_dir} && truvari bench -b data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz \
-        -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+        -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 \
+        &>> logs/truvari_output.log
         """
 
 rule reformat_truvari_results:
@@ -52,27 +51,32 @@ rule reformat_truvari_results:
 
 rule cat_truvari_results_all:
     input:
-        igenvar  = expand("results/caller_comparison/eval/iGenVar/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["quality_ranges"]["igenvar"]["from"],
-                                              config["quality_ranges"]["igenvar"]["to"]+1,
-                                              config["quality_ranges"]["igenvar"]["step"]))),
-        svim     = expand("results/caller_comparison/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["quality_ranges"]["svim"]["from"],
-                                              config["quality_ranges"]["svim"]["to"]+1,
-                                              config["quality_ranges"]["svim"]["step"]))),
-        sniffles = expand("results/caller_comparison/eval/Sniffles/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["quality_ranges"]["sniffles"]["from"],
-                                              config["quality_ranges"]["sniffles"]["to"]+1,
-                                              config["quality_ranges"]["sniffles"]["step"]))),
-        pbsv = expand("results/caller_comparison/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
-                          min_qual=list(range(config["quality_ranges"]["pbsv"]["from"],
-                                              config["quality_ranges"]["pbsv"]["to"]+1,
-                                              config["quality_ranges"]["pbsv"]["step"])))
+        igenvar          = expand("results/caller_comparison/eval/iGenVar/min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["from"],
+                                                      config["quality_ranges"]["to"]+1,
+                                                      config["quality_ranges"]["step"]))),
+        svim             = expand("results/caller_comparison/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["from"],
+                                                      config["quality_ranges"]["to"]+1,
+                                                      config["quality_ranges"]["step"]))),
+        sniffles         = expand("results/caller_comparison/eval/Sniffles/min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["from"],
+                                                      config["quality_ranges"]["to"]+1,
+                                                      config["quality_ranges"]["step"]))),
+        pbsv             = expand("results/caller_comparison/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["from"],
+                                                      config["quality_ranges"]["to"]+1,
+                                                      config["quality_ranges"]["step"]))),
+        pbsv_without_DUP = expand("results/caller_comparison/eval/pbsv_without_DUP/min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["from"],
+                                                      config["quality_ranges"]["to"]+1,
+                                                      config["quality_ranges"]["step"])))
     output:
-        igenvar  = temp("results/caller_comparison/eval/igenvar.all_results.txt"),
-        svim     = temp("results/caller_comparison/eval/svim.all_results.txt"),
-        sniffles = temp("results/caller_comparison/eval/sniffles.all_results.txt"),
-        pbsv     = temp("results/caller_comparison/eval/pbsv.all_results.txt"),
+        igenvar          = temp("results/caller_comparison/eval/igenvar.all_results.txt"),
+        svim             = temp("results/caller_comparison/eval/svim.all_results.txt"),
+        sniffles         = temp("results/caller_comparison/eval/sniffles.all_results.txt"),
+        pbsv             = temp("results/caller_comparison/eval/pbsv.all_results.txt"),
+        pbsv_without_DUP = temp("results/caller_comparison/eval/pbsv_without_DUP.all_results.txt"),
         all = "results/caller_comparison/eval/all_results.txt"
     threads: 1
     run:
@@ -80,4 +84,5 @@ rule cat_truvari_results_all:
         shell("cat {input.svim} > {output.svim}")
         shell("cat {input.sniffles} > {output.sniffles}")
         shell("cat {input.pbsv} > {output.pbsv}")
-        shell("cat {output.igenvar} {output.svim} {output.sniffles} {output.pbsv} > {output.all}")
+        shell("cat {input.pbsv_without_DUP} > {output.pbsv_without_DUP}")
+        shell("cat {output.igenvar} {output.svim} {output.sniffles} {output.pbsv} {output.pbsv_without_DUP} > {output.all}")

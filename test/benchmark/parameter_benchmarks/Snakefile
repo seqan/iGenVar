@@ -41,7 +41,7 @@ rule bgzip:
     output:
         "{name}.vcf.gz"
     shell:
-        "bgzip -c {input} > {output}"
+        "pbgzip -c {input} > {output}"
 
 rule tabix:
     input:
@@ -59,12 +59,11 @@ rule truvari:
         output_dir = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}"
     output:
         summary = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
-    conda:
-        "../envs/truvari.yaml"
     shell:
         """
         rm -rf {params.output_dir} && truvari bench -b data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz \
-        -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0
+        -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 \
+        &>> logs/truvari_output.log
         """
 
 rule reformat_truvari_results:

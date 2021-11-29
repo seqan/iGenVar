@@ -1,6 +1,0 @@
-channels:
-  - r
-dependencies:
-  - r
-  - r-tidyverse
-  - r-scales

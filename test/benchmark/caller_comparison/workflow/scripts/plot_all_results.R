@@ -1,12 +1,11 @@
 library(tidyverse)
-library(scales)
 
 args = commandArgs(trailingOnly=TRUE)
 
 res <- read_tsv(args[1], col_names = c("caller", "min_qual", "metric", "value"))
 res$caller = factor(res$caller,
-                    levels=c('iGenVar', 'SVIM', 'Sniffles', 'pbsv'),
-                    labels=c('iGenVar', 'SVIM', 'Sniffles', 'pbsv'))
+                    levels=c('iGenVar', 'SVIM', 'Sniffles', 'pbsv', 'pbsv_without_DUP'),
+                    labels=c('iGenVar 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP'))
 res %>%
     filter(metric %in% c("recall", "precision")) %>%
     pivot_wider(names_from=metric, values_from=value) %>%
@@ -17,10 +16,13 @@ res %>%
       # scale_shape_manual(values=c(15,16,17)) +
       # scale_color_manual(values=c("deepskyblue3", "goldenrod2", "firebrick2")) +
       geom_path() +
-      labs(y = "Precision", x = "Recall", color = "Tool", pch = "Tool") +
+      labs(y = "Precision", x = "Recall", color = "Tool", pch = "Tool",
+           title="Caller Comparison", subtitle="HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.md.bam") +
       lims(x=c(0,100), y=c(0,100)) +
       theme_bw() +
       theme(panel.spacing = unit(0.75, "lines")) +
-      theme(text = element_text(size=14), axis.text.x = element_text(size=9), axis.text.y = element_text(size=9))
+      theme(text = element_text(size=14), axis.text.x = element_text(size=9), axis.text.y = element_text(size=9)) +
+      theme(plot.title=element_text(size=20, hjust=0.5, face="bold", color="black")) +
+      theme(plot.subtitle=element_text(size=10, hjust=0.5, face="italic", color="black"))
 
 ggsave(args[2], width=20, height=12)

@@ -1,4 +1,4 @@
 channels:
  - bioconda
 dependencies:
- - svim=1.4.2
+ - svim=2.0.0

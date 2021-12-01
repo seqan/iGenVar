@@ -1,4 +1,0 @@
-channels:
- - bioconda
-dependencies:
- - svim=2.0.0

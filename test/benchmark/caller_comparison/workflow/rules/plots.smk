@@ -8,5 +8,5 @@ rule plot_pr_all_results:
     shell:
         """
         Rscript --vanilla Repos/iGenVar/test/benchmark/caller_comparison/workflow/scripts/plot_all_results.R \
-        {input} {output} > {log}
+        {input} Repos/iGenVar/test/benchmark/F1_score.csv {output} > {log}
         """

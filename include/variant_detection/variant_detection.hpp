@@ -1,9 +1,9 @@
 #pragma once
 
-#include <seqan3/std/filesystem>    // for filesystem
+#include <filesystem>               // for filesystem
+#include <fstream>
 #include <map>
 #include <vector>
-#include <fstream>
 
 #include "iGenVar.hpp"              // for struct cmd_arguments
 #include "structures/junction.hpp"  // for class Junction

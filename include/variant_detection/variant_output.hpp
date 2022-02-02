@@ -1,8 +1,7 @@
 #pragma once
 
+#include <filesystem>
 #include <ostream>
-
-#include <seqan3/std/filesystem>
 
 #include "iGenVar.hpp"              // for cmd_arguments
 #include "structures/cluster.hpp"   // for class Cluster

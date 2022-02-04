@@ -47,16 +47,6 @@ jobs:
             build_type: Release
             cxx_flags: "-std=c++2a"
 
-          - name: "gcc8"
-            cxx: "g++-8"
-            cc: "gcc-8"
-            build_type: Release
-
-          - name: "gcc7"
-            cxx: "g++-7"
-            cc: "gcc-7"
-            build_type: Release
-
     steps:
       - name: Set repository name
         run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV

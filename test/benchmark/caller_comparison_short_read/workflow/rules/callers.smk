@@ -58,9 +58,66 @@ rule copy_igenvar_results:
                 sed -i 's/S2L3/iGenVar_SL3/g' {output.res_SL3}
             """)
 
+# Vaquita (no threading possible)
+rule run_Vaquita:
+    output:
+        vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.vcf"
+    log:
+        "logs/caller_comparison_short_read/Vaquita_output.{dataset}.log"
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            short_bam = config["short_read_bam"]["s1"],
+            genome = config["reference_fa"]["Illumina_Paired_End"]
+        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+            short_bam = config["short_read_bam"]["s2"],
+            genome = config["reference_fa"]["Illumina_Mate_Pair"]
+        shell("""
+            /usr/bin/time -v ./build/vaquita/bin/vaquita call --referenceGenome {genome} --cutoff 1 \
+                --minSVSize {min_var_length} {short_bam} > {output.vcf} 2> {log}
+        """)
+        # Defaults:
+        #     -v, --minVote INTEGER
+        #         Minimum number of evidence types(=vote) that support SVs for rescue. -1: Supported by all evidence types.
+        #         Default: -1.
+        #     -q, --minMapQual INTEGER
+        #         Mapping quaility cutoff. Default: 20.
+        #     -a, --adjTol INTEGER
+        #         Positional adjacency in nucleotide resolution. Default: 50.
+        # Split-read evidence:
+        #     -ss, --maxSplit INTEGER
+        #         Maximum number of segments in a single read. Default: 2.
+        #     -so, --maxOverlap INTEGER
+        #         Maximum allowed overlaps between segements. Default: 20.
+        #     -se, --minSplitReadSupport DOUBLE
+        #         SVs supported by >= se get a vote. Default: 1.
+        # Read-pair evidence:
+        #     -ps, --pairedEndSearchSize INTEGER
+        #         Size of breakpoint candidate regions. Default: 500.
+        #     -pi, --abInsParam DOUBLE
+        #         Discordant insertion size: median +/- (MAD * pi) Default: 9.0.
+        #     -pd, --depthOutlier DOUBLE
+        #         Depth outlier: {Q3 + (IQR * pd)} Default: 1.0.
+        #     -pe, --minPairSupport DOUBLE
+        #         SVs supported by >= pe get a vote. Default: 1.
+        # Soft-clipped evidence:
+        #     -cs, --minClippedSeqSize INTEGER
+        #         Minimum size of clipped sequence to be considered. Default: 20.
+        #     -ce, --clippedSeqErrorRate DOUBLE
+        #         Maximum edit distance: floor{length of clipped sequence * (1 - ce)}. Default: 0.1.
+        # Read-depth evidence:
+        #     -rs, --samplingNum INTEGER
+        #         Number of random sample to estimate the background distribution(Q3, IQR, ..) of read-depth evidence.
+        #         Default: 100000.
+        #     -rw, --readDepthWindowSize INTEGER
+        #         Window size to caclulate average read-depth around breakpoints. Default: 20.
+        #     --use-re-for-bs
+        #         Use RE for balanced SVs(eg. inverison).
+        #     -re, --reThreshold DOUBLE
+        #         SVs satisfy read-depth evidence >= {Q3 + (IQR * re)} get a vote. Default: 1.0.
+
 # Vaquita-LR
 # We have only results for S1, S1L1, S1L2
-rule copy_vaquita_lr_results:
+rule copy_Vaquita_LR_results:
     output:
         res_S = "results/caller_comparison_short_read/{dataset}/eval/VaquitaLR_S/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
         res_SL1 = "results/caller_comparison_short_read/{dataset}/eval/VaquitaLR_SL1/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",

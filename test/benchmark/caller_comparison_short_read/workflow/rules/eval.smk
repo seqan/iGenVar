@@ -68,6 +68,14 @@ rule cat_truvari_results_all:
                                min_qual = min_qual_iGenVar),
         iGenVar_SL3   = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_SL3/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
                                min_qual = min_qual_iGenVar),
+        # [W::vcf_parse_info] INFO 'CE' is not defined in the header, assuming Type=String
+        # [W::bcf_update_info] INFO/END=0 is smaller than POS at chr1:1
+        # ...
+        # KeyError: 'unknown INFO: CE'
+        Vaquita       = expand("results/caller_comparison_short_read/{{dataset}}/eval/Vaquita/min_qual_{min_qual}/pr_rec.txt",
+                               min_qual=list(range(config["quality_ranges"]["from"],
+                                                   config["quality_ranges"]["to"],
+                                                   config["quality_ranges"]["step"]))),
         VaquitaLR_S   = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_S/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
                                min_qual = min_qual_VaquitaLR),
         VaquitaLR_SL1 = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_SL1/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
@@ -81,6 +89,7 @@ rule cat_truvari_results_all:
         iGenVar_SL1   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl1.all_results.txt"),
         iGenVar_SL2   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl2.all_results.txt"),
         iGenVar_SL3   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl3.all_results.txt"),
+        Vaquita       = temp("results/caller_comparison_short_read/{{dataset}}/eval/Vaquita.all_results.txt"),
         VaquitaLR_S   = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_S.all_results.txt"),
         VaquitaLR_SL1 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL1.all_results.txt"),
         VaquitaLR_SL2 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL2.all_results.txt"),
@@ -92,12 +101,13 @@ rule cat_truvari_results_all:
         shell("cat {input.iGenVar_SL1} > {output.iGenVar_SL1}")
         shell("cat {input.iGenVar_SL2} > {output.iGenVar_SL2}")
         shell("cat {input.iGenVar_SL3} > {output.iGenVar_SL3}")
+        shell("cat {input.Vaquita} > {output.Vaquita}")
         shell("cat {input.VaquitaLR_S} > {output.VaquitaLR_S}")
         shell("cat {input.VaquitaLR_SL1} > {output.VaquitaLR_SL1}")
         shell("cat {input.VaquitaLR_SL2} > {output.VaquitaLR_SL2}")
         shell("cat {input.VaquitaLR_SL3} > {output.VaquitaLR_SL3}")
         shell("""
             cat {output.iGenVar_S} {output.iGenVar_SL1} {output.iGenVar_SL2} {output.iGenVar_SL3} \
-                {output.VaquitaLR_S} {output.VaquitaLR_SL1} {output.VaquitaLR_SL2} {output.VaquitaLR_SL3} \
+                {output.Vaquita} {output.VaquitaLR_S} {output.VaquitaLR_SL1} {output.VaquitaLR_SL2} {output.VaquitaLR_SL3} \
                 > {output.all}
         """)

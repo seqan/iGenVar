@@ -2,11 +2,14 @@
 
 #include "structures/aligned_segment.hpp"
 #include "structures/breakend.hpp"
+#include "structures/cluster.hpp"
+#include "structures/junction.hpp"
 #include "variant_detection/method_enums.hpp"
 
 /* tests for aligned_segment */
 
 using seqan3::operator""_cigar_operation;
+using seqan3::operator""_dna5;
 
 TEST(structures, aligned_segment)
 {
@@ -104,7 +107,7 @@ TEST(structures, method_enums_refinement_methods)
 
 /* tests for junctions */
 
-TEST(structures, breakend_flip_orientation)
+TEST(structures, junctions_breakend_flip_orientation)
 {
     Breakend forward_breakend{"chr1", 42, strand::forward};
     Breakend reverse_breakend{"chr1", 42, strand::reverse};
@@ -116,4 +119,42 @@ TEST(structures, breakend_flip_orientation)
     EXPECT_NE(forward_breakend, reverse_breakend);
     forward_breakend.flip_orientation();
     EXPECT_EQ(forward_breakend, reverse_breakend); // both are forward now
+}
+
+/* tests for clusters */
+
+TEST(structures, clusters_get_common_tandem_dup_count)
+{
+    Junction junction_1{Breakend{"chr1", 123456, strand::forward},
+                        Breakend{"chr1", 234567, strand::forward},
+                        ""_dna5, 0, "read_1"};
+    Junction junction_2{Breakend{"chr1", 123456, strand::forward},
+                        Breakend{"chr1", 234567, strand::forward},
+                        ""_dna5, 1, "read_1"};
+    Junction junction_3{Breakend{"chr1", 123456, strand::forward},
+                        Breakend{"chr1", 234567, strand::forward},
+                        ""_dna5, 2, "read_1"};
+    Junction junction_4{Breakend{"chr1", 123456, strand::forward},
+                        Breakend{"chr1", 234567, strand::forward},
+                        ""_dna5, 7, "read_1"};
+
+    // Tandem duplication with 2 copies:
+    Cluster cluster_1{{junction_3, junction_3, junction_3}};
+    EXPECT_EQ(cluster_1.get_common_tandem_dup_count(), 2);
+
+    // Tandem duplication with different amount of copies:
+    Cluster cluster_2{{junction_2, junction_3, junction_4}};
+    EXPECT_EQ(cluster_2.get_common_tandem_dup_count(), 3); // (1+2+7)/3=3,333
+
+    // More than two thirds of the junctions have a 0 tandem_dup_count, than its probably no tandem duplication.
+    Cluster cluster_3{{junction_1, junction_1, junction_1, junction_2}};
+    EXPECT_EQ(cluster_3.get_common_tandem_dup_count(), 0);
+
+    // Two thirds of the junctions have a 0 tandem_dup_count, than its probably a tandem duplication.
+    Cluster cluster_4{{junction_1, junction_1, junction_2}};
+    EXPECT_EQ(cluster_4.get_common_tandem_dup_count(), 0);
+
+    // Less than two thirds of the junctions have a 0 tandem_dup_count, than its probably a tandem duplication.
+    Cluster cluster_5{{junction_1, junction_2}};
+    EXPECT_EQ(cluster_5.get_common_tandem_dup_count(), 1);
 }

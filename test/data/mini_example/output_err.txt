@@ -11,14 +11,18 @@ DEL: chr1	56	Forward	chr1	70	Forward	0	0	read018
 DUP:TANDEM: chr1	109	Forward	chr1	124	Forward	0	2	read021
 2 segments describe this tandem duplication. Its length on the read is 34 and a single duplicated part has a length of 16 => tandem_dup_count = 2
 INS: chr1	124	Forward	chr1	125	Forward	15	0	read023
+			inserted sequence: CCCCGGGGCCAATTT
 INS: chr1	124	Forward	chr1	125	Forward	15	0	read024
+			inserted sequence: CCCCGGGGCCAATTT
 INS: chr1	124	Forward	chr1	125	Forward	15	0	read025
+			inserted sequence: CCCCGGGGCCAATTT
 BND: chr1	96	Forward	chr1	125	Forward	0	0	read027
 DUP:TANDEM: chr1	180	Forward	chr1	187	Forward	0	2	read029
 2 segments describe this tandem duplication. Its length on the read is 16 and a single duplicated part has a length of 8 => tandem_dup_count = 2
 DUP:TANDEM: chr1	180	Forward	chr1	187	Forward	0	2	read030
 2 segments describe this tandem duplication. Its length on the read is 16 and a single duplicated part has a length of 8 => tandem_dup_count = 2
-INS: chr1	179	Forward	chr1	180	Forward	8	0	read031
+DUP:TANDEM: chr1	179	Forward	chr1	187	Forward	8	2	read031
+			duplicated sequence: ATATATTT with 2 duplications
 DUP:TANDEM: chr1	180	Forward	chr1	187	Forward	0	2	read033
 2 segments describe this tandem duplication. Its length on the read is 16 and a single duplicated part has a length of 8 => tandem_dup_count = 2
 BND: chr1	180	Reverse	chr1	187	Reverse	0	0	read034
@@ -38,10 +42,15 @@ DEL: chr1	335	Forward	chr1	350	Forward	0	0	read043
 DEL: chr1	335	Forward	chr1	350	Forward	0	0	read044
 DEL: chr1	335	Forward	chr1	350	Forward	0	0	read045
 INS: chr1	367	Forward	chr1	368	Forward	11	0	read046
+			inserted sequence: GGTAACGTGTA
 INS: chr1	367	Forward	chr1	368	Forward	11	0	read047
+			inserted sequence: GGTAACGTGTA
 INS: chr1	367	Forward	chr1	368	Forward	11	0	read048
+			inserted sequence: GGTAACGTGTA
 INS: chr1	367	Forward	chr1	368	Forward	11	0	read049
+			inserted sequence: GGTAACGTGTA
 INS: chr1	367	Forward	chr1	368	Forward	11	0	read050
+			inserted sequence: GGTAACGTGTA
 DEL: chr1	383	Forward	chr1	395	Forward	0	0	read050
 BND: chr1	10	Reverse	chr1	470	Reverse	0	0	read051
 BND: chr1	10	Reverse	chr1	470	Reverse	0	0	read052

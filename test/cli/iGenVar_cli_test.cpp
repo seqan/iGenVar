@@ -156,8 +156,11 @@ std::string const expected_err_default_no_err_2
 std::string const general_header_lines_1
 {
     "##fileformat=VCFv4.3\n"
-    "##filedate=\n"             // remove date as it can differ and erease it from the result.out
-    "##source=iGenVarCaller\n"
+    "##FILTER=<ID=PASS,Description=\"All filters passed\">\n"
+    "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\">\n"
+    "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\">\n"
+    "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\">\n"
+    "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
 };
 
 std::string const contig_cutoff_sam = "##contig=<ID=chr21,length=46709983>\n";
@@ -165,13 +168,11 @@ std::string const contig_mini_example = "##contig=<ID=chr1,length=482>\n";
 
 std::string const general_header_lines_2
 {
-    "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
-    "##INFO=<ID=END,Number=1,Type=Integer,Description=\"End position of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
+    "##filedate=\n"             // remove date as it can differ and erase it from the result.out
+    "##source=iGenVarCaller\n"
     "##ALT=<ID=DEL,Number=1,Description=\"Deletion\">\n"
     "##ALT=<ID=DUP:TANDEM,Number=1,Description=\"Tandem Duplication\">\n"
     "##ALT=<ID=INS,Number=1,Description=\"Insertion of novel sequence\">\n"
-    "##FORMAT=<ID=GT,Number=1,Type=String,Description=\"Genotype\">\n"
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
 };
 
@@ -209,8 +210,8 @@ TEST_F(iGenVar_cli_test, test_verbose_option)
         "Start clustering...\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
     EXPECT_EQ(result.err, expected_err + expected_err_default_no_err_2);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
 }
 
 // Help page:
@@ -262,7 +263,7 @@ TEST_F(iGenVar_cli_test, test_outfile)
 
     //this does not specifically check if file exists, rather if its readable.
     EXPECT_TRUE(f.is_open());
-    EXPECT_EQ(buffer.str().erase(32,19), expected_res_default);
+    EXPECT_EQ(buffer.str().erase(408, 19), expected_res_default); // erase the filedate
 }
 
 TEST_F(iGenVar_cli_test, test_intermediate_result_output)
@@ -278,7 +279,7 @@ TEST_F(iGenVar_cli_test, test_intermediate_result_output)
 
     // This does not specifically check if file exists, rather if its readable.
     EXPECT_TRUE(f1.is_open());
-    EXPECT_NE(buffer1.str(), "");
+    EXPECT_NE(buffer1.str(), std::string{});
 
     std::ifstream f2;
     f2.open(clusters_out_file_path);
@@ -287,7 +288,7 @@ TEST_F(iGenVar_cli_test, test_intermediate_result_output)
 
     // This does not specifically check if file exists, rather if its readable.
     EXPECT_TRUE(f2.is_open());
-    EXPECT_NE(buffer2.str(), "");
+    EXPECT_NE(buffer2.str(), std::string{});
 }
 
 TEST_F(iGenVar_cli_test, test_genome_input)
@@ -306,8 +307,8 @@ TEST_F(iGenVar_cli_test, test_genome_input)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + general_header_lines_2);
     EXPECT_EQ(result.err, expected_err);
+    EXPECT_EQ(result.out.erase(372, 19), general_header_lines_1 + general_header_lines_2); // erase the filedate
 }
 
 // SV specifications:
@@ -381,14 +382,14 @@ TEST_F(iGenVar_cli_test, set_min_qual)
     {
         "Done with clustering. Found 2 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 2 SVs.\n"
+        "Detected 1 SVs.\n"
     };
     std::string const expected_res
     {
         "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default + expected_res);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default + expected_res);
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
@@ -419,7 +420,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_arguments)
         "Start clustering...\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err + expected_err_default_no_err_2);
 }
 
@@ -452,7 +453,7 @@ TEST_F(iGenVar_cli_test, simple_clustering)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
@@ -462,7 +463,7 @@ TEST_F(iGenVar_cli_test, hierarchical_clustering)
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method hierarchical_clustering");
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err_default_no_err_2);
 }
 
@@ -493,7 +494,7 @@ TEST_F(iGenVar_cli_test, self_balancing_binary_tree)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_cutoff_sam + general_header_lines_2);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
@@ -510,7 +511,7 @@ TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_cutoff_sam + general_header_lines_2);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
@@ -522,7 +523,7 @@ TEST_F(iGenVar_cli_test, no_refinement)
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method no_refinement");
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err_default_no_err_2);
 }
 
@@ -538,7 +539,7 @@ TEST_F(iGenVar_cli_test, sViper_refinement_method)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
@@ -554,7 +555,7 @@ TEST_F(iGenVar_cli_test, sVirl_refinement_method)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
@@ -593,7 +594,7 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
     cli_test_result result = execute_app("iGenVar",
                                          "-j ", data(default_alignment_long_reads_file_path));
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err_default_no_err_2);
 }
 
@@ -612,7 +613,7 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
         "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
-    EXPECT_EQ(result.out.erase(32,19), expected_res_default);
+    EXPECT_EQ(result.out.erase(408, 19), expected_res_default); // erase the filedate
     EXPECT_EQ(result.err, expected_err);
 }
 
@@ -640,7 +641,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
                                          "--method read_pairs");
 
     // Check the output of junctions:
-    EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_mini_example + general_header_lines_2);
+    EXPECT_EQ(result.out.erase(402, 19), general_header_lines_1 + contig_mini_example + general_header_lines_2); // erase the filedate
 
     // Check the debug output of junctions:
     std::string const expected_err
@@ -706,14 +707,13 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
     std::ifstream output_res_file("../../data/output_res.vcf");
     std::string const output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                      std::istreambuf_iterator<char>());
-    EXPECT_EQ(result.out.erase(32,19), output_res_str);
+    EXPECT_EQ(result.out.erase(402, 19), output_res_str); // erase the filedate
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_err.txt");
     std::string const output_err_str((std::istreambuf_iterator<char>(output_err_file)),
                                      std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
-
 }
 
 TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
@@ -732,7 +732,7 @@ TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
     std::ifstream output_res_file("../../data/output_short_and_long_res.vcf");
     std::string const output_res_str((std::istreambuf_iterator<char>(output_res_file)),
                                      std::istreambuf_iterator<char>());
-    EXPECT_EQ(result.out.erase(32,19), output_res_str);
+    EXPECT_EQ(result.out.erase(402, 19), output_res_str); // erase the filedate
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_short_and_long_err.txt");

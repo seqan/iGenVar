@@ -47,4 +47,4 @@ We created small examples, which you can use to test our app:
 <p align="center"><img height="500" src="https://github.com/seqan/iGenVar/blob/863297c128d9fa67a4ab51206d7338dcbdd8ca1b/doc/ReleasePlan.png"></p>
 
 ## Dependencies
-We support gcc/g++ 9 and higher.
+We support gcc/g++ 10 and higher.

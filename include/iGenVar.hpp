@@ -31,7 +31,7 @@ struct cmd_arguments
     /* -m */ uint64_t max_tol_inserted_length = 50;
     /* -e */ uint64_t max_tol_deleted_length = 50;
     /* -n */ uint64_t max_overlap = 10;
-    /* -q */ uint64_t min_qual = 1;
+    /* -q */ uint64_t min_qual = 5; // best min_qual for PacBio CCS data of NA24385 HG002
 // Clustering specifications:
     /* -p */ uint64_t partition_max_distance = 1000;
     /* -w */ double hierarchical_clustering_cutoff = 0.5;

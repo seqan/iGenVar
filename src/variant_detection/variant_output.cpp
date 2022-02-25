@@ -2,6 +2,8 @@
 
 #include <iostream> // for std::cout
 
+#include <seqan3/core/debug_stream.hpp>         // for seqan3::debug_stream
+
 #include "structures/junction.hpp"              // for class Junction
 #include "variant_parser/variant_record.hpp"    // for class variant_header
 
@@ -16,6 +18,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
     header.add_meta_info("SVLEN", 1, "Integer", "Length of SV called.", "iGenVarCaller", "1.0");
     header.add_meta_info("END", 1, "Integer", "End position of SV called.", "iGenVarCaller", "1.0");
     header.print(references_lengths, args.vcf_sample_name, out_stream);
+    size_t amount_SVs = 0;
     for (size_t i = 0; i < clusters.size(); ++i)
     {
         size_t cluster_size = clusters[i].get_cluster_size();
@@ -90,8 +93,10 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                     }
                 }
             }
+            ++amount_SVs;
         }
     }
+    seqan3::debug_stream << "Detected " << amount_SVs << " SVs.\n";
 }
 
 //!\overload

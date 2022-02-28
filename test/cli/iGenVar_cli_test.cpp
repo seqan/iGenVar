@@ -125,7 +125,7 @@ std::string const help_page_advanced
     "    -q, --min_qual (unsigned 64 bit integer)\n"
     "          Specify the minimum quality (amount of supporting reads) of a\n"
     "          structural variant to be reported in the vcf output file. This value\n"
-    "          needs to be non-negative. Default: 1.\n"
+    "          needs to be non-negative. Default: 5.\n"
     "    -p, --partition_max_distance (unsigned 64 bit integer)\n"
     "          Specify the maximum distance in bp between members of the same\n"
     "          partition.This value needs to be non-negative. Default: 1000.\n"
@@ -134,7 +134,7 @@ std::string const help_page_advanced
     "          value needs to be non-negative. Default: 0.5.\n"
 };
 
-std::string expected_err_default_no_err
+std::string const expected_err_default_no_err_1
 {
     "Detect junctions in long reads...\n"
     "The read depth method for long reads is not yet implemented.\n"
@@ -144,19 +144,26 @@ std::string expected_err_default_no_err
     "Start clustering...\n"
 };
 
+std::string const expected_err_default_no_err_2
+{
+    "Done with clustering. Found 2 junction clusters.\n"
+    "No refinement was selected.\n"
+    "Detected 0 SVs.\n"
+};
+
 // VCF output
 
-std::string general_header_lines_1
+std::string const general_header_lines_1
 {
     "##fileformat=VCFv4.3\n"
     "##filedate=\n"             // remove date as it can differ and erease it from the result.out
     "##source=iGenVarCaller\n"
 };
 
-std::string contig_cutoff_sam = "##contig=<ID=chr21,length=46709983>\n";
-std::string contig_mini_example = "##contig=<ID=chr1,length=482>\n";
+std::string const contig_cutoff_sam = "##contig=<ID=chr21,length=46709983>\n";
+std::string const contig_mini_example = "##contig=<ID=chr1,length=482>\n";
 
-std::string general_header_lines_2
+std::string const general_header_lines_2
 {
     "##INFO=<ID=SVTYPE,Number=1,Type=String,Description=\"Type of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
     "##INFO=<ID=SVLEN,Number=1,Type=Integer,Description=\"Length of SV called.\",Source=\"iGenVarCaller\",Version=\"1.0\">\n"
@@ -168,21 +175,16 @@ std::string general_header_lines_2
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
 };
 
-std::string expected_res_default_1
-{
-    "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
-};
-
-std::string expected_res_default = general_header_lines_1 + contig_cutoff_sam + general_header_lines_2 + expected_res_default_1;
+std::string const expected_res_default = general_header_lines_1 + contig_cutoff_sam + general_header_lines_2;
 
 TEST_F(iGenVar_cli_test, no_options)
 {
     cli_test_result result = execute_app("iGenVar");
-    std::string expected_res
+    std::string const expected_res
     {
-            "iGenVar - Detect genomic variants in a read alignment file\n"
-            "==========================================================\n"
-            "    Try -h or --help for more information.\n"
+        "iGenVar - Detect genomic variants in a read alignment file\n"
+        "==========================================================\n"
+        "    Try -h or --help for more information.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res);
@@ -193,7 +195,7 @@ TEST_F(iGenVar_cli_test, no_options)
 TEST_F(iGenVar_cli_test, test_verbose_option)
 {
     cli_test_result result = execute_app("iGenVar", "-j", data(default_alignment_long_reads_file_path), "--verbose");
-    std::string expected_err
+    std::string const expected_err
     {
         "Detect junctions in long reads...\n"
         "INS: chr21\t41972615\tForward\tchr21\t41972616\tForward\t1681\t0\tm2257/8161/CCS\n"
@@ -205,11 +207,10 @@ TEST_F(iGenVar_cli_test, test_verbose_option)
         "BND: chr21\t41972616\tReverse\tchr22\t17458416\tReverse\t0\t0\tm38637/7161/CCS\n"
         "The read depth method for long reads is not yet implemented.\n"
         "Start clustering...\n"
-        "Done with clustering. Found 2 junction clusters.\nNo refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err);
+    EXPECT_EQ(result.err, expected_err + expected_err_default_no_err_2);
 }
 
 // Help page:
@@ -217,7 +218,7 @@ TEST_F(iGenVar_cli_test, test_verbose_option)
 TEST_F(iGenVar_cli_test, help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "-h");
-    std::string expected_res = help_page_part_1 + help_page_part_2;
+    std::string const expected_res = help_page_part_1 + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res);
@@ -227,7 +228,7 @@ TEST_F(iGenVar_cli_test, help_page_argument)
 TEST_F(iGenVar_cli_test, advanced_help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "-hh");
-    std::string expected_res = help_page_part_1 + help_page_advanced + help_page_part_2;
+    std::string const expected_res = help_page_part_1 + help_page_advanced + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res);
@@ -239,7 +240,7 @@ TEST_F(iGenVar_cli_test, advanced_help_page_argument)
 TEST_F(iGenVar_cli_test, fail_no_input_file)
 {
     cli_test_result result = execute_app("iGenVar", "--method cigar_string");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] You need to input at least one sam/bam file.\n"
         "Please use -i or -input_short_reads to pass a short read file or -j or -input_long_reads for a long read file.\n"
@@ -294,12 +295,16 @@ TEST_F(iGenVar_cli_test, test_genome_input)
     cli_test_result result = execute_app("iGenVar",
                                          "-g", data(default_genome_file_path),
                                          "-i", data("single_end_mini_example.sam"));
-    std::string const expected_err = "Detect SNPs and indels in short reads...\n"
-                                     "Active regions of chr1: [(6,15),(53,74),(121,130),(176,185),(184,193),(262,304),"
-                                     "(311,319),(332,354),(364,373),(381,398),(467,476)]\n"
-                                     "Start clustering...\n"
-                                     "Done with clustering. Found 0 junction clusters.\n"
-                                     "No refinement was selected.\n";
+    std::string const expected_err =
+    {
+        "Detect SNPs and indels in short reads...\n"
+        "Active regions of chr1: [(6,15),(53,74),(121,130),(176,185),(184,193),(262,304),"
+        "(311,319),(332,354),(364,373),(381,398),(467,476)]\n"
+        "Start clustering...\n"
+        "Done with clustering. Found 0 junction clusters.\n"
+        "No refinement was selected.\n"
+        "Detected 0 SVs.\n"
+    };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + general_header_lines_2);
     EXPECT_EQ(result.err, expected_err);
@@ -312,7 +317,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--min_var_length -30");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Value parse failed for --min_var_length: Argument -30 could not be parsed as type unsigned 64 bit "
         "integer.\n"
@@ -327,7 +332,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--max_var_length -30");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Value parse failed for --max_var_length: Argument -30 could not be parsed as type unsigned 64 bit "
         "integer.\n"
@@ -342,7 +347,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--max_tol_inserted_length -30");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Value parse failed for --max_tol_inserted_length: Argument -30 could not be parsed as type unsigned 64"
         " bit integer.\n"
@@ -357,7 +362,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--max_overlap -30");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Value parse failed for --max_overlap: Argument -30 could not be parsed as type unsigned 64 bit integer"
         ".\n"
@@ -367,12 +372,32 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
     EXPECT_EQ(result.err, expected_err);
 }
 
+TEST_F(iGenVar_cli_test, set_min_qual)
+{
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "--min_qual 1");
+    std::string const expected_err
+    {
+        "Done with clustering. Found 2 junction clusters.\n"
+        "No refinement was selected.\n"
+        "Detected 2 SVs.\n"
+    };
+    std::string const expected_res
+    {
+        "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
+    };
+    EXPECT_EQ(result.exit_code, 0);
+    EXPECT_EQ(result.out.erase(32,19), expected_res_default + expected_res);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
+}
+
 TEST_F(iGenVar_cli_test, fail_negative_min_qual)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--min_qual -30");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Value parse failed for --min_qual: Argument -30 could not be parsed as type unsigned 64 bit integer.\n"
     };
@@ -388,16 +413,14 @@ TEST_F(iGenVar_cli_test, with_detection_method_arguments)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method cigar_string --method split_read");
-    std::string expected_err
+    std::string const expected_err
     {
         "Detect junctions in long reads...\n"
         "Start clustering...\n"
-        "Done with clustering. Found 2 junction clusters.\n"
-        "No refinement was selected.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err);
+    EXPECT_EQ(result.err, expected_err + expected_err_default_no_err_2);
 }
 
 TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
@@ -405,7 +428,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method cigar_string --method cigar_string");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] The same detection method was selected multiple times.\n"
         "Methods to be used: [cigar_string,cigar_string]\n"
@@ -422,14 +445,15 @@ TEST_F(iGenVar_cli_test, simple_clustering)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method simple_clustering");
-    std::string expected_err
+    std::string const expected_err
     {
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
 TEST_F(iGenVar_cli_test, hierarchical_clustering)
@@ -437,14 +461,9 @@ TEST_F(iGenVar_cli_test, hierarchical_clustering)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method hierarchical_clustering");
-    std::string expected_err
-    {
-        "Done with clustering. Found 2 junction clusters.\n"
-        "No refinement was selected.\n"
-    };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err_default_no_err_2);
 }
 
 TEST_F(iGenVar_cli_test, fail_negative_hierarchical_clustering_cutoff)
@@ -452,7 +471,7 @@ TEST_F(iGenVar_cli_test, fail_negative_hierarchical_clustering_cutoff)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--hierarchical_clustering_cutoff -30");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] You gave a negative hierarchical_clustering_cutoff parameter.\n"
     };
@@ -466,15 +485,16 @@ TEST_F(iGenVar_cli_test, self_balancing_binary_tree)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method self_balancing_binary_tree");
-    std::string expected_err
+    std::string const expected_err
     {
         "The self-balancing binary tree clustering method is not yet implemented.\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_cutoff_sam + general_header_lines_2);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
 TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
@@ -482,15 +502,16 @@ TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method candidate_selection_based_on_voting");
-    std::string expected_err
+    std::string const expected_err
     {
         "The candidate selection based on voting clustering method is not yet implemented.\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_cutoff_sam + general_header_lines_2);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
 // Refinement methods:
@@ -500,14 +521,9 @@ TEST_F(iGenVar_cli_test, no_refinement)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method no_refinement");
-    std::string expected_err
-    {
-        "Done with clustering. Found 2 junction clusters.\n"
-        "No refinement was selected.\n"
-    };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err_default_no_err_2);
 }
 
 TEST_F(iGenVar_cli_test, sViper_refinement_method)
@@ -515,14 +531,15 @@ TEST_F(iGenVar_cli_test, sViper_refinement_method)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method sViper_refinement_method");
-    std::string expected_err
+    std::string const expected_err
     {
         "Done with clustering. Found 2 junction clusters.\n"
         "The sViper refinement method is not yet implemented.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
 TEST_F(iGenVar_cli_test, sVirl_refinement_method)
@@ -530,14 +547,15 @@ TEST_F(iGenVar_cli_test, sVirl_refinement_method)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method sVirl_refinement_method");
-    std::string expected_err
+    std::string const expected_err
     {
         "Done with clustering. Found 2 junction clusters.\n"
         "The sVirl refinement method is not yet implemented.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err);
 }
 
 // Other argument tests
@@ -548,7 +566,7 @@ TEST_F(iGenVar_cli_test, fail_unknown_option)
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "-y 0");
 
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Unknown option -y. In case this is meant to be a non-option/argument/parameter, please specify the "
         "start of non-options with '--'. See -h/--help for program information.\n"
@@ -561,7 +579,7 @@ TEST_F(iGenVar_cli_test, fail_unknown_option)
 TEST_F(iGenVar_cli_test, fail_missing_value)
 {
     cli_test_result result = execute_app("iGenVar", "-i");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] Missing value for option -i\n"
     };
@@ -574,14 +592,9 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
                                          "-j ", data(default_alignment_long_reads_file_path));
-    std::string expected_err
-    {
-        "Done with clustering. Found 2 junction clusters.\n"
-        "No refinement was selected.\n"
-    };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
-    EXPECT_EQ(result.err, expected_err_default_no_err + expected_err);
+    EXPECT_EQ(result.err, expected_err_default_no_err_1 + expected_err_default_no_err_2);
 }
 
 TEST_F(iGenVar_cli_test, test_direct_methods_input)
@@ -590,12 +603,13 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method cigar_string --method split_read "
                                          "--clustering_method 0 --refinement_method 0");
-    std::string expected_err
+    std::string const expected_err
     {
         "Detect junctions in long reads...\n"
         "Start clustering...\n"
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(32,19), expected_res_default);
@@ -607,7 +621,7 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
     cli_test_result result = execute_app("iGenVar",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method 9");
-    std::string expected_err
+    std::string const expected_err
     {
         "[Error] You have chosen an invalid input value: 9. "
         "Please use one of: [0,cigar_string,1,split_read,2,read_pairs,3,read_depth]\n"
@@ -629,7 +643,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
     EXPECT_EQ(result.out.erase(32,19), general_header_lines_1 + contig_mini_example + general_header_lines_2);
 
     // Check the debug output of junctions:
-    std::string expected_err
+    std::string const expected_err
     {
         "Detect junctions in short reads...\n"
         "The read pair method is not yet implemented.\n"
@@ -671,6 +685,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
         "Start clustering...\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
+        "Detected 0 SVs.\n"
     };
     EXPECT_EQ(result.err, expected_err);
 
@@ -684,18 +699,19 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
                                          "--verbose",
                                          "--method cigar_string --method split_read",
                                          "--min_var_length 8 --max_var_length 400",
+                                         "--min_qual 1",
                                          "--hierarchical_clustering_cutoff 0.1");
 
     // Check the output of junctions:
-    std::ifstream output_res_file("../../data/output_res.txt");
-    std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
-                                std::istreambuf_iterator<char>());
+    std::ifstream output_res_file("../../data/output_res.vcf");
+    std::string const output_res_str((std::istreambuf_iterator<char>(output_res_file)),
+                                     std::istreambuf_iterator<char>());
     EXPECT_EQ(result.out.erase(32,19), output_res_str);
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_err.txt");
-    std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
-                                std::istreambuf_iterator<char>());
+    std::string const output_err_str((std::istreambuf_iterator<char>(output_err_file)),
+                                     std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
 
 }
@@ -709,18 +725,19 @@ TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
                                          "--method cigar_string --method split_read",
                                          // TODO (irallia 25.10.2021): Add other methods when implemented.
                                          "--min_var_length 8 --max_var_length 400",
+                                         "--min_qual 1",
                                          "--hierarchical_clustering_cutoff 0.1");
 
     // Check the output of junctions:
-    std::ifstream output_res_file("../../data/output_short_and_long_res.txt");
-    std::string output_res_str((std::istreambuf_iterator<char>(output_res_file)),
-                                std::istreambuf_iterator<char>());
+    std::ifstream output_res_file("../../data/output_short_and_long_res.vcf");
+    std::string const output_res_str((std::istreambuf_iterator<char>(output_res_file)),
+                                     std::istreambuf_iterator<char>());
     EXPECT_EQ(result.out.erase(32,19), output_res_str);
 
     // Check the debug output of junctions:
     std::ifstream output_err_file("../../data/output_short_and_long_err.txt");
-    std::string output_err_str((std::istreambuf_iterator<char>(output_err_file)),
-                                std::istreambuf_iterator<char>());
+    std::string const output_err_str((std::istreambuf_iterator<char>(output_err_file)),
+                                     std::istreambuf_iterator<char>());
     EXPECT_EQ(result.err, output_err_str);
 
     std::filesystem::remove(short_reads_bamit_path);

@@ -6,10 +6,10 @@ target_use_datasources (iGenVar_cli_test FILES simulated.minimap2.hg19.coordsort
 target_use_datasources (iGenVar_cli_test FILES mini_example_reference.fasta)
 target_use_datasources (iGenVar_cli_test FILES paired_end_mini_example.sam)
 target_use_datasources (iGenVar_cli_test FILES single_end_mini_example.sam)
-target_use_datasources (iGenVar_cli_test FILES output_res.txt)
 target_use_datasources (iGenVar_cli_test FILES output_err.txt)
-target_use_datasources (iGenVar_cli_test FILES output_short_and_long_res.txt)
+target_use_datasources (iGenVar_cli_test FILES output_res.vcf)
 target_use_datasources (iGenVar_cli_test FILES output_short_and_long_err.txt)
+target_use_datasources (iGenVar_cli_test FILES output_short_and_long_res.vcf)
 
 # add_cli_test (iGenVar_options_test.cpp)
 # target_use_datasources (iGenVar_options_test FILES in.fastq)

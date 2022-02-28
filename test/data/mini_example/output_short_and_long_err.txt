@@ -79,3 +79,4 @@ INS: chr1	508	Reverse	chr1	528	Reverse	6	0	read054
 Start clustering...
 Done with clustering. Found 18 junction clusters.
 No refinement was selected.
+Detected 18 SVs.

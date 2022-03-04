@@ -24,8 +24,11 @@ string (ASCII 27 Esc)
 set (FontBold "${Esc}[1m")
 set (FontReset "${Esc}[m")
 
-# Dependency: SeqAn3.
-find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
+# Dependency: b.i.o.
+find_package (bio QUIET REQUIRED HINTS lib/b.i.o./build_system)
+
+# Dependency: SeqAn3 is found by b.i.o. as well.
+# find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
 
 # Use ccache.
 include ("${SEQAN3_CLONE_DIR}/test/cmake/seqan3_require_ccache.cmake")
@@ -42,6 +45,7 @@ FetchContent_Populate(hclust)
 add_library ("fastcluster" STATIC ${hclust_SOURCE_DIR}/fastcluster.cpp)
 target_include_directories ("fastcluster" PUBLIC ${hclust_SOURCE_DIR})
 
+# Dependency: BAMIntervalTree.
 add_library ("bamit" INTERFACE)
 target_include_directories ("bamit" INTERFACE lib/BAMIntervalTree/include/)
 

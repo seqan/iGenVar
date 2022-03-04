@@ -34,12 +34,6 @@ jobs:
             cc: "gcc-10"
             build_type: Release
 
-          - name: "gcc9 (c++2a)"
-            cxx: "g++-9"
-            cc: "gcc-9"
-            build_type: Release
-            cxx_flags: "-std=c++2a"
-
     steps:
       - name: Set repository name
         run: echo "REPOSITORY_NAME=$(echo '${{ github.repository }}' | awk -F '/' '{print $2}')" >> $GITHUB_ENV

@@ -1,122 +1,159 @@
 #include "variant_detection/variant_output.hpp"
 
+#include <chrono>   // for std::chrono::system_clock
+#include <ctime>    // for std::localtime, std::time, std::time_t
+#include <iomanip>  // for std::put_time
 #include <iostream> // for std::cout
 
-#include <seqan3/core/debug_stream.hpp>         // for seqan3::debug_stream
+#include <seqan3/core/debug_stream.hpp> // for seqan3::debug_stream
 
-#include "structures/junction.hpp"              // for class Junction
-#include "variant_parser/variant_record.hpp"    // for class variant_header
+using namespace std::string_literals;
+using namespace seqan3::literals;
 
-void find_and_output_variants(std::map<std::string, int32_t> & references_lengths,
-                              std::vector<Cluster> const & clusters,
-                              cmd_arguments const & args,
-                              std::ostream & out_stream)
+std::string transTime()
 {
-    variant_header header{};
-    header.set_fileformat("VCFv4.3");
-    header.add_meta_info("SVTYPE", 1, "String", "Type of SV called.", "iGenVarCaller", "1.0");
-    header.add_meta_info("SVLEN", 1, "Integer", "Length of SV called.", "iGenVarCaller", "1.0");
-    header.add_meta_info("END", 1, "Integer", "End position of SV called.", "iGenVarCaller", "1.0");
-    header.print(references_lengths, args.vcf_sample_name, out_stream);
-    size_t amount_SVs = 0;
-    for (size_t i = 0; i < clusters.size(); ++i)
+    std::stringstream text_stream;
+    const std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    const std::time_t rawtime = std::chrono::system_clock::to_time_t(now);
+    text_stream << std::put_time(std::localtime(&rawtime), "%F %T");
+    std::string time_string = text_stream.str();
+    return time_string;
+}
+
+void write_header(std::map<std::string, int32_t> & references_lengths,
+                  std::string sample_name,
+                  bio::var_io::header & hdr)
+{
+    hdr.file_format = "VCFv4.3";
+    // Default:
+    // hdr.filters.push_back({ .id = "PASS", .description = "All filters passed"});
+    hdr.infos.push_back({ .id = "END", .number = 1, .type = bio::var_io::value_type_id::int32,
+                          .description = "End position of SV called."});
+    hdr.infos.push_back({ .id = "SVLEN", .number = 1, .type = bio::var_io::value_type_id::int32,
+                          .description = "Length of SV called."});
+    hdr.infos.push_back({ .id = "SVTYPE", .number = 1, .type = bio::var_io::value_type_id::string,
+                          .description = "Type of SV called."});
+    hdr.formats.push_back({ .id = "GT", .number = 1, .type = bio::var_io::value_type_id::string,
+                          .description = "Genotype"});
+
+    for (auto const & [id, length] : references_lengths)
+        hdr.contigs.push_back({ .id = id, .length = length});
+
+    hdr.other_lines = {"filedate="s + transTime(),
+                       "source=iGenVarCaller",
+                       "ALT=<ID=DEL,Number=1,Description=\"Deletion\">",
+                       "ALT=<ID=DUP:TANDEM,Number=1,Description=\"Tandem Duplication\">",
+                       "ALT=<ID=INS,Number=1,Description=\"Insertion of novel sequence\">"};
+    hdr.column_labels = {"CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", sample_name};
+}
+
+void write_record(Cluster const & cluster,
+                  cmd_arguments const & args,
+                  bool & found_SV,
+                  bio::var_io::default_record<> & record)
+{
+    Breakend mate1 = cluster.get_average_mate1();
+    Breakend mate2 = cluster.get_average_mate2();
+
+    record.chrom() = mate1.seq_name;
+    // Increment position by 1 because VCF is 1-based
+    record.pos() = mate1.position + 1;
+    // TODO (irallia 23.02.22): add global RECORD_ID
+    record.id() = ".";
+    // TODO (irallia 23.02.22): add reference
+    record.ref() = "N"_dna5;
+    record.qual() = cluster.get_cluster_size();
+    record.filter() = {"PASS"};
+    record.genotypes() = {};
+    record.genotypes().push_back({ .id = "GT", .value = std::vector{"./."s}});
+
+    if (mate1.orientation == mate2.orientation)
     {
-        size_t cluster_size = clusters[i].get_cluster_size();
-        if (cluster_size >= args.min_qual)
+        if (mate1.seq_name == mate2.seq_name)
         {
-            Breakend mate1 = clusters[i].get_average_mate1();
-            Breakend mate2 = clusters[i].get_average_mate2();
-            if (mate1.orientation == mate2.orientation)
+            size_t insert_size = cluster.get_average_inserted_sequence_size();
+            if (mate1.orientation == strand::forward)
             {
-                if (mate1.seq_name == mate2.seq_name)
+                int distance = mate2.position - mate1.position - 1;
+                int sv_length = insert_size - distance;
+                // The SVLEN is neither too short nor too long than specified by the user.
+                if (std::abs(sv_length) >= args.min_var_length &&
+                    std::abs(sv_length) <= args.max_var_length)
                 {
-                    size_t insert_size = clusters[i].get_average_inserted_sequence_size();
-                    if (mate1.orientation == strand::forward)
+                    // Tandem Duplication
+                    if (cluster.get_common_tandem_dup_count() > 0)
                     {
-                        int distance = mate2.position - mate1.position - 1;
-                        int sv_length = insert_size - distance;
-                        // The SVLEN is neither too short nor too long than specified by the user.
-                        if (std::abs(sv_length) >= args.min_var_length &&
-                            std::abs(sv_length) <= args.max_var_length)
-                        {
-                            // Tandem Duplication
-                            if (clusters[i].get_common_tandem_dup_count() > 0)
-                            {
-                                variant_record tmp{};
-                                tmp.set_chrom(mate1.seq_name);
-                                tmp.set_qual(cluster_size);
-                                tmp.set_alt("<DUP:TANDEM>");
-                                tmp.add_info("SVTYPE", "DUP");
-                                // Increment position by 1 because VCF is 1-based
-                                tmp.set_pos(mate1.position + 1);
-                                tmp.add_info("SVLEN", std::to_string(distance));
-                                // Increment end by 1 because VCF is 1-based
-                                tmp.add_info("END", std::to_string(mate2.position + 1));
-                                tmp.print(out_stream);
-                            }
-                            // Deletion (sv_length is negative)
-                            else if (sv_length < 0 &&
-                                     insert_size <= args.max_tol_inserted_length)
-                            {
-                                variant_record tmp{};
-                                tmp.set_chrom(mate1.seq_name);
-                                tmp.set_qual(cluster_size);
-                                tmp.set_alt("<DEL>");
-                                tmp.add_info("SVTYPE", "DEL");
-                                // Increment position by 1 because VCF is 1-based
-                                tmp.set_pos(mate1.position + 1);
-                                tmp.add_info("SVLEN", std::to_string(sv_length));
-                                // Increment end by 1 because VCF is 1-based
-                                // Decrement end by 1 because deletion ends one base before mate2 begins
-                                tmp.add_info("END", std::to_string(mate2.position));
-                                tmp.print(out_stream);
-                            }
-                            // Insertion (sv_length is positive)
-                            // for a small deletion inside of an insertion, the distance is a small negative value
-                            else if (sv_length > 0 &&
-                                     distance <= 0 &&
-                                     std::abs(distance) <= args.max_tol_deleted_length)
-                            {
-                                variant_record tmp{};
-                                tmp.set_chrom(mate1.seq_name);
-                                tmp.set_qual(cluster_size);
-                                tmp.set_alt("<INS>");
-                                tmp.add_info("SVTYPE", "INS");
-                                // Increment position by 1 because VCF is 1-based
-                                tmp.set_pos(mate1.position + 1);
-                                tmp.add_info("SVLEN", std::to_string(sv_length));
-                                // Increment end by 1 because VCF is 1-based
-                                tmp.add_info("END", std::to_string(mate1.position + 1));
-                                tmp.print(out_stream);
-                            }
-                        }
+                        record.alt() = {"<DUP:TANDEM>"};
+                        // Increment end by 1 because VCF is 1-based
+                        record.info() = {};
+                        record.info().push_back({.id = "END", .value = mate2.position + 1});
+                        record.info().push_back({.id = "SVLEN", .value = distance});
+                        record.info().push_back({.id = "SVTYPE", .value = "DUP"});
+                        found_SV = true;
+                    }
+                    // Deletion (sv_length is negative)
+                    else if (sv_length < 0 &&
+                             insert_size <= args.max_tol_inserted_length)
+                    {
+                        record.alt() = {"<DEL>"};
+                        // Increment end by 1 because VCF is 1-based
+                        // Decrement end by 1 because deletion ends one base before mate2 begins
+                        record.info() = {};
+                        record.info().push_back({.id = "END", .value = mate2.position});
+                        record.info().push_back({.id = "SVLEN", .value = sv_length});
+                        record.info().push_back({.id = "SVTYPE", .value = "DEL"});
+                        found_SV = true;
+                    }
+                    // Insertion (sv_length is positive)
+                    // for a small deletion inside of an insertion, the distance is a small negative value
+                    else if (sv_length > 0 &&
+                             distance <= 0 &&
+                             std::abs(distance) <= args.max_tol_deleted_length)
+                    {
+                        record.alt() = {"<INS>"};
+                        // Increment end by 1 because VCF is 1-based
+                        record.info() = {};
+                        record.info().push_back({.id = "END", .value = mate1.position + 1});
+                        record.info().push_back({.id = "SVLEN", .value = sv_length});
+                        record.info().push_back({.id = "SVTYPE", .value = "INS"});
+                        found_SV = true;
                     }
                 }
             }
-            ++amount_SVs;
         }
     }
-    seqan3::debug_stream << "Detected " << amount_SVs << " SVs.\n";
 }
 
-//!\overload
 void find_and_output_variants(std::map<std::string, int32_t> & references_lengths,
                               std::vector<Cluster> const & clusters,
                               cmd_arguments const & args,
                               std::filesystem::path const & output_file_path)
 {
-    if (output_file_path.empty())
+    bio::var_io::header hdr{};
+    write_header(references_lengths, args.vcf_sample_name, hdr);
+
+    bio::var_io::default_record<> record{};
+    size_t amount_SVs = 0;
+    bool found_SV = false;
+
+    auto writer
+        = output_file_path.empty() ? bio::var_io::writer{std::cout, bio::vcf{}} : bio::var_io::writer{output_file_path};
+
+    writer.set_header(hdr);
+    for (size_t i = 0; i < clusters.size(); ++i)
     {
-        find_and_output_variants(references_lengths, clusters, args, std::cout);
-    }
-    else
-    {
-        std::ofstream out_file{output_file_path.c_str()};
-        if (!out_file.good() || !out_file.is_open())
+        // ignore low quality SVs
+        if (clusters[i].get_cluster_size() >= args.min_qual)
         {
-            throw std::runtime_error{"Could not open file '" + output_file_path.string() + "' for reading."};
+            write_record(clusters[i], args, found_SV, record);
+            if (found_SV)
+            {
+                writer.push_back(record);
+                ++amount_SVs;
+            }
         }
-        find_and_output_variants(references_lengths, clusters, args, out_file);
-        out_file.close();
+        found_SV = false;
     }
+
+    seqan3::debug_stream << "Detected " << amount_SVs << " SVs.\n";
 }

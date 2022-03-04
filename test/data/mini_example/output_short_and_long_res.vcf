@@ -1,14 +1,15 @@
 ##fileformat=VCFv4.3
+##FILTER=<ID=PASS,Description="All filters passed">
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position of SV called.">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of SV called.">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##contig=<ID=chr1,length=482>
 ##filedate=
 ##source=iGenVarCaller
-##contig=<ID=chr1,length=482>
-##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.",Source="iGenVarCaller",Version="1.0">
-##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of SV called.",Source="iGenVarCaller",Version="1.0">
-##INFO=<ID=END,Number=1,Type=Integer,Description="End position of SV called.",Source="iGenVarCaller",Version="1.0">
 ##ALT=<ID=DEL,Number=1,Description="Deletion">
 ##ALT=<ID=DUP:TANDEM,Number=1,Description="Tandem Duplication">
 ##ALT=<ID=INS,Number=1,Description="Insertion of novel sequence">
-##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	MYSAMPLE
 chr1	57	.	N	<DEL>	18	PASS	END=70;SVLEN=-13;SVTYPE=DEL	GT	./.
 chr1	97	.	N	<DEL>	1	PASS	END=125;SVLEN=-28;SVTYPE=DEL	GT	./.

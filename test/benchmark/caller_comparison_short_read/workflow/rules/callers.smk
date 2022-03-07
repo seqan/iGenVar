@@ -6,7 +6,7 @@ rule run_igenvar:
     input:
         bam = config["long_bam"]
     output:
-        vcf = "results/caller_comparison_long_read/iGenVar/variants.vcf"
+        vcf = "results/caller_comparison_short_read/iGenVar/variants.vcf"
     threads: 1
     shell:
         """
@@ -25,13 +25,13 @@ rule run_svim:
         bai = config["long_bai"],
         genome = config["reference_fa"] # [E::fai_build3_core] Cannot index files compressed with gzip, please use bgzip
     output:
-        "results/caller_comparison_long_read/SVIM/variants.vcf"
+        "results/caller_comparison_short_read/SVIM/variants.vcf"
     resources:
         mem_mb = 20000,
         time_min = 600,
         io_gb = 100
     params:
-        working_dir = "results/caller_comparison_long_read/SVIM/"
+        working_dir = "results/caller_comparison_short_read/SVIM/"
     threads: 1
     # conda:
     #     "../../../envs/svim.yaml"
@@ -49,7 +49,7 @@ rule run_sniffles:
     input:
         bam = config["long_md_bam"]
     output:
-        "results/caller_comparison_long_read/Sniffles/raw_variants_{min_qual}.vcf"
+        "results/caller_comparison_short_read/Sniffles/raw_variants_{min_qual}.vcf"
     resources:
         mem_mb = 400000,
         time_min = 1200,
@@ -60,7 +60,7 @@ rule run_sniffles:
     shell:
         """
         sniffles --mapped_reads {input.bam} \
-            --vcf results/caller_comparison_long_read/Sniffles/raw_variants_{wildcards.min_qual}.vcf \
+            --vcf results/caller_comparison_short_read/Sniffles/raw_variants_{wildcards.min_qual}.vcf \
             --min_support {wildcards.min_qual} --min_length {min_var_length} --threads {threads} --genotype \
             >> logs/sniffles_output.log
         """
@@ -69,9 +69,9 @@ rule run_sniffles:
 # see https://github.com/fritzsedlazeck/Sniffles/issues/209 (Fixed, but there just hasn't been a release since the fix.)
 rule fix_sniffles:
     input:
-        "results/caller_comparison_long_read/Sniffles/raw_variants_{min_qual}.vcf"
+        "results/caller_comparison_short_read/Sniffles/raw_variants_{min_qual}.vcf"
     output:
-        "results/caller_comparison_long_read/Sniffles/variants.unsorted.min_qual_{min_qual}.vcf"
+        "results/caller_comparison_short_read/Sniffles/variants.unsorted.min_qual_{min_qual}.vcf"
     run:
         shell("sed 's/##INFO=<ID=SUPTYPE,Number=A/##INFO=<ID=SUPTYPE,Number=./' {input} > {output}")
         shell("sed -i '4i##FILTER=<ID=STRANDBIAS,Description=\"Strand is biased.\">' {output}")
@@ -79,9 +79,9 @@ rule fix_sniffles:
 # Split to SV classes
 rule fix_sniffles_2:
     input:
-        "results/caller_comparison_long_read/Sniffles/variants.unsorted.min_qual_{min_qual}.vcf"
+        "results/caller_comparison_short_read/Sniffles/variants.unsorted.min_qual_{min_qual}.vcf"
     output:
-        "results/caller_comparison_long_read/Sniffles/variants.min_qual_{min_qual}.vcf"
+        "results/caller_comparison_short_read/Sniffles/variants.min_qual_{min_qual}.vcf"
     shell:
         "bcftools sort {input} > {output}"
 
@@ -90,8 +90,8 @@ rule run_pbsv_dicsover:
     input:
         bam = config["long_bam"]
     output:
-        svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
-        # svsig_gz = dynamic("results/caller_comparison_long_read/pbsv/signatures.{region}.svsig.gz")
+        svsig_gz = "results/caller_comparison_short_read/pbsv/signatures.svsig.gz"
+        # svsig_gz = dynamic("results/caller_comparison_short_read/pbsv/signatures.{region}.svsig.gz")
     resources:
         mem_mb = 400000,
         time_min = 2000,
@@ -103,17 +103,17 @@ rule run_pbsv_dicsover:
         "pbsv discover {input.bam} {output.svsig_gz}"
         # """
         # for i in $(samtools view -H {input.bam} | grep '^@SQ' | cut -f2 | cut -d':' -f2); do
-        #     pbsv discover --region $i {input.bam} results/caller_comparison_long_read/pbsv/signatures.$i.svsig.gz
+        #     pbsv discover --region $i {input.bam} results/caller_comparison_short_read/pbsv/signatures.$i.svsig.gz
         # done
         # """
 
 rule run_pbsv_call:
     input:
         genome = config["reference_fa"],
-        svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
-        # svsig_gz = dynamic("results/caller_comparison_long_read/pbsv/signatures.{region}.svsig.gz")
+        svsig_gz = "results/caller_comparison_short_read/pbsv/signatures.svsig.gz"
+        # svsig_gz = dynamic("results/caller_comparison_short_read/pbsv/signatures.{region}.svsig.gz")
     output:
-        "results/caller_comparison_long_read/pbsv/variants.min_qual_{min_qual}.vcf"
+        "results/caller_comparison_short_read/pbsv/variants.min_qual_{min_qual}.vcf"
     resources:
         mem_mb = 400000,
         time_min = 2000,
@@ -127,16 +127,16 @@ rule run_pbsv_call:
             --call-min-reads-all-samples {wildcards.min_qual} --call-min-reads-one-sample {wildcards.min_qual} \
             --call-min-reads-per-strand-all-samples 0 --call-min-bnd-reads-all-samples 0 --call-min-read-perc-one-sample 0 \
             --num-threads {threads} {input.genome} {input.svsig_gz} \
-            results/caller_comparison_long_read/pbsv/variants.min_qual_{wildcards.min_qual}.vcf
+            results/caller_comparison_short_read/pbsv/variants.min_qual_{wildcards.min_qual}.vcf
         """
 
 rule run_pbsv_call_without_DUP:
     input:
         genome = config["reference_fa"],
-        svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
-        # svsig_gz = dynamic("results/caller_comparison_long_read/pbsv/signatures.{region}.svsig.gz")
+        svsig_gz = "results/caller_comparison_short_read/pbsv/signatures.svsig.gz"
+        # svsig_gz = dynamic("results/caller_comparison_short_read/pbsv/signatures.{region}.svsig.gz")
     output:
-        "results/caller_comparison_long_read/pbsv_without_DUP/variants.min_qual_{min_qual}.vcf"
+        "results/caller_comparison_short_read/pbsv_without_DUP/variants.min_qual_{min_qual}.vcf"
     resources:
         mem_mb = 400000,
         time_min = 2000,
@@ -150,5 +150,5 @@ rule run_pbsv_call_without_DUP:
             --call-min-reads-all-samples {wildcards.min_qual} --call-min-reads-one-sample {wildcards.min_qual} \
             --call-min-reads-per-strand-all-samples 0 --call-min-bnd-reads-all-samples 0 --call-min-read-perc-one-sample 0 \
             --num-threads {threads} {input.genome} {input.svsig_gz} \
-            results/caller_comparison_long_read/pbsv_without_DUP/variants.min_qual_{wildcards.min_qual}.vcf
+            results/caller_comparison_short_read/pbsv_without_DUP/variants.min_qual_{wildcards.min_qual}.vcf
         """

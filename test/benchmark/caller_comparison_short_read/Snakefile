@@ -1,0 +1,18 @@
+configfile: "Repos/iGenVar/test/benchmark/caller_comparison/config/config.yaml"
+
+include: "workflow/rules/callers.smk"
+include: "workflow/rules/eval.smk"
+include: "workflow/rules/plots.smk"
+
+##### Target rules #####
+
+rule all:
+    input:
+        # SV calling
+        expand("results/caller_comparison/SVIM/variants.vcf"),
+        # SV lengths
+        # expand("results/caller_comparison/SV-plots/SV-length_SVIM_{minscore}.png", minscore=[3, 5, 7]),
+        # Evaluation
+        expand("results/caller_comparison/eval/results.all.png"),
+        # expand("pipeline/eval/results.tools.{vcf}.png", vcf=VCFS),
+        # expand("pipeline/eval/results.coverages.{vcf}.png", vcf=VCFS),

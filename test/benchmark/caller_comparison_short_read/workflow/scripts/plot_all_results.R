@@ -17,16 +17,16 @@ f1 <- add_column(f1, min_qual = NA, .after="caller")
 # Combine res & f1
 total <- rbind(res, f1)
 total$caller = factor(total$caller,
-                      levels=c('iGenVar', 'SVIM', 'Sniffles', 'pbsv', 'pbsv_without_DUP',
+                      levels=c('iGenVar_S', 'iGenVar_SL',
                                '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'),
-                      labels=c('iGenVar 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP',
+                      labels=c('iGenVar_S 0.0.3', 'iGenVar_SL 0.0.3',
                                '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'))
 
 scale_custom <- list(
       # https://stackoverflow.com/questions/46803260/assigning-40-shapes-or-more-in-scale-shape-manual
       scale_shape_manual(values = c(15, 16, 17, 18, 5, 46, 46, 46, 46, 46, 46, 46, 46, 46)),
-      scale_color_manual(breaks = c('iGenVar 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP'),
-                         values = c("chartreuse3", "darkorchid1", "dodgerblue", "firebrick1", "goldenrod1",
+      scale_color_manual(breaks = c('iGenVar_S 0.0.3', 'iGenVar_SL 0.0.3'),
+                         values = c("chartreuse3", "chartreuse1",
                                     "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan"),
                          na.value = "gray80")
 )

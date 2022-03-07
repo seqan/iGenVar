@@ -1,4 +1,4 @@
-configfile: "Repos/iGenVar/test/benchmark/caller_comparison/config/config.yaml"
+configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
 
 include: "workflow/rules/callers.smk"
 include: "workflow/rules/eval.smk"

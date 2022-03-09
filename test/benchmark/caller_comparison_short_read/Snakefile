@@ -1,0 +1,13 @@
+configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
+
+include: "workflow/rules/callers.smk"
+include: "workflow/rules/eval.smk"
+include: "workflow/rules/plots.smk"
+
+##### Target rules #####
+
+rule all:
+    input:
+        # SV calling
+        expand("results/caller_comparison/SVIM/variants.vcf"),
+        expand("results/caller_comparison/eval/results.all.png")

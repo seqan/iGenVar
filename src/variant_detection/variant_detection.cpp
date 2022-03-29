@@ -1,5 +1,8 @@
 #include "variant_detection/variant_detection.hpp"
 
+#include <fcntl.h>
+#include <unistd.h>
+
 #include <seqan3/core/debug_stream.hpp>
 #include <seqan3/io/sam_file/input.hpp>         // SAM/BAM support (seqan3::sam_file_input)
 
@@ -58,6 +61,13 @@ std::deque<std::string> read_header_information(auto & alignment_file,
     return ref_ids;
 }
 
+void safe_sync_rename(std::filesystem::path const & tmp_file_path, std::filesystem::path const & file_path) {
+    int fd = open(tmp_file_path.string().c_str(), O_APPEND);
+    fsync(fd);
+    close(fd);
+    std::filesystem::rename(tmp_file_path, file_path);
+}
+
 std::vector<std::unique_ptr<bamit::IntervalNode>> load_or_create_index(std::filesystem::path const & input_path)
 {
     std::filesystem::path bamit_index_file_path{input_path};
@@ -72,14 +82,19 @@ std::vector<std::unique_ptr<bamit::IntervalNode>> load_or_create_index(std::file
     }
     else
     {
-        std::ofstream out{bamit_index_file_path, std::ios_base::binary | std::ios_base::out};
+        std::filesystem::path bamit_index_file_tmp_path{input_path};
+        bamit_index_file_tmp_path += ".bit.tmp";
+        std::ofstream out{bamit_index_file_tmp_path, std::ios_base::binary | std::ios_base::out};
         cereal::BinaryOutputArchive ar(out);
         seqan3::sam_file_input input_sam{input_path, my_fields{}};
         node_list = bamit::index(input_sam);
         bamit::write(node_list, ar);
         out.close();
+        // If a run of iGenVar is aborted during BAMIT creation, an incorrect index is stored, which cannot be read when
+        // iGenVar is called again. Therefore, we write the index to a tmp file and save it with the correct file name
+        // when finished.
+        safe_sync_rename(bamit_index_file_tmp_path, bamit_index_file_path);
     }
-
     return node_list;
 }
 

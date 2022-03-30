@@ -19,7 +19,7 @@ declare_datasource (FILE mini_example_reference.fasta
 # copies file to <build>/data/paired_end_mini_example.sam
 declare_datasource (FILE paired_end_mini_example.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/paired_end_mini_example.sam
-                    URL_HASH SHA256=5e9211c3cb68105bd3359a1f001c900489bd2a5d117fa0d0da82e83766a8325d)
+                    URL_HASH SHA256=9dc47068c9a685ae414d9d943b512ab14d1d8de041d805e61c7f8352831a51b3)
 
 # copies file to <build>/data/single_end_mini_example.sam
 declare_datasource (FILE single_end_mini_example.sam

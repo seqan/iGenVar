@@ -129,6 +129,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 {
     // Store junctions
     std::vector<Junction> junctions{};
+    // Map of contig names and their length (SN and LN tag of @SQ)
     std::map<std::string, int32_t> references_lengths{};
 
     // short reads

@@ -1,0 +1,13 @@
+configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
+
+include: "workflow/rules/callers.smk"
+include: "workflow/rules/eval.smk"
+include: "workflow/rules/eval.DUP_as_INS.smk"
+include: "workflow/rules/plots.smk"
+
+##### Target rules #####
+
+rule all:
+    input:
+        "results/caller_comparison_vaquita_lr/results.DEL_only.png",
+        "results/caller_comparison_vaquita_lr/results.DEL_and_DUP_as_INS.png"

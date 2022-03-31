@@ -20,6 +20,14 @@
 std::deque<std::string> read_header_information(auto & alignment_file,
                                                 std::map<std::string, int32_t> & references_lengths);
 
+/*! \brief Support function for a atomic file write operation.\n
+ *         Note: The functionality of the variables is described for BAMIT.
+ *
+ * \param[in] tmp_file_path - tmp file path (ending: `.bit.tmp`)
+ * \param[in] file_path - the path for the BAMIT file (ending: `.bit`)
+ */
+void safe_sync_rename(std::filesystem::path const & tmp_file_path, std::filesystem::path const & file_path);
+
 /*! \brief Attempts to load a bamit index having the same name as a given input file, with ".bit" appended at the end.
  *         If this file does not exist, it will create the index itself and save it to that file.
  *

@@ -41,7 +41,7 @@ rule bgzip:
     output:
         "{name}.vcf.gz"
     shell:
-        "pbgzip -c {input} > {output}"
+        "bgzip -c {input} > {output}"
 
 rule tabix:
     input:

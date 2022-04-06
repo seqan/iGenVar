@@ -132,6 +132,15 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     // Map of contig names and their length (SN and LN tag of @SQ)
     std::map<std::string, int32_t> references_lengths{};
 
+    // if short and long reads are given warn the user about the necessary equality of references
+    if (!args.alignment_short_reads_file_path.empty() && !args.alignment_long_reads_file_path.empty())
+    {
+        seqan3::debug_stream << "You have specified two input files for short and long read data. Note that they should"
+                                " be mapped to the same reference, e.g. GRCh37 (hg19) or GRCh38 (hg38). If they come"
+                                " from different versions, for example the coordinates may not match. In such a case,"
+                                " use a coordinate converter beforehand.\n";
+    }
+
     // short reads
     // TODO (joergi-w 30.09.2021) Control the selection with the 'method' parameter, not the availability of a genome.
     if (!args.alignment_short_reads_file_path.empty() && args.genome_file_path.empty())

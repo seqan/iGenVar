@@ -1,3 +1,4 @@
+You have specified two input files for short and long read data. Note that they should be mapped to the same reference, e.g. GRCh37 (hg19) or GRCh38 (hg38). If they come from different versions, for example the coordinates may not match. In such a case, use a coordinate converter beforehand.
 Detect junctions in short reads...
 DEL: chr1	56	Forward	chr1	70	Forward	0	0	read010
 DEL: chr1	56	Forward	chr1	70	Forward	0	0	read011

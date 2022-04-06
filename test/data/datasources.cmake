@@ -39,7 +39,7 @@ declare_datasource (FILE output_res.vcf
 # copies file to <build>/data/output_short_and_long_err.txt
 declare_datasource (FILE output_short_and_long_err.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_err.txt
-                    URL_HASH SHA256=1c67222988ab9eb4eaa4fb9a558d2eb023d85e70eba30d29d9facb8a6580d2bd)
+                    URL_HASH SHA256=819b50d57e4c0238f3216e6b982072749b568dcc300e8761c9cd4251b6b9daef)
 
 # copies file to <build>/data/output_short_and_long_res.vcf
 declare_datasource (FILE output_short_and_long_res.vcf

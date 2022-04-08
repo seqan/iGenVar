@@ -28,7 +28,9 @@ void retrieve_aligned_segments(std::string const & sa_string, std::vector<Aligne
         split_string(sa_tag, fields, ',');
         if (fields.size() == 6)
         {
-            std::string ref_name = fields[0];
+            // As the chromosome names can differ between "1" and "chr1", we would distinguish same SVs from different
+            // input files if the chromosome naming is different. Thus we add the "chr" prefix.
+            std::string const ref_name = (fields[0].starts_with("chr") ? fields[0] : ("chr" + fields[0]));
             // Decrement by 1 because position in SA tag is stored as string and 1-based unlike other coordinates
             int32_t pos = std::stoi(fields[1]) - 1;
             strand orientation;

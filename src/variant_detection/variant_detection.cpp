@@ -36,12 +36,18 @@ std::deque<std::string> read_header_information(auto & alignment_file,
     }
 
     // Get the information from \@SQ tag, more precise the values of the SN and LN tags
-    std::deque<std::string> const ref_ids = alignment_file.header().ref_ids();
+    std::deque<std::string> ref_ids = alignment_file.header().ref_ids();
     std::vector<std::tuple<int32_t, std::string>> ref_id_info = alignment_file.header().ref_id_info;
 
     size_t i = 0;
-    for (std::string const & ref_id : ref_ids)
+    for (std::string & ref_id : ref_ids)
     {
+        // As the chromosome names can differ between "1" and "chr1", we would distinguish same SVs from different
+        // input files if the chromosome naming is different. Thus we add the "chr" prefix.
+        if (!ref_id.starts_with("chr")) {
+            // Add "chr" prefix
+            ref_id = "chr" + ref_id;
+        }
         int32_t ref_length = std::get<0>(ref_id_info[i]);
         if (references_lengths.find(ref_id) != references_lengths.end())
         {
@@ -126,7 +132,7 @@ void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junct
             ref_id < 0 || ref_pos < 0)
             continue;
 
-        std::string const ref_name = ref_ids[ref_id];
+        std::string const & ref_name = ref_ids[ref_id];
 
         for (detection_methods method : args.methods) {
             switch (method)
@@ -206,7 +212,8 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
             ref_id < 0 || ref_pos < 0)
             continue;
 
-        std::string const ref_name = ref_ids[ref_id];
+        std::string const & ref_name = ref_ids[ref_id];
+
         for (detection_methods method : args.methods) {
             switch (method)
             {

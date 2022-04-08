@@ -19,7 +19,7 @@ declare_datasource (FILE mini_example_reference.fasta
 # copies file to <build>/data/paired_end_mini_example.sam
 declare_datasource (FILE paired_end_mini_example.sam
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/paired_end_mini_example.sam
-                    URL_HASH SHA256=5e9211c3cb68105bd3359a1f001c900489bd2a5d117fa0d0da82e83766a8325d)
+                    URL_HASH SHA256=9dc47068c9a685ae414d9d943b512ab14d1d8de041d805e61c7f8352831a51b3)
 
 # copies file to <build>/data/single_end_mini_example.sam
 declare_datasource (FILE single_end_mini_example.sam
@@ -39,7 +39,7 @@ declare_datasource (FILE output_res.vcf
 # copies file to <build>/data/output_short_and_long_err.txt
 declare_datasource (FILE output_short_and_long_err.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_err.txt
-                    URL_HASH SHA256=1c67222988ab9eb4eaa4fb9a558d2eb023d85e70eba30d29d9facb8a6580d2bd)
+                    URL_HASH SHA256=819b50d57e4c0238f3216e6b982072749b568dcc300e8761c9cd4251b6b9daef)
 
 # copies file to <build>/data/output_short_and_long_res.vcf
 declare_datasource (FILE output_short_and_long_res.vcf

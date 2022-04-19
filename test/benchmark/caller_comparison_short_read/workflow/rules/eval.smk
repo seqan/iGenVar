@@ -27,14 +27,15 @@ rule truvari:
         vcf = "results/caller_comparison_short_read/{caller}/variants.min_qual_{min_qual}.vcf.gz",
         index = "results/caller_comparison_short_read/{caller}/variants.min_qual_{min_qual}.vcf.gz.tbi"
     params:
-        output_dir = "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}"
+        output_dir = "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}",
+        truth_set_gz = config["truth_set"]["gz"],
+        truth_set_bed = config["truth_set"]["bed"]
     output:
         summary = "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}/summary.txt"
     shell:
         """
-        rm -rf {params.output_dir} && truvari bench -b data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz \
-            -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 \
-            &>> logs/truvari_output.log
+        rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} \
+            --passonly --includebed {params.truth_set_bed} -p 0 &>> logs/truvari_output.log
         """
 
 rule reformat_truvari_results:

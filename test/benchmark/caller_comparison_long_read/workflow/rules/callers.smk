@@ -22,7 +22,7 @@ rule run_igenvar:
 rule run_svim:
     input:
         bam = config["long_read_bam"]["l2"],
-        genome = config["reference_fa"]["PacBio_CCS_10kb"] # [E::fai_build3_core] Cannot index files compressed with gzip, please use bgzip
+        genome = config["reference_fa"]["PacBio_CCS"] # [E::fai_build3_core] Cannot index files compressed with gzip, please use bgzip
     output:
         "results/caller_comparison_long_read/SVIM/variants.vcf"
     resources:
@@ -108,7 +108,7 @@ rule run_pbsv_dicsover:
 
 rule run_pbsv_call:
     input:
-        genome = config["reference_fa"]["PacBio_CCS_10kb"],
+        genome = config["reference_fa"]["PacBio_CCS"],
         svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
         # svsig_gz = dynamic("results/caller_comparison_long_read/pbsv/signatures.{region}.svsig.gz")
     output:
@@ -131,7 +131,7 @@ rule run_pbsv_call:
 
 rule run_pbsv_call_without_DUP:
     input:
-        genome = config["reference_fa"]["PacBio_CCS_10kb"],
+        genome = config["reference_fa"]["PacBio_CCS"],
         svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
         # svsig_gz = dynamic("results/caller_comparison_long_read/pbsv/signatures.{region}.svsig.gz")
     output:

@@ -4,7 +4,9 @@ channels:
   - conda-forge
   - bioconda
 dependencies:
-  - bgzip # rule tabix - accepts only zipped files zipped with bgzip
+  # - bedops    # for vcf2bed
+  - bgzip     # rule tabix - accepts only zipped files zipped with bgzip
+  - crossmap  # for coordinate_conversion.sh
   - mamba
   - pip
   - python=3.6

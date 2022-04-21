@@ -1,3 +1,5 @@
+configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
+
 rule all:
     input:
         expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
@@ -17,7 +19,7 @@ rule all:
 
 rule run_igenvar:
     input:
-        bam = "data/long_reads/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio_sorted.bam"
+        bam = config["long_read_bam"]["l2"]
     output:
         vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.vcf"
     shell:
@@ -56,14 +58,15 @@ rule truvari:
         vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz",
         index = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz.tbi"
     params:
-        output_dir = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}"
+        output_dir = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}",
+        truth_set_gz = config["truth_set"]["gz"],
+        truth_set_bed = config["truth_set"]["bed"]
     output:
         summary = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
     shell:
         """
-        rm -rf {params.output_dir} && truvari bench -b data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz \
-        -c {input.vcf} -o {params.output_dir} --passonly --includebed data/truth_set/HG002_SVs_Tier1_v0.6.bed -p 0 \
-        &>> logs/truvari_output.log
+        rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} \
+            --passonly --includebed {params.truth_set_bed} -p 0 &>> logs/truvari_output.log
         """
 
 rule reformat_truvari_results:

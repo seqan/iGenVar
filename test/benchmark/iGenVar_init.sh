@@ -29,7 +29,7 @@ git submodule update --recursive --init
 cd ../svim
 pip install .
 
-echo "$(tput setaf 1)$(tput setab 7)------- iGenVar downloaded (1/3) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- iGenVar downloaded (1/5) --------$(tput sgr 0)" 1>&3
 
 cd ../..
 mkdir -p build && cd build && mkdir -p iGenVar && cd iGenVar
@@ -39,7 +39,7 @@ make -j 16
 
 make test && make doc
 
-echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (2/3) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (2/5) --------$(tput sgr 0)" 1>&3
 
 cd ../..
 mkdir -p data && cd data
@@ -47,12 +47,7 @@ mkdir -p data && cd data
 # short & long reads, reference and truth sets
 ./../Repos/iGenVar/test/benchmark/dataset_downloads.sh
 
-cd ..
-
-echo "$(tput setaf 1)$(tput setab 7)------- data downloaded (3/3) --------$(tput sgr 0)" 1>&3
-
-mkdir -p tmp/picard
-mkdir -p results
+echo "$(tput setaf 1)$(tput setab 7)------- data downloaded (3/5) --------$(tput sgr 0)" 1>&3
 
 # -------- -------- pre installation steps -------- -------- #
 # We do our benchmarks with snakemake, and need several tools like
@@ -62,6 +57,21 @@ mkdir -p results
 # wget https://repo.anaconda.com/archive/Anaconda3-2021.05-Linux-x86_64.sh
 # ./Anaconda3-2021.05-Linux-x86_64.sh
 conda env create -f Repos/iGenVar/test/benchmark/envs/environment.yml
+conda activate benchmarks
+
+echo "$(tput setaf 1)$(tput setab 7)------- anaconda environment prepared (4/5) --------$(tput sgr 0)" 1>&3
+
+cd data
+
+./../Repos/iGenVar/test/benchmark/prepare_BAM_with_crossmap.sh
+./../Repos/iGenVar/test/benchmark/prepare_truth_set_with_NCBI.sh
+
+cd ..
+
+echo "$(tput setaf 1)$(tput setab 7)------- data prepared (5/5) --------$(tput sgr 0)" 1>&3
+
+mkdir -p tmp/picard
+mkdir -p results
 
 # run Snakefile with:
 # snakemake --snakefile Repos/iGenVar/test/benchmark/caller_comparison_long_read/Snakefile --cores 16 --rerun-incomplete \

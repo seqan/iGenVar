@@ -33,14 +33,19 @@ rule truvari:
     log:
         "logs/truvari/truvari_output.{input_combination}.{min_qual}.log"
     params:
-        output_dir = "results/caller_comparison_vaquita_lr/eval/{input_combination}/min_qual_{min_qual}",
-        truth_set_gz = config["truth_set_DEL"]["gz"],
-        truth_set_bed = config["truth_set"]["bed"]
-    shell:
-        """
-        rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \
-            --passonly --includebed {params.truth_set_bed} &>> {log}
-        """
+        output_dir = "results/caller_comparison_vaquita_lr/eval/{input_combination}/min_qual_{min_qual}"
+    run:
+        if (wildcards.input_combination == 'S2') | (wildcards.input_combination == 'L3') | (wildcards.input_combination == 'S2L3'):
+            truth_set_gz = config["truth_set_DEL_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+        else: # S1, L1, L2, S1L1, S1L2
+            truth_set_gz = config["truth_set_DEL"]["gz"],
+            truth_set_bed = config["truth_set"]["bed"]
+        shell("""
+        rm -rf {params.output_dir} && truvari bench -b {truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \
+            --passonly --includebed {truth_set_bed} &>> {log}
+        """)
+        # => The combinations of S1L3, S2L1, S2L2 are not possible.
         # -f data/reference/hs37d5.fa
 
 rule reformat_truvari_results:
@@ -62,15 +67,20 @@ rule cat_truvari_results_all:
                       min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
                                           config["quality_ranges"]["Vaquita-LR"]["to"],
                                           config["quality_ranges"]["Vaquita-LR"]["step"]))),
-        S2   = expand("results/caller_comparison_vaquita_lr/eval/S2/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        # S2 run: (stop after 60h)
+        # [2022-4-21 14:51:46] [START] SV CLASSIFICATION
+        # [2022-4-21 14:51:46] [START] FIND INVERSIONS
+        # [2022-4-21 14:52:15] [END] FIND INVERSIONS (29 seconds.)
+        # [2022-4-21 14:52:15] [START] FIND DELETIONS
+        # [2022-4-21 14:52:34] [END] FIND DELETIONS (19 seconds.)
+        # [2022-4-21 14:52:34] [START] FIND DUPLICATIONS
+        # [2022-4-22 2:34:23] [END] FIND DUPLICATIONS (42109 seconds.)
+        # [2022-4-22 2:34:23] [START] FIND TRANSLOCATION
+        # S2   = expand("results/caller_comparison_vaquita_lr/eval/S2/min_qual_{min_qual}/pr_rec.txt",
+        #               min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+        #                                   config["quality_ranges"]["Vaquita-LR"]["to"],
+        #                                   config["quality_ranges"]["Vaquita-LR"]["step"]))),
         S1L1 = expand("results/caller_comparison_vaquita_lr/eval/S1L1/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
-        S2L1 = expand("results/caller_comparison_vaquita_lr/eval/S2L1/min_qual_{min_qual}/pr_rec.txt",
                       min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
                                           config["quality_ranges"]["Vaquita-LR"]["to"],
                                           config["quality_ranges"]["Vaquita-LR"]["step"]))),
@@ -78,18 +88,10 @@ rule cat_truvari_results_all:
                       min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
                                           config["quality_ranges"]["Vaquita-LR"]["to"],
                                           config["quality_ranges"]["Vaquita-LR"]["step"]))),
-        S2L2 = expand("results/caller_comparison_vaquita_lr/eval/S2L2/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
-        S1L3 = expand("results/caller_comparison_vaquita_lr/eval/S1L3/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
-        S2L3 = expand("results/caller_comparison_vaquita_lr/eval/S2L3/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        # S2L3 = expand("results/caller_comparison_vaquita_lr/eval/S2L3/min_qual_{min_qual}/pr_rec.txt",
+        #               min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+        #                                   config["quality_ranges"]["Vaquita-LR"]["to"],
+        #                                   config["quality_ranges"]["Vaquita-LR"]["step"]))),
         L1   = expand("results/caller_comparison_vaquita_lr/eval/L1/min_qual_{min_qual}/pr_rec.txt",
                       min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
                                           config["quality_ranges"]["Vaquita-LR"]["to"],
@@ -104,13 +106,10 @@ rule cat_truvari_results_all:
                                           config["quality_ranges"]["Vaquita-LR"]["step"])))
     output:
         S1   = temp("results/caller_comparison_vaquita_lr/eval/S1.all_results.txt"),
-        S2   = temp("results/caller_comparison_vaquita_lr/eval/S2.all_results.txt"),
+        # S2   = temp("results/caller_comparison_vaquita_lr/eval/S2.all_results.txt"),
         S1L1 = temp("results/caller_comparison_vaquita_lr/eval/S1L1.all_results.txt"),
-        S2L1 = temp("results/caller_comparison_vaquita_lr/eval/S2L1.all_results.txt"),
         S1L2 = temp("results/caller_comparison_vaquita_lr/eval/S1L2.all_results.txt"),
-        S2L2 = temp("results/caller_comparison_vaquita_lr/eval/S2L2.all_results.txt"),
-        S1L3 = temp("results/caller_comparison_vaquita_lr/eval/S1L3.all_results.txt"),
-        S2L3 = temp("results/caller_comparison_vaquita_lr/eval/S2L3.all_results.txt"),
+        # S2L3 = temp("results/caller_comparison_vaquita_lr/eval/S2L3.all_results.txt"),
         L1   = temp("results/caller_comparison_vaquita_lr/eval/L1.all_results.txt"),
         L2   = temp("results/caller_comparison_vaquita_lr/eval/L2.all_results.txt"),
         L3   = temp("results/caller_comparison_vaquita_lr/eval/L3.all_results.txt"),
@@ -118,18 +117,20 @@ rule cat_truvari_results_all:
     threads: 1
     run:
         shell("cat {input.S1} > {output.S1}")
-        shell("cat {input.S2} > {output.S2}")
+        # shell("cat {input.S2} > {output.S2}")
         shell("cat {input.S1L1} > {output.S1L1}")
-        shell("cat {input.S2L1} > {output.S2L1}")
         shell("cat {input.S1L2} > {output.S1L2}")
-        shell("cat {input.S2L2} > {output.S2L2}")
-        shell("cat {input.S1L3} > {output.S1L3}")
-        shell("cat {input.S2L3} > {output.S2L3}")
+        # shell("cat {input.S2L3} > {output.S2L3}")
         shell("cat {input.L1} > {output.L1}")
         shell("cat {input.L2} > {output.L2}")
         shell("cat {input.L3} > {output.L3}")
         shell("""
-            cat {output.S1} {output.S2} {output.S1L1} {output.S2L1} \
-                {output.S1L2} {output.S2L2} {output.S1L3} {output.S2L3} \
+            cat {output.S1} \
+                {output.S1L1} {output.S1L2} \
                 {output.L1} {output.L2} {output.L3} > {output.all}
         """)
+        # shell("""
+        #     cat {output.S1} {output.S2} \
+        #         {output.S1L1} {output.S1L2} {output.S2L3} \
+        #         {output.L1} {output.L2} {output.L3} > {output.all}
+        # """)

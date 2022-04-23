@@ -8,6 +8,7 @@ rule run_Vaquita_LR:
         "logs/caller_comparison_vaquita_lr/{input_combination}_output.log"
     threads: 8
     run:
+        # The combinations of S1L3, S2L1, S2L2 are not possible, as they have a different chromosome naming (with and without chr).
         if wildcards.input_combination == 'S1': # Illumina Paired End
             short_bam = config["short_read_bam"]["s1"],
             genome = config["reference_fa"]["Illumina_Paired_End"]
@@ -33,37 +34,10 @@ rule run_Vaquita_LR:
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
                 --output-file {output.vcf} &>> {log}
             """)
-        elif wildcards.input_combination == 'S2L1': # Illumina Mate Pair & MtSinai PacBio
-            short_bam = config["short_read_bam"]["s2"],
-            long_bam = config["long_read_bam"]["l1"],
-            genome = config["reference_fa"]["Illumina_Mate_Pair"] # or config["reference_fa"]["MtSinai_PacBio"]
-            shell("""
-            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} --longRead {long_bam} \
-                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
-                --output-file {output.vcf} &>> {log}
-            """)
         elif wildcards.input_combination == 'S1L2': # Illumina Paired End & PacBio CCS
             short_bam = config["short_read_bam"]["s1"],
             long_bam = config["long_read_bam"]["l2"],
             genome = config["reference_fa"]["Illumina_Paired_End"] # or config["reference_fa"]["PacBio_CCS"]
-            shell("""
-            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} --longRead {long_bam} \
-                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
-                --output-file {output.vcf} &>> {log}
-            """)
-        elif wildcards.input_combination == 'S2L2': # Illumina Mate Pair & PacBio CCS
-            short_bam = config["short_read_bam"]["s2"],
-            long_bam = config["long_read_bam"]["l2"],
-            genome = config["reference_fa"]["Illumina_Mate_Pair"] # or config["reference_fa"]["PacBio_CCS"]
-            shell("""
-            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} --longRead {long_bam} \
-                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
-                --output-file {output.vcf} &>> {log}
-            """)
-        elif wildcards.input_combination == 'S1L3': # Illumina Paired End & 10X Genomics
-            short_bam = config["short_read_bam"]["s1"],
-            long_bam = config["long_read_bam"]["l3"],
-            genome = config["reference_fa"]["Illumina_Paired_End"] # or config["reference_fa"]["10X_Genomics"]
             shell("""
             /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} --longRead {long_bam} \
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \

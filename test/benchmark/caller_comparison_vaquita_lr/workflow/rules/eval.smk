@@ -3,12 +3,10 @@ rule filter_vcf:
         vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants.vcf"
     output:
         vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants.min_qual_{min_qual}.vcf"
-    log:
-        "logs/caller_comparison_vaquita_lr/filter_vcf_output.{input_combination}.{min_qual}.log"
     conda:
         "../../../envs/bcftools.yaml"
     shell:
-        "bcftools view -i 'QUAL>={wildcards.min_qual}.00' {input.vcf} > {output.vcf} 2> {log}"
+        "bcftools view -i 'INFO/SC>={wildcards.min_qual}' {input.vcf} > {output.vcf}"
 
 rule bgzip:
     input:

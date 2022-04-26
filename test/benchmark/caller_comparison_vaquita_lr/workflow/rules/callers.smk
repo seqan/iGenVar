@@ -3,7 +3,7 @@ min_var_length = config["parameters"]["min_var_length"]
 
 rule run_Vaquita_LR:
     output:
-        vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants.vcf"
+        vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants_without_contigs.vcf"
     log:
         "logs/caller_comparison_vaquita_lr/{input_combination}_output.log"
     threads: 8
@@ -155,3 +155,21 @@ rule run_Vaquita_LR:
         #     -j, --reThreshold (double)
         #         SVs satisfy read-depth evidence >= {Q3 + (IQR * h)} get a vote. Default: 1. Value must be in range
         #         [0,1.79769e+308].
+
+rule fix_vaquita_lr:
+    input:
+        vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants_without_contigs.vcf"
+    output:
+        vcf_1 = "results/caller_comparison_vaquita_lr/{input_combination}/variants_without_fileformat.vcf",
+        vcf_2 = "results/caller_comparison_vaquita_lr/{input_combination}/variants.vcf"
+    params:
+        igenvar_vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
+    run:
+        shell("""
+        fileformat=$(head -n 1 {input.vcf}) && \
+        less {params.igenvar_vcf} | grep contig | cat - {input.vcf} > {output.vcf_1} && \
+        echo $fileformat | cat - {output.vcf_1} > {output.vcf_2}
+        """)
+        # without the 'chr' prefix: S1, L1, L2, S1L1, S1L2
+        if (wildcards.input_combination == 'S1') | (wildcards.input_combination == 'L1') | (wildcards.input_combination == 'L2') | (wildcards.input_combination == 'S1L1') | (wildcards.input_combination == 'S1L2'):
+            shell("sed -i -e 's/ID=chr/ID=/g' {output.vcf_2}")

@@ -3,32 +3,57 @@ min_var_length = config["parameters"]["min_var_length"],
 max_var_length = config["parameters"]["max_var_length"]
 
 # iGenVar
-# TODO (irallia 07.03.2022): change this to short read input
-rule run_iGenVar_S:
-    input:
-        bam = config["long_bam"]
+rule copy_igenvar_results:
     output:
-        vcf = "results/caller_comparison_short_read/iGenVar/variants.vcf"
+        res_S = "results/caller_comparison_short_read/{dataset}/eval/iGenVar_S/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+        res_SL1 = "results/caller_comparison_short_read/{dataset}/eval/iGenVar_SL1/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+        res_SL2 = "results/caller_comparison_short_read/{dataset}/eval/iGenVar_SL2/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+        res_SL3 = "results/caller_comparison_short_read/{dataset}/eval/iGenVar_SL3/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt"
     threads: 1
-    shell:
-        """
-        ./build/iGenVar/bin/iGenVar --input_long_reads {input.bam} --output {output.vcf} --vcf_sample_name {sample} \
-            --threads {threads} --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1
-        """
-
-# TODO (irallia 07.03.2022): add short read input
-rule run_iGenVar_SL:
-    input:
-        bam = config["long_bam"]
-    output:
-        vcf = "results/caller_comparison_short_read/iGenVar/variants.vcf"
-    threads: 1
-    shell:
-        """
-        ./build/iGenVar/bin/iGenVar --input_long_reads {input.bam} --output {output.vcf} --vcf_sample_name {sample} \
-            --threads {threads} --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1
-        """
-        # Defaults:
-        # --method cigar_string --method split_read --method read_pairs --method read_depth
-        # --clustering_methods hierarchical_clustering --refinement_methods no_refinement
-        # --max_tol_inserted_length 50 --max_overlap 10 --hierarchical_clustering_cutoff 0.5
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S1/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Paired_End/eval/iGenVar_S/
+            """)
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S1L1/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Paired_End/eval/iGenVar_SL1/
+            """)
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S1L2/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Paired_End/eval/iGenVar_SL2/
+            """)
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S1L3/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Paired_End/eval/iGenVar_SL3/
+            """)
+            shell("""
+                sed -i 's/S1/iGenVar_S/g' {output.res_S}
+                sed -i 's/S1L1/iGenVar_SL1/g' {output.res_SL1}
+                sed -i 's/S1L2/iGenVar_SL2/g' {output.res_SL2}
+                sed -i 's/S1L3/iGenVar_SL3/g' {output.res_SL3}
+            """)
+        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S2/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Mate_Pair/eval/iGenVar_S/
+            """)
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S2L1/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Mate_Pair/eval/iGenVar_SL1/
+            """)
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S2L2/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Mate_Pair/eval/iGenVar_SL2/
+            """)
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/S2L3/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/Illumina_Mate_Pair/eval/iGenVar_SL3/
+            """)
+            shell("""
+                sed -i 's/S2/iGenVar_S/g' {output.res_S}
+                sed -i 's/S2L1/iGenVar_SL1/g' {output.res_SL1}
+                sed -i 's/S2L2/iGenVar_SL2/g' {output.res_SL2}
+                sed -i 's/S2L3/iGenVar_SL3/g' {output.res_SL3}
+            """)

@@ -9,6 +9,9 @@ short_read_bam:
 # short_read_bam:
 #     s1: data/short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
 #     s2: data/short_reads/GRCh38/HG002.sorted.bam
+short_bam_name:
+    s1: "AshkenazimTrio - HG002 NA24385 Son - NIST Illumina 2x250bps Paired-end"
+    s2: "AshkenazimTrio - HG002 NA24385 Son - NIST Stanford Illumina 6kb Mate Pair"
 
 # long read data
 ## MtSinai PacBio (minimap2)

@@ -57,16 +57,24 @@ rule reformat_truvari_results:
 
 rule cat_truvari_results_all:
     input:
-        iGenVar_S   = expand("results/caller_comparison_short_read/eval/iGenVar_S/min_qual_{min_qual}/pr_rec.txt",
-                             min_qual = min_qual_iGenVar),
-        iGenVar_SL  = expand("results/caller_comparison_short_read/eval/iGenVar_SL/min_qual_{min_qual}/pr_rec.txt",
-                             min_qual = min_qual_iGenVar)
+        iGenVar_S     = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_S/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_iGenVar),
+        iGenVar_SL1   = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_SL1/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_iGenVar),
+        iGenVar_SL2   = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_SL2/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_iGenVar),
+        iGenVar_SL3   = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_SL3/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_iGenVar)
     output:
-        iGenVar_S   = temp("results/caller_comparison_short_read/eval/igenvar_s.all_results.txt"),
-        iGenVar_SL  = temp("results/caller_comparison_short_read/eval/igenvar_sl.all_results.txt")
-        all = "results/caller_comparison_short_read/eval/all_results.txt"
+        iGenVar_S     = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_s.all_results.txt"),
+        iGenVar_SL1   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl1.all_results.txt"),
+        iGenVar_SL2   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl2.all_results.txt"),
+        iGenVar_SL3   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl3.all_results.txt"),
+        all = "results/caller_comparison_short_read/{dataset}/eval/all_results.txt"
     threads: 1
     run:
         shell("cat {input.iGenVar_S} > {output.iGenVar_S}")
-        shell("cat {input.iGenVar_SL} > {output.iGenVar_SL}")
-        shell("cat {output.iGenVar_S} {output.iGenVar_SL} > {output.all}")
+        shell("cat {input.iGenVar_SL1} > {output.iGenVar_SL1}")
+        shell("cat {input.iGenVar_SL2} > {output.iGenVar_SL2}")
+        shell("cat {input.iGenVar_SL3} > {output.iGenVar_SL3}")
+        shell("cat {output.iGenVar_S} {output.iGenVar_SL1} {output.iGenVar_SL2} {output.iGenVar_SL3} > {output.all}")

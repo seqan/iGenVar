@@ -1,6 +1,9 @@
-min_qual_iGenVar = list(range(config["quality_ranges"]["iGenVar"]["from"],
-                              config["quality_ranges"]["iGenVar"]["to"],
-                              config["quality_ranges"]["iGenVar"]["step"]))
+min_qual_iGenVar   = list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                config["quality_ranges"]["iGenVar"]["to"],
+                                config["quality_ranges"]["iGenVar"]["step"]))
+min_qual_VaquitaLR = list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+                                config["quality_ranges"]["Vaquita-LR"]["to"],
+                                config["quality_ranges"]["Vaquita-LR"]["step"]))
 
 rule filter_vcf:
     input:
@@ -64,12 +67,24 @@ rule cat_truvari_results_all:
         iGenVar_SL2   = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_SL2/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
                                min_qual = min_qual_iGenVar),
         iGenVar_SL3   = expand("results/caller_comparison_short_read/{{dataset}}/eval/iGenVar_SL3/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
-                               min_qual = min_qual_iGenVar)
+                               min_qual = min_qual_iGenVar),
+        VaquitaLR_S   = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_S/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_VaquitaLR),
+        VaquitaLR_SL1 = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_SL1/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_VaquitaLR),
+        VaquitaLR_SL2 = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_SL2/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_VaquitaLR),
+        VaquitaLR_SL3 = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_SL3/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+                               min_qual = min_qual_VaquitaLR)
     output:
         iGenVar_S     = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_s.all_results.txt"),
         iGenVar_SL1   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl1.all_results.txt"),
         iGenVar_SL2   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl2.all_results.txt"),
         iGenVar_SL3   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl3.all_results.txt"),
+        VaquitaLR_S   = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_S.all_results.txt"),
+        VaquitaLR_SL1 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL1.all_results.txt"),
+        VaquitaLR_SL2 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL2.all_results.txt"),
+        VaquitaLR_SL3 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL3.all_results.txt"),
         all = "results/caller_comparison_short_read/{dataset}/eval/all_results.txt"
     threads: 1
     run:
@@ -77,4 +92,12 @@ rule cat_truvari_results_all:
         shell("cat {input.iGenVar_SL1} > {output.iGenVar_SL1}")
         shell("cat {input.iGenVar_SL2} > {output.iGenVar_SL2}")
         shell("cat {input.iGenVar_SL3} > {output.iGenVar_SL3}")
-        shell("cat {output.iGenVar_S} {output.iGenVar_SL1} {output.iGenVar_SL2} {output.iGenVar_SL3} > {output.all}")
+        shell("cat {input.VaquitaLR_S} > {output.VaquitaLR_S}")
+        shell("cat {input.VaquitaLR_SL1} > {output.VaquitaLR_SL1}")
+        shell("cat {input.VaquitaLR_SL2} > {output.VaquitaLR_SL2}")
+        shell("cat {input.VaquitaLR_SL3} > {output.VaquitaLR_SL3}")
+        shell("""
+            cat {output.iGenVar_S} {output.iGenVar_SL1} {output.iGenVar_SL2} {output.iGenVar_SL3} \
+                {output.VaquitaLR_S} {output.VaquitaLR_SL1} {output.VaquitaLR_SL2} {output.VaquitaLR_SL3} \
+                > {output.all}
+        """)

@@ -23,17 +23,21 @@ f1 <- add_column(f1, min_qual = NA, .after="caller")
 total <- rbind(res, f1)
 total$caller = factor(total$caller,
                       levels=c('iGenVar_S', 'iGenVar_SL1', 'iGenVar_SL2', 'iGenVar_SL3',
+                               'VaquitaLR_S', 'VaquitaLR_SL1', 'VaquitaLR_SL2', 'VaquitaLR_SL3',
                                '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'),
                       labels=c('iGenVar 0.0.3: S', 'iGenVar: SL1', 'iGenVar: SL2', 'iGenVar: SL3',
+                               'Vaquita LR: S', 'Vaquita LR: SL1', 'Vaquita LR: SL2', 'Vaquita LR: SL3',
                                '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'))
 
 scale_custom <- list(
       # https://stackoverflow.com/questions/46803260/assigning-40-shapes-or-more-in-scale-shape-manual
-      scale_shape_manual(values = c(15, 16, 16, 16,
+      scale_shape_manual(values = c(15, 16, 16, 16, 17, 17, 17, 17
                                     46, 46, 46, 46, 46, 46, 46, 46, 46)),
       # https://www.farb-tabelle.de/de/farbtabelle.htm
-      scale_color_manual(breaks = c('iGenVar 0.0.3: S', 'iGenVar: SL1', 'iGenVar: SL2', 'iGenVar: SL3'),
+      scale_color_manual(breaks = c('iGenVar 0.0.3: S', 'iGenVar: SL1', 'iGenVar: SL2', 'iGenVar: SL3',
+                                    'Vaquita LR: S', 'Vaquita LR: SL1', 'Vaquita LR: SL2', 'Vaquita LR: SL3'),
                          values = c("chartreuse3", "chartreuse1", "chartreuse1", "chartreuse1",
+                                    "maroon1", "maroon3", "maroon3", "maroon3",
                                     "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan"),
                          na.value = "gray80"))
 

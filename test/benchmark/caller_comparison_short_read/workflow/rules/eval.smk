@@ -5,13 +5,15 @@ min_qual_VaquitaLR = list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
                                 config["quality_ranges"]["Vaquita-LR"]["to"],
                                 config["quality_ranges"]["Vaquita-LR"]["step"]))
 
-rule filter_vcf:
+rule filter_vaquita_vcf:
     input:
-        "results/caller_comparison_short_read/{caller,iGenVar_S|iGenVar_SL}/variants.vcf"
+        vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.vcf"
     output:
-        "results/caller_comparison_short_read/{caller,iGenVar_S|iGenVar_SL}/variants.min_qual_{min_qual}.vcf"
+        vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.min_qual_{min_qual}.vcf"
+    conda:
+        "../../../envs/bcftools.yaml"
     shell:
-        "bcftools view -i 'QUAL>={wildcards.min_qual}' {input} > {output}"
+        "bcftools view -i 'INFO/SC>={wildcards.min_qual}' {input.vcf} > {output.vcf}"
 
 rule bgzip:
     input:
@@ -31,32 +33,36 @@ rule tabix:
 
 rule truvari:
     input:
-        vcf = "results/caller_comparison_short_read/{caller}/variants.min_qual_{min_qual}.vcf.gz",
-        index = "results/caller_comparison_short_read/{caller}/variants.min_qual_{min_qual}.vcf.gz.tbi"
+        vcf = "results/caller_comparison_short_read/{dataset}/{caller}/variants.min_qual_{min_qual}.vcf.gz",
+        index = "results/caller_comparison_short_read/{dataset}/{caller}/variants.min_qual_{min_qual}.vcf.gz.tbi"
     params:
-        output_dir = "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}",
-        truth_set_gz = config["truth_set"]["gz"],
-        truth_set_bed = config["truth_set"]["bed"]
-    output:
-        summary = "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}/summary.txt"
-    shell:
-        """
-        rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} \
-            --passonly --includebed {params.truth_set_bed} -p 0 &>> logs/truvari_output.log
-        """
+        output_dir = "results/caller_comparison_short_read/{dataset}/eval/{caller}/min_qual_{min_qual}"
+    log:
+        "logs/caller_comparison_short_read/truvari/truvari_output.{dataset}.{caller}.{min_qual}.log"
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            truth_set_gz = config["truth_set"]["gz"],
+            truth_set_bed = config["truth_set"]["bed"]
+        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+            truth_set_gz = config["truth_set_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+        shell("""
+            rm -rf {params.output_dir} && truvari bench -b {truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \
+                --passonly --includebed {truth_set_bed} &>> {log}
+        """)
+        # -f data/reference/hs37d5.fa
 
 rule reformat_truvari_results:
     input:
-        "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}/summary.txt"
+        txt = "results/caller_comparison_short_read/{dataset}/eval/{caller}/min_qual_{min_qual}/summary.txt"
     output:
-        "results/caller_comparison_short_read/eval/{caller}/min_qual_{min_qual}/pr_rec.txt"
-    threads: 1
-    shell:
-        """
-        cat {input} | grep '\<precision\>\|\<recall\>' | tr -d ',' |sed 's/^[ \t]*//' | tr -d '\"' | tr -d ' ' \
-            | tr ':' '\t' | awk 'OFS=\"\\t\" {{ print \"{wildcards.caller}\", \"{wildcards.min_qual}\", $1, $2 }}' \
-            > {output}
-        """
+        txt = "results/caller_comparison_short_read/{dataset}/eval/{caller}/min_qual_{min_qual}/pr_rec.txt"
+    run:
+        shell("""
+            cat {input.txt} | grep '\<precision\>\|\<recall\>' | tr -d ',' |sed 's/^[ \t]*//' | tr -d '\"' | tr -d ' ' \
+                | tr ':' '\t' | awk 'OFS=\"\\t\" {{ print \"{wildcards.caller}\", \"{wildcards.min_qual}\", $1, $2 }}' \
+                > {output.txt}
+        """)
 
 rule cat_truvari_results_all:
     input:

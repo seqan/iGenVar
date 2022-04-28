@@ -61,7 +61,7 @@ rule copy_igenvar_results:
 # Vaquita (no threading possible)
 rule run_Vaquita:
     output:
-        vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.vcf"
+        vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_contigs.vcf"
     log:
         "logs/caller_comparison_short_read/Vaquita_output.{dataset}.log"
     run:
@@ -114,6 +114,27 @@ rule run_Vaquita:
         #         Use RE for balanced SVs(eg. inverison).
         #     -re, --reThreshold DOUBLE
         #         SVs satisfy read-depth evidence >= {Q3 + (IQR * re)} get a vote. Default: 1.0.
+
+# add missing contig lines to header (copied from iGenVar)
+rule fix_Vaquita:
+    input:
+        vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_contigs.vcf"
+    output:
+        vcf_1 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_fileformat.vcf",
+        vcf_2 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.vcf"
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            igenvar_vcf = "results/caller_comparison_iGenVar_only/S1/variants.vcf"
+        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+            igenvar_vcf = "results/caller_comparison_iGenVar_only/S2/variants.vcf"
+        shell("""
+            fileformat=$(head -n 1 {input.vcf}) && \
+            less {igenvar_vcf} | grep contig | cat - {input.vcf} > {output.vcf_1} && \
+            echo $fileformat | cat - {output.vcf_1} > {output.vcf_2}
+        """)
+        # without the 'chr' prefix:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            shell("sed -i -e 's/ID=chr/ID=/g' {output.vcf_2}")
 
 # Vaquita-LR
 # We have only results for S1, S1L1, S1L2

@@ -51,7 +51,7 @@ long_bam_name:
 ### GRCh37
 reference_fa:
     Illumina_Paired_End: data/reference/GRCh37/hs37d5.fa
-    Illumina_Mate_Pair: data/reference/GRCh37/hg19.reordered.fa
+    Illumina_Mate_Pair: data/reference/GRCh37/hg19.reordered.short.fa
     MtSinai_PacBio: data/reference/GRCh37/hs37d5.fa
     PacBio_CCS: data/reference/GRCh37/hs37d5.fa
     10X_Genomics: data/reference/GRCh37/hg19.reordered.fa

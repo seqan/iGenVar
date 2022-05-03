@@ -229,7 +229,7 @@ rule run_Delly2:
 # GRIDSS
 rule run_GRIDSS:
     output:
-        vcf = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants.vcf"
+        vcf = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants_unfixed.vcf"
     log:
         "logs/caller_comparison_short_read/GRIDSS_output.{dataset}.log"
     threads: 8
@@ -293,3 +293,75 @@ rule run_GRIDSS:
     #     parallel assembly across multiple processes.
     # --jobnodes: total number of assembly jobs. Only required when performing
     #     parallel assembly across multiple processes.
+
+# Fix GRIDSS vcf file:
+# 1. Save original header
+# 2. Save original FORMAT and Sample rows
+rule fix_GRIDSS_1:
+    input:
+        vcf = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants_unfixed.vcf"
+    output:
+        vcf = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants_header_only.vcf",
+        txt = "results/caller_comparison_short_read/{dataset}/GRIDSS/samples.txt"
+    conda:
+        "../../../envs/bcftools.yaml"
+    shell:
+        """
+            bcftools view --header-only {input.vcf} > {output.vcf} && \
+            bcftools view --no-header {input.vcf} | awk '{{print $9,$10}}' > {output.txt}
+        """
+
+# 3. Start final variants.vcf file with the header information (append the rest later)
+# 4. Add some missing INFO descriptions to the header (END, SVLEN, READS).
+# 5. get SVLEN, SVTYPE and READS via perl script (https://github.com/stat-lab/EvalSVcallers/blob/master/scripts/vcf_convert/convert_GRIDSS_vcf.pl)
+# 6. Add missing FORMAT and Sample rows
+# 7. write SVTYPE in ALT row
+# 8. calculate INFO END from POS and SVLEN
+rule fix_GRIDSS_2:
+    input:
+        vcf = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants_header_only.vcf",
+        txt = "results/caller_comparison_short_read/{dataset}/GRIDSS/samples.txt"
+    output:
+        vcf_1 = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants.vcf",
+        vcf_2 = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants_perl_converted.vcf",
+        vcf_3 = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants_without_header.vcf",
+        txt_1 = "results/caller_comparison_short_read/{dataset}/GRIDSS/svtypes.txt",
+        txt_2 = "results/caller_comparison_short_read/{dataset}/GRIDSS/svlens.txt"
+    run:
+        shell("mv {input.vcf} {output.vcf_1}")
+        shell("""
+            sed --in-place \
+                '/##fileformat=VCFv4.2/a ##INFO=<ID=END,Number=1,Type=Integer,Description="End position of the structural variant">' \
+                {output.vcf_1}
+        """)
+        shell("""
+            sed --in-place \
+                '/##fileformat=VCFv4.2/a ##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of the SV">' \
+                {output.vcf_1}
+        """)
+        shell("""
+            sed --in-place \
+                '/##fileformat=VCFv4.2/a ##INFO=<ID=READS,Number=1,Type=Integer,Description="Number of all supporting reads">' \
+                {output.vcf_1}
+        """)
+        shell("""
+            perl Repos/iGenVar/test/benchmark/caller_comparison_short_read/workflow/scripts/convert_GRIDSS_vcf.pl \
+                {input.vcf_1} >> {output.vcf_2}
+        """)
+        shell("""
+            while read -u 3 -r line1 line2 line3 line4 line5 line6 line7 line8 file1 && read -u 4 -r line9 line10 file2; do
+                echo -e $line1'\t'$line2'\t'$line3'\t'$line4'\t'$line5'\t'$line6'\t'$line7'\t'$line8'\t'$line9'\t'$line10;
+            done 3<{output.vcf_2} 4<{input.txt} > {output.vcf_3}
+        """)
+        shell("less {output.vcf_3} | awk -F 'SVTYPE=' '{{print $2}}'  | awk -F ';' '{{print $1}}' > {output.txt_1}")
+        shell("less {output.vcf_3} | awk -F 'SVLEN=' '{{print $2}}'  | awk -F ';' '{{print $1}}' > {output.txt_2}")
+        shell("""
+            while read -u 3 -r line1 line2 line3 line4 line5 line6 line7 line8 line9 line10 file1 && read -u 4 -r svtype file2 && read -u 5 -r svlen file3; do
+                if [[ $svtype == INS ]] || [[ $svtype == DUP ]]
+                then
+                    echo -e $line1'\t'$line2'\t'$line3'\t'$line4'\t<'$svtype'>\t'$line6'\t'$line7'\tEND='$(expr $line2 + 1)';'$line8'\t'$line9'\t'$line10;
+                else # DEL, INV
+                    echo -e $line1'\t'$line2'\t'$line3'\t'$line4'\t<'$svtype'>\t'$line6'\t'$line7'\tEND='$(expr $line2 + $svlen)';'$line8'\t'$line9'\t'$line10;
+                fi
+            done 3<{output.vcf_3} 4<{output.txt_1} 5<{output.txt_2} >> {output.vcf_1}
+        """)

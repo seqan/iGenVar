@@ -18,8 +18,7 @@ echo "$(tput setaf 1)$(tput setab 7)------- CrossMap installed and prepared (5.1
 samtools faidx data/reference/GRCh37/hg19.fa $(cat Repos/iGenVar/test/benchmark/data/order_of_hg19.txt) \
     > data/reference/GRCh37/hg19.reordered.fa
 ## for GRIDSS:
-less data/reference/GRCh37/hg19.reordered.fa | sed -n -e '/>chrM/,$p' | sed -e '/>chr1_gl000191_random/,$d' > data/reference/GRCh37/hg19.reordered.short.fa
-less data/reference/GRCh37/hg19.reordered.fa | sed -e '/>chrM/,$d' >> data/reference/GRCh37/hg19.reordered.short.fa
+less data/reference/GRCh37/hg19.reordered.fa | sed -e '/>chr_1/,$d' >> data/reference/GRCh37/hg19.reordered.short.fa
 
 echo "$(tput setaf 1)$(tput setab 7)------- reference files prepared (5.2/9.6) --------$(tput sgr 0)" 1>&3
 

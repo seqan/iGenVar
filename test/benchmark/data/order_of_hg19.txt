@@ -1,3 +1,4 @@
+chrM
 chr1
 chr2
 chr3
@@ -22,7 +23,6 @@ chr21
 chr22
 chrX
 chrY
-chrM
 chr1_gl000191_random
 chr1_gl000192_random
 chr4_ctg9_hap1

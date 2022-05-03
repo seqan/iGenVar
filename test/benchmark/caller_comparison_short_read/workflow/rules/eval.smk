@@ -62,7 +62,10 @@ rule truvari:
     log:
         "logs/caller_comparison_short_read/truvari/truvari_output.{dataset}.{caller}.{min_qual}.log"
     run:
-        if wildcards.dataset == 'Illumina_Paired_End':
+        if (wildcards.caller == 'GRIDSS'):
+            truth_set_gz = config["truth_set_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+        elif wildcards.dataset == 'Illumina_Paired_End':
             truth_set_gz = config["truth_set"]["gz"],
             truth_set_bed = config["truth_set"]["bed"]
         else: # wildcards.dataset == 'Illumina_Mate_Pair'

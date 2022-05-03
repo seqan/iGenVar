@@ -4,6 +4,8 @@ include: "workflow/rules/callers.smk"
 include: "workflow/rules/eval.smk"
 include: "workflow/rules/plots.smk"
 
+ruleorder: create_empty_Vaquita > create_empty_GRIDSS > reformat_truvari_results
+
 ##### Target rules #####
 
 rule all:

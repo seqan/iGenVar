@@ -115,6 +115,14 @@ rule run_Vaquita:
         #     -re, --reThreshold DOUBLE
         #         SVs satisfy read-depth evidence >= {Q3 + (IQR * re)} get a vote. Default: 1.0.
 
+
+# As Vaquita is not working with all datasets we create empty output files.
+rule create_empty_Vaquita:
+    output:
+        txt = "results/caller_comparison_short_read/{dataset}/eval/Vaquita/min_qual_{min_qual}/pr_rec.txt"
+    shell:
+        "echo 'Vaquita\t{wildcards.min_qual}\tprecision\t0\nVaquita\t{wildcards.min_qual}\trecall\t0' > {output.txt}"
+
 # add missing contig lines to header (copied from iGenVar)
 rule fix_Vaquita:
     input:
@@ -293,6 +301,13 @@ rule run_GRIDSS:
     #     parallel assembly across multiple processes.
     # --jobnodes: total number of assembly jobs. Only required when performing
     #     parallel assembly across multiple processes.
+
+# As GRIDSS is not working with the dataset Illumina_Mate_Pair we create empty output files.
+rule create_empty_GRIDSS:
+    output:
+        txt = "results/caller_comparison_short_read/Illumina_Mate_Pair/eval/GRIDSS/min_qual_{min_qual}/pr_rec.txt"
+    shell:
+        "echo 'GRIDSS\t{wildcards.min_qual}\tprecision\t0\nGRIDSS\t{wildcards.min_qual}\trecall\t0' > {output.txt}"
 
 # Fix GRIDSS vcf file:
 # 1. Save original header

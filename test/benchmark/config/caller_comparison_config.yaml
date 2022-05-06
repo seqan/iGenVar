@@ -23,6 +23,11 @@ long_read_md_bam:
     l1: data/long_reads/GRCh37/HG002_PacBio_GRCh37.md.bam
     l2: data/long_reads/GRCh37/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.md.bam
     l3: data/long_reads/GRCh37/NA24385_phased_possorted_bam.md.bam
+sampled_long_read_bam:
+    l2x1: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.1x.bam
+    l2x2: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.2x.bam
+    l2x3: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.3x.bam
+
 ### GRCh38
 # long_read_bam:
 #     l1: data/long_reads/GRCh38/HG002_PacBio_GRCh38.bam

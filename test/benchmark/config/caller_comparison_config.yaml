@@ -77,3 +77,7 @@ quality_ranges:
     from: 1
     to: 70
     step: 1
+    iGenVar:
+        from: 1
+        to: 40
+        step: 1

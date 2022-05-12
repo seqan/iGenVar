@@ -4,7 +4,9 @@ library(tidyverse)
 
 args = commandArgs(trailingOnly=TRUE)
 
-parameter_name = args[2]
+bam_name <- args[2]
+parameter_name = args[3]
+benchmark_title = c("Parameter Benchmarks - ", parameter_name)
 
 if (parameter_name == "min_var_length") {
   parameter_values = c(10,30,50,100)
@@ -33,9 +35,10 @@ res %>%
     ggplot(aes(recall, precision, color = get(parameter_name), pch = get(parameter_name))) +
       geom_point(size=0.5) +
       geom_path() +
-      labs(y = "Precision", x = "Recall", color = parameter_name, pch = parameter_name) +
+      labs(y = "Precision", x = "Recall", color = parameter_name, pch = parameter_name,
+           title=benchmark_title, subtitle=bam_name) +
       lims(x=c(0,100), y=c(0,100)) +
       theme_bw() +
       theme(text = element_text(size=14), axis.text.x = element_text(size=9), axis.text.y = element_text(size=9))
 
-ggsave(args[3], width=7, height=6)
+ggsave(args[4], width=7, height=6)

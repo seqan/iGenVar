@@ -9,19 +9,19 @@ parameter_name = args[3]
 benchmark_title = c("Parameter Benchmarks - ", parameter_name)
 
 if (parameter_name == "min_var_length") {
-  parameter_values = c(10,30,50,100)
+  parameter_values = c(10,30,50,75,100)
 } else if (parameter_name == "max_var_length") {
-  parameter_values = c(1000,10000,100000,1000000)
+  parameter_values = c(1000,5000,10000,100000)
 } else if (parameter_name == "max_tol_inserted_length") {
-  parameter_values = c(1,10,100,1000)
+  parameter_values = c(10,50,100)
 } else if (parameter_name == "max_tol_deleted_length") {
-  parameter_values = c(1,10,100,1000)
+  parameter_values = c(10,50,100)
 } else if (parameter_name == "max_overlap") {
-  parameter_values = c(1,10,100,1000)
+  parameter_values = c(10,50,100)
 } else if (parameter_name == "partition_max_distance") {
-  parameter_values = c(10,100,1000,10000)
+  parameter_values = c(10,25,50,100,1000)
 } else {                    # hierarchical_clustering_cutoff
-  parameter_values = c(0.2,0.5,1,10)
+  parameter_values = c(0.1,0.2,0.3,0.4)
 }
 
 res <- read_tsv(args[1], col_names = c(parameter_name, "min_qual", "metric", "value"))

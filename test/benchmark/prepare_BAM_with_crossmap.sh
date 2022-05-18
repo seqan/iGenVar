@@ -40,6 +40,8 @@ samtools calmd --threads 16 -Q -b long_reads/GRCh38/HG002.10kb.Sequel.pbmm2.GRCh
     > long_reads/GRCh38/HG002.10kb.Sequel.pbmm2.GRCh38.whatshap.haplotag.RTG.10x.trio.md.bam \
     reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
 ## Add sampled files with different coverages
+#   coverage calculation:
+#   samtools depth -a --threads 16 DATASET | awk '{sum+=$3} END { print "Average = ",sum/NR}'
 cd long_reads/GRCh37/
 mkdir -p sampled
 ### The library was sequenced to approximately 30-fold coverage.

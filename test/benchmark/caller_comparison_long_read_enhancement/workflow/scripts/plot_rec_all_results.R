@@ -58,7 +58,7 @@ ggplot(total, aes(TP, FN, color = long_read_enhancement)) +
       geom_path(linetype = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                              1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
                ) +
-      labs(y = "TP", x = "FN", color = "Tool",
+      labs(x = "TP", y = "FN", color = "Tool",
             title="Long Read Enhancement - iGenVar 0.0.3 - Recall",
             subtitle="Short reads combined with low coverage (sampled) long reads\nmin_qual < 6") +
       lims(x=c(0,9641), y=c(0,9641)) +

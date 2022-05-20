@@ -50,7 +50,7 @@ ggplot(total, aes(TP, FP, color = long_read_enhancement)) +
       # cex: character expansion; rot: rotation
       geom_dl(aes(label = long_read_enhancement), method = list("last.points", rot=-20, cex = 0.5, dl.trans(x=x+0.1))) +
       geom_path() +
-      labs(y = "TP", x = "FP", color = "Tool",
+      labs(x = "TP", y = "FP", color = "Tool",
             title="Long Read Enhancement - iGenVar 0.0.3 - Precision",
             subtitle="Short reads combined with low coverage (sampled) long reads") +
       lims(x=c(0,9641), y=c(0,9641)) +

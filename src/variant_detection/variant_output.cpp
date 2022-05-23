@@ -70,16 +70,13 @@ void write_record(Cluster const & cluster,
     record.genotypes().push_back({ .id = "GT", .value = std::vector{"./."s}});
     record.info() = {};
 
-    if (mate1.orientation == mate2.orientation)
+    if (mate1.seq_name == mate2.seq_name)
     {
-        if (mate1.seq_name == mate2.seq_name)
-        {
-            if (mate1.orientation == strand::forward)
-            {
         size_t const insert_size = cluster.get_average_inserted_sequence_size();
         int const distance = mate2.position - mate1.position - 1;
         int sv_length;
         std::string sv_type;
+
         // Tandem Duplication
         // In case of a small deletion inside of a duplication, the distance is a small positive value
         if (cluster.get_common_tandem_dup_count() > 0 && distance <= (int) args.max_tol_deleted_length)
@@ -90,9 +87,25 @@ void write_record(Cluster const & cluster,
             sv_length = insert_size;
             sv_type = "DUP";
         }
+        // Deletion OR Inversion
+        else if (distance > 0)
+        {
+            // Inversion
+            // An Inversion consists of 2 Breakpoints, thus it looks like a deletion with an inserted sequence
+            if (insert_size >= args.min_var_length)
+            {
+                // Increment position by 1 because INV mate1 points on its last element
+                record.pos() += 1;
+                record.alt() = {"<INV>"};
+                // Increment end by 1 because VCF is 1-based
+                // Increment end by 1 because inversion ends one base before mate2 begins
+                record.info().push_back({.id = "END", .value = mate2.position + 1});
+                sv_length = distance;
+                sv_type = "INV";
+            }
             // Deletion
             // In case of a small insertion inside of an deletion, the insert_size is a small positive value.
-            else if (distance > 0 && insert_size <= args.max_tol_inserted_length)
+            else if (insert_size <= args.max_tol_inserted_length)
             {
                 record.alt() = {"<DEL>"};
                 // Increment end by 1 because VCF is 1-based
@@ -101,6 +114,7 @@ void write_record(Cluster const & cluster,
                 sv_length = -distance;
                 sv_type = "DEL";
             }
+        }
         // Insertion (sv_length is positive)
         // In case of a small deletion inside of an insertion, the distance is a small positive value
         else if (insert_size > 0 && distance <= (int) args.max_tol_deleted_length)
@@ -119,8 +133,6 @@ void write_record(Cluster const & cluster,
             record.info().push_back({.id = "iGenVar_SVLEN", .value = sv_length});
             record.info().push_back({.id = "SVTYPE", .value = sv_type});
             found_SV = true;
-        }
-        }
         }
     }
 }

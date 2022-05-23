@@ -97,6 +97,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
     size_t amount_tandem_dup_segments{0};
     size_t tandem_dup_length_on_read{0};
     size_t last_tandem_dup_len{0};
+    Breakend inversion_mate1{};
 
     for (size_t i = 1; i < aligned_segments.size(); i++)
     {
@@ -121,9 +122,33 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 Breakend mate1{current.ref_name, mate1_pos, current.orientation};
                 Breakend mate2{next.ref_name, mate2_pos, next.orientation};
                 size_t tandem_dup_count = 0;
-                // if novel inserted sequence
-                if (current.ref_name == next.ref_name && distance_on_read > 0)
+                // if interchromosomal
+                if (current.ref_name == next.ref_name)
                 {
+                    // if inverted sequence
+                    //               |-INV-|
+                    // read --------><------ -------->
+                    //      |-mate1-|        |-mate2-|
+                    if (current.orientation != next.orientation)
+                    {
+                        auto inverted_bases = query_sequence | seqan3::views::slice(current.get_query_start(),
+                                                                                    next.get_query_start());
+
+                        if (current.orientation == strand::forward) // && next.orientation == strand::reverse
+                        { // first breakpoint
+                            inversion_mate1 = mate1; //{current.ref_name, mate1_pos + 1, current.orientation};
+                        }
+                        else
+                        { // second breakpoint
+                            junctions.emplace_back(inversion_mate1, mate2, inverted_bases, tandem_dup_count, read_name);
+                            if (gVerbose)
+                                seqan3::debug_stream << "INV: " << junctions.back() << "\n"
+                                                     << "Inverted bases: " << inverted_bases << "\n";
+                        }
+                    }
+                    // if novel inserted sequence
+                    else if (distance_on_read > 0)
+                    {
                         // Reset tandem dup values to zero
                         amount_tandem_dup_segments = 0;
                         tandem_dup_length_on_read = 0;
@@ -192,7 +217,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                             }
                         }
                         else
-                        { // Else TRA or DUP or INV
+                        { // Else interchromosomal TRA or DUP
                             // Reset tandem dup values to zero
                             amount_tandem_dup_segments = 0;
                             tandem_dup_length_on_read = 0;
@@ -201,6 +226,18 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                             if (gVerbose)
                                 seqan3::debug_stream << "BND: " << junctions.back() << "\n";
                         }
+                    }
+                }
+                else
+                { // Else intrachromosomal TRA
+                    // Reset tandem dup values to zero
+                    amount_tandem_dup_segments = 0;
+                    tandem_dup_length_on_read = 0;
+                    last_tandem_dup_len = 0;
+
+                    junctions.emplace_back(mate1, mate2, ""_dna5, tandem_dup_count, read_name);
+                    if (gVerbose)
+                        seqan3::debug_stream << "BND: " << junctions.back() << "\n";
                 }
             }
         }

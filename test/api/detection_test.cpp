@@ -296,8 +296,6 @@ TEST(junction_detection, analyze_aligned_segments)
         Breakend new_breakend_3 {"chr1", 106, strand::reverse};
         Breakend new_breakend_4 {"chr2", 109, strand::reverse};
         Breakend new_breakend_5 {"chr1", 115, strand::forward};
-        Breakend new_breakend_6 {"chr1", 129, strand::reverse};
-        Breakend new_breakend_7 {"chr1", 116, strand::reverse};
         Breakend new_breakend_8 {"chr1", 130, strand::forward};
         Breakend new_breakend_9 {"chr1", 133, strand::forward};
         Breakend new_breakend_10 {"chr1", 150, strand::forward};
@@ -309,11 +307,8 @@ TEST(junction_detection, analyze_aligned_segments)
                                                      Junction{new_breakend_3, new_breakend_4,
                                                               ""_dna5,
                                                               0, read_name},         // translocation
-                                                     Junction{new_breakend_5, new_breakend_6,
-                                                              ""_dna5,
-                                                              0, read_name},         // inversion
-                                                     Junction{new_breakend_7, new_breakend_8,
-                                                              ""_dna5,
+                                                     Junction{new_breakend_5, new_breakend_8,
+                                                              "GGGGCCCCCATTTT"_dna5,
                                                               0, read_name},         // inversion
                                                      Junction{new_breakend_9, new_breakend_10,
                                                               ""_dna5,
@@ -497,10 +492,8 @@ TEST(junction_detection, analyze_sa_tag)
                      ""_dna5, 0, read_name},                                                        // chr1 20 -> chr2 102
             Junction{Breakend{"chr1", 20, strand::reverse}, Breakend{"chr2", 110, strand::reverse}, // TRA 1 (interspersed)
                      ""_dna5, 0, read_name},                                                        // chr2 111 -> chr1 21
-            Junction{Breakend{"chr1", 29, strand::forward}, Breakend{"chr1", 39, strand::reverse},  // INV
-                     ""_dna5, 0, read_name},                                                        // (30,40] deleted
-            Junction{Breakend{"chr1", 30, strand::reverse}, Breakend{"chr1", 40, strand::forward},  // INV
-                     ""_dna5, 0, read_name},                                                        // [31,41) inserted
+            Junction{Breakend{"chr1", 29, strand::forward}, Breakend{"chr1", 40, strand::forward},  // INV
+                     "CCCCCATTTT"_dna5, 0, read_name},                                              // (30,41) inverted
             Junction{Breakend{"chr1", 50, strand::forward}, Breakend{"chr1", 59, strand::forward},  // DUP:TANDEM
                      "TCGCAACTAC"_dna5, 2, read_name},                                              // [51,60] duplicated
             Junction{Breakend{"chr1", 69, strand::forward}, Breakend{"chr1", 140, strand::forward}, // TRA 2 (intrachr.)
@@ -736,8 +729,6 @@ TEST(junction_detection, analyze_sa_tag)
         Breakend new_breakend_3 {"chr1", 106, strand::reverse};
         Breakend new_breakend_4 {"chr2", 109, strand::reverse};
         Breakend new_breakend_5 {"chr1", 115, strand::forward};
-        Breakend new_breakend_6 {"chr1", 129, strand::reverse};
-        Breakend new_breakend_7 {"chr1", 116, strand::reverse};
         Breakend new_breakend_8 {"chr1", 130, strand::forward};
         Breakend new_breakend_9 {"chr1", 133, strand::forward};
         Breakend new_breakend_10 {"chr1", 150, strand::forward};
@@ -749,11 +740,8 @@ TEST(junction_detection, analyze_sa_tag)
                                                      Junction{new_breakend_3, new_breakend_4,
                                                               ""_dna5,
                                                               0, read_name},         // translocation
-                                                     Junction{new_breakend_5, new_breakend_6,
-                                                              ""_dna5,
-                                                              0, read_name},         // inversion
-                                                     Junction{new_breakend_7, new_breakend_8,
-                                                              ""_dna5,
+                                                     Junction{new_breakend_5, new_breakend_8,
+                                                              "GGGGCCCCCATTTT"_dna5,
                                                               0, read_name},         // inversion
                                                      Junction{new_breakend_9, new_breakend_10,
                                                               ""_dna5,

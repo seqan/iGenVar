@@ -46,10 +46,13 @@ DEL: chr1	383	Forward	chr1	395	Forward	0	0	read050
 BND: chr1	10	Reverse	chr1	470	Reverse	0	0	read051
 BND: chr1	10	Reverse	chr1	470	Reverse	0	0	read052
 BND: chr1	33	Forward	chr1	471	Forward	0	0	read052
-DUP:TANDEM: chr1	511	Forward	chr1	528	Forward	0	2	read053
-2 segments describe this tandem duplication. Its length on the read is 39 and a single duplicated part has a length of 18 => tandem_dup_count = 2
+DUP:TANDEM: chr1	520	Forward	chr1	528	Forward	0	3	read053
+2 segments describe this tandem duplication. Its length on the read is 30 and a single duplicated part has a length of 9 => tandem_dup_count = 3
+DUP:TANDEM: chr1	508	Forward	chr1	528	Forward	0	5	read053
+3 segments describe this tandem duplication. Its length on the read is 51 and a single duplicated part has a length of 9 => tandem_dup_count = 5
 INS: chr1	508	Reverse	chr1	528	Reverse	6	0	read054
+BND: chr1	520	Reverse	chr1	528	Reverse	0	0	read055
 Start clustering...
-Done with clustering. Found 18 junction clusters.
+Done with clustering. Found 19 junction clusters.
 No refinement was selected.
 Detected 11 SVs.

@@ -2,38 +2,69 @@ configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
 
 rule all:
     input:
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="min_var_length"),
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="max_var_length"),
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="max_tol_inserted_length"),
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="max_tol_deleted_length"),
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="max_overlap"),
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="partition_max_distance"),
-        expand("results/parameter_benchmarks/plots/{parameter_name}.results.all.png",
-               parameter_name="hierarchical_clustering_cutoff")
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="min_var_length"),
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="max_var_length"),
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="max_tol_inserted_length"),
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="max_tol_deleted_length"),
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="max_overlap"),
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="partition_max_distance"),
+        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+                parameter_name="hierarchical_clustering_cutoff")
 
 rule run_igenvar:
-    input:
-        bam = config["long_read_bam"]["l2"]
     output:
-        vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.vcf"
-    shell:
-        """
-        ./build/iGenVar/bin/iGenVar -t 1 -j {input.bam} -o {output.vcf} --vcf_sample_name HG002 \
-        --method cigar_string --method split_read -c 1 --min_qual 2 \
-        --{wildcards.parameter_name} {wildcards.parameter_value}
-        """
+        vcf = "results/parameter_benchmarks/{dataset}/{parameter_name}/{parameter_value}_output.vcf"
+    params:
+        is_short_read_dataset = "true"
+    log:
+        "logs/parameter_benchmarks/{dataset}/{parameter_name}_{parameter_value}_output.log"
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            bam = config["short_read_bam"]["s1"],
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
+            bam = config["short_read_bam"]["s2"],
+        elif wildcards.dataset == 'MtSinai_PacBio':
+            bam = config["long_read_bam"]["l1"],
+            params.is_short_read_dataset = "false"
+        elif wildcards.dataset == 'PacBio_CCS':
+            bam = config["long_read_bam"]["l2"],
+            params.is_short_read_dataset = "false"
+        else: # wildcards.dataset == '10X_Genomics'
+            bam = config["long_read_bam"]["l3"],
+            params.is_short_read_dataset = "false"
+        if params.is_short_read_dataset == 'true':
+            shell("""
+                /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {bam} -o {output.vcf} \
+                    --vcf_sample_name HG002 --method cigar_string --method split_read \
+                    --{wildcards.parameter_name} {wildcards.parameter_value} --min_qual 1 &>> {log}
+            """)
+        else: # is_short_read_dataset == 'false':
+            shell("""
+                /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_long_reads {bam} -o {output.vcf} \
+                    --vcf_sample_name HG002 --method cigar_string --method split_read \
+                    --{wildcards.parameter_name} {wildcards.parameter_value} --min_qual 1 &>> {log}
+            """)
 
 rule filter_vcf:
     input:
-        vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.vcf"
+        vcf = "results/parameter_benchmarks/{dataset}/{parameter_name}/{parameter_value}_output.vcf"
     output:
-        "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf"
+        "results/parameter_benchmarks/{dataset}/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf"
+    conda:
+        "../envs/bcftools.yaml"
     shell:
         "bcftools view -i 'QUAL>={wildcards.min_qual}' {input.vcf} > {output}"
 
@@ -55,26 +86,27 @@ rule tabix:
 
 rule truvari:
     input:
-        vcf = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz",
-        index = "results/parameter_benchmarks/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz.tbi"
-    params:
-        output_dir = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}",
-        truth_set_gz = config["truth_set"]["gz"],
-        truth_set_bed = config["truth_set"]["bed"]
+        vcf = "results/parameter_benchmarks/{dataset}/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz",
+        index = "results/parameter_benchmarks/{dataset}/{parameter_name}/{parameter_value}_output.min_qual_{min_qual}.vcf.gz.tbi"
     output:
-        summary = "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
-    shell:
-        """
+        summary = "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
+    params:
+        output_dir = "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}",
+        truth_set_gz = config["truth_set_renamed_chr"]["gz"],
+        truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+    log:
+        "logs/parameter_benchmarks/truvari/{dataset}/{parameter_name}_{parameter_value}_min_qual_{min_qual}_output.log"
+    run:
+        shell("""
         rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} \
-            --passonly --includebed {params.truth_set_bed} -p 0 &>> logs/truvari_output.log
-        """
+            --passonly --includebed {params.truth_set_bed} -p 0 &>> {log}
+        """)
 
 rule reformat_truvari_results:
     input:
-        "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
+        "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
     output:
-        "results/parameter_benchmarks/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/pr_rec.txt"
-    threads: 1
+        "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/pr_rec.txt"
     shell:
         """
         cat {input} | grep '\<precision\>\|\<recall\>' | tr -d ',' |sed 's/^[ \t]*//' | tr -d '\"' | tr -d ' ' | tr ':' '\t' \
@@ -83,35 +115,49 @@ rule reformat_truvari_results:
 
 rule cat_truvari_results_full:
     input:
-        input1 = expand("results/parameter_benchmarks/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[10, 30, 50, 100],                           # default: 30
-               min_qual=range(1, 51)),
-        input2 = expand("results/parameter_benchmarks/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1000, 10000, 100000, 1000000],              # default: 100.000
-               min_qual=range(1, 51)),
-        input3 = expand("results/parameter_benchmarks/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1, 10, 100, 1000],                          # default: 50
-               min_qual=range(1, 51)),
-        input4 = expand("results/parameter_benchmarks/truvari/max_tol_deleted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1, 10, 100, 1000],                          # default: 50
-               min_qual=range(1, 51)),
-        input5 = expand("results/parameter_benchmarks/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[1, 10, 100, 1000],                          # default: 10
-               min_qual=range(1, 51)),
-        input6 = expand("results/parameter_benchmarks/truvari/partition_max_distance/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value=[10, 100, 1000, 10000],                      # default: 1000
-               min_qual=range(1, 51)),
-        input7 = expand("results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
-               parameter_value= [0.2, 0.5, 1, 10],                          # default: 0.5
-               min_qual=range(1, 51))
+        input1 = expand("results/parameter_benchmarks/{{dataset}}/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value=[10, 30, 50, 75, 100],          # default: 30
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"]))),
+        input2 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value=[1000, 5000, 10000, 100000],    # default: 10.000
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"]))),
+        input3 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value=[10, 50, 100],                  # default: 50
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"]))),
+        input4 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_tol_deleted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value=[10, 50, 100],                  # default: 50
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"]))),
+        input5 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value=[10, 50, 100],                  # default: 50
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"]))),
+        input6 = expand("results/parameter_benchmarks/{{dataset}}/truvari/partition_max_distance/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value=[10, 25, 50, 100, 1000],        # default: 50
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"]))),
+        input7 = expand("results/parameter_benchmarks/{{dataset}}/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
+                parameter_value= [0.1, 0.2, 0.3, 0.4],          # default: 0.3
+                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
+                                    config["quality_ranges"]["iGenVar"]["to"],
+                                    config["quality_ranges"]["iGenVar"]["step"])))
     output:
-        summary1 = "results/parameter_benchmarks/truvari/min_var_length/all_results.txt",
-        summary2 = "results/parameter_benchmarks/truvari/max_var_length/all_results.txt",
-        summary3 = "results/parameter_benchmarks/truvari/max_tol_inserted_length/all_results.txt",
-        summary4 = "results/parameter_benchmarks/truvari/max_tol_deleted_length/all_results.txt",
-        summary5 = "results/parameter_benchmarks/truvari/max_overlap/all_results.txt",
-        summary6 = "results/parameter_benchmarks/truvari/partition_max_distance/all_results.txt",
-        summary7 = "results/parameter_benchmarks/truvari/hierarchical_clustering_cutoff/all_results.txt"
+        summary1 = "results/parameter_benchmarks/{dataset}/truvari/min_var_length/all_results.txt",
+        summary2 = "results/parameter_benchmarks/{dataset}/truvari/max_var_length/all_results.txt",
+        summary3 = "results/parameter_benchmarks/{dataset}/truvari/max_tol_inserted_length/all_results.txt",
+        summary4 = "results/parameter_benchmarks/{dataset}/truvari/max_tol_deleted_length/all_results.txt",
+        summary5 = "results/parameter_benchmarks/{dataset}/truvari/max_overlap/all_results.txt",
+        summary6 = "results/parameter_benchmarks/{dataset}/truvari/partition_max_distance/all_results.txt",
+        summary7 = "results/parameter_benchmarks/{dataset}/truvari/hierarchical_clustering_cutoff/all_results.txt"
     shell:
         """
         cat {input.input1} > {output.summary1} && cat {input.input2} > {output.summary2} && \
@@ -122,8 +168,11 @@ rule cat_truvari_results_full:
 
 rule plot_pr_all_results:
     input:
-        "results/parameter_benchmarks/truvari/{parameter_name}/all_results.txt"
+        "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/all_results.txt"
     output:
-        "results/parameter_benchmarks/plots/{parameter_name}.results.all.png"
+        "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png"
     shell:
-        "Rscript --vanilla Repos/iGenVar/test/benchmark/parameter_benchmarks/plot_all.R {input} {wildcards.parameter_name} {output}"
+        """
+        Rscript --vanilla Repos/iGenVar/test/benchmark/parameter_benchmarks/plot_all.R {input} \
+        {wildcards.dataset} {wildcards.parameter_name} {output}
+        """

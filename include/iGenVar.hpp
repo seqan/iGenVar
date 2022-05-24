@@ -27,14 +27,14 @@ struct cmd_arguments
     /* -r */ refinement_methods refinement_method{no_refinement};                    // default: no refinement
 // SV specifications:
     /* -k */ uint64_t min_var_length = 30;
-    /* -l */ uint64_t max_var_length = 100000;
+    /* -l */ uint64_t max_var_length = 10000;
     /* -m */ uint64_t max_tol_inserted_length = 50;
     /* -e */ uint64_t max_tol_deleted_length = 50;
-    /* -n */ uint64_t max_overlap = 10;
+    /* -n */ uint64_t max_overlap = 50;
     /* -q */ uint64_t min_qual = 5; // best min_qual for PacBio CCS data of NA24385 HG002
 // Clustering specifications:
-    /* -p */ uint64_t partition_max_distance = 1000;
-    /* -w */ double hierarchical_clustering_cutoff = 0.5;
+    /* -p */ uint64_t partition_max_distance = 50;
+    /* -w */ double hierarchical_clustering_cutoff = 0.3;
     /* x? */
 // Refinement specifications:
     /* y, z? */

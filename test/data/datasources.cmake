@@ -29,19 +29,19 @@ declare_datasource (FILE single_end_mini_example.sam
 # copies file to <build>/data/output_err.txt
 declare_datasource (FILE output_err.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_err.txt
-                    URL_HASH SHA256=e70dc7eeb4008d0a36e0515db4bdc83f3e49cb53295d1127bbd0c463eec77696)
+                    URL_HASH SHA256=411f718aff148e3de595663761cf41e05413dda40480e19566976e3f214bd227)
 
 # copies file to <build>/data/output_res.vcf
 declare_datasource (FILE output_res.vcf
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_res.vcf
-                    URL_HASH SHA256=98238d077a44d1dfbe8ee342cdeb3e793ef0f026e54fc3f8bf4fe3d9c29a637d)
+                    URL_HASH SHA256=f4bc7e9cd969eacb8d0b05fbfb403b52391fdf2d1cbf7b37dddb2869e216268c)
 
 # copies file to <build>/data/output_short_and_long_err.txt
 declare_datasource (FILE output_short_and_long_err.txt
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_err.txt
-                    URL_HASH SHA256=819b50d57e4c0238f3216e6b982072749b568dcc300e8761c9cd4251b6b9daef)
+                    URL_HASH SHA256=f34123952dffe996b68c28035a79668829b01c2f3d69bc6d3c2c94148ed40524)
 
 # copies file to <build>/data/output_short_and_long_res.vcf
 declare_datasource (FILE output_short_and_long_res.vcf
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_res.vcf
-                    URL_HASH SHA256=ac250f321cb893d3d888ad34c94cd487913bf509b5808719bcbd4b88ddb1641d)
+                    URL_HASH SHA256=37f86770662579851886ff22e85623476d90fd37390f41b7b5964dac70a11945)

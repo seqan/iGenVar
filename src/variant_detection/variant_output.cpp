@@ -30,6 +30,8 @@ void write_header(std::map<std::string, int32_t> & references_lengths,
     hdr.infos.push_back({ .id = "END", .number = 1, .type = bio::var_io::value_type_id::int32,
                           .description = "End position of SV called."});
     hdr.infos.push_back({ .id = "SVLEN", .number = 1, .type = bio::var_io::value_type_id::int32,
+                          .description = "Difference in length between REF and ALT alleles."});
+    hdr.infos.push_back({ .id = "iGenVar_SVLEN", .number = 1, .type = bio::var_io::value_type_id::int32,
                           .description = "Length of SV called."});
     hdr.infos.push_back({ .id = "SVTYPE", .number = 1, .type = bio::var_io::value_type_id::string,
                           .description = "Type of SV called."});
@@ -113,7 +115,8 @@ void write_record(Cluster const & cluster,
                 if (std::abs(sv_length) >= args.min_var_length &&
                     std::abs(sv_length) <= args.max_var_length)
                 {
-                    record.info().push_back({.id = "SVLEN", .value = sv_length});
+                    record.info().push_back({.id = "SVLEN", .value = distance});
+                    record.info().push_back({.id = "iGenVar_SVLEN", .value = sv_length});
                     record.info().push_back({.id = "SVTYPE", .value = sv_type});
                     found_SV = true;
                 }

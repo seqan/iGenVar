@@ -42,6 +42,9 @@ Single duplication: CCCC
 INS: chr1	124	Forward	chr1	125	Forward	15	0	read023
 INS: chr1	124	Forward	chr1	125	Forward	15	0	read024
 INS: chr1	124	Forward	chr1	125	Forward	15	0	read025
+INS: chr1	124	Forward	chr1	125	Forward	15	0	read025a
+INS: chr1	124	Forward	chr1	125	Forward	15	0	read025b
+INS: chr1	124	Forward	chr1	125	Forward	15	0	read025c
 BND: chr1	96	Forward	chr1	125	Forward	0	0	read027
 DUP:TANDEM: chr1	180	Forward	chr1	187	Forward	7	2	read029
 2 segments describe this tandem duplication. Its length on the read is 16 and a single duplicated part has a length of 8 => tandem_dup_count = 2
@@ -86,7 +89,17 @@ DUP:TANDEM: chr1	508	Forward	chr1	528	Forward	9	5	read053
 Single duplication: ACCCGGGTA
 INS: chr1	508	Reverse	chr1	528	Reverse	6	0	read054
 BND: chr1	520	Reverse	chr1	528	Reverse	0	0	read055
+BND: chr1	579	Forward	chr1	596	Reverse	0	0	read056
+BND: chr1	580	Reverse	chr1	597	Forward	0	0	read056
+BND: chr1	579	Forward	chr1	596	Reverse	0	0	read057
+BND: chr1	580	Reverse	chr1	597	Forward	0	0	read057
+BND: chr1	579	Forward	chr1	596	Reverse	0	0	read058
+BND: chr1	580	Reverse	chr1	597	Forward	0	0	read058
+BND: chr1	579	Forward	chr1	596	Reverse	0	0	read059
+BND: chr1	580	Reverse	chr1	597	Forward	0	0	read059
+BND: chr1	579	Forward	chr1	596	Reverse	0	0	read060
+BND: chr1	580	Reverse	chr1	597	Forward	0	0	read060
 Start clustering...
-Done with clustering. Found 20 junction clusters.
+Done with clustering. Found 22 junction clusters.
 No refinement was selected.
 Detected 11 SVs.

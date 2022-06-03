@@ -21,25 +21,27 @@ precision <- add_column(precision, min_qual = NA, .after="long_read_enhancement"
 # Combine res & precision
 total <- rbind(res, precision)
 total$long_read_enhancement = factor(total$long_read_enhancement,
-                                     levels=c('no_enhancement', 'SL2x1', 'SL2x2', 'SL2x3', 'L2x1', 'L2x2', 'L2x3', 'L2',
+                                     levels=c('no_enhancement', 'SL2x1', 'SL2x2', 'SL2x3', 'SL2x5', 'SL2x10',
+                                              'L2x1', 'L2x2', 'L2x3', 'L2x5', 'L2x10', 'full_enhancement', 'L2',
                                               '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'),
                                      labels=c('iGenVar 0.0.3: S',
-                                              'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage',
-                                              'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage',
-                                              'iGenVar 0.0.3: L',
+                                              'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage', 'iGenVar SL with 5x coverage', 'iGenVar SL with 10x coverage',
+                                              'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage', 'iGenVar L with 5x coverage', 'iGenVar L with 10x coverage',
+                                              'iGenVar 0.0.3: SL', 'iGenVar 0.0.3: L',
                                               '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'))
 
 scale_custom <- list(
       # https://stackoverflow.com/questions/46803260/assigning-40-shapes-or-more-in-scale-shape-manual
-      scale_shape_manual(values = c(15, 16, 16, 16, 17, 17, 17, 18, 46, 46, 46, 46, 46, 46, 46, 46, 46)),
+      scale_shape_manual(values = c(15, 16, 16, 16, 16, 16, 17, 17, 17, 17, 17, 18, 18, 46, 46, 46, 46, 46, 46, 46, 46, 46)),
       # https://www.farb-tabelle.de/de/farbtabelle.htm
       scale_color_manual(breaks = c('iGenVar 0.0.3: S',
-                                    'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage',
-                                    'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage',
-                                    'iGenVar 0.0.3: L'),
+                                    'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage', 'iGenVar SL with 5x coverage', 'iGenVar SL with 10x coverage',
+                                    'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage', 'iGenVar L with 5x coverage', 'iGenVar L with 10x coverage',
+                                    'iGenVar 0.0.3: SL', 'iGenVar 0.0.3: L'),
                          values = c("chartreuse3",
-                                    "deepskyblue", "dodgerblue1", "dodgerblue2",# "dodgerblue3", "dodgerblue4", "darkblue",
-                                    "firebrick1", "firebrick1", "firebrick1", "firebrick3",
+                                    "deepskyblue", "dodgerblue1", "dodgerblue2", "dodgerblue3", "dodgerblue4",
+                                    "firebrick1", "firebrick1", "firebrick1", "firebrick1", "firebrick1",
+                                    "darkblue", "chartreuse3",
                                     "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan"),
                          na.value = "gray80"))
 

@@ -27,6 +27,8 @@ sampled_long_read_bam:
     l2x1: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.1x.bam # Average = 0.956229
     l2x2: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.2x.bam # Average = 1.91026
     l2x3: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.3x.bam # Average = 2.86353
+    l2x5: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.5x.bam # Average = 4.77531
+    l2x10: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.10x.bam # Average = 9.54839
     # samtools depth -a --threads 16 DATASET | awk '{sum+=$3} END { print "Average = ",sum/NR}'
 
 ### GRCh38

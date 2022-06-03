@@ -55,6 +55,12 @@ samtools view -s 0.066666666666666666 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap
 # 3x coverage
 samtools view -s 0.10 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
     > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.3x.bam
+# 5x coverage
+samtools view -s 0.166666666666666666 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.5x.bam
+# 10x coverage
+samtools view -s 0.333333333333333333 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.10x.bam
 cd ../..
 
 # 10X Genomics

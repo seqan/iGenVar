@@ -22,12 +22,13 @@ recall <- add_column(recall, min_qual = NA, .after="long_read_enhancement")
 # Combine res & recall
 total <- rbind(res, recall)
 total$long_read_enhancement = factor(total$long_read_enhancement,
-                                     levels=c('no_enhancement', 'SL2x1', 'SL2x2', 'SL2x3', 'L2x1', 'L2x2', 'L2x3', 'L2',
+                                     levels=c('no_enhancement', 'SL2x1', 'SL2x2', 'SL2x3', 'SL2x5', 'SL2x10',
+                                              'L2x1', 'L2x2', 'L2x3', 'L2x5', 'L2x10', 'full_enhancement', 'L2',
                                               '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'),
                                      labels=c('iGenVar 0.0.3: S',
-                                              'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage',
-                                              'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage',
-                                              'iGenVar 0.0.3: L',
+                                              'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage', 'iGenVar SL with 5x coverage', 'iGenVar SL with 10x coverage',
+                                              'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage', 'iGenVar L with 5x coverage', 'iGenVar L with 10x coverage',
+                                              'iGenVar 0.0.3: SL', 'iGenVar 0.0.3: L',
                                               '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'))
 
 scale_custom <- list(
@@ -39,12 +40,13 @@ scale_custom <- list(
       #                                 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)) # Change linetypes
       # https://www.farb-tabelle.de/de/farbtabelle.htm
       scale_color_manual(breaks = c('iGenVar 0.0.3: S',
-                                    'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage',
-                                    'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage',
-                                    'iGenVar 0.0.3: L'),
+                                    'iGenVar SL with 1x coverage', 'iGenVar SL with 2x coverage', 'iGenVar SL with 3x coverage', 'iGenVar SL with 5x coverage', 'iGenVar SL with 10x coverage',
+                                    'iGenVar L with 1x coverage', 'iGenVar L with 2x coverage', 'iGenVar L with 3x coverage', 'iGenVar L with 5x coverage', 'iGenVar L with 10x coverage',
+                                    'iGenVar 0.0.3: SL', 'iGenVar 0.0.3: L'),
                          values = c("chartreuse3",
-                                    "deepskyblue", "dodgerblue1", "dodgerblue4",# "dodgerblue2", "dodgerblue4", "darkblue",
-                                    "chocolate1", "tomato", "firebrick1", "firebrick4",
+                                    "deepskyblue", "dodgerblue1", "dodgerblue2", "dodgerblue3", "dodgerblue4",
+                                    "firebrick1", "firebrick1", "firebrick1", "firebrick1", "firebrick1",
+                                    "darkblue", "chartreuse3",
                                     "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan"),
                          na.value = "gray80"))
 
@@ -55,8 +57,10 @@ ggplot(total, aes(TP, FN, color = long_read_enhancement)) +
       # cex: character expansion; rot: rotation
       geom_dl(aes(label = long_read_enhancement), method = list("last.points", rot=-20, cex = 0.5, dl.trans(x=x+0.1))) +
       # http://www.cookbook-r.com/Graphs/Shapes_and_line_types/
-      geom_path(linetype = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-                             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
+      geom_path(linetype = c(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+                             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                             1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1)
                ) +
       labs(x = "TP", y = "FN", color = "Tool",
             title="Long Read Enhancement - iGenVar 0.0.3 - Recall",

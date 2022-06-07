@@ -159,22 +159,24 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                         // next_segment            --------------
                         //                         ||||||||||||||||||||||
                         // next_but_one_segment    ----------------------
+                        single_dup_len = std::gcd(last_tandem_dup_len, std::abs(distance_on_ref));
+                        auto single_duplication = query_sequence | seqan3::views::slice(current.get_query_end(),
+                                                                                        current.get_query_end() + single_dup_len);
+
                         if (amount_tandem_dup_segments == 0)
                         {
                             tandem_dup_length_on_read += std::abs(distance_on_ref);
-                            single_dup_len = std::gcd(last_tandem_dup_len, std::abs(distance_on_ref));
                             tandem_dup_count = tandem_dup_length_on_read / single_dup_len;
-                            junctions.emplace_back(mate2, mate1, ""_dna5, tandem_dup_count, read_name);
+                            junctions.emplace_back(mate2, mate1, single_duplication, tandem_dup_count, read_name);
                         }
                         else
                         {
-                            single_dup_len = std::gcd(last_tandem_dup_len, std::abs(distance_on_ref));
                             // In the case of more than two segments describing the tandem duplication, we have to take
                             // the start of the current segment instead of the start of the next one.
                             mate2 = Breakend{next.ref_name, current.get_reference_start(), next.orientation};
                             tandem_dup_count = tandem_dup_length_on_read / single_dup_len;
                             // Replace last element
-                            junctions.back() = Junction{mate2, mate1, ""_dna5, tandem_dup_count, read_name};
+                            junctions.back() = Junction{mate2, mate1, single_duplication, tandem_dup_count, read_name};
                         }
                         ++amount_tandem_dup_segments;
                         last_tandem_dup_len = std::abs(distance_on_ref);
@@ -184,7 +186,8 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                                                  << (amount_tandem_dup_segments + 1) << " segments describe this tandem"
                                                  << " duplication. Its length on the read is " << tandem_dup_length_on_read
                                                  << " and a single duplicated part has a length of " << single_dup_len
-                                                 << " => tandem_dup_count = " << tandem_dup_count << "\n";
+                                                 << " => tandem_dup_count = " << tandem_dup_count << "\n"
+                                                 << "Single duplication: " << single_duplication << "\n";
                         }
                     }
                     else

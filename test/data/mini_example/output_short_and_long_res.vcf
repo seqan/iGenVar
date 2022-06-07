@@ -1,7 +1,8 @@
 ##fileformat=VCFv4.3
 ##FILTER=<ID=PASS,Description="All filters passed">
 ##INFO=<ID=END,Number=1,Type=Integer,Description="End position of SV called.">
-##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of SV called.">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Difference in length between REF and ALT alleles.">
+##INFO=<ID=iGenVar_SVLEN,Number=1,Type=Integer,Description="Length of SV called.">
 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
 ##contig=<ID=chr1,length=482>
@@ -11,14 +12,14 @@
 ##ALT=<ID=DUP:TANDEM,Number=1,Description="Tandem Duplication">
 ##ALT=<ID=INS,Number=1,Description="Insertion of novel sequence">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	MYSAMPLE
-chr1	57	.	N	<DEL>	18	PASS	END=70;SVLEN=-13;SVTYPE=DEL	GT	./.
-chr1	97	.	N	<DEL>	1	PASS	END=125;SVLEN=-28;SVTYPE=DEL	GT	./.
-chr1	110	.	N	<DUP:TANDEM>	1	PASS	END=125;SVLEN=14;SVTYPE=DUP	GT	./.
-chr1	125	.	N	<INS>	14	PASS	END=125;SVLEN=15;SVTYPE=INS	GT	./.
-chr1	180	.	N	<INS>	7	PASS	END=180;SVLEN=8;SVTYPE=INS	GT	./.
-chr1	266	.	N	<DEL>	4	PASS	END=286;SVLEN=-20;SVTYPE=DEL	GT	./.
-chr1	282	.	N	<DEL>	1	PASS	END=299;SVLEN=-17;SVTYPE=DEL	GT	./.
-chr1	336	.	N	<DEL>	4	PASS	END=350;SVLEN=-14;SVTYPE=DEL	GT	./.
-chr1	368	.	N	<INS>	5	PASS	END=368;SVLEN=11;SVTYPE=INS	GT	./.
-chr1	384	.	N	<DEL>	1	PASS	END=395;SVLEN=-11;SVTYPE=DEL	GT	./.
-chr1	509	.	N	<DUP:TANDEM>	1	PASS	END=529;SVLEN=19;SVTYPE=DUP	GT	./.
+chr1	57	.	N	<DEL>	18	PASS	END=70;SVLEN=13;iGenVar_SVLEN=-13;SVTYPE=DEL	GT	./.
+chr1	97	.	N	<DEL>	1	PASS	END=125;SVLEN=28;iGenVar_SVLEN=-28;SVTYPE=DEL	GT	./.
+chr1	125	.	N	<INS>	14	PASS	END=125;SVLEN=0;iGenVar_SVLEN=15;SVTYPE=INS	GT	./.
+chr1	180	.	N	<INS>	7	PASS	END=180;SVLEN=0;iGenVar_SVLEN=8;SVTYPE=INS	GT	./.
+chr1	181	.	N	<DUP:TANDEM>	2	PASS	END=188;SVLEN=6;iGenVar_SVLEN=8;SVTYPE=DUP	GT	./.
+chr1	266	.	N	<DEL>	4	PASS	END=286;SVLEN=20;iGenVar_SVLEN=-20;SVTYPE=DEL	GT	./.
+chr1	282	.	N	<DEL>	1	PASS	END=299;SVLEN=17;iGenVar_SVLEN=-17;SVTYPE=DEL	GT	./.
+chr1	336	.	N	<DEL>	4	PASS	END=350;SVLEN=14;iGenVar_SVLEN=-14;SVTYPE=DEL	GT	./.
+chr1	368	.	N	<INS>	5	PASS	END=368;SVLEN=0;iGenVar_SVLEN=11;SVTYPE=INS	GT	./.
+chr1	384	.	N	<DEL>	1	PASS	END=395;SVLEN=11;iGenVar_SVLEN=-11;SVTYPE=DEL	GT	./.
+chr1	509	.	N	<DUP:TANDEM>	1	PASS	END=529;SVLEN=19;iGenVar_SVLEN=9;SVTYPE=DUP	GT	./.

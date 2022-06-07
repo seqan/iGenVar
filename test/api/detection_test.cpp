@@ -502,7 +502,7 @@ TEST(junction_detection, analyze_sa_tag)
             Junction{Breakend{"chr1", 30, strand::reverse}, Breakend{"chr1", 40, strand::forward},  // INV
                      ""_dna5, 0, read_name},                                                        // [31,41) inserted
             Junction{Breakend{"chr1", 50, strand::forward}, Breakend{"chr1", 59, strand::forward},  // DUP:TANDEM
-                     ""_dna5, 2, read_name},                                                        // [51,60] duplicated
+                     "TCGCAACTAC"_dna5, 2, read_name},                                              // [51,60] duplicated
             Junction{Breakend{"chr1", 69, strand::forward}, Breakend{"chr1", 140, strand::forward}, // TRA 2 (intrachr.)
                      ""_dna5, 0, read_name},                                                        // behind 70 -> 141
             Junction{Breakend{"chr1", 70, strand::reverse}, Breakend{"chr1", 149, strand::reverse}, // TRA 2 (intrachr.)
@@ -566,7 +566,7 @@ TEST(junction_detection, analyze_sa_tag)
         std::vector<Junction> junctions_expected_res =
         {                                                                     // +1 as we are 0 based but SAM is 1 based
             Junction{Breakend{"chr1", 20, strand::forward}, Breakend{"chr1", 29, strand::forward}, // DUP:TANDEM
-                     ""_dna5, 4, read_name}                                                        // [21,30] duplicated
+                     "AAACGGCCCC"_dna5, 4, read_name}                                              // [21,30] duplicated
         };
 
         ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());
@@ -670,7 +670,7 @@ TEST(junction_detection, analyze_sa_tag)
         std::vector<Junction> junctions_expected_res =
         {                                                                     // +1 as we are 0 based but SAM is 1 based
             Junction{Breakend{"chr1", 30, strand::forward}, Breakend{"chr1", 49, strand::forward}, // DUP:TANDEM
-                     ""_dna5, 2, read_name}                                                        // [21,50] duplicated
+                     "AAACGGCCCC"_dna5, 2, read_name}                                              // [21,50] duplicated
         };
 
         ASSERT_EQ(junctions_expected_res.size(), junctions_res.size());

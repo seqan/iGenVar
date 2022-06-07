@@ -1,0 +1,20 @@
+configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
+
+include: "workflow/rules/callers.smk"
+include: "workflow/rules/eval.smk"
+include: "workflow/rules/eval.DUP_as_INS.smk"
+include: "workflow/rules/eval_precision_recall.smk"
+include: "workflow/rules/plots.smk"
+
+##### Target rules #####
+
+rule all:
+    input:
+        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.all.png",
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"]),
+        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.DUP_as_INS.all.png",
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"]),
+        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.pr_all.png",
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"]),
+        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.rec_all.png",
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"])

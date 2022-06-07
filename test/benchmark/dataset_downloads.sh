@@ -12,6 +12,7 @@ mkdir -p GRCh37 && cd GRCh37
 ## NIST Illumina 2x250bps Paired-end
 ### reference: ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/technical/reference/phase2_reference_assembly_sequence/hs37d5.fa.gz
 ### README: .../NIST_Illumina_2x250bps/novoalign_bams/README_update_feb2019
+### coverage: ~40-50x (samtools depth average = 65.8713)
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Illumina_2x250bps/novoalign_bams/HG002.hs37d5.2x250.bam
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Illumina_2x250bps/novoalign_bams/HG002.hs37d5.2x250.bam.bai
 cd .. && mkdir -p GRCh38 && cd GRCh38
@@ -25,10 +26,13 @@ ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Illumina_2x250bps/novoalign_ba
 ### using bwa mem (Li 2013) with default settings, and duplicates were marked using samblaster (Faust 2014).
 cd .. && cd GRCh37
 ### reference: hg19 from ucsc
+### README: .../NIST_Stanford_Illumina_6kb_matepair/README.NIST_Stanford_Illumina_6kb_matepair
+### coverage: 13-17x (samtools depth average = 14.1621)
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Stanford_Illumina_6kb_matepair/bams/HG002.mate_pair.sorted.bam
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Stanford_Illumina_6kb_matepair/bams/HG002.mate_pair.sorted.bam.bai
 cd .. && cd GRCh38
 ### reference: GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fna
+### README: .../NIST_Stanford_Illumina_6kb_matepair/README.NIST_Stanford_Illumina_6kb_matepair
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Stanford_Illumina_6kb_matepair/bams/GRCh38/HG002.sorted.bam
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/NIST_Stanford_Illumina_6kb_matepair/bams/GRCh38/HG002.sorted.bam.bai
 
@@ -54,11 +58,13 @@ ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/PacBio_MtSinai_NIST/PacBio_minimap2
 cd .. && cd GRCh37
 ### reference: The reads were aligned to the hs37d5 reference
 ### README: .../PacBio_CCS_10kb/alignment/README.txt
+### coverage: 30x (samtools depth average = 28.6346)
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/PacBio_CCS_10kb/alignment/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/PacBio_CCS_10kb/alignment/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam.bai
 cd .. && cd GRCh38
 ### reference: reads were aligned to the GRCh38_no_alt_analysis reference using pbmm2
 ### README: .../PacBio_CCS_10kb/GRCh38_no_alt_analysis/README.txt
+### coverage: 30x (samtools depth average = 28.8953)
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/PacBio_CCS_10kb/GRCh38_no_alt_analysis/HG002.10kb.Sequel.pbmm2.GRCh38.whatshap.haplotag.RTG.10x.trio.bam
 ${WGET} ${NCBI}/${ReferenceSamples}/${HG002}/PacBio_CCS_10kb/GRCh38_no_alt_analysis/HG002.10kb.Sequel.pbmm2.GRCh38.whatshap.haplotag.RTG.10x.trio.bam.bai
 

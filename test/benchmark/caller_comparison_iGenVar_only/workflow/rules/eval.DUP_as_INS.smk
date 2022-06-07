@@ -13,12 +13,10 @@ rule DUP_as_INS_filter_vcf:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.vcf"
     output:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.min_qual_{min_qual}.vcf"
-    log:
-        "logs/caller_comparison_iGenVar_only/filter_vcf_output.{input_combination}.DUP_as_INS.{min_qual}.log",
     conda:
         "../../../envs/bcftools.yaml"
     shell:
-        "bcftools view -i 'QUAL>={wildcards.min_qual}.00' {input.vcf} > {output.vcf} 2> {log}"
+        "bcftools view -i 'QUAL>={wildcards.min_qual}.00' {input.vcf} > {output.vcf}"
 
 rule DUP_as_INS_truvari:
     input:

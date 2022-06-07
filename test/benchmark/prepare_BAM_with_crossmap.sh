@@ -39,6 +39,29 @@ samtools calmd --threads 16 -Q -b long_reads/GRCh37/HG002.Sequel.10kb.pbmm2.hs37
 samtools calmd --threads 16 -Q -b long_reads/GRCh38/HG002.10kb.Sequel.pbmm2.GRCh38.whatshap.haplotag.RTG.10x.trio.bam \
     > long_reads/GRCh38/HG002.10kb.Sequel.pbmm2.GRCh38.whatshap.haplotag.RTG.10x.trio.md.bam \
     reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
+## Add sampled files with different coverages
+#   coverage calculation:
+#   samtools depth -a --threads 16 DATASET | awk '{sum+=$3} END { print "Average = ",sum/NR}'
+cd long_reads/GRCh37/
+mkdir -p sampled
+### The library was sequenced to approximately 30-fold coverage.
+### Samtools sampling is working when sampling 50% or lower:
+# 1x coverage
+samtools view -s 0.033333333333333333 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.1x.bam
+# 2x coverage
+samtools view -s 0.066666666666666666 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.2x.bam
+# 3x coverage
+samtools view -s 0.10 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.3x.bam
+# 5x coverage
+samtools view -s 0.166666666666666666 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.5x.bam
+# 10x coverage
+samtools view -s 0.333333333333333333 -b HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam \
+    > sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.10x.bam
+cd ../..
 
 # 10X Genomics
 ## Add MD tag for Sniffles

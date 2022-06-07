@@ -3,8 +3,8 @@
 ## NIST Stanford Illumina 6kb Mate Pair
 ### GRCh37
 short_read_bam:
-    s1: data/short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam
-    s2: data/short_reads/GRCh37/HG002.mate_pair.sorted.bam
+    s1: data/short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam # ~40-50x coverage (Average = 65.8713)
+    s2: data/short_reads/GRCh37/HG002.mate_pair.sorted.bam # 13-17x coverage (Average = 14.1621)
 ### GRCh38
 # short_read_bam:
 #     s1: data/short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
@@ -16,13 +16,21 @@ short_read_bam:
 ## 10X Genomics
 ### GRCh37
 long_read_bam:
-    l1: data/long_reads/GRCh37/HG002_PacBio_GRCh37.bam
-    l2: data/long_reads/GRCh37/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam
-    l3: data/long_reads/GRCh37/NA24385_phased_possorted_bam.bam
+    l1: data/long_reads/GRCh37/HG002_PacBio_GRCh37.bam # 30x coverage (Average = 28.6346)
+    l2: data/long_reads/GRCh37/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.bam # (Average = 42.5946)
+    l3: data/long_reads/GRCh37/NA24385_phased_possorted_bam.bam # (Average = 25.1495)
 long_read_md_bam:
     l1: data/long_reads/GRCh37/HG002_PacBio_GRCh37.md.bam
     l2: data/long_reads/GRCh37/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.md.bam
     l3: data/long_reads/GRCh37/NA24385_phased_possorted_bam.md.bam
+sampled_long_read_bam:
+    l2x1: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.1x.bam # Average = 0.956229
+    l2x2: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.2x.bam # Average = 1.91026
+    l2x3: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.3x.bam # Average = 2.86353
+    l2x5: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.5x.bam # Average = 4.77531
+    l2x10: data/long_reads/GRCh37/sampled/HG002.Sequel.10kb.pbmm2.hs37d5.whatshap.haplotag.RTG.10x.trio.10x.bam # Average = 9.54839
+    # samtools depth -a --threads 16 DATASET | awk '{sum+=$3} END { print "Average = ",sum/NR}'
+
 ### GRCh38
 # long_read_bam:
 #     l1: data/long_reads/GRCh38/HG002_PacBio_GRCh38.bam

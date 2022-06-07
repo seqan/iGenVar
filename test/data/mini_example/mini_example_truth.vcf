@@ -1,0 +1,37 @@
+##fileformat=VCFv4.3
+##FILTER=<ID=PASS,Description="All filters passed">
+##INFO=<ID=END,Number=1,Type=Integer,Description="End position of SV called.">
+##INFO=<ID=SVLEN,Number=1,Type=Integer,Description="Length of SV called.">
+##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.">
+##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
+##FORMAT=<ID=CN,Number=1,Type=Integer,Description="Copy number of tandem duplication (e.g. 2 for one additional copy)">
+##contig=<ID=chr1,length=482>
+##filedate=
+##source=iGenVarCaller
+##ALT=<ID=DEL,Number=1,Description="Deletion">
+##ALT=<ID=DUP:TANDEM,Number=1,Description="Tandem Duplication">
+##ALT=<ID=INS,Number=1,Description="Insertion of novel sequence">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	MYSAMPLE
+chr1	34	dup_B	N	N]1:471]	.	PASS	END=299;SVLEN=-27;SVTYPE=BND;MATEID=dup_A	GT	./.
+chr1	57	.	N	<DEL>	.	PASS	END=70;SVLEN=-13;SVTYPE=DEL	GT	./.
+chr1	125	.	N	<INS>	.	PASS	END=125;SVLEN=15;SVTYPE=INS	GT	./.
+chr1	180	.	N	<DUP:TANDEM>	.	PASS	END=180;SVLEN=8;SVTYPE=DUP	GT:CN	./.:2
+chr1	266	.	N	<DEL>	.	PASS	END=282;SVLEN=-16;SVTYPE=DEL	GT	./.
+chr1	266	.	N	<INS>	.	PASS	END=266;SVLEN=13;SVTYPE=INS	GT	./.
+chr1	266	tra_A	N	N]1:286]	.	PASS	END=286;SVLEN=20;SVTYPE=BND;MATEID=tra_B	GT	./.
+chr1	282	tra_C	N	N]1:299]	.	PASS	END=299;SVLEN=17;SVTYPE=BND;MATEID=tra_D	GT	./.
+chr1	286	.	N	<DEL>	.	PASS	END=299;SVLEN=-13;SVTYPE=DEL	GT	./.
+chr1	286	.	N	<INS>	.	PASS	END=286;SVLEN=16;SVTYPE=INS	GT	./.
+chr1	286	tra_B	N	N]1:266]	.	PASS	END=266;SVLEN=-20;SVTYPE=BND;MATEID=tra_A	GT	./.
+chr1	299	tra_D	N	N]1:282]	.	PASS	END=282;SVLEN=-17;SVTYPE=BND;MATEID=tra_C	GT	./.
+chr1	336	.	N	<DEL>	.	PASS	END=350;SVLEN=-14;SVTYPE=DEL	GT	./.
+chr1	368	.	N	<INS>	.	PASS	END=368;SVLEN=11;SVTYPE=INS	GT	./.
+chr1	368	tra_E	N	N]1:384]	.	PASS	END=384;SVLEN=16;SVTYPE=BND;MATEID=tra_F	GT	./.
+chr1	384	.	N	<DEL>	.	PASS	END=395;SVLEN=-11;SVTYPE=DEL	GT	./.
+chr1	384	tra_F	N	N]1:395]	.	PASS	END=299;SVLEN=11;SVTYPE=BND;MATEID=tra_G	GT	./.
+chr1	395	tra_G	N	N]1:368]	.	PASS	END=299;SVLEN=-27;SVTYPE=BND;MATEID=tra_E	GT	./.
+chr1	471	.	N	<INS>	.	PASS	END=471;SVLEN=24;SVTYPE=INS	GT	./.
+chr1	471	.	N	<DUP>	.	PASS	END=471;SVLEN=24;SVTYPE=DUP	GT:CN	./.:2
+chr1	471	dup_A	N	N]1:10]	.	PASS	END=299;SVLEN=-461;SVTYPE=BND;MATEID=dup_B	GT	./.
+chr1	509	.	N	<DUP:TANDEM>	.	PASS	END=527;SVLEN=9;SVTYPE=DUP	GT:CN	./.:5
+chr1	581	.	N	<INV>	.	PASS	END=598;SVLEN=17;SVTYPE=DUP	GT	./.

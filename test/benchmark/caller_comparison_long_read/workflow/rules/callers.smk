@@ -131,14 +131,12 @@ rule fix_sniffles_2:
 
 #PBSV
 rule run_pbsv_dicsover:
-    input:
-        bam = config["long_read_bam"]["l2"]
     output:
         svsig_gz = "results/caller_comparison_long_read/{dataset}/pbsv/signatures.svsig.gz"
         # svsig_gz = dynamic("results/caller_comparison_long_read/{dataset}/pbsv/signatures/{region}.svsig.gz")
-    threads: 8
     log:
-        "logs/caller_comparison_long_read/pbsv/pbsv_discover.{dataset}.{region}.log"
+        log = "logs/caller_comparison_long_read/pbsv/pbsv_discover.{dataset}.log"
+    threads: 8
     run:
         if wildcards.dataset == 'MtSinai_PacBio':
             long_bam = config["long_read_bam"]["l1"]
@@ -146,10 +144,10 @@ rule run_pbsv_dicsover:
             long_bam = config["long_read_bam"]["l2"]
         else: # wildcards.dataset == '10X_Genomics'
             long_bam = config["long_read_bam"]["l3"]
-        shell("pbsv discover {input.bam} {output.svsig_gz}")
+        shell("/usr/bin/time -v pbsv discover {long_bam} {output.svsig_gz} &>> {log}")
         # shell("""
         #     for i in $(samtools view -H {long_bam} | grep '^@SQ' | cut -f2 | cut -d':' -f2); do
-        #         /usr/bin/time -v pbsv discover --region $i {long_bam} results/caller_comparison_long_read/{wildcards.dataset}/pbsv/signatures/$i.svsig.gz &>> {log} &
+        #         /usr/bin/time -v pbsv discover --region $i {long_bam} results/caller_comparison_long_read/{wildcards.dataset}/pbsv/signatures/$i.svsig.gz &>> {output.log} &
         #     done
         #     wait
         # """)
@@ -157,8 +155,7 @@ rule run_pbsv_dicsover:
 # pbsv call is not using more than 200% CPU capacity (2 threads)
 rule run_pbsv_call:
     input:
-        svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
-        # svsig_gz = dynamic("results/caller_comparison_long_read/{dataset}/pbsv/signatures/*.svsig.gz")
+        svsig_gz = "results/caller_comparison_long_read/{dataset}/pbsv/signatures.svsig.gz"
     output:
         vcf = "results/caller_comparison_long_read/{dataset}/pbsv/variants.min_qual_{min_qual}.vcf"
     log:
@@ -181,8 +178,7 @@ rule run_pbsv_call:
 # pbsv call is not using more than 200% CPU capacity (2 threads)
 rule run_pbsv_call_without_DUP:
     input:
-        svsig_gz = "results/caller_comparison_long_read/pbsv/signatures.svsig.gz"
-        # svsig_gz = dynamic("results/caller_comparison_long_read/{dataset}/pbsv/signatures/*.svsig.gz")
+        svsig_gz = "results/caller_comparison_long_read/{dataset}/pbsv/signatures.svsig.gz"
     output:
         vcf = "results/caller_comparison_long_read/{dataset}/pbsv_without_DUP/variants.min_qual_{min_qual}.vcf"
     log:

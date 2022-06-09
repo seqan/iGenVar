@@ -122,7 +122,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                 Breakend mate1{current.ref_name, mate1_pos, current.orientation};
                 Breakend mate2{next.ref_name, mate2_pos, next.orientation};
                 size_t tandem_dup_count = 0;
-                // if interchromosomal
+                // if intrachromosomal
                 if (current.ref_name == next.ref_name)
                 {
                     // if inverted sequence
@@ -217,7 +217,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                             }
                         }
                         else
-                        { // Else interchromosomal TRA or DUP
+                        { // Else intrachromosomal TRA or DUP
                             // Reset tandem dup values to zero
                             amount_tandem_dup_segments = 0;
                             tandem_dup_length_on_read = 0;
@@ -229,7 +229,7 @@ void analyze_aligned_segments(std::vector<AlignedSegment> const & aligned_segmen
                     }
                 }
                 else
-                { // Else intrachromosomal TRA
+                { // Else interchromosomal TRA - possible crossing over
                     // Reset tandem dup values to zero
                     amount_tandem_dup_segments = 0;
                     tandem_dup_length_on_read = 0;

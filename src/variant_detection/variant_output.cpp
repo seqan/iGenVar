@@ -79,7 +79,7 @@ void write_record(Cluster const & cluster,
 
         // Tandem Duplication
         // In case of a small deletion inside of a duplication, the distance is a small positive value
-        if (cluster.get_common_tandem_dup_count() > 0 && distance <= (int) args.max_tol_deleted_length)
+        if (cluster.get_common_tandem_dup_count() > 0 && static_cast<uint64_t>(distance) <= args.max_tol_deleted_length)
         {
             record.alt() = {"<DUP:TANDEM>"};
             // Increment end by 1 because VCF is 1-based
@@ -117,7 +117,7 @@ void write_record(Cluster const & cluster,
         }
         // Insertion (sv_length is positive)
         // In case of a small deletion inside of an insertion, the distance is a small positive value
-        else if (insert_size > 0 && distance <= (int) args.max_tol_deleted_length)
+        else if (insert_size > 0 && static_cast<uint64_t>(distance) <= args.max_tol_deleted_length)
         {
             record.alt() = {"<INS>"};
             // Increment end by 1 because VCF is 1-based

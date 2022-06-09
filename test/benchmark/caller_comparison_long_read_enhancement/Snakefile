@@ -11,10 +11,7 @@ include: "workflow/rules/plots.smk"
 rule all:
     input:
         expand("results/caller_comparison_long_read_enhancement/{dataset}.results.all.png",
-               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"]),
-        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.DUP_as_INS.all.png",
-               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"]),
-        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.pr_all.png",
-               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"]),
-        expand("results/caller_comparison_long_read_enhancement/{dataset}.results.rec_all.png",
+               "results/caller_comparison_long_read_enhancement/{dataset}.results.DUP_as_INS.all.png",
+               "results/caller_comparison_long_read_enhancement/{dataset}.results.pr_all.png",
+               "results/caller_comparison_long_read_enhancement/{dataset}.results.rec_all.png",
                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"])

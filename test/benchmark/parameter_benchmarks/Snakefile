@@ -7,26 +7,14 @@ min_qual_iGenVar = list(range(config["quality_ranges"]["iGenVar"]["from"],
 rule all:
     input:
         expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="min_var_length"),
-        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="max_var_length"),
-        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="max_tol_inserted_length"),
-        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="max_tol_deleted_length"),
-        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="max_overlap"),
-        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="partition_max_distance"),
-        expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
-                dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
-                parameter_name="hierarchical_clustering_cutoff")
+               "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+               "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+               "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+               "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+               "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+               "results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair", "MtSinai_PacBio", "PacBio_CCS", "10X_Genomics"],
+               parameter_name="hierarchical_clustering_cutoff")
 
 rule run_igenvar:
     output:

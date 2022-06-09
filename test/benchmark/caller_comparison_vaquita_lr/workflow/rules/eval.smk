@@ -1,3 +1,7 @@
+min_qual_VaquitaLR = list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+                                config["quality_ranges"]["Vaquita-LR"]["to"],
+                                config["quality_ranges"]["Vaquita-LR"]["step"]))
+
 rule filter_vcf:
     input:
         vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants.vcf"
@@ -64,9 +68,7 @@ rule reformat_truvari_results:
 rule cat_truvari_results_all:
     input:
         S1   = expand("results/caller_comparison_vaquita_lr/eval/S1/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         # S2 run: (stop after 60h)
         # [2022-4-21 14:51:46] [START] SV CLASSIFICATION
         # [2022-4-21 14:51:46] [START] FIND INVERSIONS
@@ -77,33 +79,19 @@ rule cat_truvari_results_all:
         # [2022-4-22 2:34:23] [END] FIND DUPLICATIONS (42109 seconds.)
         # [2022-4-22 2:34:23] [START] FIND TRANSLOCATION
         # S2   = expand("results/caller_comparison_vaquita_lr/eval/S2/min_qual_{min_qual}/pr_rec.txt",
-        #               min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["to"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        #               min_qual = min_qual_VaquitaLR),
         S1L1 = expand("results/caller_comparison_vaquita_lr/eval/S1L1/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         S1L2 = expand("results/caller_comparison_vaquita_lr/eval/S1L2/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         # S2L3 = expand("results/caller_comparison_vaquita_lr/eval/S2L3/min_qual_{min_qual}/pr_rec.txt",
-        #               min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["to"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        #               min_qual = min_qual_VaquitaLR),
         L1   = expand("results/caller_comparison_vaquita_lr/eval/L1/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         L2   = expand("results/caller_comparison_vaquita_lr/eval/L2/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         L3   = expand("results/caller_comparison_vaquita_lr/eval/L3/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"])))
+                      min_qual = min_qual_VaquitaLR)
     output:
         S1   = temp("results/caller_comparison_vaquita_lr/eval/S1.all_results.txt"),
         # S2   = temp("results/caller_comparison_vaquita_lr/eval/S2.all_results.txt"),

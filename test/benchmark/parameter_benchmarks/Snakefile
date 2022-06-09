@@ -1,5 +1,9 @@
 configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
 
+min_qual_iGenVar = list(range(config["quality_ranges"]["iGenVar"]["from"],
+                              config["quality_ranges"]["iGenVar"]["to"],
+                              config["quality_ranges"]["iGenVar"]["step"]))
+
 rule all:
     input:
         expand("results/parameter_benchmarks/{dataset}/plots/{parameter_name}.results.all.png",
@@ -117,39 +121,25 @@ rule cat_truvari_results_full:
     input:
         input1 = expand("results/parameter_benchmarks/{{dataset}}/truvari/min_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value=[10, 30, 50, 75, 100],          # default: 30
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"]))),
+                min_qual = min_qual_iGenVar),
         input2 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_var_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value=[1000, 5000, 10000, 100000],    # default: 10.000
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"]))),
+                min_qual = min_qual_iGenVar),
         input3 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_tol_inserted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value=[10, 50, 100],                  # default: 50
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"]))),
+                min_qual = min_qual_iGenVar),
         input4 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_tol_deleted_length/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value=[10, 50, 100],                  # default: 50
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"]))),
+                min_qual = min_qual_iGenVar),
         input5 = expand("results/parameter_benchmarks/{{dataset}}/truvari/max_overlap/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value=[10, 50, 100],                  # default: 50
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"]))),
+                min_qual = min_qual_iGenVar),
         input6 = expand("results/parameter_benchmarks/{{dataset}}/truvari/partition_max_distance/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value=[10, 25, 50, 100, 1000],        # default: 50
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"]))),
+                min_qual = min_qual_iGenVar),
         input7 = expand("results/parameter_benchmarks/{{dataset}}/truvari/hierarchical_clustering_cutoff/{parameter_value}_min_qual_{min_qual}/pr_rec.txt",
                 parameter_value= [0.1, 0.2, 0.3, 0.4],          # default: 0.3
-                min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                    config["quality_ranges"]["iGenVar"]["to"],
-                                    config["quality_ranges"]["iGenVar"]["step"])))
+                min_qual = min_qual_iGenVar)
     output:
         summary1 = "results/parameter_benchmarks/{dataset}/truvari/min_var_length/all_results.txt",
         summary2 = "results/parameter_benchmarks/{dataset}/truvari/max_var_length/all_results.txt",

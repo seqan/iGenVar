@@ -1,3 +1,7 @@
+min_qual_VaquitaLR = list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+                                config["quality_ranges"]["Vaquita-LR"]["to"],
+                                config["quality_ranges"]["Vaquita-LR"]["step"]))
+
 rule DUP_as_INS:
     input:
         vcf = "results/caller_comparison_vaquita_lr/{input_combination}/variants.vcf"
@@ -57,37 +61,21 @@ rule DUP_as_INS_reformat_truvari_results:
 rule DUP_as_INS_cat_truvari_results_all:
     input:
         S1   = expand("results/caller_comparison_vaquita_lr/eval/S1/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         # S2   = expand("results/caller_comparison_vaquita_lr/eval/S2/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-        #               min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["to"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        #               min_qual = min_qual_VaquitaLR),
         S1L1 = expand("results/caller_comparison_vaquita_lr/eval/S1L1/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         S1L2 = expand("results/caller_comparison_vaquita_lr/eval/S1L2/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         # S2L3 = expand("results/caller_comparison_vaquita_lr/eval/S2L3/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-        #               min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["to"],
-        #                                   config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        #               min_qual = min_qual_VaquitaLR),
         L1   = expand("results/caller_comparison_vaquita_lr/eval/L1/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         L2   = expand("results/caller_comparison_vaquita_lr/eval/L2/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"]))),
+                      min_qual = min_qual_VaquitaLR),
         L3   = expand("results/caller_comparison_vaquita_lr/eval/L3/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
-                                          config["quality_ranges"]["Vaquita-LR"]["to"],
-                                          config["quality_ranges"]["Vaquita-LR"]["step"])))
+                      min_qual = min_qual_VaquitaLR)
     output:
         S1   = temp("results/caller_comparison_vaquita_lr/eval/S1.DUP_as_INS.all_results.txt"),
         # S2   = temp("results/caller_comparison_vaquita_lr/eval/S2.DUP_as_INS.all_results.txt"),

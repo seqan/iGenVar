@@ -98,11 +98,11 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.max_tol_inserted_length, 'm', "max_tol_inserted_length",
-                      "Specify what should be the longest tolerated inserted sequence at sites of non-INS/DUP SVs. "
+                      "Specify what should be the longest tolerated inserted sequence at sites of DEL SVs. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.max_tol_deleted_length, 'e', "max_tol_deleted_length",
-                      "Specify what should be the longest tolerated deleted sequence at sites of non-DEL SVs. "
+                      "Specify what should be the longest tolerated deleted sequence at sites of non-DEL/INV SVs. "
                       "This value needs to be non-negative.",
                       seqan3::option_spec::advanced);
     parser.add_option(args.max_overlap, 'n', "max_overlap",

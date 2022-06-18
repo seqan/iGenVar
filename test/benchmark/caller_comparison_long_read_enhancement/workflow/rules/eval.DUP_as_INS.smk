@@ -3,8 +3,6 @@ rule DUP_as_INS:
         vcf = "results/caller_comparison_long_read_enhancement/{dataset}/{long_read_enhancement}/variants.vcf"
     output:
         vcf = "results/caller_comparison_long_read_enhancement/{dataset}/{long_read_enhancement}/variants.DUP_as_INS.vcf"
-    log:
-        "logs/caller_comparison_long_read_enhancement/DUP_as_INS.{dataset}.{long_read_enhancement}.log"
     shell:
         "sed -e 's/<DUP:TANDEM>/<INS>/g' {input.vcf} | sed -e 's/SVTYPE=DUP/SVTYPE=INS/g' > {output.vcf}"
 

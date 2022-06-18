@@ -83,9 +83,13 @@ parameters:
 
 quality_ranges:
     from: 1
-    to: 70
+    to: 60
     step: 1
     iGenVar:
         from: 1
         to: 50
+        step: 1
+    sniffles:
+        from: 2
+        to: 60
         step: 1

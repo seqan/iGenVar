@@ -4,7 +4,7 @@ max_var_length = config["parameters"]["max_var_length"]
 
 rule run_iGenVar:
     output:
-        vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
+        vcf = "results/caller_comparison_iGenVar_only/{input_combination}/unsorted_variants.vcf"
     log:
         "logs/caller_comparison_iGenVar_only/{input_combination}_output.log"
     threads: 2
@@ -96,3 +96,14 @@ rule run_iGenVar:
         # --method cigar_string --method split_read --method read_pairs --method read_depth
         # --clustering_methods hierarchical_clustering --refinement_methods no_refinement
         # --max_tol_inserted_length 50 --max_overlap 10 --hierarchical_clustering_cutoff 0.5
+
+# TODO (irallia 24.06.2022): The vcf is not sorted anymore.
+rule picard:
+    input:
+        vcf = "results/caller_comparison_iGenVar_only/{input_combination}/unsorted_variants.vcf"
+    output:
+        vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
+    log:
+        "logs/caller_comparison_iGenVar_only/picard_output.{input_combination}.log"
+    shell:
+        "picard SortVcf -I {input.vcf} -O {output.vcf} -Xms1g -Xmx100g --TMP_DIR tmp/picard/ &>> {log}"

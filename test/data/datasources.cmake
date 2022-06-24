@@ -34,7 +34,7 @@ declare_datasource (FILE output_err.txt
 # copies file to <build>/data/output_res.vcf
 declare_datasource (FILE output_res.vcf
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_res.vcf
-                    URL_HASH SHA256=245974501fe0b8cfc63873008780c46eec115ecd63f90809b6fa98f2eb6852ca)
+                    URL_HASH SHA256=098fa627a6ba12baa5327d3ded97a3b75fa715d4b3177be5e9eaca1ee727e65d)
 
 # copies file to <build>/data/output_short_and_long_err.txt
 declare_datasource (FILE output_short_and_long_err.txt
@@ -44,4 +44,4 @@ declare_datasource (FILE output_short_and_long_err.txt
 # copies file to <build>/data/output_short_and_long_res.vcf
 declare_datasource (FILE output_short_and_long_res.vcf
                     URL ${CMAKE_SOURCE_DIR}/test/data/mini_example/output_short_and_long_res.vcf
-                    URL_HASH SHA256=b32b53637e93c769f21fd92345cc5194788f44abd8f021778c2624e917e87b3a)
+                    URL_HASH SHA256=d85da83b11a5ebe88832bfdc2cc1db985eda2c05d9e657eb6ba7ff99a4828eed)

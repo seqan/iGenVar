@@ -75,6 +75,7 @@ void write_record(Cluster const & cluster,
         size_t const insert_size = cluster.get_average_inserted_sequence_size();
         int const distance = mate2.position - mate1.position - 1;
         int sv_length;
+        int sv_length_iGenVar;
         std::string sv_type;
 
         // Tandem Duplication
@@ -84,7 +85,8 @@ void write_record(Cluster const & cluster,
             record.alt() = {"<DUP:TANDEM>"};
             // Increment end by 1 because VCF is 1-based
             record.info().push_back({.id = "END", .value = mate2.position + 1});
-            sv_length = insert_size;
+            sv_length = distance + 2;
+            sv_length_iGenVar = insert_size;
             sv_type = "DUP";
         }
         // Deletion OR Inversion
@@ -101,6 +103,7 @@ void write_record(Cluster const & cluster,
                 // Increment end by 1 because inversion ends one base before mate2 begins
                 record.info().push_back({.id = "END", .value = mate2.position + 1});
                 sv_length = distance;
+                sv_length_iGenVar = sv_length;
                 sv_type = "INV";
             }
             // Deletion
@@ -112,6 +115,7 @@ void write_record(Cluster const & cluster,
                 // Decrement end by 1 because deletion ends one base before mate2 begins
                 record.info().push_back({.id = "END", .value = mate2.position});
                 sv_length = -distance;
+                sv_length_iGenVar = sv_length;
                 sv_type = "DEL";
             }
         }
@@ -123,14 +127,15 @@ void write_record(Cluster const & cluster,
             // Increment end by 1 because VCF is 1-based
             record.info().push_back({.id = "END", .value = mate1.position + 1});
             sv_length = insert_size;
+            sv_length_iGenVar = sv_length;
             sv_type = "INS";
         }
         // The SVLEN is neither too short nor too long than specified by the user.
         if (std::abs(sv_length) >= args.min_var_length &&
             std::abs(sv_length) <= args.max_var_length)
         {
-            record.info().push_back({.id = "SVLEN", .value = distance});
-            record.info().push_back({.id = "iGenVar_SVLEN", .value = sv_length});
+            record.info().push_back({.id = "SVLEN", .value = sv_length});
+            record.info().push_back({.id = "iGenVar_SVLEN", .value = sv_length_iGenVar});
             record.info().push_back({.id = "SVTYPE", .value = sv_type});
             found_SV = true;
         }

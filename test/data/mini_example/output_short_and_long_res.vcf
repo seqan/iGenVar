@@ -8,9 +8,9 @@
 ##contig=<ID=chr1,length=482>
 ##filedate=
 ##source=iGenVarCaller
-##ALT=<ID=DEL,Number=1,Description="Deletion">
-##ALT=<ID=DUP:TANDEM,Number=1,Description="Tandem Duplication">
-##ALT=<ID=INS,Number=1,Description="Insertion of novel sequence">
+##ALT=<ID=DEL,Description="Deletion">
+##ALT=<ID=DUP:TANDEM,Description="Tandem Duplication">
+##ALT=<ID=INS,Description="Insertion of novel sequence">
 #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO	FORMAT	MYSAMPLE
 chr1	57	.	N	<DEL>	18	PASS	END=70;SVLEN=13;iGenVar_SVLEN=-13;SVTYPE=DEL	GT	./.
 chr1	97	.	N	<DEL>	1	PASS	END=125;SVLEN=28;iGenVar_SVLEN=-28;SVTYPE=DEL	GT	./.

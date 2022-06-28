@@ -43,9 +43,9 @@ void write_header(std::map<std::string, int32_t> & references_lengths,
 
     hdr.other_lines = {"filedate="s + transTime(),
                        "source=iGenVarCaller",
-                       "ALT=<ID=DEL,Number=1,Description=\"Deletion\">",
-                       "ALT=<ID=DUP:TANDEM,Number=1,Description=\"Tandem Duplication\">",
-                       "ALT=<ID=INS,Number=1,Description=\"Insertion of novel sequence\">"};
+                       "ALT=<ID=DEL,Description=\"Deletion\">",
+                       "ALT=<ID=DUP:TANDEM,Description=\"Tandem Duplication\">",
+                       "ALT=<ID=INS,Description=\"Insertion of novel sequence\">"};
     hdr.column_labels = {"CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT", sample_name};
 }
 

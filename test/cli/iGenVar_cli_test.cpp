@@ -173,9 +173,9 @@ std::string const general_header_lines_2
 {
     "##filedate=\n"             // remove date as it can differ and erase it from the result.out
     "##source=iGenVarCaller\n"
-    "##ALT=<ID=DEL,Number=1,Description=\"Deletion\">\n"
-    "##ALT=<ID=DUP:TANDEM,Number=1,Description=\"Tandem Duplication\">\n"
-    "##ALT=<ID=INS,Number=1,Description=\"Insertion of novel sequence\">\n"
+    "##ALT=<ID=DEL,Description=\"Deletion\">\n"
+    "##ALT=<ID=DUP:TANDEM,Description=\"Tandem Duplication\">\n"
+    "##ALT=<ID=INS,Description=\"Insertion of novel sequence\">\n"
     "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO\tFORMAT\tMYSAMPLE\n"
 };
 

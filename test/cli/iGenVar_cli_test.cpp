@@ -389,7 +389,7 @@ TEST_F(iGenVar_cli_test, set_min_qual)
     };
     std::string const expected_res
     {
-        "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=0;iGenVar_SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
+        "chr21\t41972616\t.\tN\t<INS>\t1\tPASS\tEND=41972616;SVLEN=1681;iGenVar_SVLEN=1681;SVTYPE=INS\tGT\t./.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default + expected_res);

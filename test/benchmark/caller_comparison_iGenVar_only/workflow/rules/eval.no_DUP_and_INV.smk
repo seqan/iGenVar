@@ -6,32 +6,32 @@ rule DUP_as_INS:
     shell:
         "sed -e 's/<DUP:TANDEM>/<INS>/g' {input.vcf} | sed -e 's/SVTYPE=DUP/SVTYPE=INS/g' > {output.vcf}"
 
-rule INV_as_DEL_and_INS:
-    input:
-        vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.vcf"
-    output:
-        vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.no_DUP_and_INV.vcf"
-    shell:
-        """
-            sed '/<INV>/{{p;s/INV/ÄÄÄÄÄÄÄ/g;}}; s/<ÄÄÄÄÄÄÄ>/<INS>/g; s/SVTYPE=ÄÄÄÄÄÄÄ/SVTYPE=INS/g;' {input.vcf} | \
-            sed '/<INV>/{{s/<INV>/<DEL>/g; s/SVTYPE=INV/SVTYPE=DEL/g; s/SVLEN=/SVLEN=-/g;}};' > {output.vcf}
-        """
-
-# rule INV_as_INS:
+# rule INV_as_DEL_and_INS:
 #     input:
 #         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.vcf"
 #     output:
 #         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.no_DUP_and_INV.vcf"
 #     shell:
-#         "sed -e 's/<INV>/<INS>/g' {input.vcf} | sed -e 's/SVTYPE=INV/SVTYPE=INS/g' > {output.vcf}"
+#         """
+#             sed '/<INV>/{{p;s/INV/ÄÄÄÄÄÄÄ/g;}}; s/<ÄÄÄÄÄÄÄ>/<INS>/g; s/SVTYPE=ÄÄÄÄÄÄÄ/SVTYPE=INS/g;' {input.vcf} | \
+#             sed '/<INV>/{{s/<INV>/<DEL>/g; s/SVTYPE=INV/SVTYPE=DEL/g; s/SVLEN=/SVLEN=-/g;}};' > {output.vcf}
+#         """
 
-rule INV_as_DEL:
+rule INV_as_INS:
     input:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.vcf"
     output:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.no_DUP_and_INV.vcf"
     shell:
-        "sed -e '/<INV>/{{s/<INV>/<DEL>/g; s/SVTYPE=INV/SVTYPE=DEL/g; s/SVLEN=/SVLEN=-/g;}};' {input.vcf} > {output.vcf}"
+        "sed -e 's/<INV>/<INS>/g' {input.vcf} | sed -e 's/SVTYPE=INV/SVTYPE=INS/g' > {output.vcf}"
+
+# rule INV_as_DEL:
+#     input:
+#         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.vcf"
+#     output:
+#         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.no_DUP_and_INV.vcf"
+#     shell:
+#         "sed -e '/<INV>/{{s/<INV>/<DEL>/g; s/SVTYPE=INV/SVTYPE=DEL/g; s/SVLEN=/SVLEN=-/g;}};' {input.vcf} > {output.vcf}"
 
 rule DUP_as_INS_filter_vcf:
     input:

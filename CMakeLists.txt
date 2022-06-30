@@ -45,6 +45,18 @@ FetchContent_Populate(hclust)
 add_library ("fastcluster" STATIC ${hclust_SOURCE_DIR}/fastcluster.cpp)
 target_include_directories ("fastcluster" PUBLIC ${hclust_SOURCE_DIR})
 
+# Dependency: Lemon Graph Library
+FetchContent_Declare(
+        lemon
+        GIT_REPOSITORY https://github.com/seqan/lemon.git
+        GIT_TAG 400d51cff5b4c4b59dd11a30965b9837a3df7b53
+)
+FetchContent_GetProperties(lemon)
+if (NOT lemon_POPULATED)
+    FetchContent_Populate(lemon)
+    include_directories(SYSTEM ${lemon_SOURCE_DIR}/include)
+endif ()
+
 # Dependency: BAMIntervalTree.
 add_library ("bamit" INTERFACE)
 target_include_directories ("bamit" INTERFACE lib/BAMIntervalTree/include/)

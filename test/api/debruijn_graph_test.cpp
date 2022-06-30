@@ -19,12 +19,6 @@ TEST(debruijn_graph, init)
     // the k-mer CG occurs twice
     EXPECT_FALSE(graph.init_sequence(2, "CGTCG"_dna4));
 
-    // len = 0
-    EXPECT_DEBUG_DEATH(graph.init_sequence(0, "CGTCG"_dna4), "k.value > 0");
-
-    // sequence longer than k
-    EXPECT_DEBUG_DEATH(graph.init_sequence(10, "CGTCG"_dna4), "len <= reference.size");
-
     // sequence as long as k
     EXPECT_TRUE(graph.init_sequence(5, "CGTCG"_dna4));
     EXPECT_FALSE(graph.is_viable());

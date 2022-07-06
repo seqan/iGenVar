@@ -78,8 +78,10 @@ bool DeBruijnGraph::is_viable()
             {
                 lemon::ListDigraph::InArcIt in_arc(graph, node);
                 lemon::ListDigraph::OutArcIt out_arc(graph, node);
+                // true if the node has either no ingoing arc, or exactly one arc with 1 or 0 supporting reads
                 bool in = in_arc == lemon::INVALID || (arcs[in_arc] < 2 && ++in_arc == lemon::INVALID);
                 bool out = out_arc == lemon::INVALID || (arcs[out_arc] < 2 && ++out_arc == lemon::INVALID);
+                // a node is unique if for ingoing and outgoing arcs there is at most 1 supporting read
                 if (in && out)
                     ++num_unique;
                 else

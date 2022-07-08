@@ -74,8 +74,8 @@ void write_record(Cluster const & cluster,
     {
         size_t const insert_size = cluster.get_average_inserted_sequence_size();
         int const distance = mate2.position - mate1.position - 1;
-        int sv_length;
-        int sv_length_iGenVar;
+        int sv_length{};
+        int sv_length_iGenVar{};
         std::string sv_type;
 
         // Tandem Duplication

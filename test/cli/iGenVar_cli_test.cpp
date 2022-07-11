@@ -64,7 +64,7 @@ std::string const help_page_part_2
     "VERSION\n"
     "    Last update: 30-03-2021\n"
     "    iGenVar version: 0.0.3\n"
-    "    SeqAn version: 3.2.0-rc.1\n"
+    "    SeqAn version: 3.3.0-rc.1\n"
     "\n"
     "URL\n"
     "    https://github.com/seqan/iGenVar/\n"
@@ -73,7 +73,7 @@ std::string const help_page_part_2
     "    iGenVar Copyright: short_copyright\n"
     "    Author: Lydia Buntrock, David Heller, Joshua Kim\n"
     "    Contact: lydia.buntrock@fu-berlin.de\n"
-    "    SeqAn Copyright: 2006-2021 Knut Reinert, FU-Berlin; released under the\n"
+    "    SeqAn Copyright: 2006-2022 Knut Reinert, FU-Berlin; released under the\n"
     "    3-clause BSDL.\n"
     "    For full copyright and/or warranty information see --copyright.\n"
 };

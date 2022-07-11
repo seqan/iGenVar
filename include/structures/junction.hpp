@@ -3,7 +3,7 @@
 #include <seqan3/alphabet/nucleotide/dna5.hpp>
 #include <seqan3/alphabet/views/char_to.hpp>
 #include <seqan3/alphabet/views/complement.hpp>
-#include <seqan3/utility/views/to.hpp>
+#include <seqan3/utility/range/to.hpp>
 
 #include "structures/breakend.hpp"
 
@@ -43,11 +43,11 @@ public:
             mate1.flip_orientation();
             mate2.flip_orientation();
 
-            inserted_sequence = the_inserted_sequence | std::views::reverse | seqan3::views::complement | seqan3::views::to<seqan3::dna5_vector>;
+            inserted_sequence = the_inserted_sequence | std::views::reverse | seqan3::views::complement | seqan3::ranges::to<seqan3::dna5_vector>();
         }
         else
         {
-            inserted_sequence = the_inserted_sequence | seqan3::views::to<seqan3::dna5_vector>;
+            inserted_sequence = the_inserted_sequence | seqan3::ranges::to<seqan3::dna5_vector>();
         }
     }
     //!\}

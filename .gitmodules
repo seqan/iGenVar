@@ -9,5 +9,5 @@
 [submodule "b.i.o."]
 	path = lib/b.i.o.
 	# url = ../../h-2/b.i.o..git
-	url = ../../eseiler/b.i.o..git
+	url = https://github.com/eseiler/b.i.o..git
 	branch = master

@@ -27,15 +27,15 @@ void write_header(std::map<std::string, int32_t> & references_lengths,
     hdr.file_format = "VCFv4.3";
     // Default:
     // hdr.filters.push_back({ .id = "PASS", .description = "All filters passed"});
-    hdr.infos.push_back({ .id = "END", .number = 1, .type = bio::var_io::value_type_id::int32,
+    hdr.infos.push_back({ .id = "END", .number = 1, .type_id = bio::var_io::value_type_id::int32,
                           .description = "End position of SV called."});
-    hdr.infos.push_back({ .id = "SVLEN", .number = 1, .type = bio::var_io::value_type_id::int32,
+    hdr.infos.push_back({ .id = "SVLEN", .number = 1, .type_id = bio::var_io::value_type_id::int32,
                           .description = "Difference in length between REF and ALT alleles."});
-    hdr.infos.push_back({ .id = "iGenVar_SVLEN", .number = 1, .type = bio::var_io::value_type_id::int32,
+    hdr.infos.push_back({ .id = "iGenVar_SVLEN", .number = 1, .type_id = bio::var_io::value_type_id::int32,
                           .description = "Length of SV called."});
-    hdr.infos.push_back({ .id = "SVTYPE", .number = 1, .type = bio::var_io::value_type_id::string,
+    hdr.infos.push_back({ .id = "SVTYPE", .number = 1, .type_id = bio::var_io::value_type_id::string,
                           .description = "Type of SV called."});
-    hdr.formats.push_back({ .id = "GT", .number = 1, .type = bio::var_io::value_type_id::string,
+    hdr.formats.push_back({ .id = "GT", .number = 1, .type_id = bio::var_io::value_type_id::string,
                           .description = "Genotype"});
 
     for (auto const & [id, length] : references_lengths)
@@ -74,8 +74,8 @@ void write_record(Cluster const & cluster,
     {
         size_t const insert_size = cluster.get_average_inserted_sequence_size();
         int const distance = mate2.position - mate1.position - 1;
-        int sv_length;
-        int sv_length_iGenVar;
+        int sv_length{};
+        int sv_length_iGenVar{};
         std::string sv_type;
 
         // Tandem Duplication

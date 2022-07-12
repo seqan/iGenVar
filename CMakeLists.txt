@@ -24,11 +24,17 @@ string (ASCII 27 Esc)
 set (FontBold "${Esc}[1m")
 set (FontReset "${Esc}[m")
 
-# Dependency: b.i.o.
-find_package (bio QUIET REQUIRED HINTS lib/b.i.o./build_system)
+list (APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/seqan3/build_system")
+list (APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/b.i.o./build_system")
 
 # Dependency: SeqAn3 is found by b.i.o. as well.
-# find_package (SeqAn3 QUIET REQUIRED HINTS lib/seqan3/build_system)
+find_package (SeqAn3 REQUIRED)
+
+# Dependency: b.i.o.
+set (BIO_DEPENDENCY_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/lib/seqan3/include")
+set (BIO_SUBMODULES_DIR "/dev/null") # Prevent b.i.o. from including its seqan3 submodule
+find_package (bio REQUIRED)
+
 
 # Use ccache.
 include ("${SEQAN3_CLONE_DIR}/test/cmake/seqan3_require_ccache.cmake")

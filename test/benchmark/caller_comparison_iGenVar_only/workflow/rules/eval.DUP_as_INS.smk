@@ -3,8 +3,6 @@ rule DUP_as_INS:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
     output:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.DUP_as_INS.vcf"
-    log:
-        "logs/caller_comparison_iGenVar_only/DUP_as_INS.{input_combination}.log"
     shell:
         "sed -e 's/<DUP:TANDEM>/<INS>/g' {input.vcf} | sed -e 's/SVTYPE=DUP/SVTYPE=INS/g' > {output.vcf}"
 

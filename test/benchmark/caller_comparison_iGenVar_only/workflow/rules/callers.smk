@@ -7,7 +7,7 @@ rule run_iGenVar:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
     log:
         "logs/caller_comparison_iGenVar_only/{input_combination}_output.log"
-    threads: 2
+    threads: 4
     run:
         if wildcards.input_combination == 'S1': # Illumina Paired End
             short_bam = config["short_read_bam"]["s1"]

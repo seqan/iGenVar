@@ -17,21 +17,23 @@ bool DeBruijnGraph::init_sequence(unsigned char kmer_len, seqan3::dna4_vector co
     viable = false;
     graph.clear();
     assert(len <= reference.size());
+
+    // Reserve memory for nodes and arcs, because we know the size a-priori.
     graph.reserveNode(static_cast<int>(reference.size() + 1 - len));
     graph.reserveArc(static_cast<int>(reference.size() - len));
 
-    lemon::ListDigraph::Node prev_node = lemon::INVALID; // the previously processed node
+    lemon::ListDigraph::Node prev_node = lemon::INVALID; // the previously processed node (initial state: none)
     for (size_t kmer : seqan3::views::kmer_hash(reference, seqan3::ungapped{len})) // iterate kmers
     {
         if (nodes(kmer) == lemon::INVALID) // the kmer is new
         {
             nodes.set(graph.addNode(), kmer); // add node
-            if (prev_node != lemon::INVALID)
-                arcs.set(graph.addArc(prev_node, nodes(kmer)), 0); // add arc
+            if (prev_node != lemon::INVALID) // if there exists a previous node
+                arcs.set(graph.addArc(prev_node, nodes(kmer)), 0); // add arc from previous to current node
 
-            prev_node = nodes(kmer); // update processed node
+            prev_node = nodes(kmer); // update the previously processed node
         }
-        else // abort: the kmer already exists (cycle)
+        else // abort: the kmer already exists (we have found a cycle)
         {
             len = 0;
             return false;
@@ -66,7 +68,7 @@ bool DeBruijnGraph::is_viable()
 {
     if (!viable) // status is unknown
     {
-        if (len == 0 || !lemon::dag(graph)) // graph is uninitialized or has cycles
+        if (len == 0 || !lemon::dag(graph)) // graph is uninitialized or has cycles (following directed arcs)
         {
             viable = false;
         }

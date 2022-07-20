@@ -24,7 +24,7 @@ TEST(debruijn_graph, init)
     EXPECT_FALSE(graph.is_viable());
 
     // sequence longer than k
-    EXPECT_TRUE(graph.init_sequence(10, "CGTCGAAAATCAT"_dna4));
+    EXPECT_TRUE(graph.init_sequence(4, "CGTCG"_dna4));
     EXPECT_FALSE(graph.is_viable());
 }
 

@@ -9,6 +9,7 @@ add_library ("${PROJECT_NAME}_lib" STATIC modules/clustering/hierarchical_cluste
                                           structures/aligned_segment.cpp
                                           structures/breakend.cpp
                                           structures/cluster.cpp
+                                          structures/debruijn_graph.cpp
                                           structures/junction.cpp
                                           variant_detection/method_enums.cpp
                                           variant_detection/snp_indel_detection.cpp

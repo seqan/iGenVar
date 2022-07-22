@@ -199,3 +199,29 @@ rule copy_Vaquita_LR_results:
                 sed -i 's/S2L2/VaquitaLR_SL2/g' {output.res_SL2}
                 sed -i 's/S2L3/VaquitaLR_SL3/g' {output.res_SL3}
             """)
+
+# Delly2
+rule run_Delly2:
+    output:
+        bcf = "results/caller_comparison_short_read/{dataset}/Delly2/variants.bcf"
+    log:
+        "logs/caller_comparison_short_read/Delly2_output.{dataset}.log"
+    threads: 8
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            short_bam = config["short_read_bam"]["s1"],
+            genome = config["reference_fa"]["Illumina_Paired_End"]
+        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+            short_bam = config["short_read_bam"]["s2"],
+            genome = config["reference_fa"]["Illumina_Mate_Pair"]
+        shell("""
+            export OMP_NUM_THREADS={threads} && \
+            /usr/bin/time -v \
+            delly call --outfile {output.bcf} --genome {genome} --map-qual 1 {short_bam} &>> {log}
+        """)
+        # -t [ --type ] arg (=DEL)          SV type (DEL, DUP, INV, TRA, INS)
+        # -s [ --mad-cutoff ] arg (=9)      insert size cutoff, median+s*MAD (deletions only)
+        # -n [ --noindels ]                 no small InDel calling
+        # Genotyping options:
+        # -v [ --vcffile ] arg              input VCF/BCF file for re-genotyping
+        # -u [ --geno-qual ] arg (=5)       min. mapping quality for genotyping

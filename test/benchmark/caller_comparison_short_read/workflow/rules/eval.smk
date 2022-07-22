@@ -15,6 +15,16 @@ rule filter_vaquita_vcf:
     shell:
         "bcftools view -i 'INFO/SC>={wildcards.min_qual}' {input.vcf} > {output.vcf}"
 
+rule filter_bcf:
+    input:
+        bcf = "results/caller_comparison_short_read/{dataset}/Delly2/variants.bcf"
+    output:
+        vcf ="results/caller_comparison_short_read/{dataset}/Delly2/variants.min_qual_{min_qual}.vcf"
+    conda:
+        "../../../envs/bcftools.yaml"
+    shell:
+        "bcftools convert {input.bcf} | bcftools view -i 'QUAL>={wildcards.min_qual}' > {output.vcf}"
+
 rule bgzip:
     input:
         "{name}.vcf"
@@ -37,6 +47,8 @@ rule truvari:
         index = "results/caller_comparison_short_read/{dataset}/{caller}/variants.min_qual_{min_qual}.vcf.gz.tbi"
     params:
         output_dir = "results/caller_comparison_short_read/{dataset}/eval/{caller}/min_qual_{min_qual}"
+    output:
+        summary = "results/caller_comparison_short_read/{dataset}/eval/{caller}/min_qual_{min_qual}/summary.txt"
     log:
         "logs/caller_comparison_short_read/truvari/truvari_output.{dataset}.{caller}.{min_qual}.log"
     run:
@@ -89,7 +101,11 @@ rule cat_truvari_results_all:
         VaquitaLR_SL2 = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_SL2/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
                                min_qual = min_qual_VaquitaLR),
         VaquitaLR_SL3 = expand("results/caller_comparison_short_read/{{dataset}}/eval/VaquitaLR_SL3/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
-                               min_qual = min_qual_VaquitaLR)
+                               min_qual = min_qual_VaquitaLR),
+        Delly2        = expand("results/caller_comparison_short_read/{{dataset}}/eval/Delly2/min_qual_{min_qual}/pr_rec.txt",
+                               min_qual=list(range(config["quality_ranges"]["Delly2"]["from"],
+                                                   config["quality_ranges"]["Delly2"]["to"],
+                                                   config["quality_ranges"]["Delly2"]["step"])))
     output:
         iGenVar_S     = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_s.all_results.txt"),
         iGenVar_SL1   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl1.all_results.txt"),
@@ -100,6 +116,7 @@ rule cat_truvari_results_all:
         VaquitaLR_SL1 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL1.all_results.txt"),
         VaquitaLR_SL2 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL2.all_results.txt"),
         VaquitaLR_SL3 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL3.all_results.txt"),
+        Delly2        = temp("results/caller_comparison_short_read/{{dataset}}/eval/Delly2.all_results.txt"),
         all = "results/caller_comparison_short_read/{dataset}/eval/all_results.txt"
     threads: 1
     run:
@@ -112,8 +129,9 @@ rule cat_truvari_results_all:
         shell("cat {input.VaquitaLR_SL1} > {output.VaquitaLR_SL1}")
         shell("cat {input.VaquitaLR_SL2} > {output.VaquitaLR_SL2}")
         shell("cat {input.VaquitaLR_SL3} > {output.VaquitaLR_SL3}")
+        shell("cat {input.Delly2} > {output.Delly2}")
         shell("""
             cat {output.iGenVar_S} {output.iGenVar_SL1} {output.iGenVar_SL2} {output.iGenVar_SL3} \
                 {output.Vaquita} {output.VaquitaLR_S} {output.VaquitaLR_SL1} {output.VaquitaLR_SL2} {output.VaquitaLR_SL3} \
-                > {output.all}
+                {output.Delly2} > {output.all}
         """)

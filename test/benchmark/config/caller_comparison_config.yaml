@@ -96,6 +96,10 @@ quality_ranges:
     from: 1
     to: 60
     step: 1
+    Delly2:
+        from: 1
+        to: 1500
+        step: 10
     iGenVar:
         from: 1
         to: 50

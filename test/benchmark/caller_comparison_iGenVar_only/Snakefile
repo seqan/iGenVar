@@ -2,7 +2,7 @@ configfile: "Repos/iGenVar/test/benchmark/config/caller_comparison_config.yaml"
 
 include: "workflow/rules/callers.smk"
 include: "workflow/rules/eval.smk"
-include: "workflow/rules/eval.DUP_as_INS.smk"
+include: "workflow/rules/eval.no_DUP_and_INV.smk"
 include: "workflow/rules/plots.smk"
 
 ##### Target rules #####
@@ -10,4 +10,4 @@ include: "workflow/rules/plots.smk"
 rule all:
     input:
         "results/caller_comparison_iGenVar_only/eval/results.all.png",
-        "results/caller_comparison_iGenVar_only/eval/results.DUP_as_INS.all.png"
+        "results/caller_comparison_iGenVar_only/eval/results.no_DUP_and_INV.all.png"

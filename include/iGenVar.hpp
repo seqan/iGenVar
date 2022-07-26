@@ -1,8 +1,8 @@
 #pragma once
 
-#include <seqan3/argument_parser/argument_parser.hpp>   // for seqan3::argument_parser
+#include <sharg/parser.hpp>                     // for the SeqAn3 sharg::parser
 
-#include "variant_detection/method_enums.hpp"           // for enum detection_methods, clustering_methods and refinement_methods
+#include "variant_detection/method_enums.hpp"   // for enum detection_methods, clustering_methods and refinement_methods
 
 inline bool gVerbose{false};
 
@@ -40,7 +40,7 @@ struct cmd_arguments
     /* y, z? */
 };
 
-void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args);
+void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args);
 
 /*! \brief Detects genomic variants by analyzing an alignment file (sam/bam). The detected
  *         variants are printed to a given file or stdout and insertion alleles are stored in a FASTA file.

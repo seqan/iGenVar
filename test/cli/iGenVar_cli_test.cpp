@@ -42,8 +42,14 @@ std::string const help_page_part_1
     "    -g, --input_genome (std::filesystem::path)\n"
     "          Input the sequence of the reference genome. Default: \"\". The input\n"
     "          file must exist and read permissions must be granted. Valid file\n"
-    "          extensions are: [embl, fasta, fa, fna, ffn, faa, frn, fas, fastq,\n"
-    "          fq, genbank, gb, gbk, sam].\n"
+    "          extensions are: [embl, embl.bz2, embl.gz, embl.bgzf, fasta,\n"
+    "          fasta.bz2, fasta.gz, fasta.bgzf, fa, fa.bz2, fa.gz, fa.bgzf, fna,\n"
+    "          fna.bz2, fna.gz, fna.bgzf, ffn, ffn.bz2, ffn.gz, ffn.bgzf, faa,\n"
+    "          faa.bz2, faa.gz, faa.bgzf, frn, frn.bz2, frn.gz, frn.bgzf, fas,\n"
+    "          fas.bz2, fas.gz, fas.bgzf, fastq, fastq.bz2, fastq.gz, fastq.bgzf,\n"
+    "          fq, fq.bz2, fq.gz, fq.bgzf, genbank, genbank.bz2, genbank.gz,\n"
+    "          genbank.bgzf, gb, gb.bz2, gb.gz, gb.bgzf, gbk, gbk.bz2, gbk.gz,\n"
+    "          gbk.bgzf, sam, sam.bz2, sam.gz, sam.bgzf].\n"
     "    -o, --output (std::filesystem::path)\n"
     "          The path of the vcf output file. If no path is given, will output to\n"
     "          standard output. Default: \"\". Write permissions must be granted.\n"
@@ -62,9 +68,9 @@ std::string const help_page_part_2
 {
     "\n"
     "VERSION\n"
-    "    Last update: 30-03-2021\n"
+    "    Last update: 11-07-2022\n"
     "    iGenVar version: 0.0.3\n"
-    "    SeqAn version: 3.3.0-rc.1\n"
+    "    Sharg version: 0.1.0\n"
     "\n"
     "URL\n"
     "    https://github.com/seqan/iGenVar/\n"
@@ -73,7 +79,7 @@ std::string const help_page_part_2
     "    iGenVar Copyright: short_copyright\n"
     "    Author: Lydia Buntrock, David Heller, Joshua Kim\n"
     "    Contact: lydia.buntrock@fu-berlin.de\n"
-    "    SeqAn Copyright: 2006-2022 Knut Reinert, FU-Berlin; released under the\n"
+    "    SeqAn Copyright: 2006-2021 Knut Reinert, FU-Berlin; released under the\n"
     "    3-clause BSDL.\n"
     "    For full copyright and/or warranty information see --copyright.\n"
 };
@@ -92,7 +98,7 @@ std::string const help_page_advanced
     "          Choose the detection method(s) to be used. Value must be one of\n"
     "          (method name or number)\n"
     "          [0,cigar_string,1,split_read,2,read_pairs,3,read_depth]. Default:\n"
-    "          [cigar_string,split_read,read_pairs,read_depth].\n"
+    "          [cigar_string, split_read, read_pairs, read_depth].\n"
     "    -c, --clustering_method (clustering_methods)\n"
     "          Choose the clustering method to be used. Value must be one of\n"
     "          (method name or number)\n"
@@ -198,7 +204,9 @@ TEST_F(iGenVar_cli_test, no_options)
 // TODO (irallia): There is an open Issue, if we want to add the verbose option https://github.com/seqan/iGenVar/issues/20
 TEST_F(iGenVar_cli_test, test_verbose_option)
 {
-    cli_test_result result = execute_app("iGenVar", "-j", data(default_alignment_long_reads_file_path), "--verbose");
+    cli_test_result result = execute_app("iGenVar",
+                                         "-j", data(default_alignment_long_reads_file_path),
+                                         "--verbose");
     std::string const expected_err
     {
         "Detect junctions in long reads...\n"
@@ -628,7 +636,7 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
     std::string const expected_err
     {
         "[Error] You have chosen an invalid input value: 9. "
-        "Please use one of: [0,cigar_string,1,split_read,2,read_pairs,3,read_depth]\n"
+        "Please use one of: [0, cigar_string, 1, split_read, 2, read_pairs, 3, read_depth]\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});

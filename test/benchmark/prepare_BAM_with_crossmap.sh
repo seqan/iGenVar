@@ -10,7 +10,7 @@ conda create -n crossmap -c defaults -c bioconda crossmap # Python 2.7.18
 wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=20 --no-clobber --no-verbose \
     http://hgdownload.soe.ucsc.edu/goldenPath/hg19/liftOver/hg19ToHg38.over.chain.gz
 
-echo "$(tput setaf 1)$(tput setab 7)------- CrossMap installed and prepared (5.1/5.6) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- CrossMap installed and prepared (5.1/9.6) --------$(tput sgr 0)" 1>&3
 
 # Illumina Mate Pair
 ## prepare reference file:
@@ -18,7 +18,7 @@ echo "$(tput setaf 1)$(tput setab 7)------- CrossMap installed and prepared (5.1
 samtools faidx data/reference/GRCh37/hg19.fa $(cat Repos/iGenVar/test/benchmark/data/order_of_hg19.txt) \
     > data/reference/GRCh37/hg19.reordered.fa
 
-echo "$(tput setaf 1)$(tput setab 7)------- reference files prepared (5.2/5.6) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- reference files prepared (5.2/9.6) --------$(tput sgr 0)" 1>&3
 
 # Illumina Paired End
 samtools sort short_reads/GRCh37/HG002.hs37d5.2x250.bam -o short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam
@@ -78,4 +78,4 @@ CrossMap.py bam hg19ToHg38.over.chain.gz long_reads/GRCh37/NA24385_phased_possor
     long_reads/GRCh38/NA24385_phased_possorted_bam.md.Hg38.bam
 conda activate benchmarks
 
-echo "$(tput setaf 1)$(tput setab 7)------- BAM files prepared (5.3/5.6) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- BAM files prepared (5.3/9.6) --------$(tput sgr 0)" 1>&3

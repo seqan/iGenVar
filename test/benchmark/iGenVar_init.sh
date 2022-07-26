@@ -16,30 +16,53 @@ set -ex
 echo $(date)
 start=$(date +%s) # get starting date
 
-# -------- -------- get & build iGenVar -------- -------- #
+echo "$(tput setaf 1)$(tput setab 7)------- environment created (1/9) --------$(tput sgr 0)" 1>&3
+
+# -------- -------- get & build iGenVar, SVIM, Vaquita, Vaquita-LR -------- -------- #
 mkdir -p Repos && cd Repos/
 git clone https://github.com/seqan/iGenVar.git
 git clone https://github.com/eldariont/svim.git
+git clone https://github.com/seqan/vaquita.git
+git clone https://github.com/joshuak94/vaquita-LR.git # git@github.com:joshuak94/vaquita-LR.git
 
 cd iGenVar
 git submodule update --recursive --init
+
+cd ../vaquita-LR
+# Currently you have to update the .git/config git@ -> https://
+git submodule update --recursive --init
+git checkout develop
+
+echo "$(tput setaf 1)$(tput setab 7)------- Repos downloaded (2/9) --------$(tput sgr 0)" 1>&3
 
 # ToDo: Remove and use conda again when this is merged: https://github.com/bioconda/bioconda-recipes/pull/29099
 # Install SVIM from github (requires Python 3.6.* or newer): installs all dependencies except those necessary for read alignment (ngmlr, minimap2, samtools)
 cd ../svim
 pip install .
 
-echo "$(tput setaf 1)$(tput setab 7)------- iGenVar downloaded (1/5) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- SVIM installed (3/9) --------$(tput sgr 0)" 1>&3
 
-cd ../..
+cd ../../..
 mkdir -p build && cd build && mkdir -p iGenVar && cd iGenVar
 cmake ../../Repos/iGenVar/ -Weverything
-
 make -j 16
-
 make test && make doc
 
-echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (2/5) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- iGenVar built (4/9) --------$(tput sgr 0)" 1>&3
+
+cd ..
+mkdir -p Vaquita && cd Vaquita
+cmake ../../Repos/vaquita/ -Weverything
+make -j 16
+
+echo "$(tput setaf 1)$(tput setab 7)------- Vaquita built (5/9) --------$(tput sgr 0)" 1>&3
+
+cd ..
+mkdir -p Vaquita-LR && cd Vaquita-LR
+cmake ../../Repos/vaquita-LR/ -Weverything
+make -j 16
+
+echo "$(tput setaf 1)$(tput setab 7)------- Vaquita-LR built (6/9) --------$(tput sgr 0)" 1>&3
 
 cd ../..
 mkdir -p data && cd data
@@ -47,7 +70,7 @@ mkdir -p data && cd data
 # short & long reads, reference and truth sets
 ./../Repos/iGenVar/test/benchmark/dataset_downloads.sh
 
-echo "$(tput setaf 1)$(tput setab 7)------- data downloaded (3/5) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- Datasets downloaded (7/9) --------$(tput sgr 0)" 1>&3
 
 # -------- -------- pre installation steps -------- -------- #
 # We do our benchmarks with snakemake, and need several tools like
@@ -59,9 +82,7 @@ echo "$(tput setaf 1)$(tput setab 7)------- data downloaded (3/5) --------$(tput
 conda env create -f Repos/iGenVar/test/benchmark/envs/environment.yml
 conda activate benchmarks
 
-echo "$(tput setaf 1)$(tput setab 7)------- anaconda environment prepared (4/5) --------$(tput sgr 0)" 1>&3
-
-cd data
+echo "$(tput setaf 1)$(tput setab 7)------- anaconda environment prepared (8/9) --------$(tput sgr 0)" 1>&3
 
 ./../Repos/iGenVar/test/benchmark/prepare_BAM_with_crossmap.sh
 ./../Repos/iGenVar/test/benchmark/prepare_truth_set.sh
@@ -69,7 +90,7 @@ cd data
 
 cd ..
 
-echo "$(tput setaf 1)$(tput setab 7)------- data prepared (5/5) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- data prepared (9/9) --------$(tput sgr 0)" 1>&3
 
 mkdir -p tmp/picard
 mkdir -p results

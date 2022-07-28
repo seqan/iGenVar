@@ -75,10 +75,20 @@ rule cat_truvari_results_all:
                                   min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
                                                       config["quality_ranges"]["iGenVar"]["to"],
                                                       config["quality_ranges"]["iGenVar"]["step"]))),
+        # MtSinai_PacBio - Error in rule picard: Exception in thread "main" htsjdk.tribble.TribbleException: The provided VCF file is malformed at approximately line number 819567: unparsable vcf record with allele ...
         svim             = expand("results/caller_comparison_long_read/{{dataset}}/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
                                   min_qual=list(range(config["quality_ranges"]["from"],
                                                       config["quality_ranges"]["to"],
                                                       config["quality_ranges"]["step"]))),
+        vaquita_lr_L     = expand("results/caller_comparison_long_read/{{dataset}}/eval/Vaquita_lr_L/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+                                                      config["quality_ranges"]["Vaquita-LR"]["to"],
+                                                      config["quality_ranges"]["Vaquita-LR"]["step"]))),
+        # 10X Genomics - does not exist
+        vaquita_lr_SL    = expand("results/caller_comparison_long_read/{{dataset}}/eval/Vaquita_lr_SL/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+                                  min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
+                                                      config["quality_ranges"]["Vaquita-LR"]["to"],
+                                                      config["quality_ranges"]["Vaquita-LR"]["step"]))),
         sniffles         = expand("results/caller_comparison_long_read/{{dataset}}/eval/Sniffles/min_qual_{min_qual}/pr_rec.txt",
                                   min_qual=list(range(config["quality_ranges"]["sniffles"]["from"],
                                                       config["quality_ranges"]["sniffles"]["to"],
@@ -94,7 +104,11 @@ rule cat_truvari_results_all:
     output:
         igenvar_L        = temp("results/caller_comparison_long_read/{{dataset}}/eval/igenvar_L.all_results.txt"),
         igenvar_SL       = temp("results/caller_comparison_long_read/{{dataset}}/eval/igenvar_SL.all_results.txt"),
+        # MtSinai_PacBio - Error in rule picard: Exception in thread "main" htsjdk.tribble.TribbleException: The provided VCF file is malformed at approximately line number 819567: unparsable vcf record with allele ...
         svim             = temp("results/caller_comparison_long_read/{{dataset}}/eval/svim.all_results.txt"),
+        vaquita_lr_L     = temp("results/caller_comparison_long_read/{{dataset}}/eval/vaquita_lr_L.all_results.txt"),
+        # 10X Genomics - does not exist
+        vaquita_lr_SL    = temp("results/caller_comparison_long_read/{{dataset}}/eval/vaquita_lr_SL.all_results.txt"),
         sniffles         = temp("results/caller_comparison_long_read/{{dataset}}/eval/sniffles.all_results.txt"),
         pbsv             = temp("results/caller_comparison_long_read/{{dataset}}/eval/pbsv.all_results.txt"),
         pbsv_without_DUP = temp("results/caller_comparison_long_read/{{dataset}}/eval/pbsv_without_DUP.all_results.txt"),
@@ -104,8 +118,10 @@ rule cat_truvari_results_all:
         shell("cat {input.igenvar_L} > {output.igenvar_L}")
         shell("cat {input.igenvar_SL} > {output.igenvar_SL}")
         shell("cat {input.svim} > {output.svim}")
+        shell("cat {input.vaquita_lr_L} > {output.vaquita_lr_L}")
+        shell("cat {input.vaquita_lr_SL} > {output.vaquita_lr_SL}")
         shell("cat {input.sniffles} > {output.sniffles}")
         shell("cat {input.pbsv} > {output.pbsv}")
         shell("cat {input.pbsv_without_DUP} > {output.pbsv_without_DUP}")
-        shell("cat {output.igenvar_L} {output.igenvar_SL} {output.svim} \
+        shell("cat {output.igenvar_L} {output.igenvar_SL} {output.svim} {output.vaquita_lr_L} {output.vaquita_lr_SL} \
                    {output.sniffles} {output.pbsv} {output.pbsv_without_DUP} > {output.all}")

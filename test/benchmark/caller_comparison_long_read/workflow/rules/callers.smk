@@ -95,6 +95,53 @@ rule create_empty_SVIM:
     shell:
         "echo 'SVIM\t{wildcards.min_qual}\tprecision\t0\nSVIM\t{wildcards.min_qual}\trecall\t0' > {output.txt}"
 
+# Vaquita-LR
+# We have only results for L1, L2, L3, S1L1, S1L2
+rule copy_vaquita_lr_results:
+    output:
+        res_L = "results/caller_comparison_long_read/{dataset}/eval/Vaquita_lr_L/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
+        res_SL = "results/caller_comparison_long_read/{dataset}/eval/Vaquita_lr_SL/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt"
+    threads: 1
+    run:
+        if wildcards.dataset == 'MtSinai_PacBio':
+            shell("""
+                cp -r results/caller_comparison_vaquita_lr/eval/L1/DUP_as_INS.min_qual_{wildcards.min_qual} \
+                    results/caller_comparison_long_read/{wildcards.dataset}/eval/Vaquita_lr_L/
+            """)
+            shell("""
+                cp -r results/caller_comparison_vaquita_lr/eval/S1L1/DUP_as_INS.min_qual_{wildcards.min_qual} \
+                    results/caller_comparison_long_read/{wildcards.dataset}/eval/Vaquita_lr_SL/
+            """)
+            shell("""
+                sed -i 's/L1/Vaquita_lr_L/g' {output.res_L}
+                sed -i 's/S1L1/Vaquita_lr_SL/g' {output.res_SL}
+            """)
+        elif wildcards.dataset == 'PacBio_CCS':
+            shell("""
+                cp -r results/caller_comparison_vaquita_lr/eval/L2/DUP_as_INS.min_qual_{wildcards.min_qual} \
+                    results/caller_comparison_long_read/{wildcards.dataset}/eval/Vaquita_lr_L/
+            """)
+            shell("""
+                cp -r results/caller_comparison_vaquita_lr/eval/S1L2/DUP_as_INS.min_qual_{wildcards.min_qual} \
+                    results/caller_comparison_long_read/{wildcards.dataset}/eval/Vaquita_lr_SL/
+            """)
+            shell("""
+                sed -i 's/L2/Vaquita_lr_L/g' {output.res_L}
+                sed -i 's/S1L2/Vaquita_lr_SL/g' {output.res_SL}
+            """)
+        else: # wildcards.dataset == '10X_Genomics'
+            shell("""
+            cp -r results/caller_comparison_vaquita_lr/eval/L3/DUP_as_INS.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_long_read/{wildcards.dataset}/eval/Vaquita_lr_L/
+            """)
+            # As Vaquita LR S1L3 does not exist, we create empty files.
+            shell("""
+                echo 'Vaquita_lr_SL\t{wildcards.min_qual}\tprecision\t0\nVaquita_lr_SL\t{wildcards.min_qual}\trecall\t0' > {output.res_SL}
+            """)
+            shell("""
+                sed -i 's/L3/Vaquita_lr_L/g' {output.res_L}
+            """)
+
 # SNIFFLES (we have to loop over min_support, because sniffles does not write a quality score into the vcf)
 rule run_sniffles:
     output:

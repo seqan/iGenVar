@@ -22,16 +22,21 @@ f1 <- add_column(f1, min_qual = NA, .after="caller")
 # Combine res & f1
 total <- rbind(res, f1)
 total$caller = factor(total$caller,
-                      levels=c('iGenVar_L', 'iGenVar_SL', 'SVIM', 'Sniffles', 'pbsv', 'pbsv_without_DUP',
+                      levels=c('iGenVar_L', 'iGenVar_SL', 'SVIM', 'Vaquita_lr_L', 'Vaquita_lr_SL',
+                               'Sniffles', 'pbsv', 'pbsv_without_DUP',
                                '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'),
-                      labels=c('iGenVar_L 0.0.3', 'iGenVar_SL 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP',
+                      labels=c('iGenVar_L 0.0.3', 'iGenVar_SL 0.0.3', 'SVIM 2.0.0', 'Vaquita LR: L', 'Vaquita LR: SL',
+                               'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP',
                                '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'))
 
 scale_custom <- list(
       # https://stackoverflow.com/questions/46803260/assigning-40-shapes-or-more-in-scale-shape-manual
-      scale_shape_manual(values = c(15, 15, 16, 17, 18, 5, 46, 46, 46, 46, 46, 46, 46, 46, 46)),
-      scale_color_manual(breaks = c('iGenVar_L 0.0.3', 'iGenVar_SL 0.0.3', 'SVIM 2.0.0', 'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP'),
-                         values = c("chartreuse1", "chartreuse3", "darkorchid1", "dodgerblue", "firebrick1", "goldenrod1",
+      scale_shape_manual(values = c(15, 15, 16, 17, 17, 18, 19, 5, 46, 46, 46, 46, 46, 46, 46, 46, 46)),
+      scale_color_manual(breaks = c('iGenVar_L 0.0.3', 'iGenVar_SL 0.0.3', 'SVIM 2.0.0', 'Vaquita LR: L', 'Vaquita LR: SL',
+                                    'Sniffles 1.0.11', 'pbsv 2.6.2', 'pbsv without DUP'),
+      # https://www.farb-tabelle.de/de/farbtabelle.htm
+                         values = c("chartreuse1", "chartreuse3", "darkorchid1", "maroon1", "maroon3",
+                                    "dodgerblue", "firebrick1", "goldenrod1",
                                     "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan"),
                          na.value = "gray80"))
 

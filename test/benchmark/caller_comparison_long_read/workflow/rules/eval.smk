@@ -103,11 +103,9 @@ rule cat_truvari_results_all:
     run:
         shell("cat {input.igenvar_L} > {output.igenvar_L}")
         shell("cat {input.igenvar_SL} > {output.igenvar_SL}")
+        shell("cat {input.svim} > {output.svim}")
         shell("cat {input.sniffles} > {output.sniffles}")
         shell("cat {input.pbsv} > {output.pbsv}")
         shell("cat {input.pbsv_without_DUP} > {output.pbsv_without_DUP}")
-        if wildcards.dataset == 'MtSinai_PacBio': # MtSinai PacBio fails with SVIM
-            shell("cat {output.igenvar_L} {output.igenvar_SL} {output.sniffles} {output.pbsv} {output.pbsv_without_DUP} > {output.all}")
-        else: # wildcards.dataset == 'PacBio_CCS' || wildcards.dataset == '10X_Genomics'
-            shell("cat {input.svim} > {output.svim}")
-            shell("cat {output.igenvar_L} {output.igenvar_SL} {output.svim} {output.sniffles} {output.pbsv} {output.pbsv_without_DUP} > {output.all}")
+        shell("cat {output.igenvar_L} {output.igenvar_SL} {output.svim} \
+                   {output.sniffles} {output.pbsv} {output.pbsv_without_DUP} > {output.all}")

@@ -59,10 +59,10 @@ rule run_svim:
         working_dir = "results/caller_comparison_long_read/{dataset}/SVIM/unsorted/"
     threads: 1
     run:
-        if wildcards.dataset == 'MtSinai_PacBio':
-            long_bam = config["long_read_bam"]["l1"],
-            genome = config["reference_fa"]["MtSinai_PacBio"]
-        elif wildcards.dataset == 'PacBio_CCS':
+        # if wildcards.dataset == 'MtSinai_PacBio':
+        #     long_bam = config["long_read_bam"]["l1"],
+        #     genome = config["reference_fa"]["MtSinai_PacBio"]
+        if wildcards.dataset == 'PacBio_CCS':
             long_bam = config["long_read_bam"]["l2"],
             genome = config["reference_fa"]["PacBio_CCS"]
         else: # wildcards.dataset == '10X_Genomics'
@@ -87,6 +87,13 @@ rule picard:
     shell:
         "picard SortVcf -I {input.vcf} -O {output.vcf} -Xms1g -Xmx100g --TMP_DIR tmp/picard/ &>> {log}"
         # The Xms and Xmx sets the java memory for avoiding "java.lang.OutOfMemoryError: GC overhead limit exceeded"
+
+# As SVIM is not working with the dataset MtSinai_PacBio we create an empty output file.
+rule create_empty_SVIM:
+    output:
+        txt = "results/caller_comparison_long_read/MtSinai_PacBio/eval/SVIM/min_qual_{min_qual}/pr_rec.txt"
+    shell:
+        "echo 'SVIM\t{wildcards.min_qual}\tprecision\t0\nSVIM\t{wildcards.min_qual}\trecall\t0' > {output.txt}"
 
 # SNIFFLES (we have to loop over min_support, because sniffles does not write a quality score into the vcf)
 rule run_sniffles:

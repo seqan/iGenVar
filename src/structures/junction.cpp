@@ -15,6 +15,11 @@ seqan3::dna5_vector Junction::get_inserted_sequence() const
     return inserted_sequence;
 }
 
+seqan3::dna5_vector Junction::get_deleted_sequence() const
+{
+    return deleted_sequence;
+}
+
 size_t Junction::get_tandem_dup_count() const
 {
     return tandem_dup_count;
@@ -25,6 +30,11 @@ std::string Junction::get_read_name() const
     return read_name;
 }
 
+float Junction::get_quality() const
+{
+    return quality;
+}
+
 bool operator<(Junction const & lhs, Junction const & rhs)
 {
     return lhs.get_mate1() != rhs.get_mate1()
@@ -33,7 +43,9 @@ bool operator<(Junction const & lhs, Junction const & rhs)
              ? lhs.get_mate2() < rhs.get_mate2()
              : lhs.get_tandem_dup_count() != rhs.get_tandem_dup_count()
                ? lhs.get_tandem_dup_count() < rhs.get_tandem_dup_count()
-               : lhs.get_inserted_sequence() < rhs.get_inserted_sequence();
+               : lhs.get_inserted_sequence() != rhs.get_inserted_sequence()
+                 ? lhs.get_inserted_sequence() < rhs.get_inserted_sequence()
+                 : lhs.get_deleted_sequence() < rhs.get_deleted_sequence();
 }
 
 bool operator==(Junction const & lhs, Junction const & rhs)
@@ -41,7 +53,8 @@ bool operator==(Junction const & lhs, Junction const & rhs)
     return (lhs.get_mate1() == rhs.get_mate1()) &&
            (lhs.get_mate2() == rhs.get_mate2()) &&
            (lhs.get_tandem_dup_count() == rhs.get_tandem_dup_count()) &&
-           (lhs.get_inserted_sequence() == rhs.get_inserted_sequence());
+           (lhs.get_inserted_sequence() == rhs.get_inserted_sequence()) &&
+           (lhs.get_deleted_sequence() == rhs.get_deleted_sequence());
 }
 
 bool operator!=(Junction const & lhs, Junction const & rhs)

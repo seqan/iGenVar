@@ -25,6 +25,12 @@ rule run_Vaquita_LR:
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
                 --output-file {output.vcf} &>> {log}
             """)
+        # [2022-7-27 14:13:41] [START] SViper: PREP PARALLEL PROCESSING
+        # [2022-7-27 14:13:41] [END] SViper: PREP PARALLEL PROCESSING (0 seconds.)
+        # [2022-7-27 14:13:41] [START] SViper: POLISHING VARIANTS
+        # terminate called after throwing an instance of 'std::logic_error'
+        # what():  Invalid region specified. Parameter regionStart was greater than regionEnd.
+        # Command terminated by signal 6
         elif wildcards.input_combination == 'S1L1': # Illumina Paired End & MtSinai PacBio
             short_bam = config["short_read_bam"]["s1"],
             long_bam = config["long_read_bam"]["l1"],
@@ -32,8 +38,12 @@ rule run_Vaquita_LR:
             shell("""
             /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} --longRead {long_bam} \
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
-                --output-file {output.vcf} &>> {log}
+                --output-file {output.vcf} --no-polishing &>> {log}
             """)
+        # [2022-7-27 11:56:42] [START] SViper: PREP PARALLEL PROCESSING
+        # [2022-7-27 11:56:42] [END] SViper: PREP PARALLEL PROCESSING (0 seconds.)
+        # [2022-7-27 11:56:42] [START] SViper: POLISHING VARIANTS
+        # Command terminated by signal 11
         elif wildcards.input_combination == 'S1L2': # Illumina Paired End & PacBio CCS
             short_bam = config["short_read_bam"]["s1"],
             long_bam = config["long_read_bam"]["l2"],
@@ -41,7 +51,7 @@ rule run_Vaquita_LR:
             shell("""
             /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} --longRead {long_bam} \
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
-                --output-file {output.vcf} &>> {log}
+                --output-file {output.vcf} --no-polishing &>> {log}
             """)
         elif wildcards.input_combination == 'S2L3': # Illumina Mate Pair & 10X Genomics
             short_bam = config["short_read_bam"]["s2"],

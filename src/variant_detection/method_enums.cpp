@@ -10,7 +10,9 @@ return std::unordered_map<std::string, detection_methods>{{"0", detection_method
                                                           {"2", detection_methods::read_pairs},
                                                           {"read_pairs", detection_methods::read_pairs},
                                                           {"3", detection_methods::read_depth},
-                                                          {"read_depth", detection_methods::read_depth}};
+                                                          {"read_depth", detection_methods::read_depth},
+                                                          {"4", detection_methods::snp_indel},
+                                                          {"snp_indel", detection_methods::snp_indel}};
 // LCOV_EXCL_STOP
 }
 

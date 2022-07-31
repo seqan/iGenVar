@@ -49,6 +49,7 @@ void write_record(Cluster const & cluster,
  *
  * \param[in] references_lengths - reference sequence dictionary parsed from \@SQ header lines
  * \param[in] clusters           - input junction clusters
+ * \param[in] snp_indels         - the set of SNPs and short indels
  * \param[in] args               - command line arguments:\n
  *                                 **args.vcf_sample_name - Name of the sample for the vcf header line*\n
  *                                 **args.min_var_length** - minimum length of variants to detect
@@ -69,5 +70,6 @@ void write_record(Cluster const & cluster,
  */
 void find_and_output_variants(std::map<std::string, int32_t> & references_lengths,
                               std::vector<Cluster> const & clusters,
+                              std::set<Junction> const & snp_indels,
                               cmd_arguments const & args,
                               std::filesystem::path const & output_file_path);

@@ -1,6 +1,7 @@
 #include "iGenVar.hpp"
 
 #include <map>
+#include <set>
 
 #include <seqan3/contrib/stream/bgzf_stream_util.hpp>       // for bgzf_thread_count
 #include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
@@ -74,7 +75,7 @@ void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments 
     parser.add_option(args.methods, 'd', "method",
                       "Choose the detection method(s) to be used. "
                       "Value must be one of (method name or number) "
-                      "[0,cigar_string,1,split_read,2,read_pairs,3,read_depth].",
+                      "[0,cigar_string,1,split_read,2,read_pairs,3,read_depth,4,snp_indel].",
                       seqan3::option_spec::advanced);
     parser.add_option(args.clustering_method, 'c', "clustering_method",
                       "Choose the clustering method to be used. "
@@ -129,6 +130,8 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 {
     // Store junctions
     std::vector<Junction> junctions{};
+    std::set<Junction> snp_indels{}; // a set is sorted and has no duplicates
+
     // Map of contig names and their length (SN and LN tag of @SQ)
     std::map<std::string, int32_t> references_lengths{};
 
@@ -142,7 +145,6 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
     }
 
     // short reads
-    // TODO (joergi-w 30.09.2021) Control the selection with the 'method' parameter, not the availability of a genome.
     if (!args.alignment_short_reads_file_path.empty() && args.genome_file_path.empty())
     {
         seqan3::debug_stream << "Detect junctions in short reads...\n";
@@ -156,11 +158,16 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
         detect_junctions_in_long_reads_sam_file(junctions, references_lengths, args);
     }
 
-    // SNPs and indels for short reads; genome must be given
-    if (!args.alignment_short_reads_file_path.empty() && !args.genome_file_path.empty())
+    // SNPs and indels for short reads; genome must be given and method selected
+    if (!args.alignment_short_reads_file_path.empty() && !args.genome_file_path.empty() &&
+        std::find(args.methods.begin(), args.methods.end(), detection_methods::snp_indel) != args.methods.end())
     {
         seqan3::debug_stream << "Detect SNPs and indels in short reads...\n";
-        detect_snp_and_indel(args.alignment_short_reads_file_path, args.min_var_length);
+        detect_snp_and_indel(snp_indels,
+                             references_lengths,
+                             args.genome_file_path,
+                             args.alignment_short_reads_file_path,
+                             args.min_var_length);
     }
 
     std::sort(junctions.begin(), junctions.end());
@@ -233,7 +240,7 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
             break;
     }
 
-    find_and_output_variants(references_lengths, clusters, args, args.output_file_path);
+    find_and_output_variants(references_lengths, clusters, snp_indels, args, args.output_file_path);
 }
 
 int main(int argc, char ** argv)

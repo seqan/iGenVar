@@ -174,6 +174,8 @@ void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junct
                 case detection_methods::read_depth: // Detect junctions from read depth evidence
                     seqan3::debug_stream << "The read depth method for short reads is not yet implemented.\n";
                     break;
+                case detection_methods::snp_indel: // not handled here
+                    break;
             }
         }
         if (gVerbose)
@@ -250,6 +252,8 @@ void detect_junctions_in_long_reads_sam_file(std::vector<Junction> & junctions,
                     break;
                 case detection_methods::read_depth: // Detect junctions from read depth evidence
                     seqan3::debug_stream << "The read depth method for long reads is not yet implemented.\n";
+                    break;
+                case detection_methods::snp_indel: // not handled here
                     break;
             }
         }

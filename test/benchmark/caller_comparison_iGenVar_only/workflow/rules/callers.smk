@@ -105,5 +105,7 @@ rule picard:
         vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
     log:
         "logs/caller_comparison_iGenVar_only/picard_output.{input_combination}.log"
+    conda:
+        "../../../envs/simulation.yaml"
     shell:
         "picard SortVcf -I {input.vcf} -O {output.vcf} -Xms1g -Xmx100g --TMP_DIR tmp/picard/ &>> {log}"

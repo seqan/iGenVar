@@ -12,6 +12,9 @@ wget --retry-connrefused --waitretry=30 --read-timeout=30 --timeout=30 --tries=2
 
 echo "$(tput setaf 1)$(tput setab 7)------- CrossMap installed and prepared (5.1/9.6) --------$(tput sgr 0)" 1>&3
 
+conda env create -f Repos/iGenVar/test/benchmark/envs/samtools.yaml
+conda activate samtools
+
 # Illumina Mate Pair
 ## prepare reference file:
 ## reorder reference:
@@ -78,6 +81,6 @@ CrossMap.py bam hg19ToHg38.over.chain.gz long_reads/GRCh37/NA24385_phased_possor
     long_reads/GRCh38/NA24385_phased_possorted_bam.Hg38.bam
 CrossMap.py bam hg19ToHg38.over.chain.gz long_reads/GRCh37/NA24385_phased_possorted_bam.md.bam \
     long_reads/GRCh38/NA24385_phased_possorted_bam.md.Hg38.bam
-conda activate benchmarks
+conda activate iGenVar_benchmark
 
 echo "$(tput setaf 1)$(tput setab 7)------- BAM files prepared (5.3/9.6) --------$(tput sgr 0)" 1>&3

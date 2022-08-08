@@ -78,4 +78,4 @@ Inverted bases: TAGCAACTCTCCAAAAC
 Start clustering...
 Done with clustering. Found 21 junction clusters.
 No refinement was selected.
-Detected 14 SVs.
+Detected 14 SVs and 0 SNPs/Indels.

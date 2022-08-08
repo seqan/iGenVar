@@ -225,3 +225,71 @@ rule run_Delly2:
         # Genotyping options:
         # -v [ --vcffile ] arg              input VCF/BCF file for re-genotyping
         # -u [ --geno-qual ] arg (=5)       min. mapping quality for genotyping
+
+# GRIDSS
+rule run_GRIDSS:
+    output:
+        vcf = "results/caller_comparison_short_read/{dataset}/GRIDSS/variants.vcf"
+    log:
+        "logs/caller_comparison_short_read/GRIDSS_output.{dataset}.log"
+    threads: 8
+    params:
+        workingdir = "results/caller_comparison_short_read/{dataset}/GRIDSS/",
+        s1 = config["short_read_bam"]["s1"],
+        s2 = config["short_read_bam"]["s2"],
+        g1 = config["reference_fa"]["Illumina_Paired_End"],
+        g2 = config["reference_fa"]["Illumina_Mate_Pair"]
+        # blacklist = config["blacklist"]
+    conda:
+        "../../../envs/gridss.yaml"
+    shell:
+        """
+            if [[ "{wildcards.dataset}" == "Illumina_Paired_End" ]]
+            then
+                /usr/bin/time -v gridss --reference {params.g1} --output {output.vcf} --threads {threads} \
+                    --workingdir {params.workingdir} {params.s1} --jvmheap 100g &>> {log}
+            else # dataset == 'Illumina_Mate_Pair'
+                /usr/bin/time -v gridss --reference {params.g2} --output {output.vcf} --threads {threads} \
+                    --workingdir {params.workingdir} {params.s2} --jvmheap 100g &>> {log}
+            fi
+        """
+    #               --workingdir {params.workingdir} --blacklist {params.blacklist} {short_bam} --jvmheap 100g &>> {log}
+    # If your input files are aligned with bwa mem or another aligner that reports split read alignments using the SA tag, then runtime can be reduced by specifying --skipsoftcliprealignment.
+    # Defaults:
+    # -a/--assembly: location of the GRIDSS assembly BAM. This file will be
+    #     created by GRIDSS.
+    # -j/--jar: location of GRIDSS jar
+    # -l/--labels: comma separated labels to use in the output VCF for the input
+    #     files. Supporting read counts for input files with the same label are
+    #     aggregated (useful for multiple sequencing runs of the same sample).
+    #     Labels default to input filenames, unless a single read group with a
+    #     non-empty sample name exists in which case the read group sample name
+    #     is used (which can be disabled by "useReadGroupSampleNameCategoryLabel=false"
+    #     in the configuration file). If labels are specified, they must be
+    #     specified for all input files.
+    # --externalaligner: use the system version of bwa instead of the in-process
+    #     version packaged with GRIDSS (default)
+    # --internalaligner: use the in-process version of bwa instead of system
+    #     version. Faster but alignment results can change between runs.
+    # --otherjvmheap: size of JVM heap for everything else. Useful to prevent
+    #     java out of memory errors when using large (>4Gb) reference genomes.
+    #     Note that some parts of assembly and variant calling use this heap
+    #     size. (Default: 4g)
+    # --skipsoftcliprealignment: [EXPERIMENTAL] skip soft clip realignment.
+    #     Reduces runtime for aligners that report split read alignments.
+    # --maxcoverage: maximum coverage. Regions with coverage in excess of this
+    #     are ignored. (Default: 50000)
+    # --picardoptions: additional standard Picard command line options. Useful
+    #     options include VALIDATION_STRINGENCY=LENIENT and COMPRESSION_LEVEL=0.
+    #     https://broadinstitute.github.io/picard/command-line-overview.html
+    # --useproperpair: use SAM 'proper pair' flag to determine whether a read
+    #     pair is discordant. Default: use library fragment size distribution to
+    #     determine read pair concordance.
+    # --concordantreadpairdistribution: portion of 6 sigma read pairs distribution
+    #     considered concordantly mapped. (Default: 0.995)
+    # --nojni: do not use JNI native code acceleration libraries JNI libraries:
+    #     snappy, GKL, ssw, bwa
+    # --jobindex: zero-based assembly job index. Only required when performing
+    #     parallel assembly across multiple processes.
+    # --jobnodes: total number of assembly jobs. Only required when performing
+    #     parallel assembly across multiple processes.

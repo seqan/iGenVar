@@ -84,8 +84,8 @@ truth_set_DEL_renamed_chr:
 #     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.vcf.gz
 #     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.bed
 
-# for hg38 (UCSC chr notation)
-blacklist: data/blacklist/ENCFF356LFX.bed
+# GRIDSS: for hg38 (UCSC chr notation)
+# blacklist: data/blacklist/ENCFF356LFX.bed
 
 parameters:
     sample: HG002
@@ -100,6 +100,10 @@ quality_ranges:
         from: 1
         to: 1500
         step: 10
+    GRIDSS:
+        from: 0
+        to: 5000
+        step: 100
     iGenVar:
         from: 1
         to: 50

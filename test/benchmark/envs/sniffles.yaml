@@ -1,4 +1,8 @@
+name: sniffles
 channels:
- - bioconda
+  - defaults
+  - conda-forge
+  - bioconda
 dependencies:
- - sniffles=1.0.12
+  - python>=3.7
+  - sniffles=2.0.3

@@ -5,15 +5,20 @@ channels:
   - bioconda
 dependencies:
   # - bedops    # for vcf2bed
-  - bgzip     # rule tabix - accepts only zipped files zipped with bgzip
-  - crossmap  # for coordinate_conversion.sh
+  - bgzip       # rule tabix - accepts only zipped files zipped with bgzip
+  - crossmap    # for coordinate_conversion.sh
   - mamba
+  - matplotlib  # rule run_svim
+  - pbsv=2.6.2
+  - picard      # rule picard
   - pip
   - python=3.6
   - r
   - r-tidyverse
   - samtools
+  - scipy       # rule run_svim
   - snakemake
+  # - svim=2.0.0
   - tabix
   - yappi
   - pip:

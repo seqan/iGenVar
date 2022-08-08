@@ -5,7 +5,7 @@
 ##INFO=<ID=iGenVar_SVLEN,Number=1,Type=Integer,Description="Length of SV called.">
 ##INFO=<ID=SVTYPE,Number=1,Type=String,Description="Type of SV called.">
 ##FORMAT=<ID=GT,Number=1,Type=String,Description="Genotype">
-##contig=<ID=chr1,length=482>
+##contig=<ID=chr1,length=610>
 ##filedate=
 ##source=iGenVarCaller
 ##ALT=<ID=DEL,Description="Deletion">

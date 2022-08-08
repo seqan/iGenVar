@@ -119,8 +119,8 @@ std::string const help_page_advanced
     "    -d, --method (List of detection_methods)\n"
     "          Choose the detection method(s) to be used. Value must be one of\n"
     "          (method name or number)\n"
-    "          [0,cigar_string,1,split_read,2,read_pairs,3,read_depth]. Default:\n"
-    "          [cigar_string, split_read, read_pairs, read_depth].\n"
+    "          [0,cigar_string,1,split_read,2,read_pairs,3,read_depth,4,snp_indel].\n"
+    "          Default: [cigar_string,split_read,read_pairs,read_depth,snp_indel].\n"
     "    -c, --clustering_method (clustering_methods)\n"
     "          Choose the clustering method to be used. Value must be one of\n"
     "          (method name or number)\n"
@@ -178,7 +178,7 @@ std::string const expected_err_default_no_err_2
 {
     "Done with clustering. Found 2 junction clusters.\n"
     "No refinement was selected.\n"
-    "Detected 0 SVs.\n"
+    "Detected 0 SVs and 0 SNPs/Indels.\n"
 };
 
 // VCF output
@@ -195,7 +195,7 @@ std::string const general_header_lines_1
 };
 
 std::string const contig_cutoff_sam = "##contig=<ID=chr21,length=46709983>\n";
-std::string const contig_mini_example = "##contig=<ID=chr1,length=482>\n";
+std::string const contig_mini_example = "##contig=<ID=chr1,length=610>\n";
 
 size_t filedate_position_0 = general_header_lines_1.size() + 11;
 size_t filedate_position_1 = general_header_lines_1.size() + contig_cutoff_sam.size() + 11;
@@ -340,16 +340,50 @@ TEST_F(iGenVar_cli_test, test_genome_input)
     std::string const expected_err =
     {
         "Detect SNPs and indels in short reads...\n"
-        "Active regions of chr1: [(6,15),(53,74),(121,130),(176,185),(184,193),(262,304),"
-        "(311,319),(332,354),(364,373),(381,398),(467,476)]\n"
+        "Active regions for chr1: [(0,36),(33,95),(101,151),(156,214),(242,419),(447,497),(484,555),(556,610)]\n"
         "Start clustering...\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 31 SNPs/Indels.\n"
+    };
+    std::string const expected_out =
+    {
+        "chr1\t59\tigenvar_snp_0\tT\tA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t188\tigenvar_ins_1\t.\tA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t190\tigenvar_snp_2\tCGGG\tT\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t196\tigenvar_snp_3\tA\tT\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t198\tigenvar_snp_4\tA\tT\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t337\tigenvar_snp_5\tTAT\tGGGC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t342\tigenvar_del_6\tA\t.\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t344\tigenvar_del_7\tGG\t.\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t348\tigenvar_del_8\tTT\t.\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t353\tigenvar_snp_9\tG\tT\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t355\tigenvar_snp_10\tT\tC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t357\tigenvar_ins_11\t.\tA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t358\tigenvar_snp_12\tC\tG\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t361\tigenvar_snp_13\tG\tAC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t364\tigenvar_snp_14\tCC\tGT\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t368\tigenvar_del_15\tA\t.\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t384\tigenvar_ins_16\t.\tC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t471\tigenvar_ins_17\t.\tA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t472\tigenvar_snp_18\tGG\tTA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t476\tigenvar_snp_19\tCT\tGA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t479\tigenvar_snp_20\tAT\tGC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t484\tigenvar_ins_21\t.\tC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t485\tigenvar_ins_22\t.\tA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t489\tigenvar_snp_23\tA\tGC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t491\tigenvar_ins_24\t.\tC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t581\tigenvar_snp_25\tC\tT\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t583\tigenvar_snp_26\tA\tGC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t587\tigenvar_del_27\tC\t.\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t592\tigenvar_ins_28\t.\tC\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t594\tigenvar_snp_29\tCG\tA\t1\tPASS\t.\tGT\t./.\n"
+        "chr1\t597\tigenvar_snp_30\tT\tC\t1\tPASS\t.\tGT\t./.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.err, expected_err);
-    EXPECT_EQ(result.out.erase(filedate_position_0, 19), general_header_lines_1 + general_header_lines_2); // erase the filedate
+    EXPECT_EQ(result.out.erase(filedate_position_2, 19), // erase the filedate
+              general_header_lines_1 + contig_mini_example + general_header_lines_2 + expected_out);
 }
 
 // SV specifications:
@@ -428,7 +462,7 @@ TEST_F(iGenVar_cli_test, set_min_qual)
     {
         "Done with clustering. Found 2 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 1 SVs.\n"
+        "Detected 1 SVs and 0 SNPs/Indels.\n"
     };
     std::string const expected_res
     {
@@ -500,7 +534,7 @@ TEST_F(iGenVar_cli_test, simple_clustering)
     {
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -544,7 +578,7 @@ TEST_F(iGenVar_cli_test, self_balancing_binary_tree)
         "The self-balancing binary tree clustering method is not yet implemented.\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -562,7 +596,7 @@ TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
         "The candidate selection based on voting clustering method is not yet implemented.\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -592,7 +626,7 @@ TEST_F(iGenVar_cli_test, sViper_refinement_method)
     {
         "Done with clustering. Found 2 junction clusters.\n"
         "The sViper refinement method is not yet implemented.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -609,7 +643,7 @@ TEST_F(iGenVar_cli_test, sVirl_refinement_method)
     {
         "Done with clustering. Found 2 junction clusters.\n"
         "The sVirl refinement method is not yet implemented.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -670,7 +704,7 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
         "Start clustering...\n"
         "Done with clustering. Found 3 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -686,7 +720,7 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
     std::string const expected_err
     {
         "[Error] You have chosen an invalid input value: 9. "
-        "Please use one of: [0, cigar_string, 1, split_read, 2, read_pairs, 3, read_depth]\n"
+        "Please use one of: [0, cigar_string, 1, split_read, 2, read_pairs, 3, read_depth, 4, snp_indel]\n"
     };
     EXPECT_EQ(result.exit_code, 65280);
     EXPECT_EQ(result.out, std::string{});
@@ -748,7 +782,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
         "Start clustering...\n"
         "Done with clustering. Found 0 junction clusters.\n"
         "No refinement was selected.\n"
-        "Detected 0 SVs.\n"
+        "Detected 0 SVs and 0 SNPs/Indels.\n"
     };
     EXPECT_EQ(result.err, expected_err);
 

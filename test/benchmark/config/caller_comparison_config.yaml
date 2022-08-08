@@ -112,6 +112,10 @@ quality_ranges:
         from: 2
         to: 60
         step: 1
+    TIDDIT:
+        from: 1 # QUAL goes exactly from 0 to 100
+        to: 100
+        step: 1
     Vaquita-LR:
         from: 1
         to: 100 # QUAL goes exactly from 0 to 100

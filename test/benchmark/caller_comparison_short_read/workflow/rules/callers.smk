@@ -365,3 +365,42 @@ rule fix_GRIDSS_2:
                 fi
             done 3<{output.vcf_3} 4<{output.txt_1} 5<{output.txt_2} >> {output.vcf_1}
         """)
+
+# TIDDIT (no threading possible)
+rule run_TIDDIT:
+    output:
+        vcf = "results/caller_comparison_short_read/{dataset}/TIDDIT/variants.vcf"
+    params:
+        output_prefix = "results/caller_comparison_short_read/{dataset}/TIDDIT/variants"
+    log:
+        "logs/caller_comparison_short_read/TIDDIT_output.{dataset}.log"
+    run:
+        if wildcards.dataset == 'Illumina_Paired_End':
+            short_bam = config["short_read_bam"]["s1"],
+            genome = config["reference_fa"]["Illumina_Paired_End"]
+        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+            short_bam = config["short_read_bam"]["s2"],
+            genome = config["reference_fa"]["Illumina_Mate_Pair"]
+        shell("""
+            /usr/bin/time -v tiddit --sv --bam {short_bam} --ref {genome} -o {params.output_prefix} -p 1 -r 1 \
+                -z {min_var_length} &>> {log}
+        """)
+        # NOTE: It is important that you use the TIDDIT.py wrapper for SV detection. The TIDDIT binary in the TIDDIT/bin
+        #       folder does not perform any clustering, it simply extract SV signatures into a tab file.
+        # Defaults:
+        # -i	paired reads maximum allowed insert size. Pairs aligning on the same chr at a distance higher than this
+        #       are considered candidates for SV (default= 99.9th percentile of insert size)
+        # -d	expected reads orientations, possible values "innie" (-> <-) or "outtie" (<- ->).
+        #       Default: major orientation within the dataset
+        # -p	Minimum number of supporting pairs in order to call a variation event (default 3)
+        # -r	Minimum number of supporting split reads to call a small variant (default 3)
+        # -q	Minimum mapping quality to consider an alignment (default= 5)
+        # -Q	Minimum regional mapping quality (default 20)
+        # -n	the ploidy of the organism,(default = 2)
+        # -e	clustering distance parameter, discordant pairs closer than this distance are considered to belong to
+        #       the same variant(default = sqrt(insert-size*2)*12)
+        # -l	min-pts parameter (default=3),must be set >= 2
+        # -s	Number of reads to sample when computing library statistics(default=25000000)
+        # --n_mask	exclude regions from coverage calculation if they contain more than this fraction of N (default = 0.5)
+        # --p_ratio	minimum discordant pair/normal pair ratio at the breakpoint junction(default=0.2)
+        # --r_ratio	minimum split read/coverage ratio at the breakpoint junction(default=0.1)

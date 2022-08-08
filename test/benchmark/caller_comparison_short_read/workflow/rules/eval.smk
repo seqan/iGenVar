@@ -27,9 +27,9 @@ rule filter_bcf:
 
 rule filter_vcf:
     input:
-        vcf = "results/caller_comparison_short_read/{dataset}/{caller,GRIDSS}/variants.vcf"
+        vcf = "results/caller_comparison_short_read/{dataset}/{caller,GRIDSS|TIDDIT}/variants.vcf"
     output:
-        vcf = "results/caller_comparison_short_read/{dataset}/{caller,GRIDSS}/variants.min_qual_{min_qual}.vcf"
+        vcf = "results/caller_comparison_short_read/{dataset}/{caller,GRIDSS|TIDDIT}/variants.min_qual_{min_qual}.vcf"
     conda:
         "../../../envs/bcftools.yaml"
     shell:
@@ -122,7 +122,11 @@ rule cat_truvari_results_all:
         GRIDSS        = expand("results/caller_comparison_short_read/{{dataset}}/eval/GRIDSS/min_qual_{min_qual}/pr_rec.txt",
                                min_qual=list(range(config["quality_ranges"]["GRIDSS"]["from"],
                                                    config["quality_ranges"]["GRIDSS"]["to"],
-                                                   config["quality_ranges"]["GRIDSS"]["step"])))
+                                                   config["quality_ranges"]["GRIDSS"]["step"]))),
+        TIDDIT        = expand("results/caller_comparison_short_read/{{dataset}}/eval/TIDDIT/min_qual_{min_qual}/pr_rec.txt",
+                               min_qual=list(range(config["quality_ranges"]["TIDDIT"]["from"],
+                                                   config["quality_ranges"]["TIDDIT"]["to"],
+                                                   config["quality_ranges"]["TIDDIT"]["step"])))
     output:
         iGenVar_S     = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_s.all_results.txt"),
         iGenVar_SL1   = temp("results/caller_comparison_short_read/{{dataset}}/eval/igenvar_sl1.all_results.txt"),
@@ -135,6 +139,7 @@ rule cat_truvari_results_all:
         VaquitaLR_SL3 = temp("results/caller_comparison_short_read/{{dataset}}/eval/vaquitaLR_SL3.all_results.txt"),
         Delly2        = temp("results/caller_comparison_short_read/{{dataset}}/eval/Delly2.all_results.txt"),
         GRIDSS        = temp("results/caller_comparison_short_read/{{dataset}}/eval/GRIDSS.all_results.txt"),
+        TIDDIT        = temp("results/caller_comparison_short_read/{{dataset}}/eval/TIDDIT.all_results.txt"),
         all = "results/caller_comparison_short_read/{dataset}/eval/all_results.txt"
     threads: 1
     run:
@@ -149,8 +154,9 @@ rule cat_truvari_results_all:
         shell("cat {input.VaquitaLR_SL3} > {output.VaquitaLR_SL3}")
         shell("cat {input.Delly2} > {output.Delly2}")
         shell("cat {input.GRIDSS} > {output.GRIDSS}")
+        shell("cat {input.TIDDIT} > {output.TIDDIT}")
         shell("""
             cat {output.iGenVar_S} {output.iGenVar_SL1} {output.iGenVar_SL2} {output.iGenVar_SL3} \
                 {output.Vaquita} {output.VaquitaLR_S} {output.VaquitaLR_SL1} {output.VaquitaLR_SL2} {output.VaquitaLR_SL3} \
-                {output.Delly2} {output.GRIDSS} > {output.all}
+                {output.Delly2} {output.GRIDSS} {output.TIDDIT} > {output.all}
         """)

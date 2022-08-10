@@ -34,7 +34,7 @@ rule copy_igenvar_results:
                 sed -i 's/S1L2/iGenVar_SL2/g' {output.res_SL2}
                 sed -i 's/S1L3/iGenVar_SL3/g' {output.res_SL3}
             """)
-        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
             shell("""
             cp -r results/caller_comparison_iGenVar_only/eval/S2/no_DUP_and_INV.min_qual_{wildcards.min_qual} \
                 results/caller_comparison_short_read/Illumina_Mate_Pair/eval/iGenVar_S/
@@ -57,6 +57,62 @@ rule copy_igenvar_results:
                 sed -i 's/S2L2/iGenVar_SL2/g' {output.res_SL2}
                 sed -i 's/S2L3/iGenVar_SL3/g' {output.res_SL3}
             """)
+        elif wildcards.dataset == 'hg38_Sim_default':
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/hg38_Sim_default/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_default/eval/iGenVar_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_default/eval/iGenVar_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_default/iGenVar_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'iGenVar_SL1\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'iGenVar_SL2\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'iGenVar_SL3\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
+        elif wildcards.dataset == 'hg38_Sim_InDel':
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/hg38_Sim_InDel/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_InDel/eval/iGenVar_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_InDel/eval/iGenVar_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_InDel/iGenVar_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'iGenVar_SL1\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'iGenVar_SL2\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'iGenVar_SL3\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
+        elif wildcards.dataset == 'hg38_Sim_noSNP':
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/hg38_Sim_noSNP/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_noSNP/eval/iGenVar_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_noSNP/eval/iGenVar_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_noSNP/iGenVar_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'iGenVar_SL1\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'iGenVar_SL2\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'iGenVar_SL3\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
+        else: # wildcards.dataset == 'hg38_Sim_SNPandSV'
+            shell("""
+            cp -r results/caller_comparison_iGenVar_only/eval/hg38_Sim_SNPandSV/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_SNPandSV/eval/iGenVar_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_SNPandSV/eval/iGenVar_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_SNPandSV/iGenVar_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'iGenVar_SL1\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'iGenVar_SL2\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'iGenVar_SL3\t{wildcards.min_qual}\tprecision\t0\niGenVar_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
 
 # Vaquita (no threading possible)
 rule run_Vaquita:
@@ -68,9 +124,21 @@ rule run_Vaquita:
         if wildcards.dataset == 'Illumina_Paired_End':
             short_bam = config["short_read_bam"]["s1"],
             genome = config["reference_fa"]["Illumina_Paired_End"]
-        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
             short_bam = config["short_read_bam"]["s2"],
             genome = config["reference_fa"]["Illumina_Mate_Pair"]
+        elif wildcards.dataset == 'hg38_Sim_default': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim1"],
+            genome = config["reference_fa"]["simulation_ref"]
+        elif wildcards.dataset == 'hg38_Sim_InDel': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim2"],
+            genome = config["reference_fa"]["simulation_ref"]
+        elif wildcards.dataset == 'hg38_Sim_noSNP': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim3"],
+            genome = config["reference_fa"]["simulation_ref"]
+        else: # wildcards.dataset == 'hg38_Sim_SNPandSV': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim4"],
+            genome = config["reference_fa"]["simulation_ref"]
         shell("""
             /usr/bin/time -v ./build/vaquita/bin/vaquita call --referenceGenome {genome} --cutoff 1 \
                 --minSVSize {min_var_length} {short_bam} > {output.vcf} 2> {log}
@@ -119,7 +187,7 @@ rule run_Vaquita:
 # As Vaquita is not working with all datasets we create empty output files.
 rule create_empty_Vaquita:
     output:
-        txt = "results/caller_comparison_short_read/{dataset}/eval/Vaquita/min_qual_{min_qual}/pr_rec.txt"
+        txt = "results/caller_comparison_short_read/{dataset,Illumina_Paired_End|Illumina_Mate_Pair|hg38_Sim_noSNP}/eval/Vaquita/min_qual_{min_qual}/pr_rec.txt"
     shell:
         "echo 'Vaquita\t{wildcards.min_qual}\tprecision\t0\nVaquita\t{wildcards.min_qual}\trecall\t0' > {output.txt}"
 
@@ -128,17 +196,21 @@ rule fix_Vaquita:
     input:
         vcf = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_contigs.vcf"
     output:
-        vcf_1 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_fileformat.vcf",
-        vcf_2 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.vcf"
+        vcf_1 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_fileformat_and_CE_INFO.vcf",
+        vcf_2 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants_without_fileformat.vcf",
+        vcf_3 = "results/caller_comparison_short_read/{dataset}/Vaquita/variants.vcf"
+    params:
+        igenvar_vcf = "results/caller_comparison_iGenVar_only/{dataset}/variants.vcf"
     run:
         if wildcards.dataset == 'Illumina_Paired_End':
-            igenvar_vcf = "results/caller_comparison_iGenVar_only/S1/variants.vcf"
-        else: # wildcards.dataset == 'Illumina_Mate_Pair'
-            igenvar_vcf = "results/caller_comparison_iGenVar_only/S2/variants.vcf"
+            params.igenvar_vcf = "results/caller_comparison_iGenVar_only/S1/variants.vcf"
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
+            params.igenvar_vcf = "results/caller_comparison_iGenVar_only/S2/variants.vcf"
         shell("""
             fileformat=$(head -n 1 {input.vcf}) && \
-            less {igenvar_vcf} | grep contig | cat - {input.vcf} > {output.vcf_1} && \
-            echo $fileformat | cat - {output.vcf_1} > {output.vcf_2}
+            less {params.igenvar_vcf} | grep contig | cat - {input.vcf} > {output.vcf_1} && \
+            echo "##INFO=<ID=CE,Number=1,Type=Integer,Description=\"soft-clipped evidence\">" | cat - {output.vcf_1} > {output.vcf_2}
+            echo $fileformat | cat - {output.vcf_2} > {output.vcf_3}
         """)
         # without the 'chr' prefix:
         if wildcards.dataset == 'Illumina_Paired_End':
@@ -179,7 +251,7 @@ rule copy_Vaquita_LR_results:
                 sed -i 's/S1L2/VaquitaLR_SL2/g' {output.res_SL2}
                 sed -i 's/S1L3/VaquitaLR_SL3/g' {output.res_SL3}
             """)
-        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
             # As Vaquita LR S2 and all combinations not exist, we create empty files.
             shell("""
                 # cp -r results/caller_comparison_vaquita_lr/eval/S2/DUP_as_INS.min_qual_{wildcards.min_qual} \
@@ -207,6 +279,62 @@ rule copy_Vaquita_LR_results:
                 sed -i 's/S2L2/VaquitaLR_SL2/g' {output.res_SL2}
                 sed -i 's/S2L3/VaquitaLR_SL3/g' {output.res_SL3}
             """)
+        elif wildcards.dataset == 'hg38_Sim_default':
+            shell("""
+            cp -r results/caller_comparison_vaquita_lr/eval/hg38_Sim_default/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_default/eval/iGenVar_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_default/eval/iGenVar_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_default/VaquitaLR_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'VaquitaLR_SL1\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'VaquitaLR_SL2\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'VaquitaLR_SL3\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
+        elif wildcards.dataset == 'hg38_Sim_InDel':
+            shell("""
+            cp -r results/caller_comparison_vaquita_lr/eval/hg38_Sim_InDel/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_InDel/eval/VaquitaLR_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_InDel/eval/VaquitaLR_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_InDel/VaquitaLR_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'VaquitaLR_SL1\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'VaquitaLR_SL2\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'VaquitaLR_SL3\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
+        # elif wildcards.dataset == 'hg38_Sim_noSNP':
+        #     shell("""
+        #     cp -r results/caller_comparison_vaquita_lr/eval/hg38_Sim_noSNP/simulation.min_qual_{wildcards.min_qual} \
+        #         results/caller_comparison_short_read/hg38_Sim_noSNP/eval/VaquitaLR_S/
+        #     """)
+        #     shell("""
+        #     mv results/caller_comparison_short_read/hg38_Sim_noSNP/eval/VaquitaLR_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+        #         {output.res_S}
+        #     """)
+        #     shell("sed -i 's/hg38_Sim_noSNP/VaquitaLR_S/g' {output.res_S}")
+        #     # Skip LR combinatons - create empty output files:
+        #     shell("echo 'VaquitaLR_SL1\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+        #     shell("echo 'VaquitaLR_SL2\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+        #     shell("echo 'VaquitaLR_SL3\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
+        else: # wildcards.dataset == 'hg38_Sim_SNPandSV'
+            shell("""
+            cp -r results/caller_comparison_vaquita_lr/eval/hg38_Sim_SNPandSV/simulation.min_qual_{wildcards.min_qual} \
+                results/caller_comparison_short_read/hg38_Sim_SNPandSV/eval/VaquitaLR_S/
+            """)
+            shell("""
+            mv results/caller_comparison_short_read/hg38_Sim_SNPandSV/eval/VaquitaLR_S/simulation.min_qual_{wildcards.min_qual}/pr_rec.txt \
+                {output.res_S}
+            """)
+            shell("sed -i 's/hg38_Sim_SNPandSV/VaquitaLR_S/g' {output.res_S}")
+            # Skip LR combinatons - create empty output files:
+            shell("echo 'VaquitaLR_SL1\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL1\t{wildcards.min_qual}\trecall\t0' > {output.res_SL1}")
+            shell("echo 'VaquitaLR_SL2\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL2\t{wildcards.min_qual}\trecall\t0' > {output.res_SL2}")
+            shell("echo 'VaquitaLR_SL3\t{wildcards.min_qual}\tprecision\t0\nVaquitaLR_SL3\t{wildcards.min_qual}\trecall\t0' > {output.res_SL3}")
 
 # Delly2
 rule run_Delly2:
@@ -219,9 +347,21 @@ rule run_Delly2:
         if wildcards.dataset == 'Illumina_Paired_End':
             short_bam = config["short_read_bam"]["s1"],
             genome = config["reference_fa"]["Illumina_Paired_End"]
-        else: # wildcards.dataset == 'Illumina_Mate_Pair'
-            short_bam = config["short_read_bam"]["s2"],
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
+            short_bam = config["short_read_bam"]["s1"],
             genome = config["reference_fa"]["Illumina_Mate_Pair"]
+        elif wildcards.dataset == 'hg38_Sim_default':
+            short_bam = config["simulated_short_read_bam"]["sim1"],
+            genome = config["reference_fa"]["simulation_ref"]
+        elif wildcards.dataset == 'hg38_Sim_InDel':
+            short_bam = config["simulated_short_read_bam"]["sim2"],
+            genome = config["reference_fa"]["simulation_ref"]
+        elif wildcards.dataset == 'hg38_Sim_noSNP':
+            short_bam = config["simulated_short_read_bam"]["sim3"],
+            genome = config["reference_fa"]["simulation_ref"]
+        else: # wildcards.dataset == 'hg38_Sim_SNPandSV'
+            short_bam = config["simulated_short_read_bam"]["sim4"],
+            genome = config["reference_fa"]["simulation_ref"]
         shell("""
             export OMP_NUM_THREADS={threads} && \
             /usr/bin/time -v \
@@ -245,21 +385,47 @@ rule run_GRIDSS:
         workingdir = "results/caller_comparison_short_read/{dataset}/GRIDSS/",
         s1 = config["short_read_bam"]["s1"],
         s2 = config["short_read_bam"]["s2"],
+        sim1 = config["simulated_short_read_bam"]["sim1"],
+        sim2 = config["simulated_short_read_bam"]["sim2"],
+        sim3 = config["simulated_short_read_bam"]["sim3"],
+        sim4 = config["simulated_short_read_bam"]["sim4"],
         g1 = config["reference_fa"]["Illumina_Paired_End"],
-        g2 = config["reference_fa"]["Illumina_Mate_Pair"]
+        g2 = config["reference_fa"]["Illumina_Mate_Pair"],
+        g3 = config["reference_fa"]["simulation_ref"]
         # blacklist = config["blacklist"]
     conda:
         "../../../envs/gridss.yaml"
     shell:
         """
-            if [[ "{wildcards.dataset}" == "Illumina_Paired_End" ]]
-            then
+            case {wildcards.dataset} in
+            Illumina_Paired_End)
                 /usr/bin/time -v gridss --reference {params.g1} --output {output.vcf} --threads {threads} \
                     --workingdir {params.workingdir} {params.s1} --jvmheap 100g &>> {log}
-            else # dataset == 'Illumina_Mate_Pair'
+                ;;
+            Illumina_Mate_Pair)
                 /usr/bin/time -v gridss --reference {params.g2} --output {output.vcf} --threads {threads} \
                     --workingdir {params.workingdir} {params.s2} --jvmheap 100g &>> {log}
-            fi
+                ;;
+            hg38_Sim_default)
+                /usr/bin/time -v gridss --reference {params.g3} --output {output.vcf} --threads {threads} \
+                    --workingdir {params.workingdir} {params.sim1} --jvmheap 100g &>> {log}
+                ;;
+            hg38_Sim_InDel)
+                /usr/bin/time -v gridss --reference {params.g3} --output {output.vcf} --threads {threads} \
+                    --workingdir {params.workingdir} {params.sim2} --jvmheap 100g &>> {log}
+                ;;
+            hg38_Sim_noSNP)
+                /usr/bin/time -v gridss --reference {params.g3} --output {output.vcf} --threads {threads} \
+                    --workingdir {params.workingdir} {params.sim3} --jvmheap 100g &>> {log}
+                ;;
+            hg38_Sim_SNPandSV)
+                /usr/bin/time -v gridss --reference {params.g3} --output {output.vcf} --threads {threads} \
+                    --workingdir {params.workingdir} {params.sim4} --jvmheap 100g &>> {log}
+                ;;
+            *)
+                echo "Unhandled dataset: {wildcards.dataset}!"
+                ;;
+            esac
         """
     #               --workingdir {params.workingdir} --blacklist {params.blacklist} {short_bam} --jvmheap 100g &>> {log}
     # If your input files are aligned with bwa mem or another aligner that reports split read alignments using the SA tag, then runtime can be reduced by specifying --skipsoftcliprealignment.
@@ -361,7 +527,7 @@ rule fix_GRIDSS_2:
         """)
         shell("""
             perl Repos/iGenVar/test/benchmark/caller_comparison_short_read/workflow/scripts/convert_GRIDSS_vcf.pl \
-                {input.vcf_1} >> {output.vcf_2}
+                {output.vcf_1} >> {output.vcf_2}
         """)
         shell("""
             while read -u 3 -r line1 line2 line3 line4 line5 line6 line7 line8 file1 && read -u 4 -r line9 line10 file2; do
@@ -381,6 +547,14 @@ rule fix_GRIDSS_2:
             done 3<{output.vcf_3} 4<{output.txt_1} 5<{output.txt_2} >> {output.vcf_1}
         """)
 
+rule create_empty_TIDDIT:
+    output:
+        txt = "results/caller_comparison_short_read/{dataset,hg38_Sim_default|hg38_Sim_InDel|hg38_Sim_noSNP|hg38_Sim_SNPandSV}/eval/TIDDIT/min_qual_{min_qual}/pr_rec.txt",
+    shell:
+        """
+        echo 'TIDDIT\t{wildcards.min_qual}\tprecision\t0\nTIDDIT\t{wildcards.min_qual}\trecall\t0' > {output.txt}
+        """
+
 # TIDDIT (no threading possible)
 rule run_TIDDIT:
     output:
@@ -393,9 +567,21 @@ rule run_TIDDIT:
         if wildcards.dataset == 'Illumina_Paired_End':
             short_bam = config["short_read_bam"]["s1"],
             genome = config["reference_fa"]["Illumina_Paired_End"]
-        else: # wildcards.dataset == 'Illumina_Mate_Pair'
+        elif wildcards.dataset == 'Illumina_Mate_Pair':
             short_bam = config["short_read_bam"]["s2"],
             genome = config["reference_fa"]["Illumina_Mate_Pair"]
+        elif wildcards.dataset == 'hg38_Sim_default':
+            short_bam = config["simulated_short_read_bam"]["sim1"],
+            genome = config["reference_fa"]["simulation_ref"]
+        elif wildcards.dataset == 'hg38_Sim_InDel':
+            short_bam = config["simulated_short_read_bam"]["sim2"],
+            genome = config["reference_fa"]["simulation_ref"]
+        elif wildcards.dataset == 'hg38_Sim_noSNP':
+            short_bam = config["simulated_short_read_bam"]["sim3"],
+            genome = config["reference_fa"]["simulation_ref"]
+        else: # wildcards.dataset == 'hg38_Sim_SNPandSV'
+            short_bam = config["simulated_short_read_bam"]["sim4"],
+            genome = config["reference_fa"]["simulation_ref"]
         shell("""
             /usr/bin/time -v tiddit --sv --bam {short_bam} --ref {genome} -o {params.output_prefix} -p 1 -r 1 \
                 -z {min_var_length} &>> {log}

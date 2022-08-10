@@ -69,6 +69,8 @@ mkdir -p data && cd data
 
 # short & long reads, reference and truth sets
 ./../Repos/iGenVar/test/benchmark/dataset_downloads.sh
+# create simulated datasets
+./../Repos/iGenVar/test/benchmark/simulation/mason_simulation.sh
 
 echo "$(tput setaf 1)$(tput setab 7)------- Datasets downloaded (7/9) --------$(tput sgr 0)" 1>&3
 

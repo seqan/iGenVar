@@ -48,6 +48,19 @@ long_bam_name:
     l2: "AshkenazimTrio - HG002 NA24385 Son - PacBio CCS 10kb"
     l3: "AshkenazimTrio - HG002 NA24385 Son - 10X Genomics"
 
+# short read data - simulation from hs37d5.fa
+### GRCh38
+simulated_short_read_bam:
+    sim1: data/simulation_GRCh38/hg38_simulation_10000000_Illumina_reads_default_sorted.bam
+    sim2: data/simulation_GRCh38/hg38_simulation_10000000_Illumina_reads_InDel_sorted.bam
+    sim3: data/simulation_GRCh38/hg38_simulation_10000000_Illumina_reads_noSNP_sorted.bam
+    sim4: data/simulation_GRCh38/hg38_simulation_10000000_Illumina_reads_SNPandSV_sorted.bam
+simulated_short_bam_name:
+    sim1: "AshkenazimTrio - HG002 NA24385 Son - hs37d5 Mason Simulation of 10000000 Illumina Reads - Default"
+    sim2: "AshkenazimTrio - HG002 NA24385 Son - hs37d5 Mason Simulation of 10000000 Illumina Reads - InDel"
+    sim3: "AshkenazimTrio - HG002 NA24385 Son - hs37d5 Mason Simulation of 10000000 Illumina Reads - no SNP"
+    sim4: "AshkenazimTrio - HG002 NA24385 Son - hs37d5 Mason Simulation of 10000000 Illumina Reads - SNP and SV"
+
 ### GRCh37
 reference_fa:
     Illumina_Paired_End: data/reference/GRCh37/hs37d5.fa
@@ -56,12 +69,12 @@ reference_fa:
     PacBio_CCS: data/reference/GRCh37/hs37d5.fa
     10X_Genomics: data/reference/GRCh37/hg19.reordered.fa
 ### GRCh38
-# reference_fa:
 #     Illumina_Paired_End: data/reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fa
 #     Illumina_Mate_Pair: data/reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fa
 #     MtSinai_PacBio: data/reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
 #     PacBio_CCS: data/reference/GRCh38/???
 #     10X_Genomics: data/reference/GRCh38/???
+    simulation_ref: data/simulation_GRCh38/hg38_chr21.fa
 
 truth_set:
     gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.vcf.gz
@@ -77,6 +90,14 @@ truth_set_DEL:
     gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.vcf.gz
 truth_set_DEL_renamed_chr:
     gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.renamed_chr.vcf.gz
+truth_set_simulation_default:
+    gz: data/simulation_GRCh38/hg38_SV_simulation_default_sorted.vcf.gz
+truth_set_simulation_InDel:
+    gz: data/simulation_GRCh38/hg38_SV_simulation_InDel_sorted.vcf.gz
+truth_set_simulation_noSNP:
+    gz: data/simulation_GRCh38/hg38_SV_simulation_noSNP_sorted.vcf.gz
+truth_set_simulation_SNPandSV:
+    gz: data/simulation_GRCh38/hg38_SV_simulation_SNPandSV_sorted.vcf.gz
 # truth_set:
 #     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.vcf.gz
 #     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.bed

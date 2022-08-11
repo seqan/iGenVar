@@ -85,10 +85,38 @@ rule run_iGenVar:
                  --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
-        else: # wildcards.input_combination == 'L3': # 10X Genomics
+        elif wildcards.input_combination == 'L3': # 10X Genomics
             long_bam = config["long_read_bam"]["l3"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_long_reads {long_bam} \
+                 --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'hg38_Sim_default': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim1"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
+                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'hg38_Sim_InDel': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim2"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
+                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'hg38_Sim_noSNP': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim3"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
+                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        else: # wildcards.input_combination == 'hg38_Sim_SNPandSV': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim4"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
                  --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)

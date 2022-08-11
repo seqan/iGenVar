@@ -3,12 +3,14 @@ rule plot_pr_all_results:
         a = "results/caller_comparison_iGenVar_only/eval/all_results.txt",
         b = "results/caller_comparison_iGenVar_only/eval/DEL_results.txt",
         c = "results/caller_comparison_iGenVar_only/eval/INS_results.txt",
-        d = "results/caller_comparison_iGenVar_only/eval/no_DUP_and_INV_results.txt"
+        d = "results/caller_comparison_iGenVar_only/eval/no_DUP_and_INV_results.txt",
+        e = "results/caller_comparison_iGenVar_only/eval/simulation.txt"
     output:
         a = "results/caller_comparison_iGenVar_only/results.all.png",
         b = "results/caller_comparison_iGenVar_only/results.DEL.png",
         c = "results/caller_comparison_iGenVar_only/results.INS.png",
-        d = "results/caller_comparison_iGenVar_only/results.no_DUP_and_INV.png"
+        d = "results/caller_comparison_iGenVar_only/results.no_DUP_and_INV.png",
+        e = "results/caller_comparison_iGenVar_only/results.simulation.png"
     run:
         shell("""
         Rscript --vanilla Repos/iGenVar/test/benchmark/caller_comparison_iGenVar_only/workflow/scripts/plot_all_results.R \
@@ -25,4 +27,8 @@ rule plot_pr_all_results:
         shell("""
         Rscript --vanilla Repos/iGenVar/test/benchmark/caller_comparison_iGenVar_only/workflow/scripts/plot_all_results.R \
             "iGenVar 0.0.3 - Duplications and Inversions as Insertions" {input.d} Repos/iGenVar/test/benchmark/F1_score.csv {output.d}
+        """)
+        shell("""
+        Rscript --vanilla Repos/iGenVar/test/benchmark/caller_comparison_iGenVar_only/workflow/scripts/simulation.plot_all_results.R \
+            {input.e} Repos/iGenVar/test/benchmark/F1_score.csv {output.e}
         """)

@@ -119,13 +119,13 @@ void detect_junctions_in_short_reads_sam_file([[maybe_unused]] std::vector<Junct
 
     for (auto & record : alignment_short_reads_file)
     {
-        std::string const query_name        = record.id();                              // 1: QNAME
+        std::string const & query_name      = record.id();                              // 1: QNAME
         seqan3::sam_flag const flag         = record.flag();                            // 2: FLAG
-        int32_t const ref_id                = record.reference_id().value_or(-1);       // 3: RNAME
+        int32_t const & ref_id              = record.reference_id().value_or(-1);       // 3: RNAME
         int32_t const ref_pos               = record.reference_position().value_or(-1); // 4: POS
         uint8_t const mapq                  = record.mapping_quality();                 // 5: MAPQ
-        std::vector<seqan3::cigar> cigar    = record.cigar_sequence();                  // 6: CIGAR
-        seqan3::dna5_vector const seq       = record.sequence();                        // 10:SEQ
+        std::vector<seqan3::cigar> & cigar  = record.cigar_sequence();                  // 6: CIGAR
+        seqan3::dna5_vector const & seq     = record.sequence();                        // 10:SEQ
         auto tags                           = record.tags();
 
         if (hasFlagUnmapped(flag) || hasFlagSecondary(flag) || hasFlagDuplicate(flag) || mapq < 20 ||

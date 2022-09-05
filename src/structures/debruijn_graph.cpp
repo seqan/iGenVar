@@ -2,7 +2,6 @@
 #include <fstream>
 
 #include <seqan3/search/views/kmer_hash.hpp>
-#include <seqan3/utility/views/to.hpp>
 #include <seqan3/utility/views/zip.hpp>
 
 #include <lemon/connectivity.h>

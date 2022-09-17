@@ -66,6 +66,14 @@ truth_set:
 truth_set_renamed_chr:
     gz: data/truth_set/HG002_SVs_Tier1_v0.6.renamed_chr.vcf.gz
     bed: data/truth_set/HG002_SVs_Tier1_v0.6.renamed_chr.bed
+truth_set_INS:
+    gz: data/truth_set/INS/HG002_SVs_Tier1_v0.6.INS.vcf.gz
+truth_set_INS_renamed_chr:
+    gz: data/truth_set/INS/HG002_SVs_Tier1_v0.6.INS.renamed_chr.vcf.gz
+truth_set_DEL:
+    gz: data/truth_set/DEL/HG002_SVs_Tier1_v0.6.DEL.vcf.gz
+truth_set_DEL_renamed_chr:
+    gz: data/truth_set/DEL/HG002_SVs_Tier1_v0.6.DEL.renamed_chr.vcf.gz
 # truth_set:
 #     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.vcf.gz
 #     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.bed

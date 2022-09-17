@@ -54,7 +54,6 @@ echo "$(tput setaf 1)$(tput setab 7)------- truth set files remapped (5.5/5.6) -
 # create new tbi file
 # tabix -p vcf truth_set/${TRUTH_SET}.renamed_chr.Hg38.vcf.gz
 # unzip vcf
-bgzip -d -c truth_set/${TRUTH_SET}.vcf.gz > truth_set/${TRUTH_SET}.vcf
 bgzip -d -c truth_set/${TRUTH_SET}.Hg38.vcf.gz > truth_set/${TRUTH_SET}.Hg38.vcf
 # bgzip -d -c truth_set/NA24385.GRCh38.large_svs.vcf.gz > truth_set/NA24385.GRCh38.large_svs.vcf
 
@@ -64,18 +63,12 @@ awk '{if($0q!~ /^#/) print "chr"$0; else print $0}' truth_set/${TRUTH_SET}.renam
 sed -e 's/##contig=<ID=/##contig=<ID=chr/g' truth_set/${TRUTH_SET}.Hg38.vcf > truth_set/${TRUTH_SET}.Hg38.renamed_contig.vcf
 awk '{if($0q!~ /^#/) print "chr"$0; else print $0}' truth_set/${TRUTH_SET}.Hg38.renamed_contig.vcf > truth_set/${TRUTH_SET}.Hg38.renamed_chr.vcf
 # zip file again
-bgzip -c truth_set/${TRUTH_SET}.renamed_chr.vcf > truth_set/${TRUTH_SET}.renamed_chr.vcf.gz
 bgzip -c truth_set/${TRUTH_SET}.Hg38.renamed_chr.vcf > truth_set/${TRUTH_SET}.Hg38.renamed_chr.vcf.gz
 # create tbi files
-tabix -p vcf truth_set/${TRUTH_SET}.vcf.gz
-tabix -p vcf truth_set/${TRUTH_SET}.renamed_chr.vcf.gz
 tabix -p vcf truth_set/${TRUTH_SET}.Hg38.vcf.gz
 tabix -p vcf truth_set/${TRUTH_SET}.Hg38.renamed_chr.vcf.gz
 # tabix -p vcf truth_set/NA24385.GRCh38.large_svs.vcf.gz
 
-## BED
-# add chr to chromosome names
-sed -e 's/^/chr/' truth_set/${TRUTH_SET}.bed > truth_set/${TRUTH_SET}.renamed_chr.bed
 # convert to HG38
 CrossMap.py bed hg19ToHg38.over.chain.gz truth_set/${TRUTH_SET}.renamed_chr.bed truth_set/${TRUTH_SET}.Hg38.renamed_chr.bed
 # remove chr from chromosome names again

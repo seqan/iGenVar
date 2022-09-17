@@ -64,7 +64,8 @@ echo "$(tput setaf 1)$(tput setab 7)------- anaconda environment prepared (4/5) 
 cd data
 
 ./../Repos/iGenVar/test/benchmark/prepare_BAM_with_crossmap.sh
-./../Repos/iGenVar/test/benchmark/prepare_truth_set_with_NCBI.sh
+./../Repos/iGenVar/test/benchmark/prepare_truth_set.sh
+# ./../Repos/iGenVar/test/benchmark/prepare_truth_set_with_NCBI.sh
 
 cd ..
 

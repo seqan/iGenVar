@@ -9,31 +9,24 @@ do
     S1L1 | S2L1)
         MINQUAL=9
         ;;
-
     L1)
         MINQUAL=8
         ;;
-
     S1L2)
         MINQUAL=6
         ;;
-
     L2 | S2L2)
         MINQUAL=5
         ;;
-
     S1L3 | S2L3)
         MINQUAL=4
         ;;
-
     L3)
         MINQUAL=3
         ;;
-
     S1 | S2)
         MINQUAL=2
         ;;
-
     *)
         echo "Wrong input combination: $input_combination!"
         ;;
@@ -50,6 +43,49 @@ do
     less results/caller_comparison_iGenVar_only/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<DEL>" | wc -l
     echo "# INV ="
     less results/caller_comparison_iGenVar_only/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<INV>" | wc -l
+done
+
+echo "------------------------------------------------------------------------------"
+echo Vaquita-LR
+
+for input_combination in L1 L2 L3 S1 S1L1 S1L2
+do
+    echo "---------------------------------------"
+    case $input_combination in
+    S1 | S1L1 | S1L2)
+        MINQUAL=99
+        ;;
+    L1)
+        MINQUAL=97
+        ;;
+    L2)
+        MINQUAL=65
+        ;;
+    L3)
+        MINQUAL=50
+        ;;
+    *)
+        echo "Wrong input combination: $input_combination!"
+        ;;
+    esac
+
+    echo "${input_combination} - ${MINQUAL}"
+    echo "# SV ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "SVTYPE=" | wc -l
+    echo "# INS ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<INS>" | wc -l
+    echo "# DUP:TANDEM ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<DUP:TANDEM>" | wc -l
+    echo "# DUP:INT ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<DUP>" | wc -l
+    echo "# DEL ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<DEL>" | wc -l
+    echo "# INV ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<INV>" | wc -l
+    echo "# TRA ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "<TRA>" | wc -l
+    echo "# BND ="
+    less results/caller_comparison_vaquita_lr/${input_combination}/variants.min_qual_${MINQUAL}.vcf | grep "SVTYPE=BND" | wc -l
 done
 
 # ### SVIM:

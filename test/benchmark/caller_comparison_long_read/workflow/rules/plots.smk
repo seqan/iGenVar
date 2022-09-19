@@ -3,8 +3,6 @@ rule plot_pr_all_results:
         "results/caller_comparison_long_read/{dataset}/eval/all_results.txt"
     output:
         "results/caller_comparison_long_read/{dataset}_results.all.png"
-    log:
-        "logs/caller_comparison_long_read/rplot.{dataset}.all.log"
     run:
         if wildcards.dataset == 'MtSinai_PacBio':
             bam_name = config["long_bam_name"]["l1"]
@@ -14,5 +12,5 @@ rule plot_pr_all_results:
             bam_name = config["long_bam_name"]["l3"]
         shell("""
             Rscript --vanilla Repos/iGenVar/test/benchmark/caller_comparison_long_read/workflow/scripts/plot_all_results.R \
-                "{bam_name}" {input} Repos/iGenVar/test/benchmark/F1_score.csv {output} > {log}
+                "{bam_name}" {input} Repos/iGenVar/test/benchmark/F1_score.csv {output}
         """)

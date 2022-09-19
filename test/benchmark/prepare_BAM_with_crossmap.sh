@@ -23,6 +23,8 @@ echo "$(tput setaf 1)$(tput setab 7)------- reference files prepared (5.2/5.6) -
 # Illumina Paired End
 samtools sort short_reads/GRCh37/HG002.hs37d5.2x250.bam -o short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam
 samtools sort short_reads/GRCh38/HG002.GRCh38.2x250.bam -o short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
+samtools index short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam
+samtools index short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
 
 # MtSinai PacBio
 ## Add MD tag for Sniffles

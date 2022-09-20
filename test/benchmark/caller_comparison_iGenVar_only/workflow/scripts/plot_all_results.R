@@ -7,8 +7,9 @@ library(tidyverse)
 
 args = commandArgs(trailingOnly=TRUE)
 
-res <- read_tsv(args[1], col_names = c("input_combination", "min_qual", "metric", "value"))
-f1 <- read_csv(args[2], col_names = c("input_combination", "precision", "recall"))
+plotTitle <- args[1]
+res <- read_tsv(args[2], col_names = c("input_combination", "min_qual", "metric", "value"))
+f1 <- read_csv(args[3], col_names = c("input_combination", "precision", "recall"))
 
 res <- res %>%
     filter(metric %in% c("recall", "precision")) %>%
@@ -53,7 +54,7 @@ ggplot(total, aes(recall, precision, color = input_combination)) +
       geom_dl(aes(label = input_combination), method = list("last.points", rot=-20, cex = 0.5, dl.trans(x=x+0.1))) +
       geom_path() +
       labs(y = "Precision", x = "Recall", color = "Tool",
-            title="Caller Comparison - iGenVar 0.0.3", subtitle="All combinations of short and long reads") +
+            title=plotTitle, subtitle="All combinations of short and long reads") +
       lims(x=c(0,1), y=c(0,1)) +
       theme_bw() +
       theme(panel.spacing = unit(0.75, "lines")) +
@@ -61,4 +62,4 @@ ggplot(total, aes(recall, precision, color = input_combination)) +
       theme(plot.title = element_text(size=20, hjust=0.5, face="bold", color="black")) +
       theme(plot.subtitle = element_text(size=10, hjust=0.5, face="italic", color="black"))
 
-ggsave(args[3], width=10, height=8)
+ggsave(args[4], width=10, height=8)

@@ -122,18 +122,18 @@ rule no_DUP_and_INV_cat_truvari_results_all:
                                                   config["quality_ranges"]["iGenVar"]["to"],
                                                   config["quality_ranges"]["iGenVar"]["step"])))
     output:
-        S1   = temp("results/caller_comparison_iGenVar_only/eval/S1.no_DUP_and_INV.all_results.txt"),
-        S2   = temp("results/caller_comparison_iGenVar_only/eval/S2.no_DUP_and_INV.all_results.txt"),
-        S1L1 = temp("results/caller_comparison_iGenVar_only/eval/S1L1.no_DUP_and_INV.all_results.txt"),
-        S2L1 = temp("results/caller_comparison_iGenVar_only/eval/S2L1.no_DUP_and_INV.all_results.txt"),
-        S1L2 = temp("results/caller_comparison_iGenVar_only/eval/S1L2.no_DUP_and_INV.all_results.txt"),
-        S2L2 = temp("results/caller_comparison_iGenVar_only/eval/S2L2.no_DUP_and_INV.all_results.txt"),
-        S1L3 = temp("results/caller_comparison_iGenVar_only/eval/S1L3.no_DUP_and_INV.all_results.txt"),
-        S2L3 = temp("results/caller_comparison_iGenVar_only/eval/S2L3.no_DUP_and_INV.all_results.txt"),
-        L1   = temp("results/caller_comparison_iGenVar_only/eval/L1.no_DUP_and_INV.all_results.txt"),
-        L2   = temp("results/caller_comparison_iGenVar_only/eval/L2.no_DUP_and_INV.all_results.txt"),
-        L3   = temp("results/caller_comparison_iGenVar_only/eval/L3.no_DUP_and_INV.all_results.txt"),
-        all = "results/caller_comparison_iGenVar_only/eval/no_DUP_and_INV.all_results.txt"
+        S1   = temp("results/caller_comparison_iGenVar_only/eval/S1.no_DUP_and_INV_results.txt"),
+        S2   = temp("results/caller_comparison_iGenVar_only/eval/S2.no_DUP_and_INV_results.txt"),
+        S1L1 = temp("results/caller_comparison_iGenVar_only/eval/S1L1.no_DUP_and_INV_results.txt"),
+        S2L1 = temp("results/caller_comparison_iGenVar_only/eval/S2L1.no_DUP_and_INV_results.txt"),
+        S1L2 = temp("results/caller_comparison_iGenVar_only/eval/S1L2.no_DUP_and_INV_results.txt"),
+        S2L2 = temp("results/caller_comparison_iGenVar_only/eval/S2L2.no_DUP_and_INV_results.txt"),
+        S1L3 = temp("results/caller_comparison_iGenVar_only/eval/S1L3.no_DUP_and_INV_results.txt"),
+        S2L3 = temp("results/caller_comparison_iGenVar_only/eval/S2L3.no_DUP_and_INV_results.txt"),
+        L1   = temp("results/caller_comparison_iGenVar_only/eval/L1.no_DUP_and_INV_results.txt"),
+        L2   = temp("results/caller_comparison_iGenVar_only/eval/L2.no_DUP_and_INV_results.txt"),
+        L3   = temp("results/caller_comparison_iGenVar_only/eval/L3.no_DUP_and_INV_results.txt"),
+        all = "results/caller_comparison_iGenVar_only/eval/no_DUP_and_INV_results.txt"
     threads: 1
     run:
         shell("cat {input.S1} > {output.S1}")

@@ -8,4 +8,6 @@ include: "workflow/rules/plots.smk"
 
 rule all:
     input:
-        "results/caller_comparison/eval/results.all.png"
+        # SV calling
+        expand("results/caller_comparison/SVIM/variants.vcf"),
+        expand("results/caller_comparison/eval/results.all.png")

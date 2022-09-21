@@ -1,3 +1,10 @@
+min_qual_x       = list(range(config["quality_ranges"]["from"],
+                              config["quality_ranges"]["to"],
+                              config["quality_ranges"]["step"]))
+min_qual_iGenVar = list(range(config["quality_ranges"]["iGenVar"]["from"],
+                              config["quality_ranges"]["iGenVar"]["to"],
+                              config["quality_ranges"]["iGenVar"]["step"]))
+
 rule filter_SVIM_vcf:
     input:
         vcf = "results/caller_comparison_long_read/{dataset}/{caller}/variants.vcf"
@@ -68,18 +75,12 @@ rule reformat_truvari_results:
 rule cat_truvari_results_all:
     input:
         igenvar_L        = expand("results/caller_comparison_long_read/{{dataset}}/eval/iGenVar_L/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
-                                  min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                                      config["quality_ranges"]["iGenVar"]["to"],
-                                                      config["quality_ranges"]["iGenVar"]["step"]))),
+                                  min_qual = min_qual_iGenVar),
         igenvar_SL       = expand("results/caller_comparison_long_read/{{dataset}}/eval/iGenVar_SL/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
-                                  min_qual=list(range(config["quality_ranges"]["iGenVar"]["from"],
-                                                      config["quality_ranges"]["iGenVar"]["to"],
-                                                      config["quality_ranges"]["iGenVar"]["step"]))),
+                                  min_qual = min_qual_iGenVar),
         # MtSinai_PacBio - Error in rule picard: Exception in thread "main" htsjdk.tribble.TribbleException: The provided VCF file is malformed at approximately line number 819567: unparsable vcf record with allele ...
         svim             = expand("results/caller_comparison_long_read/{{dataset}}/eval/SVIM/min_qual_{min_qual}/pr_rec.txt",
-                                  min_qual=list(range(config["quality_ranges"]["from"],
-                                                      config["quality_ranges"]["to"],
-                                                      config["quality_ranges"]["step"]))),
+                                  min_qual = min_qual_x),
         vaquita_lr_L     = expand("results/caller_comparison_long_read/{{dataset}}/eval/Vaquita_lr_L/DUP_as_INS.min_qual_{min_qual}/pr_rec.txt",
                                   min_qual=list(range(config["quality_ranges"]["Vaquita-LR"]["from"],
                                                       config["quality_ranges"]["Vaquita-LR"]["to"],
@@ -94,13 +95,9 @@ rule cat_truvari_results_all:
                                                       config["quality_ranges"]["sniffles"]["to"],
                                                       config["quality_ranges"]["sniffles"]["step"]))),
         pbsv             = expand("results/caller_comparison_long_read/{{dataset}}/eval/pbsv/min_qual_{min_qual}/pr_rec.txt",
-                                  min_qual=list(range(config["quality_ranges"]["from"],
-                                                      config["quality_ranges"]["to"],
-                                                      config["quality_ranges"]["step"]))),
+                                  min_qual = min_qual_x),
         pbsv_without_DUP = expand("results/caller_comparison_long_read/{{dataset}}/eval/pbsv_without_DUP/min_qual_{min_qual}/pr_rec.txt",
-                                  min_qual=list(range(config["quality_ranges"]["from"],
-                                                      config["quality_ranges"]["to"],
-                                                      config["quality_ranges"]["step"])))
+                                  min_qual = min_qual_x),
     output:
         igenvar_L        = temp("results/caller_comparison_long_read/{{dataset}}/eval/igenvar_L.all_results.txt"),
         igenvar_SL       = temp("results/caller_comparison_long_read/{{dataset}}/eval/igenvar_SL.all_results.txt"),

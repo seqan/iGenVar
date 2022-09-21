@@ -1,3 +1,7 @@
+min_qual_iGenVar = list(range(config["quality_ranges"]["iGenVar"]["from"],
+                              config["quality_ranges"]["iGenVar"]["to"],
+                              config["quality_ranges"]["iGenVar"]["step"]))
+
 rule filter_vcf:
     input:
         "results/caller_comparison_short_read/{caller,iGenVar_S|iGenVar_SL}/variants.vcf"
@@ -54,13 +58,9 @@ rule reformat_truvari_results:
 rule cat_truvari_results_all:
     input:
         iGenVar_S   = expand("results/caller_comparison_short_read/eval/iGenVar_S/min_qual_{min_qual}/pr_rec.txt",
-                             min_qual=list(range(config["quality_ranges"]["from"],
-                                                 config["quality_ranges"]["to"],
-                                                 config["quality_ranges"]["step"]))),
+                             min_qual = min_qual_iGenVar),
         iGenVar_SL  = expand("results/caller_comparison_short_read/eval/iGenVar_SL/min_qual_{min_qual}/pr_rec.txt",
-                             min_qual=list(range(config["quality_ranges"]["from"],
-                                                 config["quality_ranges"]["to"],
-                                                 config["quality_ranges"]["step"])))
+                             min_qual = min_qual_iGenVar)
     output:
         iGenVar_S   = temp("results/caller_comparison_short_read/eval/igenvar_s.all_results.txt"),
         iGenVar_SL  = temp("results/caller_comparison_short_read/eval/igenvar_sl.all_results.txt")

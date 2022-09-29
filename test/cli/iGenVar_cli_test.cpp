@@ -205,6 +205,7 @@ TEST_F(iGenVar_cli_test, no_options)
 TEST_F(iGenVar_cli_test, test_verbose_option)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--verbose");
     std::string const expected_err
@@ -229,7 +230,7 @@ TEST_F(iGenVar_cli_test, test_verbose_option)
 
 TEST_F(iGenVar_cli_test, help_page_argument)
 {
-    cli_test_result result = execute_app("iGenVar", "-h");
+    cli_test_result result = execute_app("iGenVar", "--version-check", "false", "-h");
     std::string const expected_res = help_page_part_1 + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
@@ -239,7 +240,7 @@ TEST_F(iGenVar_cli_test, help_page_argument)
 
 TEST_F(iGenVar_cli_test, advanced_help_page_argument)
 {
-    cli_test_result result = execute_app("iGenVar", "-hh");
+    cli_test_result result = execute_app("iGenVar", "--version-check", "false", "-hh");
     std::string const expected_res = help_page_part_1 + help_page_advanced + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
@@ -251,7 +252,7 @@ TEST_F(iGenVar_cli_test, advanced_help_page_argument)
 
 TEST_F(iGenVar_cli_test, fail_no_input_file)
 {
-    cli_test_result result = execute_app("iGenVar", "--method cigar_string");
+    cli_test_result result = execute_app("iGenVar", "--version-check", "false", "--method cigar_string");
     std::string const expected_err
     {
         "[Error] You need to input at least one sam/bam file.\n"
@@ -265,6 +266,7 @@ TEST_F(iGenVar_cli_test, fail_no_input_file)
 TEST_F(iGenVar_cli_test, test_outfile)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j ", data(default_alignment_long_reads_file_path),
                                          "-o ", vcf_out_file_path);
     std::ifstream f;
@@ -280,6 +282,7 @@ TEST_F(iGenVar_cli_test, test_outfile)
 TEST_F(iGenVar_cli_test, test_intermediate_result_output)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j ", data(default_alignment_long_reads_file_path),
                                          "-a ", junctions_out_file_path,
                                          "-b ", clusters_out_file_path);
@@ -305,6 +308,7 @@ TEST_F(iGenVar_cli_test, test_intermediate_result_output)
 TEST_F(iGenVar_cli_test, test_genome_input)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-g", data(default_genome_file_path),
                                          "-i", data("single_end_mini_example.sam"));
     std::string const expected_err =
@@ -327,6 +331,7 @@ TEST_F(iGenVar_cli_test, test_genome_input)
 TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--min_var_length -30");
     std::string const expected_err
@@ -342,6 +347,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_var_length)
 TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--max_var_length -30");
     std::string const expected_err
@@ -357,6 +363,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_var_length)
 TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--max_tol_inserted_length -30");
     std::string const expected_err
@@ -372,6 +379,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_tol_inserted_length)
 TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--max_overlap -30");
     std::string const expected_err
@@ -387,6 +395,7 @@ TEST_F(iGenVar_cli_test, fail_negative_max_overlap)
 TEST_F(iGenVar_cli_test, set_min_qual)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--min_qual 1");
     std::string const expected_err
@@ -407,6 +416,7 @@ TEST_F(iGenVar_cli_test, set_min_qual)
 TEST_F(iGenVar_cli_test, fail_negative_min_qual)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--min_qual -30");
     std::string const expected_err
@@ -423,6 +433,7 @@ TEST_F(iGenVar_cli_test, fail_negative_min_qual)
 TEST_F(iGenVar_cli_test, with_detection_method_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method cigar_string --method split_read");
     std::string const expected_err
@@ -438,6 +449,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_arguments)
 TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method cigar_string --method cigar_string");
     std::string const expected_err
@@ -455,6 +467,7 @@ TEST_F(iGenVar_cli_test, with_detection_method_duplicate_arguments)
 TEST_F(iGenVar_cli_test, simple_clustering)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method simple_clustering");
     std::string const expected_err
@@ -471,6 +484,7 @@ TEST_F(iGenVar_cli_test, simple_clustering)
 TEST_F(iGenVar_cli_test, hierarchical_clustering)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method hierarchical_clustering");
     EXPECT_EQ(result.exit_code, 0);
@@ -481,6 +495,7 @@ TEST_F(iGenVar_cli_test, hierarchical_clustering)
 TEST_F(iGenVar_cli_test, fail_negative_hierarchical_clustering_cutoff)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--hierarchical_clustering_cutoff -30");
     std::string const expected_err
@@ -495,6 +510,7 @@ TEST_F(iGenVar_cli_test, fail_negative_hierarchical_clustering_cutoff)
 TEST_F(iGenVar_cli_test, self_balancing_binary_tree)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method self_balancing_binary_tree");
     std::string const expected_err
@@ -512,6 +528,7 @@ TEST_F(iGenVar_cli_test, self_balancing_binary_tree)
 TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--clustering_method candidate_selection_based_on_voting");
     std::string const expected_err
@@ -531,6 +548,7 @@ TEST_F(iGenVar_cli_test, candidate_selection_based_on_voting)
 TEST_F(iGenVar_cli_test, no_refinement)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method no_refinement");
     EXPECT_EQ(result.exit_code, 0);
@@ -541,6 +559,7 @@ TEST_F(iGenVar_cli_test, no_refinement)
 TEST_F(iGenVar_cli_test, sViper_refinement_method)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method sViper_refinement_method");
     std::string const expected_err
@@ -557,6 +576,7 @@ TEST_F(iGenVar_cli_test, sViper_refinement_method)
 TEST_F(iGenVar_cli_test, sVirl_refinement_method)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--refinement_method sVirl_refinement_method");
     std::string const expected_err
@@ -575,6 +595,7 @@ TEST_F(iGenVar_cli_test, sVirl_refinement_method)
 TEST_F(iGenVar_cli_test, fail_unknown_option)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "-y 0");
 
@@ -590,7 +611,7 @@ TEST_F(iGenVar_cli_test, fail_unknown_option)
 
 TEST_F(iGenVar_cli_test, fail_missing_value)
 {
-    cli_test_result result = execute_app("iGenVar", "-i");
+    cli_test_result result = execute_app("iGenVar", "--version-check", "false", "-i");
     std::string const expected_err
     {
         "[Error] Missing value for option -i\n"
@@ -603,6 +624,7 @@ TEST_F(iGenVar_cli_test, fail_missing_value)
 TEST_F(iGenVar_cli_test, with_default_arguments)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j ", data(default_alignment_long_reads_file_path));
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out.erase(filedate_position_1, 19), expected_res_default); // erase the filedate
@@ -612,6 +634,7 @@ TEST_F(iGenVar_cli_test, with_default_arguments)
 TEST_F(iGenVar_cli_test, test_direct_methods_input)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method cigar_string --method split_read "
                                          "--clustering_method 0 --refinement_method 0");
@@ -631,6 +654,7 @@ TEST_F(iGenVar_cli_test, test_direct_methods_input)
 TEST_F(iGenVar_cli_test, test_unknown_argument)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data(default_alignment_long_reads_file_path),
                                          "--method 9");
     std::string const expected_err
@@ -648,6 +672,7 @@ TEST_F(iGenVar_cli_test, test_unknown_argument)
 TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-i", data("paired_end_mini_example.sam"),
                                          "--method read_pairs");
 
@@ -707,6 +732,7 @@ TEST_F(iGenVar_cli_test, dataset_paired_end_mini_example)
 TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-j", data("single_end_mini_example.sam"),
                                          "--verbose",
                                          "--method cigar_string --method split_read",
@@ -730,6 +756,7 @@ TEST_F(iGenVar_cli_test, dataset_single_end_mini_example)
 TEST_F(iGenVar_cli_test, dataset_short_and_long_read_mini_example)
 {
     cli_test_result result = execute_app("iGenVar",
+                                         "--version-check", "false",
                                          "-i", data("paired_end_mini_example.sam"),
                                          "-j", data("single_end_mini_example.sam"),
                                          "--verbose",

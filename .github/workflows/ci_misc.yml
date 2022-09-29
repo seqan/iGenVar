@@ -8,7 +8,7 @@ on:
   pull_request:
 
 env:
-  SEQAN3_NO_VERSION_CHECK: 1
+  SHARG_NO_VERSION_CHECK: 1
   TZ: Europe/Berlin
 
 defaults:
@@ -30,7 +30,7 @@ jobs:
             build: documentation
             build_threads: 2
             test_threads: 2
-            cmake: 3.16.0
+            cmake: 3.16.9
             doxygen: 1.9.3
             requires_toolchain: true
             requires_ccache: false

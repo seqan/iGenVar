@@ -1,6 +1,6 @@
 #pragma once
 
-#include <sharg/parser.hpp>                     // for the SeqAn3 sharg::parser
+#include <sharg/parser.hpp>                     // for the SeqAn sharg::parser
 
 #include "variant_detection/method_enums.hpp"   // for enum detection_methods, clustering_methods and refinement_methods
 

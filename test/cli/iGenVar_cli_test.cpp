@@ -31,6 +31,8 @@ std::string const help_page_part_1
     "          Export the help page information. Value must be one of [html, man].\n"
     "    --version-check (bool)\n"
     "          Whether to check for the newest app version. Default: true.\n"
+    "\n"
+    "  Input / Output\n"
     "    -i, --input_short_reads (std::filesystem::path)\n"
     "          Input short read alignments in SAM or BAM format (Illumina).\n"
     "          Default: \"\". The input file must exist and read permissions must be\n"
@@ -54,8 +56,12 @@ std::string const help_page_part_1
     "          The path of the vcf output file. If no path is given, will output to\n"
     "          standard output. Default: \"\". Write permissions must be granted.\n"
     "          Valid file extensions are: [vcf].\n"
+    "\n"
+    "  VCF\n"
     "    -s, --vcf_sample_name (std::string)\n"
     "          Specify your sample name for the vcf header line. Default: MYSAMPLE.\n"
+    "\n"
+    "  Other parameters\n"
     "    -t, --threads (unsigned 64 bit integer)\n"
     "          Specify the number of decompression threads used for reading BAM\n"
     "          files. Default: 1.\n"
@@ -84,8 +90,22 @@ std::string const help_page_part_2
     "    For full copyright and/or warranty information see --copyright.\n"
 };
 
+std::string const help_page_not_advanced
+{
+    "\n"
+    "  Optional output\n"
+    "\n"
+    "  Methods\n"
+    "\n"
+    "  SV specifications\n"
+    "\n"
+    "  Clustering specifications\n"
+};
+
 std::string const help_page_advanced
 {
+    "\n"
+    "  Optional output\n"
     "    -a, --junctions (std::filesystem::path)\n"
     "          The path of the optional junction output file. If no path is given,\n"
     "          junctions will not be output. Default: \"\". Write permissions must be\n"
@@ -94,6 +114,8 @@ std::string const help_page_advanced
     "          The path of the optional cluster output file. If no path is given,\n"
     "          clusters will not be output. Default: \"\". Write permissions must be\n"
     "          granted.\n"
+    "\n"
+    "  Methods\n"
     "    -d, --method (List of detection_methods)\n"
     "          Choose the detection method(s) to be used. Value must be one of\n"
     "          (method name or number)\n"
@@ -109,6 +131,8 @@ std::string const help_page_advanced
     "          (method name or number)\n"
     "          [0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].\n"
     "          Default: no_refinement.\n"
+    "\n"
+    "  SV specifications\n"
     "    -k, --min_var_length (unsigned 64 bit integer)\n"
     "          Specify what should be the minimum length of your SVs to be\n"
     "          detected. This value needs to be non-negative. Default: 30.\n"
@@ -130,6 +154,8 @@ std::string const help_page_advanced
     "          Specify the minimum quality (amount of supporting reads) of a\n"
     "          structural variant to be reported in the vcf output file. This value\n"
     "          needs to be non-negative. Default: 5.\n"
+    "\n"
+    "  Clustering specifications\n"
     "    -p, --partition_max_distance (unsigned 64 bit integer)\n"
     "          Specify the maximum distance in bp between members of the same\n"
     "          partition.This value needs to be non-negative. Default: 50.\n"
@@ -231,7 +257,7 @@ TEST_F(iGenVar_cli_test, test_verbose_option)
 TEST_F(iGenVar_cli_test, help_page_argument)
 {
     cli_test_result result = execute_app("iGenVar", "--version-check", "false", "-h");
-    std::string const expected_res = help_page_part_1 + help_page_part_2;
+    std::string const expected_res = help_page_part_1 + help_page_not_advanced + help_page_part_2;
 
     EXPECT_EQ(result.exit_code, 0);
     EXPECT_EQ(result.out, expected_res);

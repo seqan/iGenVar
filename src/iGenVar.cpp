@@ -58,20 +58,18 @@ void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args)
     parser.info.url = "https://github.com/seqan/iGenVar/";
 
     // Options - Input / Output:
+    parser.add_subsection("Input / Output");
     parser.add_option(args.alignment_short_reads_file_path, sharg::config{
                         .short_id = 'i', .long_id = "input_short_reads",
                         .description = "Input short read alignments in SAM or BAM format (Illumina).",
-                        .advanced = false,
                         .validator = sharg::input_file_validator{{"sam", "bam"}} });
     parser.add_option(args.alignment_long_reads_file_path, sharg::config{
                         .short_id = 'j', .long_id = "input_long_reads",
                         .description = "Input long read alignments in SAM or BAM format (PacBio, Oxford Nanopore, ...).",
-                        .advanced = false,
                         .validator = sharg::input_file_validator{{"sam", "bam"}} });
     parser.add_option(args.genome_file_path, sharg::config{
                         .short_id = 'g', .long_id = "input_genome",
                         .description = "Input the sequence of the reference genome.",
-                        .advanced = false,
                         .validator = sharg::input_file_validator{combined_extensions}});
     parser.add_option(args.output_file_path, sharg::config{
                         .short_id = 'o', .long_id = "output",
@@ -79,22 +77,23 @@ void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args)
                         .validator = sharg::output_file_validator{sharg::output_file_open_options::open_or_create, {"vcf"}}});
 
     // Options - VCF:
+    parser.add_subsection("VCF");
     parser.add_option(args.vcf_sample_name, sharg::config{
                         .short_id = 's', .long_id = "vcf_sample_name",
-                        .description = "Specify your sample name for the vcf header line.",
-                        .advanced = false});
+                        .description = "Specify your sample name for the vcf header line."});
 
     // Options - Other parameters:
+    parser.add_subsection("Other parameters");
     parser.add_option(args.threads, sharg::config{
                         .short_id = 't', .long_id = "threads",
-                        .description = "Specify the number of decompression threads used for reading BAM files.",
-                        .advanced = false});
+                        .description = "Specify the number of decompression threads used for reading BAM files."});
     parser.add_flag(gVerbose, sharg::config{
                         .short_id = 'v', .long_id = "verbose",
                         .description = "If you set this flag, we provide additional details about what iGenVar does. "
                                        "The detailed output is printed in the standard error."});
 
     // Options - Optional output:
+    parser.add_subsection("Optional output");
     parser.add_option(args.junctions_file_path, sharg::config{
                         .short_id = 'a', .long_id = "junctions",
                         .description = "The path of the optional junction output file. If no path is given, junctions will not be output.",
@@ -107,6 +106,7 @@ void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args)
                         .validator = sharg::output_file_validator{sharg::output_file_open_options::open_or_create}});
 
     // Options - Methods:
+    parser.add_subsection("Methods");
     parser.add_option(args.methods, sharg::config{
                         .short_id = 'd', .long_id = "method",
                         .description = "Choose the detection method(s) to be used. "
@@ -127,6 +127,7 @@ void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args)
                         .advanced = true});
 
     // Options - SV specifications:
+    parser.add_subsection("SV specifications");
     parser.add_option(args.min_var_length, sharg::config{
                         .short_id = 'k', .long_id = "min_var_length",
                         .description = "Specify what should be the minimum length of your SVs to be detected. "
@@ -160,6 +161,7 @@ void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args)
                         .advanced = true});
 
     // Options - Clustering specifications:
+    parser.add_subsection("Clustering specifications");
     parser.add_option(args.partition_max_distance, sharg::config{
                         .short_id = 'p', .long_id = "partition_max_distance",
                         .description = "Specify the maximum distance in bp between members of the same partition."

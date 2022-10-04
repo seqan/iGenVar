@@ -30,7 +30,7 @@ jobs:
             build: documentation
             build_threads: 2
             test_threads: 2
-            cmake: 3.11.4
+            cmake: 3.16.0
             doxygen: 1.9.3
             requires_toolchain: true
             requires_ccache: false

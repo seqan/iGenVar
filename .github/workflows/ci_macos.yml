@@ -7,8 +7,8 @@ on:
   pull_request:
 
 env:
-  CMAKE_VERSION: 3.16.0
-  SEQAN3_NO_VERSION_CHECK: 1
+  CMAKE_VERSION: 3.16.9
+  SHARG_NO_VERSION_CHECK: 1
   TZ: Europe/Berlin
 
 defaults:

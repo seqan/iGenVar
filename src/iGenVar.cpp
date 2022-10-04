@@ -13,116 +13,165 @@
 #include "variant_detection/variant_detection.hpp"                  // for detect_junctions_in_long_reads_sam_file()
 #include "variant_detection/variant_output.hpp"                     // for find_and_output_variants()
 
-void initialize_argument_parser(seqan3::argument_parser & parser, cmd_arguments & args)
+static inline std::vector<std::string> sequence_extensions{
+    seqan3::detail::valid_file_extensions<typename seqan3::sequence_file_input<>::valid_formats>()};
+
+static inline std::vector<std::string> compression_extensions{[]()
+                                                              {
+                                                                  std::vector<std::string> result;
+#ifdef SEQAN3_HAS_BZIP2
+                                                                  result.push_back("bz2");
+#endif
+#ifdef SEQAN3_HAS_ZLIB
+                                                                  result.push_back("gz");
+                                                                  result.push_back("bgzf");
+#endif
+                                                                  return result;
+                                                              }()}; // GCOVR_EXCL_LINE
+
+static inline std::vector<std::string> combined_extensions{
+    []()
+    {
+        if (compression_extensions.empty())
+            return sequence_extensions; // GCOVR_EXCL_LINE
+        std::vector<std::string> result;
+        for (auto && sequence_extension : sequence_extensions)
+        {
+            result.push_back(sequence_extension);
+            for (auto && compression_extension : compression_extensions)
+                result.push_back(sequence_extension + std::string{'.'} + compression_extension);
+        }
+        return result;
+    }()};
+
+void initialize_argument_parser(sharg::parser & parser, cmd_arguments & args)
 {
     parser.info.author = "Lydia Buntrock, David Heller, Joshua Kim";
     parser.info.app_name = "iGenVar";
     parser.info.man_page_title = "Short and Long Read SV Caller";
     parser.info.short_description = "Detect genomic variants in a read alignment file";
     parser.info.version = "0.0.3";
-    parser.info.date = "30-03-2021";    // last update
+    parser.info.date = "11-07-2022";    // last update
     parser.info.email = "lydia.buntrock@fu-berlin.de";
     parser.info.long_copyright = "long_copyright";
     parser.info.short_copyright = "short_copyright";
     parser.info.url = "https://github.com/seqan/iGenVar/";
 
     // Options - Input / Output:
-    parser.add_option(args.alignment_short_reads_file_path,
-                      'i', "input_short_reads",
-                      "Input short read alignments in SAM or BAM format (Illumina).",
-                      seqan3::option_spec::standard,
-                      seqan3::input_file_validator{{"sam", "bam"}} );
-    parser.add_option(args.alignment_long_reads_file_path,
-                      'j', "input_long_reads",
-                      "Input long read alignments in SAM or BAM format (PacBio, Oxford Nanopore, ...).",
-                      seqan3::option_spec::standard,
-                      seqan3::input_file_validator{{"sam", "bam"}} );
-    parser.add_option(args.genome_file_path,
-                      'g', "input_genome",
-                      "Input the sequence of the reference genome.",
-                      seqan3::option_spec::standard,
-                      seqan3::input_file_validator<seqan3::sequence_file_input<>>{} );
-    parser.add_option(args.output_file_path, 'o', "output",
-                      "The path of the vcf output file. If no path is given, will output to standard output.",
-                      seqan3::option_spec::standard,
-                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create, {"vcf"}});
+    parser.add_subsection("Input / Output");
+    parser.add_option(args.alignment_short_reads_file_path, sharg::config{
+                        .short_id = 'i', .long_id = "input_short_reads",
+                        .description = "Input short read alignments in SAM or BAM format (Illumina).",
+                        .validator = sharg::input_file_validator{{"sam", "bam"}} });
+    parser.add_option(args.alignment_long_reads_file_path, sharg::config{
+                        .short_id = 'j', .long_id = "input_long_reads",
+                        .description = "Input long read alignments in SAM or BAM format (PacBio, Oxford Nanopore, ...).",
+                        .validator = sharg::input_file_validator{{"sam", "bam"}} });
+    parser.add_option(args.genome_file_path, sharg::config{
+                        .short_id = 'g', .long_id = "input_genome",
+                        .description = "Input the sequence of the reference genome.",
+                        .validator = sharg::input_file_validator{combined_extensions}});
+    parser.add_option(args.output_file_path, sharg::config{
+                        .short_id = 'o', .long_id = "output",
+                        .description = "The path of the vcf output file. If no path is given, will output to standard output.",
+                        .validator = sharg::output_file_validator{sharg::output_file_open_options::open_or_create, {"vcf"}}});
 
     // Options - VCF:
-    parser.add_option(args.vcf_sample_name, 's', "vcf_sample_name",
-                      "Specify your sample name for the vcf header line.",
-                      seqan3::option_spec::standard);
+    parser.add_subsection("VCF");
+    parser.add_option(args.vcf_sample_name, sharg::config{
+                        .short_id = 's', .long_id = "vcf_sample_name",
+                        .description = "Specify your sample name for the vcf header line."});
 
     // Options - Other parameters:
-    parser.add_option(args.threads, 't', "threads",
-                      "Specify the number of decompression threads used for reading BAM files.",
-                      seqan3::option_spec::standard);
-    parser.add_flag(gVerbose, 'v', "verbose",
-                    "If you set this flag, we provide additional details about what iGenVar does. The detailed output "
-                    "is printed in the standard error.");
+    parser.add_subsection("Other parameters");
+    parser.add_option(args.threads, sharg::config{
+                        .short_id = 't', .long_id = "threads",
+                        .description = "Specify the number of decompression threads used for reading BAM files."});
+    parser.add_flag(gVerbose, sharg::config{
+                        .short_id = 'v', .long_id = "verbose",
+                        .description = "If you set this flag, we provide additional details about what iGenVar does. "
+                                       "The detailed output is printed in the standard error."});
 
     // Options - Optional output:
-    parser.add_option(args.junctions_file_path, 'a', "junctions",
-                      "The path of the optional junction output file. If no path is given, junctions will not be output.",
-                      seqan3::option_spec::advanced,
-                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create});
-    parser.add_option(args.clusters_file_path, 'b', "clusters",
-                      "The path of the optional cluster output file. If no path is given, clusters will not be output.",
-                      seqan3::option_spec::advanced,
-                      seqan3::output_file_validator{seqan3::output_file_open_options::open_or_create});
+    parser.add_subsection("Optional output");
+    parser.add_option(args.junctions_file_path, sharg::config{
+                        .short_id = 'a', .long_id = "junctions",
+                        .description = "The path of the optional junction output file. If no path is given, junctions will not be output.",
+                        .advanced = true,
+                        .validator = sharg::output_file_validator{sharg::output_file_open_options::open_or_create}});
+    parser.add_option(args.clusters_file_path, sharg::config{
+                        .short_id = 'b', .long_id = "clusters",
+                        .description = "The path of the optional cluster output file. If no path is given, clusters will not be output.",
+                        .advanced = true,
+                        .validator = sharg::output_file_validator{sharg::output_file_open_options::open_or_create}});
 
     // Options - Methods:
-    parser.add_option(args.methods, 'd', "method",
-                      "Choose the detection method(s) to be used. "
-                      "Value must be one of (method name or number) "
-                      "[0,cigar_string,1,split_read,2,read_pairs,3,read_depth].",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.clustering_method, 'c', "clustering_method",
-                      "Choose the clustering method to be used. "
-                      "Value must be one of (method name or number) [0,simple_clustering,"
-                      "1,hierarchical_clustering,2,self_balancing_binary_tree,3,candidate_selection_based_on_voting].",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.refinement_method, 'r', "refinement_method",
-                      "Choose the refinement method to be used. "
-                      "Value must be one of (method name or number) "
-                      "[0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].",
-                      seqan3::option_spec::advanced);
+    parser.add_subsection("Methods");
+    parser.add_option(args.methods, sharg::config{
+                        .short_id = 'd', .long_id = "method",
+                        .description = "Choose the detection method(s) to be used. "
+                                       "Value must be one of (method name or number) "
+                                       "[0,cigar_string,1,split_read,2,read_pairs,3,read_depth].",
+                        .advanced = true});
+    parser.add_option(args.clustering_method, sharg::config{
+                        .short_id = 'c', .long_id = "clustering_method",
+                        .description = "Choose the clustering method to be used. Value must be one of "
+                                       "(method name or number) [0,simple_clustering,1,hierarchical_clustering,"
+                                       "2,self_balancing_binary_tree,3,candidate_selection_based_on_voting].",
+                        .advanced = true});
+    parser.add_option(args.refinement_method, sharg::config{
+                        .short_id = 'r', .long_id = "refinement_method",
+                        .description = "Choose the refinement method to be used. "
+                                       "Value must be one of (method name or number) "
+                                       "[0,no_refinement,1,sViper_refinement_method,2,sVirl_refinement_method].",
+                        .advanced = true});
 
     // Options - SV specifications:
-    parser.add_option(args.min_var_length, 'k', "min_var_length",
-                      "Specify what should be the minimum length of your SVs to be detected. "
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.max_var_length, 'l', "max_var_length",
-                      "Specify what should be the maximum length of your SVs to be detected. "
-                      "SVs larger than this threshold can still be output as translocations. "
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.max_tol_inserted_length, 'm', "max_tol_inserted_length",
-                      "Specify what should be the longest tolerated inserted sequence at sites of DEL SVs. "
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.max_tol_deleted_length, 'e', "max_tol_deleted_length",
-                      "Specify what should be the longest tolerated deleted sequence at sites of non-DEL/INV SVs. "
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.max_overlap, 'n', "max_overlap",
-                      "Specify the maximum allowed overlap between two alignment segments. "
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.min_qual, 'q', "min_qual",
-                      "Specify the minimum quality (amount of supporting reads) of a structural variant to be reported "
-                      "in the vcf output file. This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
+    parser.add_subsection("SV specifications");
+    parser.add_option(args.min_var_length, sharg::config{
+                        .short_id = 'k', .long_id = "min_var_length",
+                        .description = "Specify what should be the minimum length of your SVs to be detected. "
+                                       "This value needs to be non-negative.",
+                        .advanced = true});
+    parser.add_option(args.max_var_length, sharg::config{
+                        .short_id = 'l', .long_id = "max_var_length",
+                        .description = "Specify what should be the maximum length of your SVs to be detected. "
+                                       "SVs larger than this threshold can still be output as translocations. "
+                                       "This value needs to be non-negative.",
+                        .advanced = true});
+    parser.add_option(args.max_tol_inserted_length, sharg::config{
+                        .short_id = 'm', .long_id = "max_tol_inserted_length",
+                        .description = "Specify what should be the longest tolerated inserted sequence at sites of DEL "
+                                       "SVs. This value needs to be non-negative.",
+                        .advanced = true});
+    parser.add_option(args.max_tol_deleted_length, sharg::config{
+                        .short_id = 'e', .long_id = "max_tol_deleted_length",
+                        .description = "Specify what should be the longest tolerated deleted sequence at sites of "
+                                       "non-DEL/INV SVs. This value needs to be non-negative.",
+                        .advanced = true});
+    parser.add_option(args.max_overlap, sharg::config{
+                        .short_id = 'n', .long_id = "max_overlap",
+                        .description = "Specify the maximum allowed overlap between two alignment segments. "
+                                       "This value needs to be non-negative.",
+                        .advanced = true});
+    parser.add_option(args.min_qual, sharg::config{
+                        .short_id = 'q', .long_id = "min_qual",
+                        .description = "Specify the minimum quality (amount of supporting reads) of a structural variant "
+                                       "to be reported in the vcf output file. This value needs to be non-negative.",
+                        .advanced = true});
 
     // Options - Clustering specifications:
-    parser.add_option(args.partition_max_distance, 'p', "partition_max_distance",
-                      "Specify the maximum distance in bp between members of the same partition."
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
-    parser.add_option(args.hierarchical_clustering_cutoff, 'w', "hierarchical_clustering_cutoff",
-                      "Specify the distance cutoff for the hierarchical clustering. "
-                      "This value needs to be non-negative.",
-                      seqan3::option_spec::advanced);
+    parser.add_subsection("Clustering specifications");
+    parser.add_option(args.partition_max_distance, sharg::config{
+                        .short_id = 'p', .long_id = "partition_max_distance",
+                        .description = "Specify the maximum distance in bp between members of the same partition."
+                                       "This value needs to be non-negative.",
+                        .advanced = true});
+    parser.add_option(args.hierarchical_clustering_cutoff, sharg::config{
+                        .short_id = 'w', .long_id = "hierarchical_clustering_cutoff",
+                        .description = "Specify the distance cutoff for the hierarchical clustering. "
+                                       "This value needs to be non-negative.",
+                        .advanced = true});
 }
 
 void detect_variants_in_alignment_file(cmd_arguments const & args)
@@ -238,18 +287,18 @@ void detect_variants_in_alignment_file(cmd_arguments const & args)
 
 int main(int argc, char ** argv)
 {
-    seqan3::argument_parser myparser{"iGenVar", argc, argv};    // initialise myparser
+    sharg::parser parser{"iGenVar", argc, argv};                    // initialise myparser
     cmd_arguments args{};
-    initialize_argument_parser(myparser, args);
+    initialize_argument_parser(parser, args);
 
     // Parse the given arguments and catch possible errors.
     try
     {
-        myparser.parse();                                               // trigger command line parsing
+        parser.parse();                                             // trigger command line parsing
     }
-    catch (seqan3::argument_parser_error const & ext)                   // catch user errors
+    catch (sharg::parser_error const & ext)                         // catch user errors
     {
-        seqan3::debug_stream << "[Error] " << ext.what() << '\n';       // customise your error message
+        seqan3::debug_stream << "[Error] " << ext.what() << '\n';   // customise your error message
         return -1;
     }
 

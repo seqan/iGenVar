@@ -46,14 +46,14 @@ rule truvari:
         output_dir = "results/caller_comparison_long_read/{dataset}/eval/{caller}/min_qual_{min_qual}"
     run:
         if wildcards.dataset == 'MtSinai_PacBio':
-            truth_set_gz = config["truth_set"]["gz"],
-            truth_set_bed = config["truth_set"]["bed"]
+            truth_set_gz = config["truth_set_HG002"]["gz"],
+            truth_set_bed = config["truth_set_HG002"]["bed"]
         elif wildcards.dataset == 'PacBio_CCS':
-            truth_set_gz = config["truth_set"]["gz"],
-            truth_set_bed = config["truth_set"]["bed"]
+            truth_set_gz = config["truth_set_HG002"]["gz"],
+            truth_set_bed = config["truth_set_HG002"]["bed"]
         else: # wildcards.dataset == '10X_Genomics'
-            truth_set_gz = config["truth_set_renamed_chr"]["gz"],
-            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+            truth_set_gz = config["truth_set_HG002_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
         shell("""
             rm -rf {params.output_dir} && truvari bench -b {truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \
                 --passonly --includebed {truth_set_bed} &>> {log}

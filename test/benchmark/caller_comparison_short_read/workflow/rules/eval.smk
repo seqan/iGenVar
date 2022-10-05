@@ -71,14 +71,14 @@ rule truvari:
         elif (wildcards.dataset == 'hg38_Sim_SNPandSV'):
             truth_set_gz = config["truth_set_simulation_SNPandSV"]["gz"]
         elif (wildcards.caller == 'GRIDSS'):
-            truth_set_gz = config["truth_set_renamed_chr"]["gz"],
-            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+            truth_set_gz = config["truth_set_HG002_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
         elif wildcards.dataset == 'Illumina_Paired_End':
-            truth_set_gz = config["truth_set"]["gz"],
-            truth_set_bed = config["truth_set"]["bed"]
+            truth_set_gz = config["truth_set_HG002"]["gz"],
+            truth_set_bed = config["truth_set_HG002"]["bed"]
         else: # wildcards.dataset == 'Illumina_Mate_Pair'
-            truth_set_gz = config["truth_set_renamed_chr"]["gz"],
-            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+            truth_set_gz = config["truth_set_HG002_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
         if (wildcards.dataset == 'Illumina_Paired_End') | (wildcards.dataset == 'Illumina_Mate_Pair'):
             shell("""
                 rm -rf {params.output_dir} && truvari bench -b {truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \

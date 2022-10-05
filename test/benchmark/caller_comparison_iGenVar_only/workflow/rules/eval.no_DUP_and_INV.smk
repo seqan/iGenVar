@@ -57,8 +57,8 @@ rule no_DUP_and_INV_truvari:
         "logs/truvari/truvari_output.{input_combination}.{min_qual}.log"
     params:
         output_dir = "results/caller_comparison_iGenVar_only/eval/{input_combination}/no_DUP_and_INV.min_qual_{min_qual}",
-        truth_set_gz = config["truth_set_renamed_chr"]["gz"],
-        truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+        truth_set_gz = config["truth_set_HG002_renamed_chr"]["gz"],
+        truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
     shell:
         """
         rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \
@@ -85,6 +85,10 @@ rule no_DUP_and_INV_cat_truvari_results_all:
                       min_qual = min_qual_iGenVar),
         S2   = expand("results/caller_comparison_iGenVar_only/eval/S2/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
                       min_qual = min_qual_iGenVar),
+        S3   = expand("results/caller_comparison_iGenVar_only/eval/S3/min_qual_{min_qual}/pr_rec.txt",
+                      min_qual = min_qual_iGenVar),
+        # S4   = expand("results/caller_comparison_iGenVar_only/eval/S4/min_qual_{min_qual}/pr_rec.txt",
+        #               min_qual = min_qual_iGenVar),
         L1   = expand("results/caller_comparison_iGenVar_only/eval/L1/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
                       min_qual = min_qual_iGenVar),
         L2   = expand("results/caller_comparison_iGenVar_only/eval/L2/no_DUP_and_INV.min_qual_{min_qual}/pr_rec.txt",
@@ -94,6 +98,8 @@ rule no_DUP_and_INV_cat_truvari_results_all:
     output:
         S1   = temp("results/caller_comparison_iGenVar_only/eval/S1.no_DUP_and_INV_results.txt"),
         S2   = temp("results/caller_comparison_iGenVar_only/eval/S2.no_DUP_and_INV_results.txt"),
+        S3   = temp("results/caller_comparison_iGenVar_only/eval/S3.all_results.txt"),
+        # S4   = temp("results/caller_comparison_iGenVar_only/eval/S4.all_results.txt"),
         L1   = temp("results/caller_comparison_iGenVar_only/eval/L1.no_DUP_and_INV_results.txt"),
         L2   = temp("results/caller_comparison_iGenVar_only/eval/L2.no_DUP_and_INV_results.txt"),
         L3   = temp("results/caller_comparison_iGenVar_only/eval/L3.no_DUP_and_INV_results.txt"),
@@ -102,10 +108,16 @@ rule no_DUP_and_INV_cat_truvari_results_all:
     run:
         shell("cat {input.S1} > {output.S1}")
         shell("cat {input.S2} > {output.S2}")
+        shell("cat {input.S3} > {output.S3}")
+        # shell("cat {input.S4} > {output.S4}")
         shell("cat {input.L1} > {output.L1}")
         shell("cat {input.L2} > {output.L2}")
         shell("cat {input.L3} > {output.L3}")
         shell("""
-            cat {output.S1} {output.S2} \
+            cat {output.S1} {output.S2} {output.S3} \
                 {output.L1} {output.L2} {output.L3} > {output.all}
         """)
+        # shell("""
+        #     cat {output.S1} {output.S2} {output.S3} {output.S4} \
+        #         {output.L1} {output.L2} {output.L3} > {output.all}
+        # """)

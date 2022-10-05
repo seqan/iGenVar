@@ -1,4 +1,5 @@
-sample = config["parameters"]["sample"],
+sample = config["parameters"]["sample_HG002"],
+sample_NA12878 = config["parameters"]["sample_NA12878"],
 min_var_length = config["parameters"]["min_var_length"]
 
 rule run_Vaquita_LR:

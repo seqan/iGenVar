@@ -96,8 +96,8 @@ rule truvari:
         summary = "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}/summary.txt"
     params:
         output_dir = "results/parameter_benchmarks/{dataset}/truvari/{parameter_name}/{parameter_value}_min_qual_{min_qual}",
-        truth_set_gz = config["truth_set_renamed_chr"]["gz"],
-        truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+        truth_set_gz = config["truth_set_HG002_renamed_chr"]["gz"],
+        truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
     log:
         "logs/parameter_benchmarks/truvari/{dataset}/{parameter_name}_{parameter_value}_min_qual_{min_qual}_output.log"
     run:

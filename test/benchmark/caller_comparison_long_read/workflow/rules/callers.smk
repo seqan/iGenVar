@@ -1,4 +1,4 @@
-sample = config["parameters"]["sample"],
+sample = config["parameters"]["sample_HG002"],
 min_var_length = config["parameters"]["min_var_length"],
 max_var_length = config["parameters"]["max_var_length"]
 

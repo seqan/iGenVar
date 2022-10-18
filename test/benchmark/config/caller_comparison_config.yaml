@@ -91,13 +91,13 @@ truth_set_DEL:
 truth_set_DEL_renamed_chr:
     gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.renamed_chr.vcf.gz
 truth_set_simulation_default:
-    gz: data/simulation_GRCh38/hg38_SV_simulation_default_sorted.vcf.gz
+    gz: data/simulation_GRCh38/hg38_SV_simulation_default_sorted_fixed.vcf.gz
 truth_set_simulation_InDel:
-    gz: data/simulation_GRCh38/hg38_SV_simulation_InDel_sorted.vcf.gz
+    gz: data/simulation_GRCh38/hg38_SV_simulation_InDel_sorted_fixed.vcf.gz
 truth_set_simulation_noSNP:
-    gz: data/simulation_GRCh38/hg38_SV_simulation_noSNP_sorted.vcf.gz
+    gz: data/simulation_GRCh38/hg38_SV_simulation_noSNP_sorted_fixed.vcf.gz
 truth_set_simulation_SNPandSV:
-    gz: data/simulation_GRCh38/hg38_SV_simulation_SNPandSV_sorted.vcf.gz
+    gz: data/simulation_GRCh38/hg38_SV_simulation_SNPandSV_sorted_fixed.vcf.gz
 # truth_set:
 #     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.vcf.gz
 #     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.bed

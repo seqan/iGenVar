@@ -86,16 +86,22 @@ picard SortVcf -I hg38_SV_simulation_SNPandSV.vcf \
                -O hg38_SV_simulation_SNPandSV_sorted.vcf -Xms1g -Xmx100g --TMP_DIR tmp/picard/ \
                >> hg38_SV_simulation_InDel.log
 
-bgzip -c hg38_SV_simulation_default_sorted.vcf > hg38_SV_simulation_default_sorted.vcf.gz
-bgzip -c hg38_SV_simulation_InDel_sorted.vcf > hg38_SV_simulation_InDel_sorted.vcf.gz
-bgzip -c hg38_SV_simulation_noSNP_sorted.vcf > hg38_SV_simulation_noSNP_sorted.vcf.gz
-bgzip -c hg38_SV_simulation_SNPandSV_sorted.vcf > hg38_SV_simulation_SNPandSV_sorted.vcf.gz
+# Repair vcf for truvari:
+../../build/iGenVar/bin/MasonVcfConverter -i hg38_SV_simulation_default_sorted.vcf -o hg38_SV_simulation_default_sorted_fixed.vcf
+../../build/iGenVar/bin/MasonVcfConverter -i hg38_SV_simulation_InDel_sorted.vcf -o hg38_SV_simulation_InDel_sorted_fixed.vcf
+../../build/iGenVar/bin/MasonVcfConverter -i hg38_SV_simulation_noSNP_sorted.vcf -o hg38_SV_simulation_noSNP_sorted_fixed.vcf
+../../build/iGenVar/bin/MasonVcfConverter -i hg38_SV_simulation_SNPandSV_sorted.vcf -o hg38_SV_simulation_SNPandSV_sorted_fixed.vcf
+
+bgzip -c hg38_SV_simulation_default_sorted_fixed.vcf > hg38_SV_simulation_default_sorted_fixed.vcf.gz
+bgzip -c hg38_SV_simulation_InDel_sorted_fixed.vcf > hg38_SV_simulation_InDel_sorted_fixed.vcf.gz
+bgzip -c hg38_SV_simulation_noSNP_sorted_fixed.vcf > hg38_SV_simulation_noSNP_sorted_fixed.vcf.gz
+bgzip -c hg38_SV_simulation_SNPandSV_sorted_fixed.vcf > hg38_SV_simulation_SNPandSV_sorted_fixed.vcf.gz
 
 # create index
-tabix -p vcf hg38_SV_simulation_default_sorted.vcf.gz
-tabix -p vcf hg38_SV_simulation_InDel_sorted.vcf.gz
-tabix -p vcf hg38_SV_simulation_noSNP_sorted.vcf.gz
-tabix -p vcf hg38_SV_simulation_SNPandSV_sorted.vcf.gz
+tabix -p vcf hg38_SV_simulation_default_sorted_fixed.vcf.gz
+tabix -p vcf hg38_SV_simulation_InDel_sorted_fixed.vcf.gz
+tabix -p vcf hg38_SV_simulation_noSNP_sorted_fixed.vcf.gz
+tabix -p vcf hg38_SV_simulation_SNPandSV_sorted_fixed.vcf.gz
 
 # mason_simulator - Read Simulation
 # =================================

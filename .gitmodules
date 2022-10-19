@@ -6,8 +6,11 @@
 	path = lib/BAMIntervalTree
 	url = ../../joshuak94/BAMIntervalTree.git
 	branch = master
-[submodule "b.i.o."]
-	path = lib/b.i.o.
-	# url = ../../h-2/b.i.o..git
-	url = https://github.com/eseiler/b.i.o..git
-	branch = master
+[submodule "biocpp-core"]
+	path = lib/biocpp-core
+	url = ../../biocpp/biocpp-core.git
+	branch = main
+[submodule "biocpp-io"]
+	path = lib/biocpp-io
+	url = ../../biocpp/biocpp-io.git
+	branch = main

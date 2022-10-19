@@ -31,11 +31,8 @@ list (APPEND CMAKE_PREFIX_PATH "${CMAKE_CURRENT_LIST_DIR}/lib/biocpp-io/build_sy
 # Dependency: SeqAn3.
 find_package (SeqAn3 REQUIRED)
 
-# Dependency: biocpp-core.
-find_package (biocpp_core REQUIRED)
-
-# Dependency: biocpp-io.
-find_package (biocpp_io REQUIRED)
+# Dependency: biocpp.
+find_package (biocpp REQUIRED COMPONENTS core io)
 
 # Use ccache.
 include ("${SEQAN3_CLONE_DIR}/test/cmake/seqan3_require_ccache.cmake")

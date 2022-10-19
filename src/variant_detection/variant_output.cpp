@@ -66,9 +66,9 @@ void write_record(Cluster const & cluster,
     record.ref = "N"_dna5;
     record.qual = cluster.get_cluster_size();
     record.filter = {"PASS"};
-    record.genotypes = {};
+    record.genotypes.clear();
     record.genotypes.push_back({ .id = "GT", .value = std::vector{"./."s}});
-    record.info = {};
+    record.info.clear();
 
     if (mate1.seq_name == mate2.seq_name)
     {

@@ -22,20 +22,20 @@ std::string transTime()
 
 void write_header(std::map<std::string, int32_t> & references_lengths,
                   std::string sample_name,
-                  bio::io::var_io::header & hdr)
+                  bio::io::var::header & hdr)
 {
     hdr.file_format = "VCFv4.3";
     // Default:
     // hdr.filters.push_back({ .id = "PASS", .description = "All filters passed"});
-    hdr.infos.push_back({ .id = "END", .number = 1, .type_id = bio::io::var_io::value_type_id::int32,
+    hdr.infos.push_back({ .id = "END", .number = 1, .type_id = bio::io::var::value_type_id::int32,
                           .description = "End position of SV called."});
-    hdr.infos.push_back({ .id = "SVLEN", .number = 1, .type_id = bio::io::var_io::value_type_id::int32,
+    hdr.infos.push_back({ .id = "SVLEN", .number = 1, .type_id = bio::io::var::value_type_id::int32,
                           .description = "Difference in length between REF and ALT alleles."});
-    hdr.infos.push_back({ .id = "iGenVar_SVLEN", .number = 1, .type_id = bio::io::var_io::value_type_id::int32,
+    hdr.infos.push_back({ .id = "iGenVar_SVLEN", .number = 1, .type_id = bio::io::var::value_type_id::int32,
                           .description = "Length of SV called."});
-    hdr.infos.push_back({ .id = "SVTYPE", .number = 1, .type_id = bio::io::var_io::value_type_id::string,
+    hdr.infos.push_back({ .id = "SVTYPE", .number = 1, .type_id = bio::io::var::value_type_id::string,
                           .description = "Type of SV called."});
-    hdr.formats.push_back({ .id = "GT", .number = 1, .type_id = bio::io::var_io::value_type_id::string,
+    hdr.formats.push_back({ .id = "GT", .number = 1, .type_id = bio::io::var::value_type_id::string,
                           .description = "Genotype"});
 
     for (auto const & [id, length] : references_lengths)
@@ -52,7 +52,7 @@ void write_header(std::map<std::string, int32_t> & references_lengths,
 void write_record(Cluster const & cluster,
                   cmd_arguments const & args,
                   bool & found_SV,
-                  bio::io::var_io::record<> & record)
+                  bio::io::var::record<> & record)
 {
     Breakend mate1 = cluster.get_average_mate1();
     Breakend mate2 = cluster.get_average_mate2();
@@ -150,10 +150,10 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
                               cmd_arguments const & args,
                               std::filesystem::path const & output_file_path)
 {
-    bio::io::var_io::header hdr{};
+    bio::io::var::header hdr{};
     write_header(references_lengths, args.vcf_sample_name, hdr);
 
-    bio::io::var_io::record<> record{};
+    bio::io::var::record<> record{};
     size_t amount_SVs = 0;
     bool found_SV = false;
 
@@ -161,7 +161,7 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
     std::ios::sync_with_stdio(false);
 
     auto writer
-        = output_file_path.empty() ? bio::io::var_io::writer{std::cout, bio::io::vcf{}} : bio::io::var_io::writer{output_file_path};
+        = output_file_path.empty() ? bio::io::var::writer{std::cout, bio::io::vcf{}} : bio::io::var::writer{output_file_path};
 
     writer.set_header(hdr);
     for (size_t i = 0; i < clusters.size(); ++i)

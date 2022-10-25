@@ -45,23 +45,24 @@ rule simulation_cat_truvari_results_all:
                                    min_qual = min_qual_VaquitaLR),
         hg38_Sim_InDel    = expand("results/caller_comparison_vaquita_lr/eval/hg38_Sim_InDel/simulation.min_qual_{min_qual}/pr_rec.txt",
                                    min_qual = min_qual_VaquitaLR),
-        hg38_Sim_noSNP    = expand("results/caller_comparison_vaquita_lr/eval/hg38_Sim_noSNP/simulation.min_qual_{min_qual}/pr_rec.txt",
-                                   min_qual = min_qual_VaquitaLR),
+        # hg38_Sim_noSNP    = expand("results/caller_comparison_vaquita_lr/eval/hg38_Sim_noSNP/simulation.min_qual_{min_qual}/pr_rec.txt",
+        #                            min_qual = min_qual_VaquitaLR),
         hg38_Sim_SNPandSV = expand("results/caller_comparison_vaquita_lr/eval/hg38_Sim_SNPandSV/simulation.min_qual_{min_qual}/pr_rec.txt",
                                    min_qual = min_qual_VaquitaLR)
     output:
         hg38_Sim_default  = temp("results/caller_comparison_vaquita_lr/eval/hg38_Sim_default.all_results.txt"),
         hg38_Sim_InDel    = temp("results/caller_comparison_vaquita_lr/eval/hg38_Sim_InDel.all_results.txt"),
-        hg38_Sim_noSNP    = temp("results/caller_comparison_vaquita_lr/eval/hg38_Sim_noSNP.all_results.txt"),
+        # hg38_Sim_noSNP    = temp("results/caller_comparison_vaquita_lr/eval/hg38_Sim_noSNP.all_results.txt"),
         hg38_Sim_SNPandSV = temp("results/caller_comparison_vaquita_lr/eval/hg38_Sim_SNPandSV.all_results.txt"),
         all = "results/caller_comparison_vaquita_lr/eval/simulation.txt"
     threads: 1
     run:
         shell("cat {input.hg38_Sim_default} > {output.hg38_Sim_default}")
         shell("cat {input.hg38_Sim_InDel} > {output.hg38_Sim_InDel}")
-        shell("cat {input.hg38_Sim_noSNP} > {output.hg38_Sim_noSNP}")
+        # shell("cat {input.hg38_Sim_noSNP} > {output.hg38_Sim_noSNP}")
         shell("cat {input.hg38_Sim_SNPandSV} > {output.hg38_Sim_SNPandSV}")
-        shell("""
-            cat {output.hg38_Sim_default} {output.hg38_Sim_InDel} \
-                {output.hg38_Sim_noSNP} {output.hg38_Sim_SNPandSV} > {output.all}
-        """)
+        shell("cat {output.hg38_Sim_default} {output.hg38_Sim_InDel} {output.hg38_Sim_SNPandSV} > {output.all}")
+        # shell("""
+        #     cat {output.hg38_Sim_default} {output.hg38_Sim_InDel} \
+        #         {output.hg38_Sim_noSNP} {output.hg38_Sim_SNPandSV} > {output.all}
+        # """)

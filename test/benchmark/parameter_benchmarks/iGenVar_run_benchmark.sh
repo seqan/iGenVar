@@ -22,7 +22,7 @@ start=$(date +%s) # get starting date
 # conda env create -f environment.yml
 
 # source ~/.bashrc                  # if the .bashrc is not executed automatically
-conda activate iGenVar_benchmark
+conda activate benchmarks
 
 # -------- -------- run iGenVar with default values -------- -------- #
 

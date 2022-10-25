@@ -4,10 +4,11 @@ include: "workflow/rules/callers.smk"
 include: "workflow/rules/eval.smk"
 include: "workflow/rules/plots.smk"
 
+ruleorder: create_empty_Vaquita > create_empty_GRIDSS > reformat_truvari_results
+
 ##### Target rules #####
 
 rule all:
     input:
-        # SV calling
-        expand("results/caller_comparison/SVIM/variants.vcf"),
-        expand("results/caller_comparison/eval/results.all.png")
+        expand("results/caller_comparison_short_read/{dataset}_results.all.png",
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"])

@@ -9,6 +9,9 @@ short_read_bam:
 # short_read_bam:
 #     s1: data/short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
 #     s2: data/short_reads/GRCh38/HG002.sorted.bam
+short_bam_name:
+    s1: "AshkenazimTrio - HG002 NA24385 Son - NIST Illumina 2x250bps Paired-end"
+    s2: "AshkenazimTrio - HG002 NA24385 Son - NIST Stanford Illumina 6kb Mate Pair"
 
 # long read data
 ## MtSinai PacBio (minimap2)
@@ -48,7 +51,7 @@ long_bam_name:
 ### GRCh37
 reference_fa:
     Illumina_Paired_End: data/reference/GRCh37/hs37d5.fa
-    Illumina_Mate_Pair: data/reference/GRCh37/hg19.reordered.fa
+    Illumina_Mate_Pair: data/reference/GRCh37/hg19.reordered.short.fa
     MtSinai_PacBio: data/reference/GRCh37/hs37d5.fa
     PacBio_CCS: data/reference/GRCh37/hs37d5.fa
     10X_Genomics: data/reference/GRCh37/hg19.reordered.fa
@@ -61,19 +64,19 @@ reference_fa:
 #     10X_Genomics: data/reference/GRCh38/???
 
 truth_set:
-    gz: data/truth_set/HG002_SVs_Tier1_v0.6.vcf.gz
-    bed: data/truth_set/HG002_SVs_Tier1_v0.6.bed
+    gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.vcf.gz
+    bed: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.bed
 truth_set_renamed_chr:
-    gz: data/truth_set/HG002_SVs_Tier1_v0.6.renamed_chr.vcf.gz
-    bed: data/truth_set/HG002_SVs_Tier1_v0.6.renamed_chr.bed
+    gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.renamed_chr.vcf.gz
+    bed: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.renamed_chr.bed
 truth_set_INS:
-    gz: data/truth_set/INS/HG002_SVs_Tier1_v0.6.INS.vcf.gz
+    gz: data/truth_set/HG002/INS/HG002_SVs_Tier1_v0.6.INS.vcf.gz
 truth_set_INS_renamed_chr:
-    gz: data/truth_set/INS/HG002_SVs_Tier1_v0.6.INS.renamed_chr.vcf.gz
+    gz: data/truth_set/HG002/INS/HG002_SVs_Tier1_v0.6.INS.renamed_chr.vcf.gz
 truth_set_DEL:
-    gz: data/truth_set/DEL/HG002_SVs_Tier1_v0.6.DEL.vcf.gz
+    gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.vcf.gz
 truth_set_DEL_renamed_chr:
-    gz: data/truth_set/DEL/HG002_SVs_Tier1_v0.6.DEL.renamed_chr.vcf.gz
+    gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.renamed_chr.vcf.gz
 # truth_set:
 #     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.vcf.gz
 #     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.bed
@@ -81,8 +84,8 @@ truth_set_DEL_renamed_chr:
 #     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.vcf.gz
 #     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.bed
 
-# for hg38 (UCSC chr notation)
-blacklist: data/blacklist/ENCFF356LFX.bed
+# GRIDSS: for hg38 (UCSC chr notation)
+# blacklist: data/blacklist/ENCFF356LFX.bed
 
 parameters:
     sample: HG002
@@ -93,6 +96,14 @@ quality_ranges:
     from: 1
     to: 60
     step: 1
+    Delly2:
+        from: 1
+        to: 1500
+        step: 10
+    GRIDSS:
+        from: 0
+        to: 5000
+        step: 100
     iGenVar:
         from: 1
         to: 50
@@ -100,6 +111,10 @@ quality_ranges:
     sniffles:
         from: 2
         to: 60
+        step: 1
+    TIDDIT:
+        from: 1 # QUAL goes exactly from 0 to 100
+        to: 100
         step: 1
     Vaquita-LR:
         from: 1

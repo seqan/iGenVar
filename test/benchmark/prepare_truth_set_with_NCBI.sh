@@ -40,7 +40,7 @@ ${WGET} ${NCBI}/pub/remap/Homo_sapiens/2.2/GCF_000001405.13_GRCh37/GCF_000001405
 # target
 ${WGET} ${NCBI}/pub/remap/Homo_sapiens/2.2/GCF_000001405.26_GRCh38/GCF_000001405.39_GRCh38.p13/GCF_000001405.26-GCF_000001405.39.gff
 
-echo "$(tput setaf 1)$(tput setab 7)------- NCBI Genome Remapping Service installed and prepared (5.4/5.6) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- NCBI Genome Remapping Service installed and prepared (5.4/9.6) --------$(tput sgr 0)" 1>&3
 
 # convert truth set (VCF & BED)
 
@@ -48,7 +48,7 @@ echo "$(tput setaf 1)$(tput setab 7)------- NCBI Genome Remapping Service instal
 perl remap_api.pl --mode asm-asm --from GCF_000001405.13 --dest GCF_000001405.39 --annotation ${TRUTH_SET}.vcf --annot_out ${TRUTH_SET}.Hg38.vcf --report_out ${TRUTH_SET}_GRCh37_GRCh38.tsv --gbench_out ${TRUTH_SET}_GRCh38.gbp
 perl remap_api.pl --mode asm-asm --from GCF_000001405.13 --dest GCF_000001405.39 --annotation ${TRUTH_SET}.bed --annot_out ${TRUTH_SET}.Hg38.bed --report_out ${TRUTH_SET}_GRCh37_GRCh38.tsv --gbench_out ${TRUTH_SET}_GRCh38.gbp
 
-echo "$(tput setaf 1)$(tput setab 7)------- truth set files remapped (5.5/5.6) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- truth set files remapped (5.5/9.6) --------$(tput sgr 0)" 1>&3
 
 ## VCF
 # create new tbi file
@@ -76,4 +76,4 @@ sed -e 's!chr!!' truth_set/${TRUTH_SET}.renamed_chr.Hg38.bed > truth_set/${TRUTH
 
 # convert2bed --input=vcf --insertions < NA24385.GRCh38.large_svs.vcf.gz > insertions.bed
 
-echo "$(tput setaf 1)$(tput setab 7)------- truth set files prepared (5.6/5.6) --------$(tput sgr 0)" 1>&3
+echo "$(tput setaf 1)$(tput setab 7)------- truth set files prepared (5.6/9.6) --------$(tput sgr 0)" 1>&3

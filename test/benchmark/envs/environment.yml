@@ -1,25 +1,28 @@
-name: iGenVar_benchmark
+name: benchmarks
 channels:
   - defaults
   - conda-forge
   - bioconda
 dependencies:
-  # - bedops    # for vcf2bed
-  - bgzip       # rule tabix - accepts only zipped files zipped with bgzip
-  - crossmap    # for coordinate_conversion.sh
+  # - bedops           # for vcf2bed
+  - bgzip            # rule tabix - accepts only zipped files zipped with bgzip
+  - crossmap         # for coordinate_conversion.sh
+  - delly=1.0.3
+  # - lumpy-sv=0.3.1   # rule run_Lumpy
   - mamba
-  - matplotlib  # rule run_svim
+  - matplotlib       # rule run_svim
   - pbsv=2.6.2
-  - picard      # rule picard
+  - picard           # rule picard
   - pip
   - python=3.6
   - r
   - r-tidyverse
-  - samtools
-  - scipy       # rule run_svim
-  - snakemake
+  - samtools         # bgzip for rule tabix - accepts only zipped files zipped with bgzip
+  - scipy            # rule run_svim
+  - snakemake=6.15.5 # snakemake>6 needs python>3.6
   # - svim=2.0.0
   - tabix
+  - tiddit=2.12.1    # rule run_TIDDIT
   - yappi
   - pip:
     - truvari

@@ -1,0 +1,8 @@
+name: gridss
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - gridss=2.13.2   # rule run_GRIDSS
+  # Python 3.10.4

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <bio/io/var_io/writer.hpp>
+#include <bio/io/var/writer.hpp>
 
 #include "iGenVar.hpp"              // for cmd_arguments
 #include "structures/cluster.hpp"   // for class Cluster
@@ -19,7 +19,7 @@ std::string transTime();
  */
 void write_header(std::map<std::string, int32_t> & references_lengths,
                   std::string sample_name,
-                  bio::io::var_io::header & hdr);
+                  bio::io::var::header & hdr);
 
 /*! \brief Detects genomic variants from junction clusters and saves them in a record vector.
  *
@@ -43,7 +43,7 @@ void write_header(std::map<std::string, int32_t> & references_lengths,
 void write_record(Cluster const & cluster,
                   cmd_arguments const & args,
                   bool & found_SV,
-                  bio::io::var_io::record<> & record);
+                  bio::io::var::record<> & record);
 
 /*! \brief Detects genomic variants from junction clusters and prints them in output file in VCF format.
  *

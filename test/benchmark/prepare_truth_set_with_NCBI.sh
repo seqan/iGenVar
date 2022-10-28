@@ -74,6 +74,4 @@ CrossMap.py bed hg19ToHg38.over.chain.gz truth_set/${TRUTH_SET}.renamed_chr.bed 
 # remove chr from chromosome names again
 sed -e 's!chr!!' truth_set/${TRUTH_SET}.renamed_chr.Hg38.bed > truth_set/${TRUTH_SET}.Hg38.bed
 
-# convert2bed --input=vcf --insertions < NA24385.GRCh38.large_svs.vcf.gz > insertions.bed
-
 echo "$(tput setaf 1)$(tput setab 7)------- truth set files prepared (5.6/9.6) --------$(tput sgr 0)" 1>&3

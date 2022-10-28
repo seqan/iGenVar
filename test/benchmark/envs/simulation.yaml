@@ -1,0 +1,10 @@
+name: simulation
+channels:
+  - defaults
+  - conda-forge
+  - bioconda
+dependencies:
+  - bwa>=0.7  # for aligning the simulated reads
+  - mamba
+  - mason     # for simulation Illumina short reads
+  - picard    # for sorting vcf files

@@ -26,3 +26,7 @@ target_compile_options ("${PROJECT_NAME}_lib" PUBLIC "-pedantic" "-Wall" "-Wextr
 
 add_executable ("${PROJECT_NAME}" iGenVar.cpp)
 target_link_libraries ("${PROJECT_NAME}" PRIVATE "${PROJECT_NAME}_lib")
+
+# MasonVcfConverter - for Simulation Benchmarks
+add_executable (MasonVcfConverter ../test/benchmark/simulation/mason_vcf_converter.cpp)
+target_link_libraries (MasonVcfConverter PRIVATE biocpp::core biocpp::io seqan3::seqan3)

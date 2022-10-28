@@ -5,6 +5,7 @@ include: "workflow/rules/eval.smk"
 include: "workflow/rules/eval.DEL.smk"
 include: "workflow/rules/eval.INS.smk"
 include: "workflow/rules/eval.no_DUP_and_INV.smk"
+include: "workflow/rules/eval.simulation.smk"
 include: "workflow/rules/plots.smk"
 
 ##### Target rules #####
@@ -14,4 +15,5 @@ rule all:
         "results/caller_comparison_iGenVar_only/results.all.png",
         "results/caller_comparison_iGenVar_only/results.DEL.png",
         "results/caller_comparison_iGenVar_only/results.INS.png",
-        "results/caller_comparison_iGenVar_only/results.no_DUP_and_INV.png"
+        "results/caller_comparison_iGenVar_only/results.no_DUP_and_INV.png",
+        "results/caller_comparison_iGenVar_only/results.simulation.png"

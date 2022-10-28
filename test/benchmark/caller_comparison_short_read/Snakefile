@@ -4,11 +4,12 @@ include: "workflow/rules/callers.smk"
 include: "workflow/rules/eval.smk"
 include: "workflow/rules/plots.smk"
 
-ruleorder: create_empty_Vaquita > create_empty_GRIDSS > reformat_truvari_results
+ruleorder: create_empty_Vaquita > run_Vaquita > copy_Vaquita_LR_results > create_empty_GRIDSS > create_empty_TIDDIT > run_TIDDIT > reformat_truvari_results
 
 ##### Target rules #####
 
 rule all:
     input:
         expand("results/caller_comparison_short_read/{dataset}_results.all.png",
-               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair"])
+               dataset=["Illumina_Paired_End", "Illumina_Mate_Pair",
+                        "hg38_Sim_default", "hg38_Sim_InDel", "hg38_Sim_noSNP", "hg38_Sim_SNPandSV"])

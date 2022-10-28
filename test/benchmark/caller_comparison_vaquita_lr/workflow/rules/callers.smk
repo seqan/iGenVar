@@ -78,13 +78,45 @@ rule run_Vaquita_LR:
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
                 --output-file {output.vcf} &>> {log}
             """)
-        else: # wildcards.input_combination == 'L3': # 10X Genomics
+        elif wildcards.input_combination == 'L3': # 10X Genomics
             long_bam = config["long_read_bam"]["l3"],
             genome = config["reference_fa"]["10X_Genomics"]
             shell("""
             /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --longRead {long_bam} \
                 --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
                 --output-file {output.vcf} &>> {log}
+            """)
+        elif wildcards.input_combination == 'hg38_Sim_default': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim1"],
+            genome = config["reference_fa"]["simulation_ref"]
+            shell("""
+            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} \
+                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
+                --output-file {output.vcf} --no-polishing &>> {log}
+            """)
+        elif wildcards.input_combination == 'hg38_Sim_InDel': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim2"],
+            genome = config["reference_fa"]["simulation_ref"]
+            shell("""
+            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} \
+                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
+                --output-file {output.vcf} --no-polishing &>> {log}
+            """)
+        elif wildcards.input_combination == 'hg38_Sim_noSNP': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim3"],
+            genome = config["reference_fa"]["simulation_ref"]
+            shell("""
+            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} \
+                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
+                --output-file {output.vcf} --no-polishing &>> {log}
+            """)
+        else: # wildcards.input_combination == 'hg38_Sim_SNPandSV': # Illumina
+            short_bam = config["simulated_short_read_bam"]["sim4"],
+            genome = config["reference_fa"]["simulation_ref"]
+            shell("""
+            /usr/bin/time -v ./build/Vaquita-LR/bin/vaquita call --shortRead {short_bam} \
+                --referenceGenome {genome} --cutoff 1 --minSVSize {min_var_length} --threadCount {threads} \
+                --output-file {output.vcf} --no-polishing &>> {log}
             """)
         # Defaults:
         # GENERAL
@@ -149,6 +181,8 @@ rule fix_vaquita_lr:
     params:
         igenvar_vcf = "results/caller_comparison_iGenVar_only/{input_combination}/variants.vcf"
     run:
+        # save the fileformat; add contigs from iGenVar vcfs; add the fileformat again
+        # It doesn't matter if the fileformat is in the vcf twice, the main thing is that it is in the first line of the header.
         shell("""
         fileformat=$(head -n 1 {input.vcf}) && \
         less {params.igenvar_vcf} | grep contig | cat - {input.vcf} > {output.vcf_1} && \

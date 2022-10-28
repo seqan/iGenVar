@@ -84,6 +84,8 @@ rule picard:
         vcf = "results/caller_comparison_long_read/{dataset}/SVIM/variants.vcf"
     log:
         "logs/caller_comparison_long_read/SVIM/picard_output.{dataset}.log"
+    conda:
+        "../../../envs/simulation.yaml"
     shell:
         "picard SortVcf -I {input.vcf} -O {output.vcf} -Xms1g -Xmx100g --TMP_DIR tmp/picard/ &>> {log}"
         # The Xms and Xmx sets the java memory for avoiding "java.lang.OutOfMemoryError: GC overhead limit exceeded"

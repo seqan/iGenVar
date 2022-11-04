@@ -34,33 +34,31 @@ include (ExternalProject)
 # This uses under the hood ExternalProject's and you can pass any viable option of ExternalProject to this function and
 # overwrite the default behaviour. See https://cmake.org/cmake/help/latest/module/ExternalProject.html for more
 # information.
-function(declare_datasource)
-    set(options "")
-    set(one_value_args FILE URL_HASH)
-    set(multi_value_args URL)
+function (declare_datasource)
+    set (options "")
+    set (one_value_args FILE URL_HASH)
+    set (multi_value_args URL)
 
-    cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+    cmake_parse_arguments (ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    string(TOLOWER "datasource--${ARG_FILE}" datasource_name)
+    string (TOLOWER "datasource--${ARG_FILE}" datasource_name)
 
     # create data folder
-    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
+    file (MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/data)
 
-    ExternalProject_Add(
-        "${datasource_name}"
-        URL "${ARG_URL}"
-        URL_HASH "${ARG_URL_HASH}"
-        DOWNLOAD_NAME "${ARG_FILE}"
-        CONFIGURE_COMMAND ""
-        BUILD_COMMAND ""
-        INSTALL_COMMAND
-            ${CMAKE_COMMAND} -E create_symlink <DOWNLOADED_FILE> ${CMAKE_CURRENT_BINARY_DIR}/data/${ARG_FILE}
-        TEST_COMMAND ""
-        PREFIX "${CMAKE_CURRENT_BINARY_DIR}/_datasources"
-        DOWNLOAD_NO_EXTRACT TRUE # don't extract archive files like .tar.gz.
-        ${ARG_UNPARSED_ARGUMENTS}
-    )
-endfunction()
+    ExternalProject_Add ("${datasource_name}"
+                         URL "${ARG_URL}"
+                         URL_HASH "${ARG_URL_HASH}"
+                         DOWNLOAD_NAME "${ARG_FILE}"
+                         CONFIGURE_COMMAND ""
+                         BUILD_COMMAND ""
+                         INSTALL_COMMAND ${CMAKE_COMMAND} -E create_symlink <DOWNLOADED_FILE>
+                                         ${CMAKE_CURRENT_BINARY_DIR}/data/${ARG_FILE}
+                         TEST_COMMAND ""
+                         PREFIX "${CMAKE_CURRENT_BINARY_DIR}/_datasources"
+                         DOWNLOAD_NO_EXTRACT TRUE # don't extract archive files like .tar.gz.
+                         ${ARG_UNPARSED_ARGUMENTS})
+endfunction ()
 
 # Example call:
 #
@@ -78,15 +76,15 @@ endfunction()
 # This also sets the build requirement that the files must be downloaded before the <target> will be build.
 #
 # The named <target> must have been created by a command such as add_executable() or add_library().
-function(target_use_datasources target)
-    set(options "")
-    set(one_value_args)
-    set(multi_value_args "FILES")
+function (target_use_datasources target)
+    set (options "")
+    set (one_value_args)
+    set (multi_value_args "FILES")
 
-    cmake_parse_arguments(ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
+    cmake_parse_arguments (ARG "${options}" "${one_value_args}" "${multi_value_args}" ${ARGN})
 
-    foreach(filename ${ARG_FILES})
-        string(TOLOWER "datasource--${filename}" datasource_name)
+    foreach (filename ${ARG_FILES})
+        string (TOLOWER "datasource--${filename}" datasource_name)
         add_dependencies ("${target}" "${datasource_name}")
-    endforeach()
-endfunction()
+    endforeach ()
+endfunction ()

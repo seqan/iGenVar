@@ -9,9 +9,9 @@ project (iGenVar VERSION 1.0.0)
 
 # Make Release default build type
 if (NOT CMAKE_BUILD_TYPE)
-    set (CMAKE_BUILD_TYPE Release CACHE STRING
-         "Choose the type of build, options are: Debug Release Coverage RelWithDebInfo MinSizeRel."
-         FORCE)
+    set (CMAKE_BUILD_TYPE
+         Release
+         CACHE STRING "Choose the type of build, options are: Debug Release Coverage RelWithDebInfo MinSizeRel." FORCE)
 endif ()
 
 # Specify the directories where to store the built archives, libraries and executables
@@ -40,25 +40,22 @@ seqan3_require_ccache ()
 
 # Dependency: hclust.
 include (FetchContent)
-FetchContent_Declare(
-        hclust
-        GIT_REPOSITORY https://github.com/cdalitz/hclust-cpp.git
-        GIT_TAG 8d2fe71fdc2dc5e95e76485f54b9f075a63a54e6        # commit from 17 Aug 2021
+FetchContent_Declare (hclust
+                      GIT_REPOSITORY https://github.com/cdalitz/hclust-cpp.git
+                      GIT_TAG 8d2fe71fdc2dc5e95e76485f54b9f075a63a54e6 # commit from 17 Aug 2021
 )
-FetchContent_Populate(hclust)
+FetchContent_Populate (hclust)
 add_library ("fastcluster" STATIC ${hclust_SOURCE_DIR}/fastcluster.cpp)
 target_include_directories ("fastcluster" PUBLIC ${hclust_SOURCE_DIR})
 
 # Dependency: Lemon Graph Library
-FetchContent_Declare(
-        lemon
-        GIT_REPOSITORY https://github.com/seqan/lemon.git
-        GIT_TAG 400d51cff5b4c4b59dd11a30965b9837a3df7b53
-)
-FetchContent_GetProperties(lemon)
+FetchContent_Declare (lemon
+                      GIT_REPOSITORY https://github.com/seqan/lemon.git
+                      GIT_TAG 400d51cff5b4c4b59dd11a30965b9837a3df7b53)
+FetchContent_GetProperties (lemon)
 if (NOT lemon_POPULATED)
-    FetchContent_Populate(lemon)
-    include_directories(SYSTEM ${lemon_SOURCE_DIR}/include)
+    FetchContent_Populate (lemon)
+    include_directories (SYSTEM ${lemon_SOURCE_DIR}/include)
 endif ()
 
 # Dependency: BAMIntervalTree.

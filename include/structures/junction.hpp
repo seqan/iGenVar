@@ -13,8 +13,10 @@ private:
     Breakend mate1{};
     Breakend mate2{};
     seqan3::dna5_vector inserted_sequence{};
+    seqan3::dna5_vector deleted_sequence{};
     size_t tandem_dup_count{};
     std::string read_name{};
+    float quality{};
 
 public:
     /*!\name Constructors, destructor and assignment
@@ -27,14 +29,17 @@ public:
     Junction & operator=(Junction &&)       = default; //!< Defaulted.
     ~Junction()                             = default; //!< Defaulted.
 
+    //! \brief Reduced constructor for variants.
     Junction(Breakend the_mate1,
              Breakend the_mate2,
              auto const & the_inserted_sequence,
              size_t the_tandem_dup_count,
              std::string the_read_name) : mate1{std::move(the_mate1)},
                                           mate2{std::move(the_mate2)},
+                                          deleted_sequence{},
                                           tandem_dup_count{the_tandem_dup_count},
-                                          read_name{std::move(the_read_name)}
+                                          read_name{std::move(the_read_name)},
+                                          quality{0}
     {
         if ((mate2.seq_name < mate1.seq_name) ||
             (mate2.seq_name == mate1.seq_name && mate2.position < mate1.position))
@@ -50,6 +55,22 @@ public:
             inserted_sequence = the_inserted_sequence | seqan3::ranges::to<seqan3::dna5_vector>();
         }
     }
+
+    //! \brief Extended constructor.
+    Junction(Breakend the_mate1,
+             Breakend the_mate2,
+             auto const & the_inserted_sequence,
+             auto const & the_deleted_sequence,
+             size_t the_tandem_dup_count,
+             std::string the_read_name,
+             float qual)
+    {
+        *this = Junction(the_mate1, the_mate2, the_inserted_sequence, the_tandem_dup_count, the_read_name);
+
+        // The deleted sequence is taken from the reference and thus never needs to be reversed.
+        deleted_sequence = the_deleted_sequence | seqan3::ranges::to<seqan3::dna5_vector>();
+        quality = qual;
+    }
     //!\}
 
     //! \brief Returns the first mate of this junction.
@@ -63,11 +84,17 @@ public:
     */
     seqan3::dna5_vector get_inserted_sequence() const;
 
+    //! \brief Returns the sequence that is deleted from the reference.
+    seqan3::dna5_vector get_deleted_sequence() const;
+
     //! \brief Returns the number of tandem copies of this junction.
     size_t get_tandem_dup_count() const;
 
     //! \brief Returns the name of the read giving rise to this junction.
     std::string get_read_name() const;
+
+    //! \brief Returns the quality value.
+    float get_quality() const;
 };
 
 template <typename stream_t>

@@ -337,11 +337,12 @@ TEST(output_file, output_file_fail)
     std::filesystem::path fail_path{tmp_dir/"fail_file.vcf"};
     std::filesystem::create_directory(fail_path); // Make a directory with same name as output file name.
     std::map<std::string, int32_t> empty_map{};
+    std::set<Junction> empty_set{};
     std::vector<Cluster> empty_vec{};
     cmd_arguments empty_args{};
 
-    EXPECT_THROW(find_and_output_variants(empty_map, empty_vec, empty_args, fail_path), std::runtime_error);
+    EXPECT_THROW(find_and_output_variants(empty_map, empty_vec, empty_set, empty_args, fail_path), std::runtime_error);
     std::filesystem::remove_all(fail_path);
-    EXPECT_NO_THROW(find_and_output_variants(empty_map, empty_vec, empty_args, fail_path));
+    EXPECT_NO_THROW(find_and_output_variants(empty_map, empty_vec, empty_set, empty_args, fail_path));
     std::filesystem::remove_all(fail_path);
 }

@@ -5,7 +5,9 @@
 #include <iomanip>  // for std::put_time
 #include <iostream> // for std::cout
 
-#include <seqan3/core/debug_stream.hpp> // for seqan3::debug_stream
+#include <seqan3/alphabet/views/to_char.hpp>                // for seqan3::views::to_char
+#include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
+#include <seqan3/core/debug_stream/detail/to_string.hpp>    // for seqan3::detail::to_string
 
 using namespace bio::alphabet::literals;
 using namespace std::string_literals;
@@ -147,6 +149,7 @@ void write_record(Cluster const & cluster,
 
 void find_and_output_variants(std::map<std::string, int32_t> & references_lengths,
                               std::vector<Cluster> const & clusters,
+                              std::set<Junction> const & snp_indels,
                               cmd_arguments const & args,
                               std::filesystem::path const & output_file_path)
 {
@@ -179,5 +182,27 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
         found_SV = false;
     }
 
-    seqan3::debug_stream << "Detected " << amount_SVs << " SVs.\n";
+    // SNP/indel
+    // Create instance of the modified record type (later, we use the default instance from above).
+    bio::io::var::record<> rec{};
+
+    size_t cnt = 0;
+    for (Junction const & junction : snp_indels)
+    {
+        bool ins = junction.get_deleted_sequence().empty();
+        bool del = junction.get_inserted_sequence().empty();
+        rec.chrom = junction.get_mate1().seq_name;
+        rec.pos = junction.get_mate1().position + 1; // Increment position by 1 because VCF is 1-based
+        rec.id = seqan3::detail::to_string("igenvar_", ins ? "ins" : del ? "del" : "snp", "_", cnt++);
+        rec.ref = seqan3::ranges::to<std::vector>(junction.get_deleted_sequence() | seqan3::views::to_char | bio::views::char_to<bio::alphabet::dna5>);
+        rec.alt = {seqan3::detail::to_string(junction.get_inserted_sequence())};
+        rec.qual = roundf(junction.get_quality() * 100) / 100.F; // round 2 digits
+        rec.filter = {"PASS"};
+        rec.genotypes = {};
+        rec.genotypes.push_back({ .id = "GT", .value = std::vector{"./."s}});
+        rec.info = {};
+        writer.push_back(rec);
+    }
+
+    seqan3::debug_stream << "Detected " << amount_SVs << " SVs and " << snp_indels.size() << " SNPs/Indels.\n";
 }

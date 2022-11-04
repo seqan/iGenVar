@@ -12,4 +12,6 @@ add_api_test (clustering_test.cpp)
 # add_api_test (refinement_test.cpp)
 
 add_api_test (snp_indel_test.cpp)
+target_use_datasources (snp_indel_test FILES simulated.minimap2.hg19.coordsorted_cutoff.sam)
+
 add_api_test (structures_test.cpp)

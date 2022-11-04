@@ -10,6 +10,7 @@ enum detection_methods
     split_read = 1,
     read_pairs = 2,
     read_depth = 3,
+    snp_indel = 4,
 
     // Also add new methods to the default values in the argument parser
 

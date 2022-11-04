@@ -22,7 +22,7 @@ struct cmd_arguments
     /* -v - verbose - global variable gVerbose */
     /* -t */ uint64_t threads = 1;
 // Methods:
-    /* -d */ std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth}; // default: all
+    /* -d */ std::vector<detection_methods> methods{cigar_string, split_read, read_pairs, read_depth, snp_indel}; // default: all
     /* -c */ clustering_methods clustering_method{hierarchical_clustering};          // default: hierarchical clustering
     /* -r */ refinement_methods refinement_method{no_refinement};                    // default: no refinement
 // SV specifications:

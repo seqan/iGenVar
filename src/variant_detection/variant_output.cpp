@@ -5,7 +5,9 @@
 #include <iomanip>  // for std::put_time
 #include <iostream> // for std::cout
 
-#include <seqan3/core/debug_stream.hpp> // for seqan3::debug_stream
+#include <seqan3/alphabet/views/to_char.hpp>                // for seqan3::views::to_char
+#include <seqan3/core/debug_stream.hpp>                     // for seqan3::debug_stream
+#include <seqan3/core/debug_stream/detail/to_string.hpp>    // for seqan3::detail::to_string
 
 using namespace bio::alphabet::literals;
 using namespace std::string_literals;
@@ -181,39 +183,24 @@ void find_and_output_variants(std::map<std::string, int32_t> & references_length
     }
 
     // SNP/indel
-    // TODO(joergi-w) This is a work-around to avoid an assertion in b.i.o. and can be replaced later.
-    // The assertion occurs with the default ref field type (vector<seqan3::dna5>) if ref().size() > 1
-    // Instead, I define the type as vector<char>, which works. See: https://github.com/biocpp/biocpp-io/issues/53
-    using field_types = seqan3::type_list<
-            std::string,                                                      // field::chrom,
-            int32_t,                                                          // field::pos,
-            std::string,                                                      // field::id,
-            std::vector<char>,        // <== modified from vector<dna5>       // field::ref,
-            std::vector<std::string>,                                         // field::alt,
-            float,                                                            // field::qual,
-            std::vector<std::string>,                                         // field::filter,
-            std::vector<bio::var_io::info_element<bio::ownership::deep>>,     // field::info,
-            std::vector<bio::var_io::genotype_element<bio::ownership::deep>>, // field::genotypes,
-            bio::var_io::record_private_data>;                                // field::_private
-
     // Create instance of the modified record type (later, we use the default instance from above).
-    bio::record<decltype(bio::var_io::default_field_ids), field_types> rec{};
+    bio::io::var::record<> rec{};
 
     size_t cnt = 0;
     for (Junction const & junction : snp_indels)
     {
         bool ins = junction.get_deleted_sequence().empty();
         bool del = junction.get_inserted_sequence().empty();
-        rec.chrom() = junction.get_mate1().seq_name;
-        rec.pos() = junction.get_mate1().position + 1; // Increment position by 1 because VCF is 1-based
-        rec.id() = seqan3::detail::to_string("igenvar_", ins ? "ins" : del ? "del" : "snp", "_", cnt++);
-        rec.ref() = seqan3::ranges::to<std::vector>(junction.get_deleted_sequence() | seqan3::views::to_char);
-        rec.alt() = {seqan3::detail::to_string(junction.get_inserted_sequence())};
-        rec.qual() = roundf(junction.get_quality() * 100) / 100.F; // round 2 digits
-        rec.filter() = {"PASS"};
-        rec.genotypes() = {};
-        rec.genotypes().push_back({ .id = "GT", .value = std::vector{"./."s}});
-        rec.info() = {};
+        rec.chrom = junction.get_mate1().seq_name;
+        rec.pos = junction.get_mate1().position + 1; // Increment position by 1 because VCF is 1-based
+        rec.id = seqan3::detail::to_string("igenvar_", ins ? "ins" : del ? "del" : "snp", "_", cnt++);
+        rec.ref = seqan3::ranges::to<std::vector>(junction.get_deleted_sequence() | seqan3::views::to_char | bio::views::char_to<bio::alphabet::dna5>);
+        rec.alt = {seqan3::detail::to_string(junction.get_inserted_sequence())};
+        rec.qual = roundf(junction.get_quality() * 100) / 100.F; // round 2 digits
+        rec.filter = {"PASS"};
+        rec.genotypes = {};
+        rec.genotypes.push_back({ .id = "GT", .value = std::vector{"./."s}});
+        rec.info = {};
         writer.push_back(rec);
     }
 

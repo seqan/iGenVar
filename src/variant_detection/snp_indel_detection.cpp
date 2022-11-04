@@ -1,6 +1,5 @@
 #include <iostream>
 #include <numeric>
-#include <seqan3/std/ranges>
 #include <sstream>
 
 #include <seqan3/alignment/configuration/align_config_method.hpp>

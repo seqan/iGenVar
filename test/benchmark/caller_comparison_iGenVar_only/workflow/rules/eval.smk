@@ -71,8 +71,8 @@ rule cat_truvari_results_all:
                       min_qual = min_qual_iGenVar),
         S3   = expand("results/caller_comparison_iGenVar_only/eval/S3/min_qual_{min_qual}/pr_rec.txt",
                       min_qual = min_qual_iGenVar),
-        S4   = expand("results/caller_comparison_iGenVar_only/eval/S4/min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
+        # S4   = expand("results/caller_comparison_iGenVar_only/eval/S4/min_qual_{min_qual}/pr_rec.txt",
+        #               min_qual = min_qual_iGenVar),
         S1L1 = expand("results/caller_comparison_iGenVar_only/eval/S1L1/min_qual_{min_qual}/pr_rec.txt",
                       min_qual = min_qual_iGenVar),
         S2L1 = expand("results/caller_comparison_iGenVar_only/eval/S2L1/min_qual_{min_qual}/pr_rec.txt",
@@ -101,7 +101,7 @@ rule cat_truvari_results_all:
         S1   = temp("results/caller_comparison_iGenVar_only/eval/S1.all_results.txt"),
         S2   = temp("results/caller_comparison_iGenVar_only/eval/S2.all_results.txt"),
         S3   = temp("results/caller_comparison_iGenVar_only/eval/S3.all_results.txt"),
-        S4   = temp("results/caller_comparison_iGenVar_only/eval/S4.all_results.txt"),
+        # S4   = temp("results/caller_comparison_iGenVar_only/eval/S4.all_results.txt"),
         S1L1 = temp("results/caller_comparison_iGenVar_only/eval/S1L1.all_results.txt"),
         S2L1 = temp("results/caller_comparison_iGenVar_only/eval/S2L1.all_results.txt"),
         S3L1 = temp("results/caller_comparison_iGenVar_only/eval/S3L1.all_results.txt"),
@@ -120,7 +120,7 @@ rule cat_truvari_results_all:
         shell("cat {input.S1} > {output.S1}")
         shell("cat {input.S2} > {output.S2}")
         shell("cat {input.S3} > {output.S3}")
-        shell("cat {input.S4} > {output.S4}")
+        # shell("cat {input.S4} > {output.S4}")
         shell("cat {input.S1L1} > {output.S1L1}")
         shell("cat {input.S2L1} > {output.S2L1}")
         shell("cat {input.S3L1} > {output.S3L1}")
@@ -134,9 +134,16 @@ rule cat_truvari_results_all:
         shell("cat {input.L2} > {output.L2}")
         shell("cat {input.L3} > {output.L3}")
         shell("""
-            cat {output.S1} {output.S2} {output.S3} {output.S4} \
-                {output.S1L1} {output.S2L1} {output.S3L1} \
-                {output.S1L2} {output.S2L2} {output.S3L2} \
-                {output.S1L3} {output.S2L3} {output.S3L3} \
+            cat {output.S1} {output.S2} {output.S3} \
+                {output.S1L1} {output.S2L1} \
+                {output.S1L2} {output.S2L2} \
+                {output.S1L3} {output.S2L3} \
                 {output.L1} {output.L2} {output.L3} > {output.all}
         """)
+        # shell("""
+        #     cat {output.S1} {output.S2} {output.S3} {output.S4} \
+        #         {output.S1L1} {output.S2L1} \
+        #         {output.S1L2} {output.S2L2} \
+        #         {output.S1L3} {output.S2L3} \
+        #         {output.L1} {output.L2} {output.L3} > {output.all}
+        # """)

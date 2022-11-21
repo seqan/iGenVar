@@ -22,9 +22,10 @@ f1 <- add_column(f1, min_qual = NA, .after="input_combination")
 # Combine res & f1
 total <- rbind(res, f1)
 total$input_combination = factor(total$input_combination,
-                                 levels=c('S1', 'S2', 'S3', 'S4', 'S1L1', 'S2L1', 'S1L2', 'S2L2', 'S1L3', 'S2L3', 'L1', 'L2', 'L3',
+                                 levels=c('S1', 'S2', 'S3', #'S4',
+                                          'S1L1', 'S2L1', 'S1L2', 'S2L2', 'S1L3', 'S2L3', 'L1', 'L2', 'L3',
                                           '0.1', '0.2', '0.3', '0.4', '0.5', '0.6', '0.7', '0.8', '0.9'),
-                                 labels=c('Illumina Paired End', 'Illumina Mate Pair', 'Illumina HiSeq', 'NA12878 WGS GRCh38',
+                                 labels=c('Illumina Paired End', 'Illumina Mate Pair', 'Illumina HiSeq', #'NA12878 WGS GRCh38',
                                           'Illumina Paired End & MtSinai PacBio', 'Illumina Mate Pair & MtSinai PacBio',
                                           'Illumina Paired End & PacBio CCS', 'Illumina Mate Pair & PacBio CCS',
                                           'Illumina Paired End & 10X Genomics', 'Illumina Mate Pair & 10X Genomics',
@@ -41,7 +42,7 @@ scale_custom <- list(
                                     'Illumina Paired End & PacBio CCS', 'Illumina Mate Pair & PacBio CCS',
                                     'Illumina Paired End & 10X Genomics', 'Illumina Mate Pair & 10X Genomics',
                                     'MtSinai PacBio', 'PacBio CCS', '10X Genomics'),
-                         values = c("chartreuse4", "chartreuse3", "chartreuse1", "green3",
+                         values = c("chartreuse4", "chartreuse3", "chartreuse1", #"green3",
                                     "deepskyblue", "dodgerblue1", "dodgerblue2", "dodgerblue3", "dodgerblue4", "darkblue",
                                     "firebrick1", "firebrick3", "firebrick4",
                                     "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan", "tan"),

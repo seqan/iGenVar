@@ -58,18 +58,6 @@ rule cat_truvari_results_DEL:
                       min_qual = min_qual_iGenVar),
         S2   = expand("results/caller_comparison_iGenVar_only/eval/S2/DEL.min_qual_{min_qual}/pr_rec.txt",
                       min_qual = min_qual_iGenVar),
-        S1L1 = expand("results/caller_comparison_iGenVar_only/eval/S1L1/DEL.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
-        S2L1 = expand("results/caller_comparison_iGenVar_only/eval/S2L1/DEL.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
-        S1L2 = expand("results/caller_comparison_iGenVar_only/eval/S1L2/DEL.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
-        S2L2 = expand("results/caller_comparison_iGenVar_only/eval/S2L2/DEL.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
-        S1L3 = expand("results/caller_comparison_iGenVar_only/eval/S1L3/DEL.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
-        S2L3 = expand("results/caller_comparison_iGenVar_only/eval/S2L3/DEL.min_qual_{min_qual}/pr_rec.txt",
-                      min_qual = min_qual_iGenVar),
         L1   = expand("results/caller_comparison_iGenVar_only/eval/L1/DEL.min_qual_{min_qual}/pr_rec.txt",
                       min_qual = min_qual_iGenVar),
         L2   = expand("results/caller_comparison_iGenVar_only/eval/L2/DEL.min_qual_{min_qual}/pr_rec.txt",
@@ -79,12 +67,6 @@ rule cat_truvari_results_DEL:
     output:
         S1   = temp("results/caller_comparison_iGenVar_only/eval/S1.DEL_results.txt"),
         S2   = temp("results/caller_comparison_iGenVar_only/eval/S2.DEL_results.txt"),
-        S1L1 = temp("results/caller_comparison_iGenVar_only/eval/S1L1.DEL_results.txt"),
-        S2L1 = temp("results/caller_comparison_iGenVar_only/eval/S2L1.DEL_results.txt"),
-        S1L2 = temp("results/caller_comparison_iGenVar_only/eval/S1L2.DEL_results.txt"),
-        S2L2 = temp("results/caller_comparison_iGenVar_only/eval/S2L2.DEL_results.txt"),
-        S1L3 = temp("results/caller_comparison_iGenVar_only/eval/S1L3.DEL_results.txt"),
-        S2L3 = temp("results/caller_comparison_iGenVar_only/eval/S2L3.DEL_results.txt"),
         L1   = temp("results/caller_comparison_iGenVar_only/eval/L1.DEL_results.txt"),
         L2   = temp("results/caller_comparison_iGenVar_only/eval/L2.DEL_results.txt"),
         L3   = temp("results/caller_comparison_iGenVar_only/eval/L3.DEL_results.txt"),
@@ -93,17 +75,10 @@ rule cat_truvari_results_DEL:
     run:
         shell("cat {input.S1} > {output.S1}")
         shell("cat {input.S2} > {output.S2}")
-        shell("cat {input.S1L1} > {output.S1L1}")
-        shell("cat {input.S2L1} > {output.S2L1}")
-        shell("cat {input.S1L2} > {output.S1L2}")
-        shell("cat {input.S2L2} > {output.S2L2}")
-        shell("cat {input.S1L3} > {output.S1L3}")
-        shell("cat {input.S2L3} > {output.S2L3}")
         shell("cat {input.L1} > {output.L1}")
         shell("cat {input.L2} > {output.L2}")
         shell("cat {input.L3} > {output.L3}")
         shell("""
-            cat {output.S1} {output.S2} {output.S1L1} {output.S2L1} \
-                {output.S1L2} {output.S2L2} {output.S1L3} {output.S2L3} \
+            cat {output.S1} {output.S2} \
                 {output.L1} {output.L2} {output.L3} > {output.all}
         """)

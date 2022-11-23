@@ -38,8 +38,8 @@ rule truvari:
         "logs/truvari/truvari_output.{dataset}.{long_read_enhancement}.{min_qual}.log"
     params:
         output_dir = "results/caller_comparison_long_read_enhancement/{dataset}/eval/{long_read_enhancement}/min_qual_{min_qual}",
-        truth_set_gz = config["truth_set_renamed_chr"]["gz"],
-        truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+        truth_set_gz = config["truth_set_HG002_renamed_chr"]["gz"],
+        truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
     shell:
         """
         rm -rf {params.output_dir} && truvari bench -b {params.truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \

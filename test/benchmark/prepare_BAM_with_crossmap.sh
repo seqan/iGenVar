@@ -26,17 +26,21 @@ less data/reference/GRCh37/hg19.reordered.fa | sed -e '/>chr_1/,$d' >> data/refe
 echo "$(tput setaf 1)$(tput setab 7)------- reference files prepared (5.2/9.6) --------$(tput sgr 0)" 1>&3
 
 # Illumina Paired End
-samtools sort short_reads/GRCh37/HG002.hs37d5.2x250.bam -o short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam
-samtools sort short_reads/GRCh38/HG002.GRCh38.2x250.bam -o short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
-samtools index short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam
-samtools index short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
+samtools sort short_reads/GRCh37/HG002/HG002.hs37d5.2x250.bam -o short_reads/GRCh37/HG002/HG002.hs37d5.2x250.sorted.bam
+samtools sort short_reads/GRCh38/HG002/HG002.GRCh38.2x250.bam -o short_reads/GRCh38/HG002/HG002.GRCh38.2x250.sorted.bam
+samtools index short_reads/GRCh37/HG002/HG002.hs37d5.2x250.sorted.bam
+samtools index short_reads/GRCh38/HG002/HG002.GRCh38.2x250.sorted.bam
+
+# Illumina HiSeq
+samtools sort data/short_reads/GRCh37/HG002/HG002.hs37d5.60x.1.bam -o data/short_reads/GRCh37/HG002/HG002.hs37d5.60x.1.sorted.bam
+samtools index data/short_reads/GRCh37/HG002/HG002.hs37d5.60x.1.sorted.bam
 
 # MtSinai PacBio
 ## Add MD tag for Sniffles
-samtools calmd --threads 16 -Q -b long_reads/GRCh37/HG002_PacBio_GRCh37.bam \
-    > long_reads/GRCh37/HG002_PacBio_GRCh37.md.bam reference/GRCh37/hs37d5.fa
-samtools calmd --threads 16 -Q -b long_reads/GRCh38/HG002_PacBio_GRCh38.bam \
-    > long_reads/GRCh38/HG002_PacBio_GRCh38.md.bam reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
+samtools calmd --threads 16 -Q -b long_reads/GRCh37/HG002/HG002_PacBio_GRCh37.bam \
+    > long_reads/GRCh37/HG002/HG002_PacBio_GRCh37.md.bam reference/GRCh37/hs37d5.fa
+samtools calmd --threads 16 -Q -b long_reads/GRCh38/HG002/HG002_PacBio_GRCh38.bam \
+    > long_reads/GRCh38/HG002/HG002_PacBio_GRCh38.md.bam reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
 
 # PacBio CCS 10kb
 ## Add MD tag for Sniffles

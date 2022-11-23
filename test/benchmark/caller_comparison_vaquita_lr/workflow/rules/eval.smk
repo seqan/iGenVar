@@ -40,11 +40,11 @@ rule truvari:
         output_dir = "results/caller_comparison_vaquita_lr/eval/{input_combination}/min_qual_{min_qual}"
     run:
         if (wildcards.input_combination == 'S2') | (wildcards.input_combination == 'L3') | (wildcards.input_combination == 'S2L3'):
-            truth_set_gz = config["truth_set_DEL_renamed_chr"]["gz"],
-            truth_set_bed = config["truth_set_renamed_chr"]["bed"]
+            truth_set_gz = config["truth_set_HG002_DEL_renamed_chr"]["gz"],
+            truth_set_bed = config["truth_set_HG002_renamed_chr"]["bed"]
         else: # S1, L1, L2, S1L1, S1L2
-            truth_set_gz = config["truth_set_DEL"]["gz"],
-            truth_set_bed = config["truth_set"]["bed"]
+            truth_set_gz = config["truth_set_HG002_DEL"]["gz"],
+            truth_set_bed = config["truth_set_HG002"]["bed"]
         shell("""
         rm -rf {params.output_dir} && truvari bench -b {truth_set_gz} -c {input.vcf} -o {params.output_dir} -p 0 \
             --passonly --includebed {truth_set_bed} &>> {log}

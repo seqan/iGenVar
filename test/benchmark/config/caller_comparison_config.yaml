@@ -3,15 +3,18 @@
 ## NIST Stanford Illumina 6kb Mate Pair
 ### GRCh37
 short_read_bam:
-    s1: data/short_reads/GRCh37/HG002.hs37d5.2x250.sorted.bam # ~40-50x coverage (Average = 65.8713)
-    s2: data/short_reads/GRCh37/HG002.mate_pair.sorted.bam # 13-17x coverage (Average = 14.1621)
+    s1: data/short_reads/GRCh37/HG002/HG002.hs37d5.2x250.sorted.bam # ~40-50x coverage (Average = 65.8713)
+    s2: data/short_reads/GRCh37/HG002/HG002.mate_pair.sorted.bam # 13-17x coverage (Average = 14.1621)
+    s3: data/short_reads/GRCh37/HG002/HG002.hs37d5.60x.1.sorted.bam # 60x coverage (Average = 59.0516)
 ### GRCh38
-# short_read_bam:
 #     s1: data/short_reads/GRCh38/HG002.GRCh38.2x250.sorted.bam
 #     s2: data/short_reads/GRCh38/HG002.sorted.bam
+    s4: data/short_reads/GRCh38/NA12878/NA12878_S1.bam # 50x coverage (Average = 47.6849)
 short_bam_name:
     s1: "AshkenazimTrio - HG002 NA24385 Son - NIST Illumina 2x250bps Paired-end"
     s2: "AshkenazimTrio - HG002 NA24385 Son - NIST Stanford Illumina 6kb Mate Pair"
+    s3: "AshkenazimTrio - HG002 NA24385 Son - ..."
+    s4: "NA12878 - ..."
 
 # long read data
 ## MtSinai PacBio (minimap2)
@@ -64,7 +67,8 @@ simulated_short_bam_name:
 ### GRCh37
 reference_fa:
     Illumina_Paired_End: data/reference/GRCh37/hs37d5.fa
-    Illumina_Mate_Pair: data/reference/GRCh37/hg19.reordered.short.fa
+    Illumina_Mate_Pair: data/reference/GRCh37/hg19.reordered.fa
+    Illumina_HiSeq: data/reference/GRCh37/hs37d5.fa
     MtSinai_PacBio: data/reference/GRCh37/hs37d5.fa
     PacBio_CCS: data/reference/GRCh37/hs37d5.fa
     10X_Genomics: data/reference/GRCh37/hg19.reordered.fa
@@ -72,23 +76,24 @@ reference_fa:
 #     Illumina_Paired_End: data/reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fa
 #     Illumina_Mate_Pair: data/reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_plus_hs38d1_analysis_set.fa
 #     MtSinai_PacBio: data/reference/GRCh38/GCA_000001405.15_GRCh38_no_alt_analysis_set.fa
+    NA12878_WGS_GRCh38: data/reference/GRCh38/hg38.fa
 #     PacBio_CCS: data/reference/GRCh38/???
 #     10X_Genomics: data/reference/GRCh38/???
     simulation_ref: data/simulation_GRCh38/hg38_chr21.fa
 
-truth_set:
+truth_set_HG002:
     gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.vcf.gz
     bed: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.bed
-truth_set_renamed_chr:
+truth_set_HG002_renamed_chr:
     gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.renamed_chr.vcf.gz
     bed: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.renamed_chr.bed
-truth_set_INS:
+truth_set_HG002_INS:
     gz: data/truth_set/HG002/INS/HG002_SVs_Tier1_v0.6.INS.vcf.gz
-truth_set_INS_renamed_chr:
+truth_set_HG002_INS_renamed_chr:
     gz: data/truth_set/HG002/INS/HG002_SVs_Tier1_v0.6.INS.renamed_chr.vcf.gz
-truth_set_DEL:
+truth_set_HG002_DEL:
     gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.vcf.gz
-truth_set_DEL_renamed_chr:
+truth_set_HG002_DEL_renamed_chr:
     gz: data/truth_set/HG002/DEL/HG002_SVs_Tier1_v0.6.DEL.renamed_chr.vcf.gz
 truth_set_simulation_default:
     gz: data/simulation_GRCh38/hg38_SV_simulation_default_sorted_fixed.vcf.gz
@@ -99,17 +104,21 @@ truth_set_simulation_noSNP:
 truth_set_simulation_SNPandSV:
     gz: data/simulation_GRCh38/hg38_SV_simulation_SNPandSV_sorted_fixed.vcf.gz
 # truth_set:
-#     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.vcf.gz
-#     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.bed
+#     gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.Hg38.vcf.gz
+#     bed: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.Hg38.bed
 # truth_set_renamed_chr:
-#     gz: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.vcf.gz
-#     bed: data/truth_set/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.bed
+#     gz: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.vcf.gz
+#     bed: data/truth_set/HG002/HG002_SVs_Tier1_v0.6.Hg38.renamed_chr.bed
+truth_set_NA12878:
+    gz: data/truth_set/NA12878/NA12878_S1.vcf.gz
+    bed: data/truth_set/NA12878/NA12878_S1.ROH.bed
 
 # GRIDSS: for hg38 (UCSC chr notation)
 # blacklist: data/blacklist/ENCFF356LFX.bed
 
 parameters:
-    sample: HG002
+    sample_HG002: HG002
+    sample_NA12878: NA12878
     min_var_length: 40
     max_var_length: 1000000
 

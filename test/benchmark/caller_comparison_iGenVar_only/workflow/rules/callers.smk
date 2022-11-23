@@ -1,4 +1,5 @@
-sample = config["parameters"]["sample"],
+sample_HG002 = config["parameters"]["sample_HG002"],
+sample_NA12878 = config["parameters"]["sample_NA12878"],
 min_var_length = config["parameters"]["min_var_length"],
 max_var_length = config["parameters"]["max_var_length"]
 
@@ -13,14 +14,28 @@ rule run_iGenVar:
             short_bam = config["short_read_bam"]["s1"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S2': # Illumina Mate Pair
             short_bam = config["short_read_bam"]["s2"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'S3': # Illumina HiSeq
+            short_bam = config["short_read_bam"]["s3"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'S4': # NA12878 WGS GRCh38
+            short_bam = config["short_read_bam"]["s4"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
+                --output {output.vcf} --vcf_sample_name {sample_NA12878} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S1L1': # Illumina Paired End & MtSinai PacBio
@@ -28,7 +43,7 @@ rule run_iGenVar:
             long_bam = config["long_read_bam"]["l1"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S2L1': # Illumina Mate Pair & MtSinai PacBio
@@ -36,7 +51,15 @@ rule run_iGenVar:
             long_bam = config["long_read_bam"]["l1"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'S3L1': # Illumina HiSeq & MtSinai PacBio
+            short_bam = config["short_read_bam"]["s3"],
+            long_bam = config["long_read_bam"]["l1"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S1L2': # Illumina Paired End & PacBio CCS
@@ -44,7 +67,7 @@ rule run_iGenVar:
             long_bam = config["long_read_bam"]["l2"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S2L2': # Illumina Mate Pair & PacBio CCS
@@ -52,7 +75,15 @@ rule run_iGenVar:
             long_bam = config["long_read_bam"]["l2"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'S3L2': # Illumina HiSeq & PacBio CCS
+            short_bam = config["short_read_bam"]["s3"],
+            long_bam = config["long_read_bam"]["l2"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S1L3': # Illumina Paired End & 10X Genomics
@@ -60,7 +91,7 @@ rule run_iGenVar:
             long_bam = config["long_read_bam"]["l3"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'S2L3': # Illumina Mate Pair & 10X Genomics
@@ -68,56 +99,64 @@ rule run_iGenVar:
             long_bam = config["long_read_bam"]["l3"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
+                --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
+            """)
+        elif wildcards.input_combination == 'S3L3': # Illumina HiSeq & 10X Genomics
+            short_bam = config["short_read_bam"]["s3"],
+            long_bam = config["long_read_bam"]["l3"]
+            shell("""
+            /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} --input_long_reads {long_bam} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'L1': # MtSinai PacBio
             long_bam = config["long_read_bam"]["l1"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_long_reads {long_bam} \
-                 --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                 --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'L2': # PacBio CCS
             long_bam = config["long_read_bam"]["l2"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_long_reads {long_bam} \
-                 --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                 --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'L3': # 10X Genomics
             long_bam = config["long_read_bam"]["l3"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_long_reads {long_bam} \
-                 --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                 --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'hg38_Sim_default': # Illumina
             short_bam = config["simulated_short_read_bam"]["sim1"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'hg38_Sim_InDel': # Illumina
             short_bam = config["simulated_short_read_bam"]["sim2"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         elif wildcards.input_combination == 'hg38_Sim_noSNP': # Illumina
             short_bam = config["simulated_short_read_bam"]["sim3"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
-                --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         else: # wildcards.input_combination == 'hg38_Sim_SNPandSV': # Illumina
             short_bam = config["simulated_short_read_bam"]["sim4"]
             shell("""
             /usr/bin/time -v ./build/iGenVar/bin/iGenVar --input_short_reads {short_bam} \
-                 --output {output.vcf} --vcf_sample_name {sample} --threads {threads} \
+                 --output {output.vcf} --vcf_sample_name {sample_HG002} --threads {threads} \
                 --min_var_length {min_var_length} --max_var_length {max_var_length} --min_qual 1 &>> {log}
             """)
         # Defaults:
